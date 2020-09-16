@@ -1,8 +1,6 @@
 # List of valid configuration variables
 Supported configuration variables are listed in the table below.  All variables can also be specified on the command line.  Values specified on the command line will override all values in configuration defaults files.
 
-[[_TOC_]]
-
 ## Cloud info
 | Name | Description | Type | Default | Required | Notes | Used by Actions |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
