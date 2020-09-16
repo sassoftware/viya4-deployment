@@ -22,7 +22,7 @@ RUN curl -sLO https://releases.hashicorp.com/terraform/${terraform_version}/terr
 
 # Installation
 FROM baseline
-WORKDIR /cloud-deployment
+WORKDIR /viya4-deployment
 
 COPY --from=go_builder /go/bin/jsonnet /usr/local/bin/jsonnet
 COPY --from=go_builder /go/bin/jb /usr/local/bin/jb
@@ -42,13 +42,13 @@ RUN apt-get -y install gzip wget bash-completion git git-lfs jq sshpass ansible 
   && echo 'source /cloud/clis/google-cloud-sdk/completion.bash.inc' >> ~/.bashrc \
   && echo 'source /cloud/clis/google-cloud-sdk/path.bash.inc' >> ~/.bashrc
 
-COPY . /cloud-deployment/
+COPY . /viya4-deployment/
 RUN ansible-galaxy collection install -r requirements.yaml -f \
-  && chmod +x /cloud-deployment/docker-entrypoint.sh
+  && chmod +x /viya4-deployment/docker-entrypoint.sh
 
 VOLUME ["/data", "/config"]
 
 ENV BASE_DIR=/data
 ENV PLAYBOOK=playbook.yaml
 
-ENTRYPOINT ["/cloud-deployment/docker-entrypoint.sh"]
+ENTRYPOINT ["/viya4-deployment/docker-entrypoint.sh"]
