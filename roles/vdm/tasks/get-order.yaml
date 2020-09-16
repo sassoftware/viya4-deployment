@@ -1,9 +1,9 @@
 ---
-# - name: Download order viya4-orders-cli
+# - name: Download viya4-orders-cli
 #   get_url:
-#     url: "COMING SOON"
+#     url: "https://github.com/sassoftware/viya4-orders-cli/releases/download/0.1.0/viya4-orders-cli-{{ hostvars[inventory_hostname]['ansible_system']|lower }}"
 #     dest: "{{ vdm_tmp_dir.path }}/viya4-orders-cli"
-#   mode: "0755"
+#     mode: "0755"
 #   tags:
 #     - install
 #     - uninstall
@@ -11,7 +11,7 @@
 
 - name: Download order
   shell:
-    cmd: "{{ role_path }}/files/sas-viya-orders-{{ hostvars[inventory_hostname]['ansible_system']|lower }} dep --file-path {{ DEPLOY_DIR }} --file-name {{ ORDER_ZIP }} -o json {{ V4_CFG_SAS_ORDER_NUMBER }} {{ V4_CFG_SAS_CADENCE_NAME }} {{ V4_CFG_SAS_CADENCE_VERSION }}"
+    cmd: "{{ role_path }}/files/viya4-orders-cli-{{ hostvars[inventory_hostname]['ansible_system']|lower }} dep --file-path {{ DEPLOY_DIR }} --file-name {{ ORDER_ZIP }} -o json {{ V4_CFG_SAS_ORDER_NUMBER }} {{ V4_CFG_SAS_CADENCE_NAME }} {{ V4_CFG_SAS_CADENCE_VERSION }}"
   environment:
     CLIENTCREDENTIALSID: "{{ V4_CFG_SAS_CLIENT_ID | string | b64encode }}"
     CLIENTCREDENTIALSSECRET: "{{ V4_CFG_SAS_CLIENT_SECRET | string | b64encode }}"

@@ -7,7 +7,26 @@
     - install
     - uninstall
     - upgrade
-    
+
+- name: Create tmpdir
+  tempfile:
+    state: directory
+  register: tmpdir
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: Download viya4-monitoring-kubernetes
+  git:
+    repo: https://github.com/sassoftware/viya4-monitoring-kubernetes.git
+    dest: "{{ tmpdir.path }}"
+    version: 0.1.0
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
 - name: Include cluster monitoring
   include_tasks: cluster.yaml
   tags:
@@ -22,3 +41,12 @@
   include_tasks: logging.yaml
   tags:
     - cluster-logging
+
+- name: Delete tmpdir
+  file:
+    path: "{{ tmpdir.path }}"
+    state: absent
+  tags:
+    - install
+    - update
+    - uninstall

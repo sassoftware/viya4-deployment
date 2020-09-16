@@ -1,13 +1,4 @@
 ---
-- name: Create tmp directory
-  tempfile:
-    state: directory
-  register: tmpdir
-  tags:
-    - install
-    - update
-    - uninstall
-
 - name: Copy user values
   template:
     src: "user-values-prom-host.yaml"    
@@ -19,7 +10,7 @@
 
 - name: Deploy cluster monitoring
   shell:
-    cmd: "{{ role_path }}/files/ops4viya/monitoring/bin/deploy_monitoring_cluster.sh"
+    cmd: "{{ tmpdir.path }}/monitoring/bin/deploy_monitoring_cluster.sh"
   environment:
     TLS_ENABLE: "{{ tls_enable }}"
     PROM_OPER_USER_YAML: "{{ tmpdir.path }}/user-values.yaml"
@@ -31,20 +22,11 @@
 
 - name: Remove cluster monitoring
   shell:
-    cmd: "{{ role_path }}/files/ops4viya/monitoring/bin/remove_monitoring_cluster.sh"
+    cmd: "{{ tmpdir.path }}/monitoring/bin/remove_monitoring_cluster.sh"
   environment:
     TLS_ENABLE: "{{ tls_enable }}"
     PROM_OPER_USER_YAML: "{{ tmpdir.path }}/user-values.yaml"
     KUBECONFIG: "{{ kubeconfig }}"
     LOG_COLOR_ENABLE: false
   tags:
-    - uninstall
-
-- name: Delete tmpdir
-  file:
-    path: "{{ tmpdir.path }}"
-    state: absent
-  tags:
-    - install
-    - update
     - uninstall

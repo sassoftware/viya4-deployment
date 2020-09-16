@@ -61,7 +61,7 @@ target:
 apiVersion: builtin
 kind: PatchTransformer
 metadata:
-  name: sas-elasticsearch-master
+  name: sas-svi-elasticsearch-master
 patch: |-
   - op: add
     path: /spec/volumeClaimTemplates/0/spec/storageClassName
@@ -69,13 +69,13 @@ patch: |-
 target:
   group: apps
   kind: StatefulSet
-  name:  sas-elasticsearch-master
+  name:  sas-svi-elasticsearch-master
   version: v1
 ---
 apiVersion: builtin
 kind: PatchTransformer
 metadata:
-  name: sas-elasticsearch-data
+  name: sas-svi-elasticsearch-data
 patch: |-
   - op: add
     path: /spec/volumeClaimTemplates/0/spec/storageClassName
@@ -83,5 +83,5 @@ patch: |-
 target:
   group: apps
   kind: StatefulSet
-  name:  sas-elasticsearch-data
+  name:  sas-svi-elasticsearch-data
   version: v1

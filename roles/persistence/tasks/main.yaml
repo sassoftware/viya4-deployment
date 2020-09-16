@@ -5,10 +5,13 @@
   tags:
     - vdm
 
-- name: Create resources directory
+- name: Create sssd directory
   file:
     state: directory
-    path:  "{{DEPLOY_DIR}}/site-config/resources"
+    path:  "{{DEPLOY_DIR}}/site-config/sssd"
+  when:
+    - SSSD is defined
+    - SSSD is not none
   tags:
     - vdm
 
@@ -19,7 +22,7 @@
   with_items:
     - { src: "{{ KUBE |default('', true) }}", dest: ".kube" }
     - { src: "{{ CONFIG |default('', true) }}", dest: "defaults.yaml" }
-    - { src: "{{ SSSD |default('', true) }}", dest: "resources/sssd-configmap.yaml" }
+    - { src: "{{ SSSD |default('', true) }}", dest: "sssd/configmap.yaml" }
     - { src: "{{ SITEDEFAULT |default('', true) }}", dest: "sitedefault.yaml" }
     - { src: "{{ JUMP_SVR_PRIVATE_KEY |default('', true) }}", dest: ".ssh" }
   when:
