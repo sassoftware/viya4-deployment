@@ -1,0 +1,64 @@
+# This block of code is for modifying the resource allocation for RAM. The
+# default value is 2 gigabytes and the maximum value is 32 gigabytes. The
+# AMOUNT-OF-RAM should be a numeric value followed by the units, such as 3Gi
+# for 3 gigabytes. In Kubernetes, the units for gigabytes is Gi.
+# Modify memory usage
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: cas-resources-memory
+patch: |-
+  - op: replace
+    path: /spec/controllerTemplate/spec/containers/0/resources/requests/memory
+    value:
+      {{ V4_CFG_CAS_RAM_PER_NODE }}
+  - op: add
+    path: /spec/controllerTemplate/spec/containers/0/resources/limits
+    value:
+      memory: {{ V4_CFG_CAS_RAM_PER_NODE }}
+  - op: add
+    path: /spec/controllerTemplate/spec/containers/1/resources
+    value:
+      requests:
+        memory: 500Mi
+      limits:
+        memory: 500Mi
+target:
+  group: viya.sas.com
+  kind: CASDeployment
+  name: default
+  version: v1alpha1
+---
+# This block of code is for modifying the resource allocation for CPUs. The
+# default value is .25 cores and the maximum value is 8 cores. The
+# NUMBER-OF-CORES should either a whole number, representing that number of
+# cores, or a number followed by m, indicating that number of milli-cores. So 8
+# would mean allocating 8 cores, and 5m would mean allocating 500 milli-cores,
+# or .5 cores.
+# Modify CPU usage
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: cas-resources-cores
+patch: |-
+  - op: replace
+    path: /spec/controllerTemplate/spec/containers/0/resources/requests/cpu
+    value:
+      {{ V4_CFG_CAS_CORES_PER_NODE }}
+  - op: add
+    path: /spec/controllerTemplate/spec/containers/0/resources/limits/cpu
+    value:
+      {{ V4_CFG_CAS_CORES_PER_NODE }}
+  - op: add
+    path: /spec/controllerTemplate/spec/containers/1/resources/requests/cpu
+    value:
+      500m
+  - op: add
+    path: /spec/controllerTemplate/spec/containers/1/resources/limits/cpu
+    value:
+      500m
+target:
+  group: viya.sas.com
+  kind: CASDeployment
+  name: default
+  version: v1alpha1

@@ -1,0 +1,24 @@
+## Cluster
+PROVIDER: azure #[azure|aws|gcp|custom]
+PROVIDER_ACCOUNT: <provider_account>
+CLUSTER_NAME: <cluster_name>
+NAMESPACE: <namespace>
+
+## MISC
+DEPLOY: true # Set to false to stop at generating the kustomize.yaml and manifest
+LOADBALANCER_SOURCE_RANGES: ['<cluster_nat_ip>/32']
+
+## Jump 
+JUMP_SVR_HOST: <jump_host>
+JUMP_SVR_USER: <jump_user>
+
+## NFS
+V4_CFG_NFS_SVR_HOST: <nfs_path>
+V4_CFG_NFS_SVR_PATH: <nfs_export>
+
+## Storage 
+V4_CFG_MANAGE_STORAGECLASS: true #[true|false]
+
+## Ingress
+V4_CFG_INGRESS_TYPE: ingress # [ingress|istio]
+V4_CFG_INGRESS_NAME: <desired_fqdn>

@@ -1,0 +1,56 @@
+---
+- name: Add helm repo
+  community.kubernetes.helm_repository:
+    repo_name: stable
+    repo_url: https://kubernetes-charts.storage.googleapis.com/
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: Create namespace
+  community.kubernetes.k8s:
+    api_version: v1
+    kind: Namespace
+    name: "{{ nfs_namespace }}"
+    wait: true
+    kubeconfig: "{{ kubeconfig }}"
+  tags:
+    - install
+    - upgrade
+
+- name: Deploy nfs-client
+  community.kubernetes.helm:
+    name: "{{ nfs_name }}"
+    chart_ref: stable/nfs-client-provisioner
+    namespace: "{{ nfs_namespace }}"
+    values: "{{ nfs_client_config }}"
+    chart_version: "{{ chart_version }}"
+    kubeconfig: "{{ kubeconfig }}"
+    wait: true
+    update_repo_cache: true
+  tags:
+    - install
+    - upgrade
+
+- name: Remove nfs-client
+  community.kubernetes.helm:
+    name: "{{ nfs_name }}"
+    namespace: "{{ nfs_namespace }}"
+    kubeconfig: "{{ kubeconfig }}"
+    wait: true
+    values: "{{ nfs_client_config }}"
+    state: absent
+  tags:
+    - uninstall
+
+- name: Remove namespace
+  community.kubernetes.k8s:
+    api_version: v1
+    kind: Namespace
+    name: "{{ nfs_namespace }}"
+    wait: true
+    state: absent
+    kubeconfig: "{{ kubeconfig }}"
+  tags:
+    - uninstall

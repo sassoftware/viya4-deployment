@@ -1,0 +1,22 @@
+# Optional snippit for federating data from Istio's instance of Prometheus
+
+# https://github.com/helm/charts/tree/master/stable/prometheus-operator#prometheus
+prometheus:
+  prometheusSpec:
+    # https://prometheus.io/docs/prometheus/latest/configuration/configuration/#kubernetes_sd_config
+    additionalScrapeConfigs:
+    # Federate Istio Metrics from its Prometheus instance  
+    - job_name: 'federate'
+      scrape_interval: 20s
+      honor_labels: true
+      metrics_path: '/federate'
+      params:
+        'match[]':
+        - '{job=~"envoy-.*"}'
+        - '{job=~"istio-.*"}'
+        - '{job="galley"}'
+        - '{job="pilot"}'
+        - '{job="citadel"}'
+      static_configs:
+      - targets:
+        - 'prometheus.istio-system.svc.cluster.local:9090'

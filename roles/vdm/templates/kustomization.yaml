@@ -1,0 +1,50 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+namespace: {{ NAMESPACE }} 
+
+
+configurations:
+  ## user defined configurations
+{% for item in user_customizations.configurations|sort %}
+  - {{ item }}
+{% endfor %}
+
+
+resources:
+  ## sas base
+  - {{BUNDLE_ROOT }}/{{BASES_LOC }}
+
+  ## vdm defined resources
+{% for item in vdm_resources %}
+  - {{ item }}
+{% endfor %}
+
+  ## user defined resources
+{% for item in user_customizations.resources|sort %}
+  - {{ item }}
+{% endfor %}
+
+
+transformers:
+  ## vdm defined transformers
+{% for item in vdm_transformers %}
+  - {{ item  }}
+{% endfor %}
+
+  ## user defined transformers
+{% for item in user_customizations.transformers|sort %}
+  - {{ item }}
+{% endfor %}
+
+
+generators:
+  ## vdm defined generators
+{% for item in vdm_generators %}
+  - {{ item  }}
+{% endfor %}
+
+  ## user defined generators
+{% for item in user_customizations.generators|sort%}
+  - {{ item }}
+{% endfor %}

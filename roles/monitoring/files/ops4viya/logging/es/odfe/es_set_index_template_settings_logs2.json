@@ -1,0 +1,9 @@
+{
+  "index_patterns": ["viya_logs-*"],
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 1,
+    "opendistro.index_state_management.policy_id": "viya_logs_idxmgmt_policy",
+    "index.default_pipeline":"viyaburstns"
+  }
+}

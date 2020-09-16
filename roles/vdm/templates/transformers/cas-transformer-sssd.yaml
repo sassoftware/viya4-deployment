@@ -1,0 +1,30 @@
+# This block of code is for setting up a ConfigMap, like one to be used for
+# configuring SSSD.
+---
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: sssd-apply-all
+patch: |-
+  - op: add
+    path: /spec/controllerTemplate/spec/volumes/-
+    value:
+      name: sssd-config
+      configMap:
+        name: sas-sssd-config
+        defaultMode: 420
+        items:
+        - key: SSSD_CONF
+          mode: 384
+          path: sssd.conf
+
+  - op: add
+    path: /spec/controllerTemplate/spec/containers/0/volumeMounts/-
+    value:
+      name: sssd-config
+      mountPath: /sssd
+target:
+  group: viya.sas.com
+  kind: CASDeployment
+  name: .*
+  version: v1alpha1

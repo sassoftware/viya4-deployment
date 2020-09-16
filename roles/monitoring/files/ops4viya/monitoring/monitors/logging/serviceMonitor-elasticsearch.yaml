@@ -1,0 +1,23 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: elasticsearch
+  labels:
+    sas.com/monitoring-base: kube-viya-monitoring
+spec:
+  selector:
+    matchLabels:
+      app: elasticsearch-exporter
+  namespaceSelector:
+    any: true
+    # Optional: change 'any' to 'false' above to limit namespace(s)
+    # matchNames:
+    # - logging
+  endpoints:
+  - port: http
+    path: /metrics
+    metricRelabelings:
+    # The Elasticsearch exporters inexplicably uses a 'node' label, which
+    # conflicts with the common Kubernetes 'node' label, so rename it
+    - sourceLabels: [node]
+      targetLabel: es_node

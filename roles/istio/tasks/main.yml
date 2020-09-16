@@ -1,0 +1,234 @@
+---
+- name: Create tmp dir
+  tempfile:
+    state: directory
+  register: tmpdir
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: Download istio
+  shell: 
+    cmd: "curl -L https://istio.io/downloadIstio | ISTIO_VERSION={{ istio_ver }} TARGET_ARCH={{ target_arch }} sh -"
+    chdir: "{{ tmpdir.path }}"
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: Create namespace
+  community.kubernetes.k8s:
+    kubeconfig: "{{ kubeconfig }}"
+    api_version: v1
+    kind: Namespace
+    name: "istio-system"
+    wait: true
+  tags:
+    - install
+    - upgrade
+
+- name: Set kiali secret
+  community.kubernetes.k8s:
+    kubeconfig: "{{ kubeconfig }}"
+    state: present
+    definition: "{{ lookup('template', 'kiali-secret.yaml') }}"
+  tags:
+    - install
+    - upgrade
+
+- name: Set grafana secret
+  community.kubernetes.k8s:
+    kubeconfig: "{{ kubeconfig }}"
+    state: present
+    definition: "{{ lookup('template', 'grafana-secret.yaml') }}"
+  tags:
+    - install
+    - upgrade
+   
+- name: Install base Istio 
+  command: "{{ tmpdir.path }}/istio-{{ istio_ver }}/bin/istioctl --kubeconfig {{ kubeconfig }} manifest apply {{ istio_config }}"
+  tags:
+    - install
+    - upgrade
+
+- name: Lockdown ingress
+  community.kubernetes.k8s:
+    kubeconfig: "{{ kubeconfig }}"
+    state: present
+    definition:
+      apiVersion: security.istio.io/v1beta1
+      kind: AuthorizationPolicy
+      metadata:
+        name: ingress-policy
+        namespace: istio-system
+      spec:
+        selector:
+          matchLabels:
+            app: istio-ingressgateway
+        action: ALLOW
+        rules:
+        - from:
+          - source:
+              ipBlocks: "{{ loadBalancerSourceRanges }}"
+  tags:
+    - install
+    - upgrade
+
+- name: Grafana ingress
+  community.kubernetes.k8s:
+    kubeconfig: "{{ kubeconfig }}"
+    state: present
+    definition:
+      apiVersion: extensions/v1beta1
+      kind: Ingress
+      metadata:
+        annotations:
+          kubernetes.io/ingress.class: istio
+        name: grafana-ingress
+        namespace: istio-system
+      spec:
+        rules:
+          - host: "{{ grafana_ingress_host }}"
+            http:
+              paths:
+                - path: /
+                  backend:
+                    serviceName: grafana
+                    servicePort: 3000
+  when: grafana_ingress_enabled
+  tags:
+    - install
+    - upgrade
+
+- name: Prometheus ingress
+  community.kubernetes.k8s:
+    kubeconfig: "{{ kubeconfig }}"
+    state: present
+    definition:
+      apiVersion: extensions/v1beta1
+      kind: Ingress
+      metadata:
+        annotations:
+          kubernetes.io/ingress.class: istio
+        name: prometheus-ingress
+        namespace: istio-system
+      spec:
+        rules:
+          - host: "{{ prometheus_ingress_host }}"
+            http:
+              paths:
+                - path: /
+                  backend:
+                    serviceName: prometheus
+                    servicePort: 9090
+  when: prometheus_ingress_enabled
+  tags:
+    - install
+    - upgrade
+
+- name: Kiali ingress
+  community.kubernetes.k8s:
+    kubeconfig: "{{ kubeconfig }}"
+    state: present
+    definition:
+      apiVersion: extensions/v1beta1
+      kind: Ingress
+      metadata:
+        annotations:
+          kubernetes.io/ingress.class: istio
+        name: kiali-ingress
+        namespace: istio-system
+      spec:
+        rules:
+          - host: "{{ kiali_ingress_host }}"
+            http:
+              paths:
+                - path: /
+                  backend:
+                    serviceName: kiali
+                    servicePort: 20001
+  when: kiali_ingress_enabled
+  tags:
+    - install
+    - upgrade
+
+- name: Tracing ingress
+  community.kubernetes.k8s:
+    kubeconfig: "{{ kubeconfig }}"
+    state: present
+    definition:
+      apiVersion: extensions/v1beta1
+      kind: Ingress
+      metadata:
+        annotations:
+          kubernetes.io/ingress.class: istio
+        name: tracing-ingress
+        namespace: istio-system
+      spec:
+        rules:
+          - host: "{{ tracing_ingress_host }}"
+            http:
+              paths:
+                - path: /
+                  backend:
+                    serviceName: tracing
+                    servicePort: 80
+  when: tracing_ingress_enabled
+  tags:
+    - install
+    - upgrade
+
+- name: Lookup ingress
+  community.kubernetes.k8s_info:
+    api_version: v1
+    kind: Service
+    name: istio-ingressgateway
+    namespace: "istio-system"
+    kubeconfig: "{{ kubeconfig }}"
+  until: "ingress_config.resources[0].status.loadBalancer.ingress is defined and (ingress_config.resources[0].status.loadBalancer.ingress[0].ip is defined or ingress_config.resources[0].status.loadBalancer.ingress[0].hostname is defined)"
+  register: ingress_config
+  tags:
+    - install
+    - upgrade
+    - uninstall
+
+- set_fact: 
+    ingress_endpoint: "{{ ingress_config.resources[0].status.loadBalancer.ingress[0].ip |default(ingress_config.resources[0].status.loadBalancer.ingress[0].hostname, true) }}"
+    ingress_type: "{{ 'ip' if (ingress_config.resources[0].status.loadBalancer.ingress[0].ip is defined) else 'dns' }}"
+    cacheable: yes
+  tags:
+    - install
+    - upgrade
+    - uninstall
+
+- name: Uninstall base Istio 
+  shell: |
+    {{ tmpdir.path }}/istio-{{ istio_ver }}/bin/istioctl --kubeconfig {{ kubeconfig }} manifest generate {{ istio_config }} | kubectl delete -f -
+  environment:
+    KUBECONFIG: "{{ kubeconfig }}"
+  ignore_errors: yes
+  tags:
+    - uninstall
+
+- name: Delete namespace
+  community.kubernetes.k8s:
+    kubeconfig: "{{ kubeconfig }}"
+    api_version: v1
+    kind: Namespace
+    name: "istio-system"
+    wait: true
+    wait_timeout: 600
+    state: absent
+  ignore_errors: yes
+  tags:
+    - uninstall
+
+- name: Remove tmp_dir
+  file:
+    path: "{{ tmpdir.path }}"
+    state: absent
+  tags:
+    - install
+    - upgrade
+    - uninstall

@@ -1,0 +1,4 @@
+tls_enable: false
+namespace: default
+kubeconfig: ~/.kube/config
+base_domain: example.com

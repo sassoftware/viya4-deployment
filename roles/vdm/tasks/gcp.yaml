@@ -1,0 +1,15 @@
+---
+- name: Add storage classes
+  include_tasks: vdm_loader.yaml
+  vars:
+    resources:
+      - "{{ VDM_RESOURCES_PATH }}/gce-sc.yaml"
+    transformers: 
+      - "{{ VDM_TRANSFORMERS_PATH }}/sas-rwo-sc.yaml"
+      - "{{ VDM_TRANSFORMERS_PATH }}/sas-rwx-sc.yaml"
+  when:
+    - V4_CFG_MANAGE_STORAGECLASS
+  tags:
+    - install
+    - uninstall
+    - upgrade

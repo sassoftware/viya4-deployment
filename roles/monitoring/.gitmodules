@@ -1,0 +1,3 @@
+[submodule "ops4viya"]
+	path = files/ops4viya
+	url = git@gitlab.sas.com:emidev/ops4viya.git

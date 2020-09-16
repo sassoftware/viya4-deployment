@@ -1,0 +1,81 @@
+# Place overrides for the Prometheus Operator Helm Chart Here
+
+# Prometheus Operator Helm Chart
+# https://github.com/helm/charts/blob/master/stable/prometheus-operator/README.md
+#
+# CRDs
+# https://github.com/coreos/prometheus-operator/blob/master/Documentation/api.md
+#
+# Default Values
+# https://github.com/helm/charts/blob/master/stable/prometheus-operator/values.yaml
+
+# Sample ingress configuration
+# NOTE: Edit hostnames and ingress port
+
+kubelet:
+  serviceMonitor:
+    # Azure uses http for kubelet metrics by default
+    # See issue: https://github.com/coreos/prometheus-operator/issues/926
+    https: false
+
+prometheus:
+  service:
+    type: ClusterIP
+    nodePort: null
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/rewrite-target: /
+    hosts:
+    - host.cluster.example.com
+    paths:
+    - /prometheus
+  prometheusSpec:
+    externalUrl: http://host.cluster.example.com/prometheus
+
+alertmanager:
+  service:
+    type: ClusterIP
+    nodePort: null
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/rewrite-target: /
+    hosts:
+    - host.cluster.example.com
+    paths:
+    - /alertmanager
+  alertmanagerSpec:
+    externalUrl: http://host.cluster.example.com/alertmanager
+
+grafana:
+  "grafana.ini":
+    server:
+      protocol: http
+      domain: host.cluster.example.com
+      root_url: http://host.cluster.example.com/grafana
+      serve_from_sub_path: true
+  service:
+    type: ClusterIP
+    nodePort: null
+  ingress:
+    enabled: true
+    hosts:
+    - host.cluster.example.com
+    path: /grafana
+
+prometheus-node-exporter:
+  service:
+    # Override the default port of 9100 to avoid potential conflicts
+    port: 9110
+    targetPort: 9110
+  # Allow pod to be scheduled on master nodes that otherwise
+  # wouldn't schedule normal pods
+  tolerations:
+  - key: node-role.kubernetes.io/master
+    effect: NoSchedule
+  - key: workload.sas.com/class
+    operator: Exists
+    effect: NoSchedule

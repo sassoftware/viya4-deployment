@@ -1,0 +1,24 @@
+---
+- name: Add helm repo
+  community.kubernetes.helm_repository:
+    repo_name: stable
+    repo_url: https://kubernetes-charts.storage.googleapis.com/
+  tags:
+    - install
+    - uninstall
+    - upgrade
+    
+- name: Include cluster monitoring
+  include_tasks: cluster.yaml
+  tags:
+    - cluster-monitoring
+
+- name: Include viya monitoring
+  include_tasks: viya.yaml
+  tags:
+    - viya-monitoring
+
+- name: Include cluster logging
+  include_tasks: logging.yaml
+  tags:
+    - cluster-logging

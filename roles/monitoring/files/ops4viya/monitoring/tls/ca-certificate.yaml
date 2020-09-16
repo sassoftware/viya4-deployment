@@ -1,0 +1,11 @@
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: ca-certificate
+spec:
+  commonName: root-ca-certificate
+  isCA: true
+  issuerRef:
+    kind: Issuer
+    name: selfsigning-issuer
+  secretName: ca-certificate-secret

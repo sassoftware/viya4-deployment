@@ -1,0 +1,14 @@
+## Reference: https://kubernetes.io/docs/concepts/storage/storage-classes/#aws-ebs
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: sas-rwo
+  labels:
+    kubernetes.io/cluster-service: "true"
+allowVolumeExpansion: true
+provisioner: kubernetes.io/gce-pd
+parameters:
+  type: pd-standard
+  fstype: ext4
+  replication-type: none
+volumeBindingMode: WaitForFirstConsumer

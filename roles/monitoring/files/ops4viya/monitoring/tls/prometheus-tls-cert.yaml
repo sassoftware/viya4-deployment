@@ -1,0 +1,19 @@
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: prometheus-tls-cert
+spec:
+  commonName: prometheus
+  dnsNames:
+  - localhost
+  - prometheus-prometheus-operator-prometheus-0
+  - prometheus-operator-prometheus
+  issuerRef:
+    kind: Issuer
+    name: namespace-issuer
+  secretName: prometheus-tls-secret
+  usages:
+  - digital signature
+  - key encipherment
+  - server auth
+  - client auth

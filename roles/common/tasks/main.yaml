@@ -1,0 +1,62 @@
+- name: Load config file
+  include_vars:
+    file: "{{ CONFIG }}"
+  when: CONFIG is defined
+  tags:
+    - baseline
+    - vdm
+    - cluster-monitoring
+    - cluster-logging
+    - viya-monitoring
+
+- name: Set BASE_DIR default path
+  set_fact:
+    BASE_DIR="{{ansible_env.HOME}}"
+  when: BASE_DIR is not defined
+  tags:
+    - baseline
+    - vdm
+    - cluster-monitoring
+    - cluster-logging
+    - viya-monitoring
+
+- name: read tfstate vars
+  include_tasks: tfstate.yaml
+  when:
+    - TFSTATE is defined
+  tags:
+    - baseline
+    - vdm
+    - cluster-monitoring
+    - cluster-logging
+    - viya-monitoring
+
+- name: Set DEPLOY_DIR
+  set_fact:
+    DEPLOY_DIR="{{BASE_DIR}}/viya-deployments/{{PROVIDER}}/{{PROVIDER_ACCOUNT}}/{{CLUSTER_NAME}}/{{NAMESPACE}}"
+  when: DEPLOY_DIR is not defined
+  tags:
+    - baseline
+    - vdm
+    - cluster-monitoring
+    - cluster-logging
+    - viya-monitoring
+
+- set_fact:
+      KUBE: "{{DEPLOY_DIR}}/site-config/.kube"
+  when:
+    - KUBE is not defined
+  tags:
+    - baseline
+    - vdm
+    - cluster-monitoring
+    - cluster-logging
+    - viya-monitoring
+
+- set_fact:
+      JUMP_SVR_PRIVATE_KEY: "{{DEPLOY_DIR}}/site-config/.ssh"
+  when:
+    - JUMP_SVR_PRIVATE_KEY is not defined
+  tags:
+    - baseline
+    - vdm

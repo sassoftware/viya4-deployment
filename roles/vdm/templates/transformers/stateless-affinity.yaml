@@ -1,0 +1,112 @@
+---
+apiVersion: builtin
+kind: PatchTransformer
+metadata: 
+  name: stateless-affinity-0
+patch: |-
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: stateless-affinity
+    labels:
+      workload.sas.com/class: stateless
+  spec:
+    template:
+      metadata:
+        labels:
+          workload.sas.com/class: stateless
+      spec:
+        tolerations:
+          - key: "workload.sas.com/class"
+            operator: "Equal"
+            value: "stateful"
+            effect: "NoSchedule"
+          - key: "workload.sas.com/class"
+            operator: "Equal"
+            value: "stateless"
+            effect: "NoSchedule"
+        affinity:
+          nodeAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                - key: workload.sas.com/class
+                  operator: In
+                  values:
+                  - stateless
+            - weight: 50
+              preference:
+                matchExpressions:
+                - key: workload.sas.com/class
+                  operator: NotIn
+                  values:
+                  - compute
+                  - cas
+                  - stateful
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+              - matchExpressions:
+                - key: kubernetes.azure.com/mode
+                  operator: NotIn
+                  values:
+                  - system
+target:
+    kind: Deployment
+    labelSelector: sas.com/deployment-base in (spring, golang)
+---
+apiVersion: builtin
+kind: PatchTransformer
+metadata: 
+  name: stateless-affinity-1
+patch: |-
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: stateless-affinity
+    labels:
+      workload.sas.com/class: stateless
+  spec:
+    template:
+      metadata:
+        labels:
+          workload.sas.com/class: stateless
+      spec:
+        tolerations:
+          - key: "workload.sas.com/class"
+            operator: "Equal"
+            value: "stateful"
+            effect: "NoSchedule"
+          - key: "workload.sas.com/class"
+            operator: "Equal"
+            value: "stateless"
+            effect: "NoSchedule"
+        affinity:
+          nodeAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                - key: workload.sas.com/class
+                  operator: In
+                  values:
+                  - stateless
+            - weight: 50
+              preference:
+                matchExpressions:
+                - key: workload.sas.com/class
+                  operator: NotIn
+                  values:
+                  - compute
+                  - cas
+                  - stateful
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+              - matchExpressions:
+                - key: kubernetes.azure.com/mode
+                  operator: NotIn
+                  values:
+                  - system
+target:
+    kind: Deployment
+    name: sas-cas-operator

@@ -1,0 +1,28 @@
+image:
+  repository: prom/pushgateway
+  tag: v1.2.0
+
+# Bug in the helm chart - podLabels are put on the deployment, not the pod
+podLabels:
+  sas.com/monitoring-base: kube-viya-monitoring
+serviceLabels:
+  sas.com/monitoring-base: kube-viya-monitoring
+serviceAccountLabels:
+  sas.com/monitoring-base: kube-viya-monitoring
+persistentVolumeLabels:
+  sas.com/monitoring-base: kube-viya-monitoring
+
+service:
+  type: ClusterIP
+  port: 9091
+  targetPort: 9091
+
+serviceAccount:
+  create: true
+  name: sas-pushgateway
+
+serviceMonitor:
+  enabled: false
+
+persistentVolume:
+  enabled: true

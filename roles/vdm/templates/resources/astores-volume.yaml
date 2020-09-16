@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: sas-microanalytic-score-astores
+  annotations:
+    sas.com/component-name: sas-microanalytic-score
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: "{{ V4_CFG_RWX_STORAGE_CLASS }}"

@@ -1,0 +1,9 @@
+{
+  "index_patterns": ["viya_ops-*"],
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 1,
+    "opendistro.index_state_management.policy_id": "viya_ops_idxmgmt_policy"
+  }
+}
+

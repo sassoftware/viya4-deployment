@@ -1,0 +1,32 @@
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: consul
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+spec:
+  rules:
+  - host: $(INGRESS_HOST)
+    http:
+      paths:
+      - backend:
+          serviceName: consul
+          servicePort: 8500
+        path: /
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: cas
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+spec:
+  rules:
+  - host: $(INGRESS_HOST)
+    http:
+      paths:
+      - backend:
+          serviceName: default-cas
+          servicePort: 8777
+        path: /cas-shared-default-http

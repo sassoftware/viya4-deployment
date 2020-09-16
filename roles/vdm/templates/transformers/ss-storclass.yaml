@@ -1,0 +1,87 @@
+---
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: sas-cacheserver
+patch: |-
+  - op: add
+    path: /spec/volumeClaimTemplates/0/spec/storageClassName
+    value: {{ V4_CFG_RWO_STORAGE_CLASS }}
+target:
+  group: apps
+  kind: StatefulSet
+  name: sas-cacheserver
+  version: v1
+---
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: sas-cachelocator
+patch: |-
+  - op: add
+    path: /spec/volumeClaimTemplates/0/spec/storageClassName
+    value: {{ V4_CFG_RWO_STORAGE_CLASS }}
+  - op: add
+    path: /spec/template/spec/securityContext/fsGroup
+    value: 1001
+target:
+  group: apps
+  kind: StatefulSet
+  name: sas-cachelocator
+  version: v1
+---
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: sas-consul-server
+patch: |-
+  - op: add
+    path: /spec/volumeClaimTemplates/0/spec/storageClassName
+    value: {{ V4_CFG_RWO_STORAGE_CLASS }}
+target:
+  group: apps
+  kind: StatefulSet
+  name: sas-consul-server
+  version: v1
+---
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: sas-rabbitmq-server
+patch: |-
+  - op: add
+    path: /spec/volumeClaimTemplates/0/spec/storageClassName
+    value: {{ V4_CFG_RWO_STORAGE_CLASS }}
+target:
+  group: apps
+  kind: StatefulSet
+  name: sas-rabbitmq-server
+  version: v1
+---
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: sas-elasticsearch-master
+patch: |-
+  - op: add
+    path: /spec/volumeClaimTemplates/0/spec/storageClassName
+    value: {{ V4_CFG_RWO_STORAGE_CLASS }}
+target:
+  group: apps
+  kind: StatefulSet
+  name:  sas-elasticsearch-master
+  version: v1
+---
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: sas-elasticsearch-data
+patch: |-
+  - op: add
+    path: /spec/volumeClaimTemplates/0/spec/storageClassName
+    value: {{ V4_CFG_RWO_STORAGE_CLASS }}
+target:
+  group: apps
+  kind: StatefulSet
+  name:  sas-elasticsearch-data
+  version: v1

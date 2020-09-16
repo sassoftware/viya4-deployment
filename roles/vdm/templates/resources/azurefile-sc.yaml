@@ -1,0 +1,13 @@
+## Reference: https://kubernetes.io/docs/concepts/storage/storage-classes/#azure-file
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: sas-rwx
+  labels:
+    kubernetes.io/cluster-service: "true"
+allowVolumeExpansion: true
+provisioner: kubernetes.io/azure-file
+parameters:
+  skuName: Standard_LRS
+  # location: eastus
+  # storageAccount: azure_storage_account_name

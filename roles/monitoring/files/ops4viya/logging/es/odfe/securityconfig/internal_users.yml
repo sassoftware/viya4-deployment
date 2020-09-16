@@ -1,0 +1,30 @@
+---
+# This is the internal user database
+# The hash value is a bcrypt hash and can be generated with plugin/tools/hash.sh
+
+_meta:
+  type: "internalusers"
+  config_version: 2
+
+
+admin:
+  hash: ${envbc.ES_ADMIN_PASSWD}
+  reserved: true
+  backend_roles:
+  - "admin"
+  description: "Admin user"
+
+kibanaserver:
+  hash: ${envbc.ES_KIBANASERVER_PASSWD}
+  reserved: true
+  description: "Kibanaserver user"
+
+logcollector:
+  hash: ${envbc.ES_LOGCOLLECTOR_PASSWD}
+  reserved: true
+  description: "Logcollector user"
+
+metricgetter:
+  hash: ${envbc.ES_METRICGETTER_PASSWD}
+  reserved: true
+  description: "Metricgetter user"

@@ -1,0 +1,8 @@
+---
+apiVersion: builtin
+kind: ConfigMapGenerator
+metadata:
+  name: sas-shared-config
+behavior: merge
+literals:
+  - SAS_URL_SERVICE_TEMPLATE={{ V4_CFG_DEPLOYMENT_URL_PREFIX }}{{ V4_CFG_INGRESS_NAME }}{{ V4_CFG_DEPLOYMENT_URL_PORT }}

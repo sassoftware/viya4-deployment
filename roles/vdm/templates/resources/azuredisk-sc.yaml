@@ -1,0 +1,13 @@
+## Reference: https://kubernetes.io/docs/concepts/storage/storage-classes/#volume-binding-mode
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: sas-rwo
+  labels:
+    kubernetes.io/cluster-service: "true"
+allowVolumeExpansion: true
+provisioner: kubernetes.io/azure-disk
+parameters:
+  storageaccounttype: Standard_LRS
+  kind: managed
+volumeBindingMode: WaitForFirstConsumer

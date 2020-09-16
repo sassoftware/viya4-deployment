@@ -1,0 +1,14 @@
+# Kibana helm chart overrides
+# Default values: https://github.com/elastic/helm-charts/blob/master/kibana/values.yaml
+
+kibana:
+  service:
+    type: ClusterIP
+    nodePort: null
+
+  ingress:
+    annotations:
+      kubernetes.io/ingress.class: nginx
+    enabled: true
+    hosts:
+    - host.mycluster.example.com

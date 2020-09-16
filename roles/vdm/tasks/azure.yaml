@@ -1,0 +1,28 @@
+---
+- name: Add azuredisk
+  include_tasks: vdm_loader.yaml
+  vars:
+    resources:
+      - "{{ VDM_RESOURCES_PATH }}/azuredisk-sc.yaml"
+    transformers: 
+      - "{{ VDM_TRANSFORMERS_PATH }}/sas-rwo-sc.yaml"
+      - "{{ VDM_TRANSFORMERS_PATH }}/sas-rwx-sc.yaml"
+  when:
+    - V4_CFG_MANAGE_STORAGECLASS
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: Add azurefile
+  include_tasks: vdm_loader.yaml
+  vars:
+    resources:
+      - "{{ VDM_RESOURCES_PATH }}/azurefile-sc.yaml"
+  when:
+    - V4_CFG_MANAGE_STORAGECLASS
+    - V4_CFG_NFS_SVR_HOST is none
+  tags:
+    - install
+    - uninstall
+    - upgrade

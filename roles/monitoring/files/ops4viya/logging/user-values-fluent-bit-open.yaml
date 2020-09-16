@@ -1,0 +1,10 @@
+# Chart: https://github.com/helm/charts/tree/master/stable/fluent-bit
+# Default values: https://github.com/helm/charts/blob/master/stable/fluent-bit/values.yaml
+
+# NOTE: Customizations intended to alter the contents of the Fluent Bit Configuration Files
+#       should be made by altering contents of the fluent-bit_config.configmap_open.yaml files.
+#       Use this file to customize other Helm chart settings.
+
+# image:
+#   fluent_bit:
+#     tag: 1.3.11

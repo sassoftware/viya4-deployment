@@ -1,0 +1,55 @@
+---
+apiVersion: builtin
+kind: PatchTransformer
+metadata: 
+  name: cas-affinity-0
+patch: |-
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: cas-affinity
+    labels:
+      workload.sas.com/class: cas
+  spec:
+    template:
+      metadata:
+        labels:
+          workload.sas.com/class: cas
+    controllerTemplate:
+      spec:
+        tolerations:
+        - key: "workload.sas.com/class"
+          operator: "Equal"
+          value: "cas"
+          effect: "NoSchedule"
+        affinity:
+          nodeAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                - key: workload.sas.com/class
+                  operator: In
+                  values:
+                  - cas
+            - weight: 1
+              preference:
+                matchExpressions:
+                - key: workload.sas.com/class
+                  operator: NotIn
+                  values:
+                  - compute
+                  - stateless
+                  - stateful
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+              - matchExpressions:
+                - key: kubernetes.azure.com/mode
+                  operator: NotIn
+                  values:
+                  - system
+target:
+  group: viya.sas.com
+  kind: CASDeployment
+  name: .*
+  version: v1alpha1

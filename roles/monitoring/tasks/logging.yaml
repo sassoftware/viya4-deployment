@@ -1,0 +1,51 @@
+---
+- name: Create tmp directory
+  tempfile:
+    state: directory
+  register: tmpdir
+  tags:
+    - install
+    - update
+    - uninstall
+
+- name: Copy user values
+  template:
+    src: "user-values-elasticsearch-open.yaml"    
+    dest: "{{ tmpdir.path }}/user-values.yaml"
+  tags:
+    - install
+    - update
+    - uninstall
+
+- name: Deploy cluster logging
+  shell:
+    cmd: "{{ role_path }}/files/ops4viya/logging/bin/deploy_logging_open.sh"
+  environment:
+    TLS_ENABLE: "{{ tls_enable }}"
+    ES_OPEN_USER_YAML: "{{ tmpdir.path }}/user-values.yaml"
+    KUBECONFIG: "{{ kubeconfig }}"
+    LOG_COLOR_ENABLE: false
+  ignore_errors: yes
+  tags:
+    - install
+    - update
+
+- name: Remove cluster logging
+  shell:
+    cmd: " {{ role_path }}/files/ops4viya/logging/bin/remove_logging_open.sh"
+  environment:
+    TLS_ENABLE: "{{ tls_enable }}"
+    ES_OPEN_USER_YAML: "{{ tmpdir.path }}/user-values.yaml"
+    KUBECONFIG: "{{ kubeconfig }}"
+    LOG_COLOR_ENABLE: false
+  tags:
+    - uninstall
+
+- name: Delete tmpdir
+  file:
+    path: "{{ tmpdir.path }}"
+    state: absent
+  tags:
+    - install
+    - update
+    - uninstall

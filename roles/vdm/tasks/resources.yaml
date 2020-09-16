@@ -1,0 +1,49 @@
+---
+- name: Get nodes
+  community.kubernetes.k8s_info:
+    kind: Node
+    kubeconfig: "{{ kubeconfig }}"
+    label_selectors:
+      - workload.sas.com/class = cas
+  register: nodes
+  when:
+    - DEPLOY
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- set_fact:
+    V4_CFG_CAS_NODE_COUNT: "{{ nodes.resources|default({})|length }}"
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- set_fact:
+    CAS_BKUP_AGENT_RAM: "{{ (500 * 1024)|int }}"
+    CAS_RESERVE_RAM: "512"
+  when: 
+    - V4_CFG_CAS_RAM_PER_NODE is not none
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- set_fact:
+    V4_CFG_CAS_RAM_PER_NODE: "{{ ((((nodes.resources[0].status.allocatable.memory[:-2]|int - CAS_RESERVE_RAM|int) - CAS_BKUP_AGENT_RAM|int) * (9 / 10))|int|string + nodes.resources[0].status.allocatable.memory[-2:]) |default(128)}}"
+  when: 
+    - V4_CFG_CAS_RAM_PER_NODE is not none
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- set_fact:
+    V4_CFG_CAS_CORES_PER_NODE: "{{ (nodes.resources[0].status.capacity.cpu|int - 1) |default(2)}}"
+  when: 
+    - V4_CFG_CAS_CORES_PER_NODE is not none
+  tags:
+    - install
+    - uninstall
+    - upgrade

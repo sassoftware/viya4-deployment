@@ -1,0 +1,33 @@
+chart_version: 0.12.0
+efs_name: efs-provisioner
+efs_namespace: efs-provisioner
+kubeconfig: ~/.kube/config
+storageClassname: sas-rwx
+provisionerName: sas.com/aws-efs
+awsRegion: us-east-1
+path: /pvs
+
+efs_provisioner_config:
+  global:
+    deployEnv: production
+
+  efsProvisioner:
+    efsFileSystemId: "{{ efsFileSystemId }}"
+    awsRegion: "{{ awsRegion }}"
+    path: "{{ path }}"
+    provisionerName: "{{ provisionerName }}"
+    storageClass:
+      name: "{{ storageClassname }}"
+      isDefault: false
+      gidAllocate:
+        enabled: true
+        gidMin: 40000
+        gidMax: 50000
+      reclaimPolicy: Delete
+      mountOptions: []
+
+  rbac:
+    create: true
+
+  podSecurityPolicy:
+    enabled: true

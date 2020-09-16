@@ -1,0 +1,32 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: ingress-nginx
+spec:
+  selector: {}
+  podMetricsEndpoints:
+  - relabelings:
+    - sourceLabels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+      regex: (.*nginx.*)
+      action: keep
+    # Only scrape one endpoint (the 'http' port)
+    - sourceLabels: [__meta_kubernetes_pod_container_port_name]
+      regex: http
+      action: keep
+    # Save the original address in the instance tag
+    - sourceLabels: [__address__]
+      targetLabel: instance
+    # The port to scrape must be retrtieved from the prometheus.io/port annotation
+    # as the actual 'http' port won't work for metrics
+    - sourceLabels: [__meta_kubernetes_pod_ip]
+      regex: (.*)
+      action: replace
+      targetLabel: __address__
+      replacement: $1:10254
+    # Simplify the job name
+    - sourceLabels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+      separator: ;
+      regex: (.*)
+      action: replace
+      targetLabel: job
+      replacement: $1

@@ -1,0 +1,31 @@
+kibana:
+  service:
+    type: ClusterIP
+    nodePort: null
+  ingress:
+    enabled: true
+    path: /
+    hosts:
+    - kibana.{{ base_domain }}
+{% if tls_enable %}
+    tls:
+    - secretName: kibana-ingress-tls-secret
+      hosts:
+      - kibana.{{ base_domain }}
+{% endif %}
+
+elasticsearch:
+  client:
+    ingress:
+      annotations:
+        nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+      enabled: true
+      path: /
+      hosts:
+      - elasticsearch.{{ base_domain }}
+{% if tls_enable %}
+      tls:
+      - secretName: elasticsearch-ingress-tls-secret
+        hosts:
+        - elasticsearch.{{ base_domain }}
+{% endif %}

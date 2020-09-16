@@ -1,0 +1,143 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: sas-java-services
+  labels:
+    sas.com/monitoring-base: kube-viya-monitoring
+spec:
+  selector:
+    matchExpressions:
+    - key: sas.com/deployment
+      operator: Exists
+      values: []
+    - key: sas.exporter
+      operator: DoesNotExist
+      values: []
+  endpoints:
+  - port: http
+    relabelings:
+    # Enable this when a critical mass of Go services have been rebuilt to provide the
+    # correct value for the sas.com/kustomize-base annotation
+    # - sourceLabels: [__meta_kubernetes_pod_annotation_sas_com_kustomize_base]
+    #   regex: spring
+    #   action: keep
+
+    # Known non-Java services that otherwise 'look' like one
+    - sourceLabels: [__meta_kubernetes_endpoints_name]
+      regex: "consul|htmlcommons"
+      action: drop
+    - sourceLabels: [__meta_kubernetes_pod_annotation_sas_com_kustomize_base]
+      regex: "spring"
+      action: keep
+    - sourceLabels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+      regex: (.+)
+      targetLabel: __meta_kubernetes_endpoints_name
+      replacement: $1
+    - sourceLabels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+      regex: sas-(.+)
+      targetLabel: __metrics_path__
+      replacement: /$1/commons/prometheus
+    
+    # TODO: Remove when Java services support the /internal/metrics endpoint
+    # Explicit workarounds for dash-named services - map to camelCase
+    - sourceLabels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+      regex: sas-app-registry
+      targetLabel: __metrics_path__
+      replacement: /appRegistry/commons/prometheus
+    - sourceLabels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+      regex: sas-data-explorer-app
+      targetLabel: __metrics_path__
+      replacement: /SASDataExplorer/commons/prometheus
+    - sourceLabels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+      regex: sas-data-studio-app
+      targetLabel: __metrics_path__
+      replacement: /SASDataStudio/commons/prometheus
+    - sourceLabels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+      regex: sas-job-flow-scheduling
+      targetLabel: __metrics_path__
+      replacement: /jobFlowScheduling/commons/prometheus
+    # SASLogon authenticates its metrics endpoint, so drop it
+    - sourceLabels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+      regex: sas-logon-app
+      action: drop
+    - sourceLabels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+      regex: sas-microanalytic-score
+      targetLabel: __metrics_path__
+      replacement: /microanalyticScore/commons/prometheus
+    - sourceLabels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+      regex: sas-model-management
+      targetLabel: __metrics_path__
+      replacement: /modelManagement/commons/prometheus
+    - sourceLabels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+      regex: sas-model-repository
+      targetLabel: __metrics_path__
+      replacement: /modelRepository/commons/prometheus
+    - sourceLabels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+      regex: sas-studio-app
+      targetLabel: __metrics_path__
+      replacement: /SASStudio/commons/prometheus
+    - sourceLabels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+      regex: sas-job-execution-app
+      targetLabel: __metrics_path__
+      replacement: /SASJobExecution/commons/prometheus
+    - sourceLabels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+      regex: sas-conversation-designer-app
+      targetLabel: __metrics_path__
+      replacement: /SASConversationDesigner/commons/prometheus
+    - sourceLabels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+      regex: sas-natural-language-conversations
+      targetLabel: __metrics_path__
+      replacement: /naturalLanguageConversations/commons/prometheus
+    - sourceLabels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+      regex: sas-natural-language-generation
+      targetLabel: __metrics_path__
+      replacement: /naturalLanguageGeneration/commons/prometheus
+    - sourceLabels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+      regex: sas-natural-language-understanding
+      targetLabel: __metrics_path__
+      replacement: /naturalLanguageUnderstanding/commons/prometheus
+    - sourceLabels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+      regex: sas-data-plans
+      targetLabel: __metrics_path__
+      replacement: /dataPlans/commons/prometheus
+    - sourceLabels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+      regex: sas-geo-enrichment
+      targetLabel: __metrics_path__
+      replacement: /geoEnrichment/commons/prometheus
+    - sourceLabels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+      regex: sas-import-9
+      targetLabel: __metrics_path__
+      replacement: /import9/commons/prometheus
+    - sourceLabels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+      regex: sas-web-data-access
+      targetLabel: __metrics_path__
+      replacement: /webDataAccess/commons/prometheus
+    # End workaround
+
+    - sourceLabels: [__meta_kubernetes_pod_label_sas_com_deployment]
+      targetLabel: sas_deployment    
+    - sourceLabels: [__meta_kubernetes_pod_node_name]
+      targetLabel: node
+    - sourceLabels: [__meta_kubernetes_pod_annotation_sas_com_kustomize_base]
+      targetLabel: sas_service_base
+      replacement: $1
+    - sourceLabels: [__meta_kubernetes_pod_annotation_sas_com_tls_enabled_ports]
+      action: replace
+      regex: all|.*http.*
+      targetLabel: __scheme__
+      replacement: https
+    - sourceLabels: [__meta_kubernetes_service_annotation_prometheus_io_scheme]
+      action: replace
+      regex: (https?)
+      targetLabel: __scheme__
+    tlsConfig:
+      insecureSkipVerify: true
+
+    metricRelabelings:
+    # Rename logback_events_total to have consistency with the
+    # Go services metric log_events_total
+    # Renaming a metric must be done in metricRelabelings 
+    - sourceLabels: [__name__]
+      regex: logback_events_total
+      targetLabel: __name__
+      replacement: log_events_total

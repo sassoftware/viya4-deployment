@@ -1,0 +1,14 @@
+---
+apiVersion: builtin
+kind: ConfigMapGenerator
+metadata:
+  name: sas-postgres-config
+behavior: merge
+literals:
+  - DATABASE_HOST={{V4_CFG_POSTGRES_FQDN }}
+  - DATABASE_PORT=5432
+  - DATABASE_SSL_ENABLED="false"
+  - DATABASE_NAME={{ V4_CFG_POSTGRES_DATABASE }}
+  - EXTERNAL_DATABASE="true"
+  - SAS_DATABASE_DATABASESERVERNAME="postgres"
+  - SPRING_DATASOURCE_URL=jdbc:postgresql://{{ V4_CFG_POSTGRES_FQDN }}:{{ 5432 }}/{{ V4_CFG_POSTGRES_DATABASE }}?currentSchema=${application.schema}

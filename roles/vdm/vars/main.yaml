@@ -1,0 +1,9 @@
+VDM_RESOURCES_PATH: "site-config/vdm/resources"
+VDM_TRANSFORMERS_PATH: "site-config/vdm/transformers"
+VDM_GENERATORS_PATH: "site-config/vdm/generators"
+
+vdm_resources: []
+vdm_generators: []
+vdm_transformers: []
+
+ORDER_ZIP: "{{ V4_CFG_SAS_ORDER_NUMBER }}-{{ V4_CFG_SAS_CADENCE_NAME }}-{{ V4_CFG_SAS_CADENCE_VERSION }}"

@@ -1,0 +1,69 @@
+---
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: tls-networking-ingress-label-hack
+patch: |-
+  - op: add
+    path: /metadata/labels/sas.com~1deployment-base
+    value: generic
+target:
+  group: networking.k8s.io
+  version: v1beta1
+  kind: Ingress
+  annotationSelector: sas.com/component-name in (aaservices, aaservices, aaservices2, aaservices, aaservices2, aaservices, aaservices, aaservices, annotations, appregistry, audit, authorizatn, busrulesref, cas-control, cas-control, cas-control, cas-administration, cas-administration, sas-transform-services, textcategorization, textcategorization, textcategorization, comments, compservice, textconcepts, textconcepts, textconcepts, configuratn, credentials, dataagentservices, dataagentservices, sas-transform-services, dataflows, datamining, datamining, sas-data-mining-project-settings, mnresults, datamining, sas-data-profiles, sas-data-quality-services, dmdataservices, dmdataservices, intdecisions, deviceManagement, sas-transform-services, textcasdatamanagement, filesservice, foldersrvc, fonts, vfservices, vfservices2, vfservices, vfservices2, vfservices, vfservices2, vfservices, vfservices, geo-enrichment, graphtemplates, identities, import9, jobexecution, jobexecution, jobflowsch, launcher, cas-control, links, mail, maps, embscoresvc, datamining, modelcore, modelpublish, modelrepo, monitoring, naturalLanguageConversations, naturalLanguageGeneration, naturalLanguageUnderstanding, notification, textparsing, textparsing, preferences, projects, sas-data-quality-services, busrulesref, relationships, reportservicesgroup, reportexecution, reportdistribution, reportservicesgroup, reportexecution, reportRenderer, reportservicesgroup, reportservicesgroup, reportservicesgroup, dmdataservices, sas-grid, capui, decisionmgr, drive, envmgr-app, esmapp, graphbuilder, jobexecapp, logon, modelmgrweb, naturallanguagestudio, sasstudiov, themedesign, vanalytics, wfmgrwebapp, scheduler, sas-score-definitions, sas-score-execution, searchservice, searchservice, textsentiment, textsentiment, templates, textcasdatamanagement, TXTGATEWAY, themecontent, themes, thumbnails, texttopics, textcasdatamanagement, texttopics, transfer, sas-transform-services, intdecisions, types, vfevents, sas-visual-analytics-administration, web-data-access, workflow, wfsupport, wfsupport, crossdmnprxy, sas-lineage-app)
+---
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: backend-tls-networking-ingress-patch
+patch: |-
+  apiVersion: networking.k8s.io/v1beta1
+  kind: Ingress
+  metadata:
+    name: wildcard
+    annotations:
+      nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+target:
+  group: networking.k8s.io
+  version: v1beta1
+  kind: Ingress
+---
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: backend-tls-networking-ingress-port-patch
+patch: |-
+  - op: replace
+    path: /spec/rules/0/http/paths/0/backend/servicePort
+    value: 443
+target:
+  group: networking.k8s.io
+  version: v1beta1
+  kind: Ingress
+  labelSelector: sas.com/deployment-base=generic
+---
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: user-networking-k8s-io-ingress-patches
+patch: |-
+  - op: add
+    path: /spec/rules/0/host
+    value: $(INGRESS_HOST)
+  - op: add
+    path: /spec/tls
+    value: [{hosts: [$(INGRESS_HOST)], secretName: ingress-cert}]
+target:
+  group: networking.k8s.io
+  version: v1beta1
+  kind: Ingress
+  name: .*
+vars:
+- name: INGRESS_HOST
+  objref:
+    kind: ConfigMap
+    name: ingress-input
+    apiVersion: v1
+  fieldref:
+    fieldpath: data.INGRESS_HOST

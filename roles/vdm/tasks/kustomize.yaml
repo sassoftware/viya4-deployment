@@ -1,0 +1,85 @@
+- name: Generate docker auth
+  shell: |
+    kubectl --kubeconfig {{ kubeconfig }} create secret docker-registry cr-access \
+    --docker-server='{{ V4_CFG_CR_URL }}' \
+    --docker-username='{{ V4_CFG_CR_USER }}' \
+    --docker-password='{{ V4_CFG_CR_PASSWORD }}' \
+    --dry-run=client -o json | jq -r '.data.".dockerconfigjson"'
+  register: docker_auth
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: Create dockerconfigjson
+  copy:
+    dest: "{{ DEPLOY_DIR }}/cr_access.json"
+    content: "{{ docker_auth.stdout| default('{}')| b64decode }}"
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: Get user's customizations
+  siteconfig_folder:
+    path: "{{ DEPLOY_DIR }}"
+    exclude: 
+      - vdm
+  register: user_customizations
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: Copy VDM resources
+  template:
+    src: "resources/{{ item|basename }}"
+    dest: "{{ DEPLOY_DIR }}/{{ item }}"
+  with_items: "{{ vdm_resources }}"
+  when: "'/vdm/' in item"
+  ignore_errors: yes
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: Copy VDM generators
+  template:
+    src: "generators/{{ item|basename }}"
+    dest: "{{ DEPLOY_DIR }}/{{ item }}"
+  with_items: "{{ vdm_generators }}"
+  when: "'/vdm/' in item"
+  ignore_errors: yes
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: Copy VDM transformers
+  template:
+    src: "transformers/{{ item|basename }}"
+    dest: "{{ DEPLOY_DIR }}/{{ item }}"
+  with_items: "{{ vdm_transformers }}"
+  when: "'/vdm/' in item"
+  ignore_errors: yes
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: Generate kustomization.yaml
+  template:
+    src: "kustomization.yaml"
+    dest: "{{ DEPLOY_DIR }}/kustomization.yaml"
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: Generate deployment manifest
+  shell: |
+    kustomize build {{ DEPLOY_DIR }} --load_restrictor='none' -o {{ DEPLOY_DIR }}/base.yaml
+  tags:
+    - install
+    - uninstall
+    - upgrade

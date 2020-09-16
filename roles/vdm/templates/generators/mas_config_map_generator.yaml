@@ -1,0 +1,8 @@
+apiVersion: builtin
+kind: ConfigMapGenerator
+metadata:
+  name: sas-open-source-config-python
+literals:
+  - MAS_PYPATH=/python/bin/python3
+  - MAS_M2PATH=/opt/sas/viya/home/SASFoundation/misc/embscoreeng/mas2py.py
+  - DM_PYTHONHOME=/python/bin

@@ -1,0 +1,13 @@
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: openldap
+patch: |-
+  - op: add
+    path: /spec/template/spec/imagePullSecrets
+    value: []
+target:
+  group: apps
+  kind: Deployment
+  name: openldap
+  version: v1

@@ -1,0 +1,22 @@
+---
+- name: Deploy viya monitoring
+  shell:
+    cmd: "{{ role_path }}/files/ops4viya/monitoring/bin/deploy_monitoring_viya.sh"
+  environment:
+    VIYA_NS: "{{ namespace }}"
+    KUBECONFIG: "{{ kubeconfig }}"
+    LOG_COLOR_ENABLE: false
+  tags:
+    - install
+    - update
+    - uninstall
+
+- name: Remove viya monitoring
+  shell:
+    cmd: "{{ role_path }}/files/ops4viya/monitoring/bin/remove_monitoring_viya.sh"
+  environment:
+    VIYA_NS: "{{ namespace }}"
+    KUBECONFIG: "{{ kubeconfig }}"
+    LOG_COLOR_ENABLE: false
+  tags:
+    - uninstall

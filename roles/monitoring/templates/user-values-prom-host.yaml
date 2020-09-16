@@ -1,0 +1,48 @@
+prometheus:
+  service:
+    type: ClusterIP
+    nodePort: null
+  ingress:
+    enabled: true
+{% if tls_enable %}
+    tls:
+    - hosts:
+      - prometheus.{{ base_domain }}
+      secretName: prometheus-tls-secret
+{% endif %}
+    hosts:
+    - prometheus.{{ base_domain }}
+  prometheusSpec:
+    externalUrl: https://prometheus.{{ base_domain }}
+
+alertmanager:
+  service:
+    type: ClusterIP
+    nodePort: null
+  ingress:
+    enabled: true
+{% if tls_enable %}
+    tls:
+    - hosts:
+      - alertmanager.{{ base_domain }}
+      secretName: alertmanager-tls-secret
+{% endif %}
+    hosts:
+    - alertmanager.{{ base_domain }}
+  alertManagerSpec:
+    externalUrl: https://alertmanager.{{ base_domain }}
+
+grafana:
+  service:
+    type: ClusterIP
+    nodePort: null
+  ingress:
+    enabled: true
+{% if tls_enable %}
+    tls:
+    - hosts:
+      - grafana.{{ base_domain }}
+      secretName: grafana-tls-secret
+{% endif %}
+    hosts:
+    - grafana.{{ base_domain }}

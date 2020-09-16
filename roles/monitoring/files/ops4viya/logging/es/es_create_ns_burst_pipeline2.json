@@ -1,0 +1,21 @@
+{
+  "description": "Direct the incoming document to the proper index based on the value of the NAMESPACE field." ,
+  "processors": [
+    {
+       "lowercase": {
+        "field": "kube.namespace",
+        "on_failure": [{"set": { "field":"kube.namespace","value":"missing_ns"}}]
+      },
+      "date_index_name": {
+      "field": "@timestamp",
+      "date_rounding": "d",
+      "date_formats": ["ISO8601"], 
+      "index_name_prefix":"viya_logs-{{kube.namespace}}-",
+      "on_failure": [
+        {
+          "set": { "field":"pipeline_error","value":"{{ _ingest.on_failure_message}}"}
+        }
+        ]
+    }}
+  ]
+}

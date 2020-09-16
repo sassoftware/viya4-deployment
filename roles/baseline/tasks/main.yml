@@ -1,0 +1,63 @@
+
+- name: Include efs-provisioner
+  include_role: 
+    name: efs-provisioner
+  vars:
+    efsFileSystemId: "{{ V4_CFG_EFS_FSID }}"
+    awsRegion: "{{ V4_CFG_EFS_REGION }}"
+  when:
+    - PROVIDER is defined
+    - PROVIDER == "aws"
+    - V4_CFG_MANAGE_STORAGECLASS is defined
+    - V4_CFG_MANAGE_STORAGECLASS
+  tags:
+    - baseline
+
+- name: Include nfs-client-provisioner
+  include_role: 
+    name: nfs-client-provisioner
+  vars:
+    nfs_client_config:
+      nfs:
+        server: "{{ V4_CFG_NFS_SVR_HOST }}"
+        path: "{{ V4_CFG_NFS_SVR_PATH }}"
+      podSecurityPolicy:
+        enabled: true
+      storageClass:
+        name: "sas-rwx"
+        defaultClass: false
+        archiveOnDelete: false
+  when:
+    - V4_CFG_NFS_SVR_HOST is defined
+    - V4_CFG_NFS_SVR_PATH is defined
+    - V4_CFG_MANAGE_STORAGECLASS is defined
+    - V4_CFG_MANAGE_STORAGECLASS
+  tags:
+    - baseline
+
+- name: Include ingress nginx
+  include_role: 
+    name: ingress-nginx
+  when:
+    - V4_CFG_INGRESS_TYPE is defined
+    - V4_CFG_INGRESS_TYPE == 'ingress'
+  tags:
+    - baseline
+
+- name: Include istio
+  include_role: 
+    name: istio
+  when:
+    - V4_CFG_INGRESS_TYPE is defined
+    - V4_CFG_INGRESS_TYPE == 'istio'
+  tags:
+    - baseline
+
+- name: Include cert manager
+  include_role: 
+    name: cert-manager
+  when:
+    - V4_CFG_CONFIGURE_TLS is defined
+    - V4_CFG_CONFIGURE_TLS
+  tags:
+    - baseline

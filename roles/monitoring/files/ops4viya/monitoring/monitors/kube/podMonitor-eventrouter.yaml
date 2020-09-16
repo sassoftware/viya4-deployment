@@ -1,0 +1,17 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: eventrouter
+spec:
+  selector:
+    matchLabels:
+      kubernetes.io/name: eventrouter
+  namespaceSelector:
+    matchNames: [ "kube-system" ]
+  podMetricsEndpoints:
+  - relabelings:
+    - sourceLabels: [__meta_kubernetes_pod_ip]
+      regex: (.*)
+      action: replace
+      targetLabel: __address__
+      replacement: $1:8080

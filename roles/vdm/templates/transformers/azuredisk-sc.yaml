@@ -1,0 +1,14 @@
+---
+apiVersion: builtin
+kind: PatchTransformer
+metadata: 
+  name: azuredisk-sc
+patch: |-
+  kind: PersistentStorageClass
+  metadata:
+    name: wildcard
+  spec:
+    storageClassName: sas-rwo
+target:
+  kind: PersistentVolumeClaim
+  # annotationSelector: sas.com/component-name in (sas-data-quality-services,sas-cas-operator,sas-backup-job,sas-reference-data-deploy-utilities)
