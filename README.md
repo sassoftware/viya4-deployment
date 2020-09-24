@@ -24,6 +24,7 @@ This project contains Ansible code that creates a baseline in an existing kubern
   - Organize and persist config for any number of Viya deployments across namespaces, cluster, or cloud providers.
 
 ### Prerequisites
+This tool supports running both from ansible installed on your local machine or via a docker container. The Dockerfile for the container can be found [here](Dockerfile)
 
 #### Ansible
 - terraform 0.13
