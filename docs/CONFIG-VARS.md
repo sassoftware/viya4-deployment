@@ -97,10 +97,11 @@ When setting V4_CFG_MANAGE_STORAGE to true, two new storage classes will be crea
 | V4_CFG_ENABLE_EMBEDDED_LDAP | Deploy openldap in the namespace for authentication | bool | false | false | Default admin credentials are: user - viya_admin, password - Password123 | vdm |
 | V4_CFG_ENABLE_CONSUL_UI | Setup LB to access consul ui | bool | false | false | | vdm |
 
-## MPP
+## CAS
 | Name | Description | Type | Default | Required | Notes | Actions |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_CAS_RAM_PER_NODE | Amount of ram to allocate to per CAS node | int | false | false | | vdm |
-| V4_CFG_CAS_CORES_PER_NODE | Amount of cpu cores to allocate per CAS node | int | CAS node cpu count - 1 | false | | vdm |
-| V4_CFG_CAS_WORKER_QTY | Number of CAS workers | int | # of CAS nodes - 1 | false | | vdm |
-| V4_CFG_CAS_NODE_COUNT | Number of CAS nodes | int | # of CAS nodes | false | | vdm |
+| V4_CFG_CAS_SERVER_TYPE | CAS deployment type | string | smp | false | [smp,mpp] | vdm
+| V4_CFG_CAS_RAM_PER_NODE | Amount of ram to allocate to per CAS node | int | false | false | Used when V4_CFG_CAS_SERVER_TYPE is set to mpp | vdm |
+| V4_CFG_CAS_CORES_PER_NODE | Amount of cpu cores to allocate per CAS node | int | CAS node cpu count - 1 | false | Used when V4_CFG_CAS_SERVER_TYPE is set to mpp | vdm |
+| V4_CFG_CAS_WORKER_QTY | Number of CAS workers | int | # of CAS nodes - 1 | false | Used when V4_CFG_CAS_SERVER_TYPE is set to mpp | vdm |
+| V4_CFG_CAS_NODE_COUNT | Number of CAS nodes | int | # of CAS nodes | false | Used when V4_CFG_CAS_SERVER_TYPE is set to mpp | vdm |
