@@ -1,5 +1,5 @@
 ## Cluster
-PROVIDER: azure #[azure|aws|gcp|custom]
+PROVIDER: azure
 PROVIDER_ACCOUNT: <provider_account>
 CLUSTER_NAME: <cluster_name>
 NAMESPACE: <namespace>
@@ -9,18 +9,18 @@ DEPLOY: true # Set to false to stop at generating the kustomize.yaml and manifes
 LOADBALANCER_SOURCE_RANGES: ['<cluster_nat_ip>/32']
 
 ## CAS
-V4_CFG_CAS_SERVER_TYPE: smp #[smp|mpp]
+V4_CFG_CAS_SERVER_TYPE: smp
 
 ## Jump 
 JUMP_SVR_HOST: <jump_host>
 JUMP_SVR_USER: <jump_user>
 
 ## NFS
-V4_CFG_NFS_SVR_HOST: <nfs_path>
-V4_CFG_NFS_SVR_PATH: <nfs_export>
+V4_CFG_NFS_SVR_HOST: <nfs_host>
+V4_CFG_NFS_SVR_PATH: <nfs_export_path>
 
 ## Storage 
-V4_CFG_MANAGE_STORAGE: true #[true|false]
+V4_CFG_MANAGE_STORAGE: true
 
 ## SAS API Access
 V4_CFG_SAS_CLIENT_ID: '<api_client_id>'
@@ -32,18 +32,18 @@ V4_CFG_CR_USER: <container_registry_user>
 V4_CFG_CR_PASSWORD: <container_registry_password>
 
 ## Ingress
-V4_CFG_INGRESS_TYPE: ingress # [ingress|istio]
+V4_CFG_INGRESS_TYPE: ingress
 V4_CFG_INGRESS_NAME: <desired_fqdn>
-V4_CFG_CONFIGURE_TLS: false #[false]
+V4_CFG_CONFIGURE_TLS: false
 
 ## Postgres
-V4_CFG_POSTGRES_TYPE: external #[internal|external]
+V4_CFG_POSTGRES_TYPE: external
 V4_CFG_POSTGRES_ADMIN_LOGIN: <existing_pg_user> 
 V4_CFG_POSTGRES_PASSWORD: <existing_pg_password> 
 V4_CFG_POSTGRES_FQDN: <existing_pg_fqdn> 
 
 ## LDAP
-V4_CFG_ENABLE_EMBEDDED_LDAP: true #[true|false] Set to true to deploy openldap in the namespace for authentication
+V4_CFG_ENABLE_EMBEDDED_LDAP: true
 
 ## Consul UI
-V4_CFG_ENABLE_CONSUL_UI: false #[true|false] Set to true to create lb to access consul ui
+V4_CFG_ENABLE_CONSUL_UI: false

@@ -5,6 +5,7 @@
 This project contains Ansible code that creates a baseline in an existing kubernetes environment for use with Viya 4+, generates the manifest for an order, and then can also deploy that order into the kubernetes environment specified.
 
 ### Things this tool can do
+
 - Prepare K8s cluster
   - Deploy [ingress-nginx](https://kubernetes.github.io/ingress-nginx/)
   - Deploy [istio](https://istio.io/)
@@ -14,7 +15,7 @@ This project contains Ansible code that creates a baseline in an existing kubern
   - Manage storage classes for RWO and RWX storage
 - Deploy Viya
   - Retrieve the kustomization bundle from the SAS Portal using [Viya Orders CLI](https://github.com/sassoftware/viya4-orders-cli)
-  - Retrieve cloud configuration from tfsate is using a Viya 4 IaC project
+  - Retrieve cloud configuration from tfstate if using a Viya 4 IaC project
   - Run the [kustomize](https://github.com/kubernetes-sigs/kustomize) process and deploy Viya
   - Create affinity rules such that processes are targeted to appropriately labeled nodes.
   - Create pod disruption budgets for each service such that cluster maintenance will not let the last instance of a service go down during a node maintenance operation for example.
@@ -70,7 +71,7 @@ Prior to running this playbook some infrastructure needs to be in place
 - Jump Box: This tool can manage nfs folders if you provide ssh access to a JumpBox that has the nfs storage mounted to it at /mnt/viya-share. The Viya 4 IAC projects automate the needed NFS/Jumpbox setup if desired. If you wish to manage the nfs server yourself, the Jumpbox is not required. Below is the Jumpbox folder structure
 
   ```bash
-  /mnt/viya-share/    <- mounted nfs export path
+  /mnt/viya-share/    <- mounted nfs export
     /pvs              <- location for persistent volumes
     /<cluster_name>
       /bin            <- location for open source directories
@@ -130,7 +131,7 @@ Kubernetes access config file. When not integrating with SAS Viya 4 IaC projects
 
 ### Terraform state file
 
-When integrating with SAS Viya 4 IaC projects, you can provide the tfstate file to have the kubeconfig and other setting autodiscovered.
+When integrating with SAS Viya 4 IaC projects, you can provide the tfstate file to have the kubeconfig and other setting auto-discovered.
 
 ### Running
 
