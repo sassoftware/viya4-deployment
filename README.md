@@ -60,9 +60,9 @@ Prior to running this playbook some infrastructure needs to be in place
 - Storage: When using nfs based storage (like Azure NetApp or EFS), then the storage needs certain folders setup. There needs to be a PVs folder created under the export path. This is used for PVs. Additionally, a folder needs to be created for each cluster with sub-folders for bin, data, and homes. Below is the required nfs exports folder structure
 
   ```bash
-  <export_dir>
+  <export_dir>        <- nfs export path
     /pvs              <- location for persistent volumes
-    /<cluster_name>
+    /<cluster_name>   <- folder per k8s cluster
       /bin            <- location for open source directories
       /data           <- location for SAS and CAS Data
       /homes          <- location for user home directories to be mounted
@@ -73,7 +73,7 @@ Prior to running this playbook some infrastructure needs to be in place
   ```bash
   /mnt/viya-share/    <- mounted nfs export
     /pvs              <- location for persistent volumes
-    /<cluster_name>
+    /<cluster_name>   <- folder per k8s cluster
       /bin            <- location for open source directories
       /data           <- location for SAS and CAS Data
       /homes          <- location for user home directories to be mounted
