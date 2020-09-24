@@ -131,7 +131,21 @@ Kubernetes access config file. When not integrating with SAS Viya 4 IaC projects
 
 ### Terraform state file
 
-When integrating with SAS Viya 4 IaC projects, you can provide the tfstate file to have the kubeconfig and other setting auto-discovered.
+When integrating with SAS Viya 4 IaC projects, you can provide the tfstate file to have the kubeconfig and other setting auto-discovered. Some of the information that is pulled includes
+
+- NFS
+  - V4_CFG_NFS_SVR_HOST
+  - V4_CFG_NFS_SVR_PATH
+- Jumpbox
+  - JUMP_SVR_HOST
+  - JUMP_SVR_USER
+  - JUMP_SVR_PRIVATE_KEY (if a random one is generated)
+- Postgres (When V4_CFG_POSTGRES_TYPE is set to external)
+  - V4_CFG_POSTGRES_ADMIN_LOGIN
+  - V4_CFG_POSTGRES_PASSWORD
+  - V4_CFG_POSTGRES_FQDN
+- Misc
+  - Cloud NAT IP address
 
 ### Running
 
