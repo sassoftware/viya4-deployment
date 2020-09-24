@@ -101,6 +101,6 @@ When setting V4_CFG_MANAGE_STORAGE to true, two new storage classes will be crea
 | Name | Description | Type | Default | Required | Notes | Actions |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_CAS_SERVER_TYPE | CAS deployment type | string | smp | false | [smp,mpp] | vdm
-| V4_CFG_CAS_RAM_PER_NODE | Amount of ram to allocate to per CAS node | string | false | false | numeric value followed by the units, such as 32Gi for 32 gigabytes. In Kubernetes, the units for gigabytes is Gi. | vdm |
+| V4_CFG_CAS_RAM_PER_NODE | Amount of ram to allocate to per CAS node | string | (CAS node ram in Mi - 500.5) * .9  | false | Numeric value followed by the units, such as 32Gi for 32 gigabytes. In Kubernetes, the units for gigabytes is Gi. | vdm |
 | V4_CFG_CAS_CORES_PER_NODE | Amount of cpu cores to allocate per CAS node | string | CAS node cpu count - 1 | false | Either a whole number, representing that number of cores, or a number followed by m, indicating that number of milli-cores.| vdm |
 | V4_CFG_CAS_WORKER_QTY | Number of CAS workers | int | # of K8s nodes designated for CAS - 1 | false | Used when V4_CFG_CAS_SERVER_TYPE is set to mpp | vdm |

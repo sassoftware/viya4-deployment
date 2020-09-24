@@ -14,13 +14,6 @@
     - upgrade
 
 - set_fact:
-    V4_CFG_CAS_NODE_COUNT: "{{ nodes.resources|default({})|length }}"
-  tags:
-    - install
-    - uninstall
-    - upgrade
-
-- set_fact:
     CAS_BKUP_AGENT_RAM: "{{ (500 * 1024)|int }}"
     CAS_RESERVE_RAM: "512"
   when: 
