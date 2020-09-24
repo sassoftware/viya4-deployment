@@ -14,7 +14,7 @@ This project contains Ansible code that creates a baseline in an existing kubern
   - Deploy [cert-manager](https://github.com/jetstack/cert-manager) if TLS to be configured
   - Manage storage classes for RWO and RWX storage
 - Deploy Viya
-  - Retrieve the kustomization bundle from the SAS Portal using [Viya Orders CLI](https://github.com/sassoftware/viya4-orders-cli)
+  - Retrieve the deployment assets using [Viya Orders CLI](https://github.com/sassoftware/viya4-orders-cli)
   - Retrieve cloud configuration from tfstate if using a Viya 4 IaC project
   - Run the [kustomize](https://github.com/kubernetes-sigs/kustomize) process and deploy Viya
   - Create affinity rules such that processes are targeted to appropriately labeled nodes.
