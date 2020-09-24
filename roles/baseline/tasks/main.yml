@@ -8,8 +8,8 @@
   when:
     - PROVIDER is defined
     - PROVIDER == "aws"
-    - V4_CFG_MANAGE_STORAGECLASS is defined
-    - V4_CFG_MANAGE_STORAGECLASS
+    - V4_CFG_MANAGE_STORAGE is defined
+    - V4_CFG_MANAGE_STORAGE
   tags:
     - baseline
 
@@ -30,8 +30,8 @@
   when:
     - V4_CFG_NFS_SVR_HOST is defined
     - V4_CFG_NFS_SVR_PATH is defined
-    - V4_CFG_MANAGE_STORAGECLASS is defined
-    - V4_CFG_MANAGE_STORAGECLASS
+    - V4_CFG_MANAGE_STORAGE is defined
+    - V4_CFG_MANAGE_STORAGE
   tags:
     - baseline
 

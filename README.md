@@ -1,6 +1,7 @@
 # SAS Viya 4 Deployment
 
 ## Overview
+
 This project contains Ansible code that creates a baseline in an existing kubernetes environment for use with Viya 4+, generates the manifest for an order, and then can also deploy that order into the kubernetes environment specified.
 
 ### Things this tool can do
@@ -24,9 +25,11 @@ This project contains Ansible code that creates a baseline in an existing kubern
   - Organize and persist config for any number of Viya deployments across namespaces, cluster, or cloud providers.
 
 ### Prerequisites
+
 This tool supports running both from ansible installed on your local machine or via a docker container. The Dockerfile for the container can be found [here](Dockerfile)
 
 #### Ansible
+
 - terraform 0.13
 - ansible 2.9
 - unzip
@@ -41,16 +44,34 @@ This tool supports running both from ansible installed on your local machine or 
 - git
 
 #### Docker
+
 - docker
 
 #### Infrastructure
+
 Prior to running this playbook some infrastructure needs to be in place
-- Kubernetes cluster
-- Storage: When using nfs based storage (like Azure NetApp or EFS), then the storage needs certain folders setup. There needs to be a PVs folder created under the export path. This is used for pvcs. Additonal folder will be created under the nfs exports by this tooling.
-- Jump Box: If the storage is nfs based (like efs). Then a jump server is also required. The jump server needs to have the nfs based storage mounted to /mnt/viya-share. The tooling will use ssh access to the jump box to setup the storage folder structure for viya deployments.
+
+- Kubernetes cluster: You can either bring your own K8s cluster or use one of the Viya 4 IAC projects to create a cluster using terraform.
+  - [Viya 4 IaC for AWS](https://github.com/sassoftware/viya4-iac-aws)
+  - [Viya 4 IaC for Azure](https://github.com/sassoftware/viya4-iac-azure)
+  - [Viya 4 IaC for GCP](https://github.com/sassoftware/viya4-iac-gcp)
+
+- Storage: When using nfs based storage (like Azure NetApp or EFS), then the storage needs certain folders setup. There needs to be a PVs folder created under the export path. This is used for PVs. Additionally, a folder needs to be created for each cluster with sub-folders for bin, data, and homes. Below is the required nfs exports folder structure
+
+  ```bash
+  <export_dir>
+    /pvs              <- location for persistent volumes
+    /<cluster_name>
+      /bin            <- location for open source directories
+      /data           <- location for SAS and CAS Data
+      /homes          <- location for user home directories to be mounted
   ```
-  /mnt/viya-share/
-    /pvs              <- location for persistent volumes provisioned by the nfs-client PV provisioner. 
+
+- Jump Box: This tool can manage nfs folders if you provide ssh access to a JumpBox that has the nfs storage mounted to it at /mnt/viya-share. The Viya 4 IAC projects automate the needed NFS/Jumpbox setup if desired. If you wish to manage the nfs server yourself, the Jumpbox is not required. Below is the Jumpbox folder structure
+
+  ```bash
+  /mnt/viya-share/    <- mounted nfs export path
+    /pvs              <- location for persistent volumes
     /<cluster_name>
       /bin            <- location for open source directories
       /data           <- location for SAS and CAS Data
@@ -60,8 +81,9 @@ Prior to running this playbook some infrastructure needs to be in place
 ### Installation
 
 #### Ansible
-```
-#  clone repo
+
+```bash
+# clone repo
 git clone https://github.com/sassoftware/viya4-deployment.git
 
 # move to directory
@@ -72,8 +94,9 @@ ansible-galaxy collection install -r requirements.yaml -f
 ```
 
 #### Docker
-``` 
-#  clone repo
+
+```bash 
+# clone repo
 git clone https://github.com/sassoftware/viya4-deployment.git
 
 # move to directory
@@ -84,26 +107,33 @@ docker build -t viya4-deployment .
 ```
 
 ## Getting Started
+
 ### Configs
+
 The playbook uses ansible vars for configuration. It is recommended to encrypt both this file and the other configs (sitedefault, kubeconfig, and tfstate) using ansible vault.
 
 ### Ansible Vars
+
 [Definitions](docs/CONFIG-VARS.md)
 
 [Azure Sample](examples/ansible-vars-azure.yaml)
 
 ### Sitedefault
+
 Normal VIYA sitedefault file. When not specified, the following will be used:
 
 [Sample](examples/sitedefault.yaml)
 
 ### Kubeconfig
+
 Kubernetes access config file. When not integrating with SAS Viya 4 IaC projects, this must be provided
 
 ### Terraform state file
+
 When integrating with SAS Viya 4 IaC projects, you can provide the tfstate file to have the kubeconfig and other setting autodiscovered.
 
 ### Running
+
 All configs needed by ansible are also needed to be mounted into the docker container. The chart below show the mappings between the ansible flag and docker mount path.
 
 | Ansible Flag | Docker Mount Path | Description | Required |
@@ -115,8 +145,10 @@ All configs needed by ansible are also needed to be mounted into the docker cont
 | JUMP_SVR_PRIVATE_KEY | /config/jump_svr_private_key | Full path to the ssh_private_key that has access to the jumpbox | true |
 
 #### Ansible
+
 In the example command line below, replace each of the <> values, such as "<path_to_kubeconfig_file>", with the appropriate value.
-```
+
+```bash
 ansible-playbook \
   -e BASE_DIR=<path_to_store_files> \
   -e KUBE=<path_to_kubeconfig_file> \
@@ -128,8 +160,10 @@ ansible-playbook \
 ```
 
 #### Docker
+
 In the example command line below, replace each of the <> values, such as "<path_to_kubeconfig_file>", with the appropriate value.
-```
+
+```bash
 docker run \
   -v <path_to_store_files>:/data \
   -v <path_to_kubeconfig_file>:/config/kube \
@@ -140,6 +174,7 @@ docker run \
 ```
 
 #### Actions
+
 Actions are used to determine whether in install or uninstall software. One must be set when running the playbook
 
 | Name | Description |
@@ -148,6 +183,7 @@ Actions are used to determine whether in install or uninstall software. One must
 | Uninstall | Uninstalls the stack required for the specified tasks |
 
 #### Tasks
+
 Any number of tasks can be ran at the same time. This means you could run an action against a single task or all the task.
 
 | Name | Description |
@@ -159,15 +195,17 @@ Any number of tasks can be ran at the same time. This means you could run an act
 | viya-monitoring | Installs viya namespace level monitoring using the [viya4-monitoring-kubernetes](https://github.com/sassoftware/viya4-monitoring-kubernetes) project. |
 
 ### Post Install
+
 When running the baseline action an ingress will be created. You will need to register this ingress ip with your dns provider such that
-  * An A record (ex. example.com) points to the <ingress_ip>
-  * A wildcard (ex *.example.com) points to the <ingress_ip>
+
+- An A record (ex. example.com) points to the <ingress_ip>
+- A wildcard (ex *.example.com) points to the <ingress_ip>
 
 ### Examples
 
-* I have a new cluster, deployed using [Viya 4 IaC for Azure](https://github.com/sassoftware/viya4-iac-azure) project, and want to install everything using docker
+- I have a new cluster, deployed using [Viya 4 IaC for Azure](https://github.com/sassoftware/viya4-iac-azure) project, and want to install everything using docker
 
-  ```
+  ```bash
   docker run \
   -v $HOME:/data \
   -v $HOME/ansible-vars.yaml:/config/config \
@@ -175,8 +213,9 @@ When running the baseline action an ingress will be created. You will need to re
   viya4-deployment --tags "baseline,vdm,cluster-logging,cluster-monitoring,viya-monitoring,install"
   ```
 
-* I have a custom built cluster and want to baseline and deploy viya only using ansible
-  ```
+- I have a custom built cluster and want to baseline and deploy viya only using ansible
+
+  ```bash
   ansible-playbook \
     -e KUBE=$HOME/.kube/config \
     -e CONFIG=$HOME/ansible-vars.yaml\
@@ -184,8 +223,9 @@ When running the baseline action an ingress will be created. You will need to re
     playbooks/playbook.yaml --tags "baseline,vdm,install"
   ```
 
-* I have an existing cluster with viya installed and want to install another viya instance in a different namespace with monitoring, using docker
-  ```
+- I have an existing cluster with viya installed and want to install another viya instance in a different namespace with monitoring, using docker
+
+  ```bash
   docker run \
   -v $HOME:/data \
   -v $HOME/viya-deployments/deployments/azure/my_az_account/demo-aks/namespace2/site-config/defaults.yaml:/config/config \
@@ -194,15 +234,15 @@ When running the baseline action an ingress will be created. You will need to re
   viya4-deployment --tags "vdm,viya-monitoring,install"
   ```
 
-* I have a cluster with everything installed and want to uninstall everything using docker
-  ```
+- I have a cluster with everything installed and want to uninstall everything using docker
+
+  ```bash
   docker run \
   -v $HOME:/data \
   -v $HOME/ansible-vars.yaml:/config/config \
   -v $HOME/viya4-iac-azure/terraform.tfstate:/config/tfstate \
   viya4-deployment --tags "baseline,vdm,cluster-logging,cluster-monitoring,viya-monitoring,uninstall"
   ```
-
 
 ### Troubleshooting
 
@@ -218,9 +258,9 @@ Debug mode can be enabled by adding "-vvv" to the end of the docker or ansible c
 
 ## Additional Resources
 
-* [Viya Resource Guide](https://github.com/sassoftware/viya4-resource-guide)
-* [Viya 4 IaC for AWS](https://github.com/sassoftware/viya4-iac-aws)
-* [Viya 4 IaC for Azure](https://github.com/sassoftware/viya4-iac-azure)
-* [Viya 4 IaC for GCP](https://github.com/sassoftware/viya4-iac-gcp)
-* [Viya Monitoring for Kubernetes](https://github.com/sassoftware/viya4-monitoring-kubernetes)
-* [Viya Orders CLI](https://github.com/sassoftware/viya4-orders-cli)
+- [Viya Resource Guide](https://github.com/sassoftware/viya4-resource-guide)
+- [Viya 4 IaC for AWS](https://github.com/sassoftware/viya4-iac-aws)
+- [Viya 4 IaC for Azure](https://github.com/sassoftware/viya4-iac-azure)
+- [Viya 4 IaC for GCP](https://github.com/sassoftware/viya4-iac-gcp)
+- [Viya Monitoring for Kubernetes](https://github.com/sassoftware/viya4-monitoring-kubernetes)
+- [Viya Orders CLI](https://github.com/sassoftware/viya4-orders-cli)

@@ -11,9 +11,8 @@
         groups:
           - "jump"
       when:
-        - JUMP_SVR_HOST is defined
-        - JUMP_SVR_USER is defined
-        - JUMP_SVR_PRIVATE_KEY is defined
+        - V4_CFG_MANAGE_STORAGECLASS is defined
+        - V4_CFG_MANAGE_STORAGECLASS
       tags:
         - vdm
 
@@ -31,6 +30,9 @@
         - bin
         - homes
         - data
+      when:
+        - V4_CFG_MANAGE_STORAGECLASS is defined
+        - V4_CFG_MANAGE_STORAGECLASS
       tags:
         - vdm
 
