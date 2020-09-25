@@ -103,7 +103,7 @@ When setting V4_CFG_MANAGE_STORAGE to true, two new storage classes will be crea
 | V4_CFG_CAS_SERVER_TYPE <sub>1</sub> | CAS deployment type | string | smp | false | [smp,mpp] | vdm
 | V4_CFG_CAS_RAM_PER_NODE <sub>2</sub>| Amount of ram to allocate to per CAS node | string | 90% of the available RAM - 500.5Mi  | false | Numeric value followed by the units, such as 32Gi for 32 gigabytes. In Kubernetes, the units for gigabytes is Gi. | vdm |
 | V4_CFG_CAS_CORES_PER_NODE | Amount of cpu cores to allocate per CAS node | string | CAS node cpu count - 1 | false | Either a whole number, representing that number of cores, or a number followed by m, indicating that number of milli-cores.| vdm |
-| V4_CFG_CAS_WORKER_QTY | Number of CAS workers | int | # of K8s nodes designated for CAS - 1 | false | Used when V4_CFG_CAS_SERVER_TYPE is set to mpp | vdm |
+| V4_CFG_CAS_WORKER_QTY <sub>1</sub> | Number of CAS workers | int | # of K8s nodes designated for CAS - 1 | false | Used when V4_CFG_CAS_SERVER_TYPE is set to mpp | vdm |
 
 
 <sub> 1. CAS MPP setup includes the backup controller. This project strongly recommends the best practice of 1 node per CAS controller, backup  and worker pod. A CAS configuration with 3 CAS workers would require 5 nodes allocated with the CAS label and taint (CAS controller (1), CAS backup (1), CAS workers (3). </sub>
