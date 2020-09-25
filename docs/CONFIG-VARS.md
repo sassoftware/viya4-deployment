@@ -106,6 +106,6 @@ When setting V4_CFG_MANAGE_STORAGE to true, two new storage classes will be crea
 | V4_CFG_CAS_WORKER_QTY | Number of CAS workers | int | # of K8s nodes designated for CAS - 1 | false | Used when V4_CFG_CAS_SERVER_TYPE is set to mpp | vdm |
 
 
-<sub><sup> 1. CAS MPP setup includes the backup controller. This project strongly recommends the best practice of 1 node per CAS controller, backup  and worker pod. A CAS configuration with 3 CAS workers would require 5 nodes allocated with the CAS label and taint (CAS controller (1), CAS backup (1), CAS workers (3). </sub></sup>
+<sub> 1. CAS MPP setup includes the backup controller. This project strongly recommends the best practice of 1 node per CAS controller, backup  and worker pod. A CAS configuration with 3 CAS workers would require 5 nodes allocated with the CAS label and taint (CAS controller (1), CAS backup (1), CAS workers (3). </sub>
 
-<sub><sup> 2. If multiple CAS pods must share the same node, the V4_CFG_CAS_RAM_PER_NODE must be modified. </sub></sup>
+<sub> 2. If multiple CAS pods must share the same node, the V4_CFG_CAS_RAM_PER_NODE must be modified. </sub>
