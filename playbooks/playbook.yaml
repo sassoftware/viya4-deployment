@@ -11,8 +11,8 @@
         groups:
           - "jump"
       when:
-        - V4_CFG_MANAGE_STORAGECLASS is defined
-        - V4_CFG_MANAGE_STORAGECLASS
+        - V4_CFG_MANAGE_STORAGE is defined
+        - V4_CFG_MANAGE_STORAGE
       tags:
         - vdm
 
@@ -31,8 +31,8 @@
         - homes
         - data
       when:
-        - V4_CFG_MANAGE_STORAGECLASS is defined
-        - V4_CFG_MANAGE_STORAGECLASS
+        - V4_CFG_MANAGE_STORAGE is defined
+        - V4_CFG_MANAGE_STORAGE
       tags:
         - vdm
 
