@@ -73,8 +73,8 @@ When setting V4_CFG_MANAGE_STORAGE to true, two new storage classes will be crea
 ## SAS API Access
 | Name | Description | Type | Default | Required | Notes | Actions |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_SAS_CLIENT_ID | SAS API Client Id | string | | true | [Viya Orders CLI](https://github.com/sassoftware/viya4-orders-cli) for documentation | vdm |
-| V4_CFG_SAS_CLIENT_SECRET | SAS API Client Secret | string | | true | [Viya Orders CLI](https://github.com/sassoftware/viya4-orders-cli) for documentation | vdm |
+| V4_CFG_SAS_API_KEY | SAS API Client Id | string | | true | [Viya Orders CLI](https://github.com/sassoftware/viya4-orders-cli) for documentation | vdm |
+| V4_CFG_SAS_API_SECRET | SAS API Client Secret | string | | true | [Viya Orders CLI](https://github.com/sassoftware/viya4-orders-cli) for documentation | vdm |
 
 ## Container Registry Access
 | Name | Description | Type | Default | Required | Notes | Actions |

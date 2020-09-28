@@ -12,8 +12,8 @@ V4_CFG_CR_USER: null
 V4_CFG_CR_PASSWORD: null
 V4_CFG_CR_URL: https://cr.sas.com
 
-V4_CFG_SAS_CLIENT_ID: null
-V4_CFG_SAS_CLIENT_SECRET: null
+V4_CFG_SAS_API_KEY: null
+V4_CFG_SAS_API_SECRET: null
 
 V4_CFG_NFS_SVR_HOST: null
 V4_CFG_NFS_SVR_PATH: '/export'

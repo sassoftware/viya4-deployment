@@ -13,8 +13,8 @@
   shell:
     cmd: "{{ role_path }}/files/viya4-orders-cli-{{ hostvars[inventory_hostname]['ansible_system']|lower }} dep --file-path {{ DEPLOY_DIR }} --file-name {{ ORDER_ZIP }} -o json {{ V4_CFG_SAS_ORDER_NUMBER }} {{ V4_CFG_SAS_CADENCE_NAME }} {{ V4_CFG_SAS_CADENCE_VERSION }}"
   environment:
-    CLIENTCREDENTIALSID: "{{ V4_CFG_SAS_CLIENT_ID | string | b64encode }}"
-    CLIENTCREDENTIALSSECRET: "{{ V4_CFG_SAS_CLIENT_SECRET | string | b64encode }}"
+    CLIENTCREDENTIALSID: "{{ V4_CFG_SAS_API_KEY | string | b64encode }}"
+    CLIENTCREDENTIALSSECRET: "{{ V4_CFG_SAS_API_SECRET | string | b64encode }}"
   tags:
     - install
     - uninstall

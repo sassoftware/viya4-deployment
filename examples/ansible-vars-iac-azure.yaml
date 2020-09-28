@@ -12,8 +12,8 @@ V4_CFG_CAS_SERVER_TYPE: smp
 V4_CFG_MANAGE_STORAGE: true
 
 ## SAS API Access
-V4_CFG_SAS_CLIENT_ID: '<api_client_id>'
-V4_CFG_SAS_CLIENT_SECRET: '<api_client_secret>'
+V4_CFG_SAS_API_KEY: '<api_client_id>'
+V4_CFG_SAS_API_SECRET: '<api_client_secret>'
 V4_CFG_SAS_ORDER_NUMBER:  <order_number>
 
 ## CR Access
