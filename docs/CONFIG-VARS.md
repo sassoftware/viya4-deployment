@@ -22,7 +22,6 @@ Supported configuration variables are listed in the table below.  All variables 
 | Name | Description | Type | Default | Required | Notes | Actions |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | PROVIDER | Cloud provider | string | | true | [aws,azure,gcp,custom] | baseline, vdm |
-| PROVIDER_ACCOUNT | Cloud provider account name | string | | true | | baseline, vdm |
 | CLUSTER_NAME | Name of the k8s cluster | string | | true | | baseline, vdm |
 | NAMESPACE | K8s namespace in which to deploy | string | | true | | baseline, vdm, viya-monitoring |
 
@@ -73,8 +72,8 @@ When setting V4_CFG_MANAGE_STORAGE to true, two new storage classes will be crea
 ## SAS API Access
 | Name | Description | Type | Default | Required | Notes | Actions |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_SAS_API_KEY | SAS API Client Id | string | | true | [Viya Orders CLI](https://github.com/sassoftware/viya4-orders-cli) for documentation | vdm |
-| V4_CFG_SAS_API_SECRET | SAS API Client Secret | string | | true | [Viya Orders CLI](https://github.com/sassoftware/viya4-orders-cli) for documentation | vdm |
+| V4_CFG_SAS_API_KEY | SAS API Key| string | | true | [Viya Orders CLI](https://github.com/sassoftware/viya4-orders-cli) for documentation | vdm |
+| V4_CFG_SAS_API_SECRET | SAS API Secret | string | | true | [Viya Orders CLI](https://github.com/sassoftware/viya4-orders-cli) for documentation | vdm |
 
 ## Container Registry Access
 | Name | Description | Type | Default | Required | Notes | Actions |

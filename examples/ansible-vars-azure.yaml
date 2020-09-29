@@ -1,6 +1,5 @@
 ## Cluster
 PROVIDER: azure
-PROVIDER_ACCOUNT: <provider_account>
 CLUSTER_NAME: <cluster_name>
 NAMESPACE: <namespace>
 

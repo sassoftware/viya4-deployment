@@ -57,14 +57,6 @@
         unsafe_writes: yes
       when:
         - tfstate_data.provider is defined
-    - name: Add Provider Account
-      lineinfile:
-        path: "{{ CONFIG }}"
-        line: "PROVIDER_ACCOUNT: {{ tfstate_data.provider_account.value }}"
-        regex: "^PROVIDER_ACCOUNT:"
-        unsafe_writes: yes
-      when:
-        - tfstate_data.provider_account is defined
     - name: Add Cluster Name
       lineinfile:
         path: "{{ CONFIG }}"
