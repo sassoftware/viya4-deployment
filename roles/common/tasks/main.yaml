@@ -33,7 +33,7 @@
 
 - name: Set DEPLOY_DIR
   set_fact:
-    DEPLOY_DIR="{{BASE_DIR}}/viya-deployments/{{CLUSTER_NAME}}/{{NAMESPACE}}"
+    DEPLOY_DIR="{{BASE_DIR}}/{{CLUSTER_NAME}}/{{NAMESPACE}}"
   when: DEPLOY_DIR is not defined
   tags:
     - baseline

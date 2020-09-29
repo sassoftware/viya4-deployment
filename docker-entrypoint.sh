@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-OPTS="-e BASE_DIR=/data"
+OPTS=" -e BASE_DIR=/data"
 
 for FILE in "/config"/*
 do
