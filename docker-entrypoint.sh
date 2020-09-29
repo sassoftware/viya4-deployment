@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
-
 set -e
-FILES=("kube" "sitedefault" "sssd" "config" "tfstate" "jump_svr_private_key")
-OPTS="-e BASE_DIR=${BASE_DIR}"
 
-for FILE in ${FILES[@]}; do
-  if [ -f "/config/$FILE" ]; then
-    OPTS+=" -e ${FILE^^}=/config/$FILE"
+OPTS=" -e BASE_DIR=/data"
+
+for FILE in "/config"/*
+do
+  if [[ -f "$FILE" ]]
+  then
+    VAR=$(basename $FILE)
+    OPTS+=" -e ${VAR^^}=$FILE"
   fi
 done
 

@@ -1,6 +1,4 @@
 ## Cluster
-PROVIDER: azure
-CLUSTER_NAME: <cluster_name>
 NAMESPACE: <namespace>
 
 ## MISC
@@ -9,14 +7,6 @@ LOADBALANCER_SOURCE_RANGES: ['<cluster_nat_ip>/32']
 
 ## CAS
 V4_CFG_CAS_SERVER_TYPE: smp
-
-## Jump 
-JUMP_SVR_HOST: <jump_host>
-JUMP_SVR_USER: <jump_user>
-
-## NFS
-V4_CFG_NFS_SVR_HOST: <nfs_host>
-V4_CFG_NFS_SVR_PATH: <nfs_export_path>
 
 ## Storage 
 V4_CFG_MANAGE_STORAGE: true
@@ -35,11 +25,11 @@ V4_CFG_INGRESS_TYPE: ingress
 V4_CFG_INGRESS_NAME: <desired_fqdn>
 V4_CFG_CONFIGURE_TLS: false
 
-## Postgres
-V4_CFG_POSTGRES_TYPE: external
-V4_CFG_POSTGRES_ADMIN_LOGIN: <existing_pg_user> 
-V4_CFG_POSTGRES_PASSWORD: <existing_pg_password> 
-V4_CFG_POSTGRES_FQDN: <existing_pg_fqdn> 
+## If you wish to use the internal cruchy database instead of Azure Postgres 
+## uncomment and update the section below.
+# V4_CFG_POSTGRES_TYPE: internal
+# V4_CFG_POSTGRES_ADMIN_LOGIN: <desired_pg_user> 
+# V4_CFG_POSTGRES_PASSWORD: <desired_pg_password> 
 
 ## LDAP
 V4_CFG_ENABLE_EMBEDDED_LDAP: true

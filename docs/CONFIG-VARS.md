@@ -1,11 +1,27 @@
 # List of valid configuration variables
 Supported configuration variables are listed in the table below.  All variables can also be specified on the command line.  Values specified on the command line will override all values in configuration defaults files.
 
+* [Cloud info](#cloud-info)
+* [Misc](#misc)
+* [Jump Server](#jump-server)
+* [NFS / Storage](#nfs---storage)
+  + [Azure](#azure)
+  + [AWS](#aws)
+  + [GCP](#gcp)
+* [Order](#order)
+* [SAS API Access](#sas-api-access)
+* [Container Registry Access](#container-registry-access)
+* [Ingress](#ingress)
+* [Monitoring and Logging](#monitoring-and-logging)
+* [TLS](#tls)
+* [Postgres](#postgres)
+* [LDAP / Consul](#ldap---consul)
+* [CAS](#cas)
+
 ## Cloud info
 | Name | Description | Type | Default | Required | Notes | Actions |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | PROVIDER | Cloud provider | string | | true | [aws,azure,gcp,custom] | baseline, vdm |
-| PROVIDER_ACCOUNT | Cloud provider account name | string | | true | | baseline, vdm |
 | CLUSTER_NAME | Name of the k8s cluster | string | | true | | baseline, vdm |
 | NAMESPACE | K8s namespace in which to deploy | string | | true | | baseline, vdm, viya-monitoring |
 
@@ -28,15 +44,15 @@ JUMP_SVR_PRIVATE_KEY | ssh user private key to access the jump host | | string |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_NFS_SVR_HOST | NFS ip/host | string | | false | Required for Azure deploys, GCP deploys, or custom nfs setups | baseline, vdm |
 | V4_CFG_NFS_SVR_PATH | NFS export path | string | /export | false | Required for Azure deploys, GCP deploys, or custom nfs setups | baseline, vdm |
-| V4_CFG_MANAGE_STORAGECLASS | Whether to manage the storage class in k8s | bool | true | false | If you wish to manage the storage class yourself, set to false. | baseline, vdm |
-| V4_CFG_RWO_STORAGE_CLASS | ReadWriteOnce storage class name | string | "sas-rwo" | false | When V4_CFG_MANAGE_STORAGECLASS is false, set to the name of your preexisting storage class that supports ReadWriteOnce | all |
-| V4_CFG_RWX_STORAGE_CLASS | ReadWriteMany storage class name | string | "sas-rwx" | false | When V4_CFG_MANAGE_STORAGECLASS is false, set to the name of your preexisting storage class that supports ReadWritMany | all |
+| V4_CFG_MANAGE_STORAGE | Whether to manage the storage class in k8s | bool | true | false | If you wish to manage the storage class yourself, set to false. | baseline, vdm |
+| V4_CFG_RWO_STORAGE_CLASS | ReadWriteOnce storage class name | string | "sas-rwo" | false | When V4_CFG_MANAGE_STORAGE is false, set to the name of your preexisting storage class that supports ReadWriteOnce | all |
+| V4_CFG_RWX_STORAGE_CLASS | ReadWriteMany storage class name | string | "sas-rwx" | false | When V4_CFG_MANAGE_STORAGE is false, set to the name of your preexisting storage class that supports ReadWritMany | all |
 
 ### Azure
-When setting V4_CFG_MANAGE_STORAGECLASS to true, two new storage classes will be created: sas-rwo (Azure disk) and sas-rwx (Azure File, Azure Netapp, or NFS)
+When setting V4_CFG_MANAGE_STORAGE to true, two new storage classes will be created: sas-rwo (Azure disk) and sas-rwx (Azure File, Azure Netapp, or NFS)
 
 ### AWS
-When setting V4_CFG_MANAGE_STORAGECLASS to true, the efs-provisioner will be deployed. Two new storage classes will be created: sas-rwo (ebs) and sas-rwx (efs provided by the efs-provisioner)
+When setting V4_CFG_MANAGE_STORAGE to true, the efs-provisioner will be deployed. Two new storage classes will be created: sas-rwo (ebs) and sas-rwx (efs provided by the efs-provisioner)
 
 | Name | Description | Type | Default | Required | Notes | Actions |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -44,7 +60,7 @@ When setting V4_CFG_MANAGE_STORAGECLASS to true, the efs-provisioner will be dep
 | V4_CFG_EFS_REGION | AWS EFS Region | string | | false | Required for AWS deploys | baseline, vdm |
 
 ### GCP
-When setting V4_CFG_MANAGE_STORAGECLASS to true, two new storage classes will be created: sas-rwo (gce-pd) and sas-rwx (gcp filestore provided by the nfs-client-provisioner)
+When setting V4_CFG_MANAGE_STORAGE to true, two new storage classes will be created: sas-rwo (gce-pd) and sas-rwx (gcp filestore provided by the nfs-client-provisioner)
 
 ## Order
 | Name | Description | Type | Default | Required | Notes | Actions |
@@ -56,8 +72,8 @@ When setting V4_CFG_MANAGE_STORAGECLASS to true, two new storage classes will be
 ## SAS API Access
 | Name | Description | Type | Default | Required | Notes | Actions |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_SAS_CLIENT_ID | SAS API Client Id | string | | true | [Viya Orders CLI](https://github.com/sassoftware/viya4-orders-cli) for documentation | vdm |
-| V4_CFG_SAS_CLIENT_SECRET | SAS API Client Secret | string | | true | [Viya Orders CLI](https://github.com/sassoftware/viya4-orders-cli) for documentation | vdm |
+| V4_CFG_SAS_API_KEY | SAS API Key| string | | true | [Viya Orders CLI](https://github.com/sassoftware/viya4-orders-cli) for documentation | vdm |
+| V4_CFG_SAS_API_SECRET | SAS API Secret | string | | true | [Viya Orders CLI](https://github.com/sassoftware/viya4-orders-cli) for documentation | vdm |
 
 ## Container Registry Access
 | Name | Description | Type | Default | Required | Notes | Actions |
@@ -97,10 +113,15 @@ When setting V4_CFG_MANAGE_STORAGECLASS to true, two new storage classes will be
 | V4_CFG_ENABLE_EMBEDDED_LDAP | Deploy openldap in the namespace for authentication | bool | false | false | Default admin credentials are: user - viya_admin, password - Password123 | vdm |
 | V4_CFG_ENABLE_CONSUL_UI | Setup LB to access consul ui | bool | false | false | | vdm |
 
-## MPP
+## CAS
 | Name | Description | Type | Default | Required | Notes | Actions |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_CAS_RAM_PER_NODE | Amount of ram to allocate to per CAS node | int | false | false | | vdm |
-| V4_CFG_CAS_CORES_PER_NODE | Amount of cpu cores to allocate per CAS node | int | CAS node cpu count - 1 | false | | vdm |
-| V4_CFG_CAS_WORKER_QTY | Number of CAS workers | int | # of CAS nodes - 1 | false | | vdm |
-| V4_CFG_CAS_NODE_COUNT | Number of CAS nodes | int | # of CAS nodes | false | | vdm |
+| V4_CFG_CAS_SERVER_TYPE <sub>1</sub> | CAS deployment type | string | smp | false | [smp,mpp] | vdm
+| V4_CFG_CAS_RAM_PER_NODE <sub>2</sub>| Amount of ram to allocate to per CAS node | string | 90% of the available RAM - 500.5Mi  | false | Numeric value followed by the units, such as 32Gi for 32 gigabytes. In Kubernetes, the units for gigabytes is Gi. | vdm |
+| V4_CFG_CAS_CORES_PER_NODE | Amount of cpu cores to allocate per CAS node | string | CAS node cpu count - 1 | false | Either a whole number, representing that number of cores, or a number followed by m, indicating that number of milli-cores.| vdm |
+| V4_CFG_CAS_WORKER_QTY <sub>1</sub> | Number of CAS workers | int | # of K8s nodes designated for CAS - 1 | false | Used when V4_CFG_CAS_SERVER_TYPE is set to mpp | vdm |
+
+
+<sub> 1. CAS MPP setup includes the backup controller. This project strongly recommends the best practice of 1 node per CAS controller, backup  and worker pod. A CAS configuration with 3 CAS workers would require 5 nodes allocated with the CAS label and taint (CAS controller (1), CAS backup (1), CAS workers (3). </sub>
+
+<sub> 2. If multiple CAS pods must share the same node, the V4_CFG_CAS_RAM_PER_NODE must be modified. </sub>

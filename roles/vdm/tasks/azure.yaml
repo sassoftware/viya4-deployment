@@ -8,7 +8,7 @@
       - "{{ VDM_TRANSFORMERS_PATH }}/sas-rwo-sc.yaml"
       - "{{ VDM_TRANSFORMERS_PATH }}/sas-rwx-sc.yaml"
   when:
-    - V4_CFG_MANAGE_STORAGECLASS
+    - V4_CFG_MANAGE_STORAGE
   tags:
     - install
     - uninstall
@@ -20,7 +20,7 @@
     resources:
       - "{{ VDM_RESOURCES_PATH }}/azurefile-sc.yaml"
   when:
-    - V4_CFG_MANAGE_STORAGECLASS
+    - V4_CFG_MANAGE_STORAGE
     - V4_CFG_NFS_SVR_HOST is none
   tags:
     - install

@@ -40,15 +40,18 @@ RUN apt-get -y install gzip wget bash-completion git git-lfs jq sshpass ansible 
   && curl -sL https://aka.ms/InstallAzureCLIDeb | bash \
   && echo 'source /etc/profile.d/bash_completion.sh\nsource <(kubectl completion bash)\nalias k=kubectl\ncomplete -F __start_kubectl k' >> ~/.bashrc \
   && echo 'source /cloud/clis/google-cloud-sdk/completion.bash.inc' >> ~/.bashrc \
-  && echo 'source /cloud/clis/google-cloud-sdk/path.bash.inc' >> ~/.bashrc
+  && echo 'source /cloud/clis/google-cloud-sdk/path.bash.inc' >> ~/.bashrc 
 
 COPY . /viya4-deployment/
-RUN ansible-galaxy collection install -r requirements.yaml -f \
-  && chmod +x /viya4-deployment/docker-entrypoint.sh
+RUN chmod +x /viya4-deployment/docker-entrypoint.sh \
+  && mkdir /nonexistent \
+  && chown nobody /viya4-deployment /nonexistent -R
+
+USER nobody
+
+ENV PLAYBOOK=playbook.yaml 
+
+RUN ansible-galaxy collection install -r requirements.yaml -f 
 
 VOLUME ["/data", "/config"]
-
-ENV BASE_DIR=/data
-ENV PLAYBOOK=playbook.yaml
-
 ENTRYPOINT ["/viya4-deployment/docker-entrypoint.sh"]

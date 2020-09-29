@@ -78,7 +78,7 @@
 
 - name: Generate deployment manifest
   shell: |
-    kustomize build {{ DEPLOY_DIR }} --load_restrictor='none' -o {{ DEPLOY_DIR }}/base.yaml
+    kustomize build {{ DEPLOY_DIR }} --load_restrictor='none' -o {{ DEPLOY_DIR }}/site.yaml
   tags:
     - install
     - uninstall
