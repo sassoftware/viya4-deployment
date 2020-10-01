@@ -25,9 +25,10 @@ V4_CFG_INGRESS_TYPE: ingress
 V4_CFG_INGRESS_NAME: <desired_fqdn>
 V4_CFG_CONFIGURE_TLS: false
 
+V4_CFG_POSTGRES_TYPE: external
 ## If you wish to use the internal cruchy database instead of Azure Postgres 
-## uncomment and update the section below.
-# V4_CFG_POSTGRES_TYPE: internal
+## set V4_CFG_POSTGRES_TYPE to internal and uncomment 
+## then update the section below.
 # V4_CFG_POSTGRES_ADMIN_LOGIN: <desired_pg_user> 
 # V4_CFG_POSTGRES_PASSWORD: <desired_pg_password> 
 

@@ -4,7 +4,7 @@ nfs_namespace: nfs-client
 kubeconfig: ~/.kube/config
 
 nfs_server: nfs.example.org
-nfs_path: /exports
+nfs_path: /pvs
 
 nfs_client_config:
   nfs:

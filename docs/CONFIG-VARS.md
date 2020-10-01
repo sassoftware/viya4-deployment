@@ -1,24 +1,26 @@
 # List of valid configuration variables
+
 Supported configuration variables are listed in the table below.  All variables can also be specified on the command line.  Values specified on the command line will override all values in configuration defaults files.
 
-* [Cloud info](#cloud-info)
-* [Misc](#misc)
-* [Jump Server](#jump-server)
-* [NFS / Storage](#nfs---storage)
-  + [Azure](#azure)
-  + [AWS](#aws)
-  + [GCP](#gcp)
-* [Order](#order)
-* [SAS API Access](#sas-api-access)
-* [Container Registry Access](#container-registry-access)
-* [Ingress](#ingress)
-* [Monitoring and Logging](#monitoring-and-logging)
-* [TLS](#tls)
-* [Postgres](#postgres)
-* [LDAP / Consul](#ldap---consul)
-* [CAS](#cas)
+- [Cloud info](#cloud-info)
+- [Misc](#misc)
+- [Jump Server](#jump-server)
+- [NFS / Storage](#nfs---storage)
+  -- [Azure](#azure)
+  -- [AWS](#aws)
+  -- [GCP](#gcp)
+- [Order](#order)
+- [SAS API Access](#sas-api-access)
+- [Container Registry Access](#container-registry-access)
+- [Ingress](#ingress)
+- [Monitoring and Logging](#monitoring-and-logging)
+- [TLS](#tls)
+- [Postgres](#postgres)
+- [LDAP / Consul](#ldap---consul)
+- [CAS](#cas)
 
 ## Cloud info
+
 | Name | Description | Type | Default | Required | Notes | Actions |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | PROVIDER | Cloud provider | string | | true | [aws,azure,gcp,custom] | baseline, vdm |
@@ -26,6 +28,7 @@ Supported configuration variables are listed in the table below.  All variables 
 | NAMESPACE | K8s namespace in which to deploy | string | | true | | baseline, vdm, viya-monitoring |
 
 ## Misc
+
 | Name | Description | Type | Default | Required | Notes | Actions |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | DEPLOY | Whether to deploy or stop at generating kustomize and manifest | bool | true | false | | vdm |
@@ -33,6 +36,7 @@ Supported configuration variables are listed in the table below.  All variables 
 | BASE_DIR | Path to store persistent files | string | $HOME | false | | all |
 
 ## Jump Server
+
 | Name | Description | Type | Default | Required | Notes | Actions |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 JUMP_SVR_HOST | ip/fqn to the jump host | string | | true | Tool uses the jump server to interact with nfs storage. | baseline, vdm |
@@ -40,6 +44,7 @@ JUMP_SVR_USER | ssh user to access the jump host | | string | true | Tool uses t
 JUMP_SVR_PRIVATE_KEY | ssh user private key to access the jump host | | string | true | Tool uses the jump server to interact with nfs storage. | baseline, vdm |
 
 ## NFS / Storage
+
 | Name | Description | Type | Default | Required | Notes | Actions |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_NFS_SVR_HOST | NFS ip/host | string | | false | Required for Azure deploys, GCP deploys, or custom nfs setups | baseline, vdm |
@@ -49,9 +54,11 @@ JUMP_SVR_PRIVATE_KEY | ssh user private key to access the jump host | | string |
 | V4_CFG_RWX_STORAGE_CLASS | ReadWriteMany storage class name | string | "sas-rwx" | false | When V4_CFG_MANAGE_STORAGE is false, set to the name of your preexisting storage class that supports ReadWritMany | all |
 
 ### Azure
+
 When setting V4_CFG_MANAGE_STORAGE to true, two new storage classes will be created: sas-rwo (Azure disk) and sas-rwx (Azure File, Azure Netapp, or NFS)
 
 ### AWS
+
 When setting V4_CFG_MANAGE_STORAGE to true, the efs-provisioner will be deployed. Two new storage classes will be created: sas-rwo (ebs) and sas-rwx (efs provided by the efs-provisioner)
 
 | Name | Description | Type | Default | Required | Notes | Actions |
@@ -60,9 +67,11 @@ When setting V4_CFG_MANAGE_STORAGE to true, the efs-provisioner will be deployed
 | V4_CFG_EFS_REGION | AWS EFS Region | string | | false | Required for AWS deploys | baseline, vdm |
 
 ### GCP
+
 When setting V4_CFG_MANAGE_STORAGE to true, two new storage classes will be created: sas-rwo (gce-pd) and sas-rwx (gcp filestore provided by the nfs-client-provisioner)
 
 ## Order
+
 | Name | Description | Type | Default | Required | Notes | Actions |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_SAS_ORDER_NUMBER | SAS order number | string | | true | | vdm |
@@ -70,12 +79,14 @@ When setting V4_CFG_MANAGE_STORAGE to true, two new storage classes will be crea
 | V4_CFG_SAS_CADENCE_VERSION | Cadence version | string | (latest version) | false | | vdm |
 
 ## SAS API Access
+
 | Name | Description | Type | Default | Required | Notes | Actions |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_SAS_API_KEY | SAS API Key| string | | true | [Viya Orders CLI](https://github.com/sassoftware/viya4-orders-cli) for documentation | vdm |
 | V4_CFG_SAS_API_SECRET | SAS API Secret | string | | true | [Viya Orders CLI](https://github.com/sassoftware/viya4-orders-cli) for documentation | vdm |
 
 ## Container Registry Access
+
 | Name | Description | Type | Default | Required | Notes | Actions |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_CR_USER | Container registry username | string | | true | | vdm |
@@ -83,37 +94,44 @@ When setting V4_CFG_MANAGE_STORAGE to true, two new storage classes will be crea
 | V4_CFG_CR_URL | Container registry server | string | https://cr.sas.com | false | | vdm |
 
 ## Ingress
+
 | Name | Description | Type | Default | Required | Notes | Actions |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_INGRESS_TYPE | Which ingress to deploy | string | | true | [ingress,istio] | baseline, vdm |
 | V4_CFG_INGRESS_NAME | DNS name to VIYA install | string | | true | Desired FQDN to access viya | vdm |
 
 ## Monitoring and Logging
+
 | Name | Description | Type | Default | Required | Notes | Actions |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_BASE_DOMAIN | Based domain in which subdomains for kibana, grafana, prometheus and alert manager will be created | string | | false | Require when deploying monitoring and logging | cluster-monitoring, cluster-logging |
 
 ## TLS
+
 | Name | Description | Type | Default | Required | Notes | Actions |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_CONFIGURE_TLS | Install cert-manager | bool | false | false | This also enables tls form monitoring/logging stack | all |
 
 ## Postgres
+
 | Name | Description | Type | Default | Required | Notes | Actions |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_POSTGRES_TYPE | Postgres installation type | string | | true | [internal,external] | vdm |
 | V4_CFG_POSTGRES_ADMIN_LOGIN | Postgres username | string | | true | Desired username for internal postgres or existing username for external postgres | vdm |
 | V4_CFG_POSTGRES_PASSWORD | Postgres password | string | | true | Desired password for internal postgres or existing password for external postgres | vdm |
 | V4_CFG_POSTGRES_FQDN | Postgres ip/fqdn | string | | false | Required for external postgres | vdm |
+| V4_CFG_POSTGRES_PORT | Port that postgres is running on | string | 5432 | false | Required for external postgres | vdm |
 | V4_CFG_POSTGRES_DATABASE | Postgres database name | string | "SharedServices" | false | Must be unique when using single Postgres cluster for multiple Viya deployments | vdm |
 
 ## LDAP / Consul
+
 | Name | Description | Type | Default | Required | Notes | Actions |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_ENABLE_EMBEDDED_LDAP | Deploy openldap in the namespace for authentication | bool | false | false | Default admin credentials are: user - viya_admin, password - Password123 | vdm |
 | V4_CFG_ENABLE_CONSUL_UI | Setup LB to access consul ui | bool | false | false | | vdm |
 
 ## CAS
+
 | Name | Description | Type | Default | Required | Notes | Actions |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_CAS_SERVER_TYPE <sub>1</sub> | CAS deployment type | string | smp | false | [smp,mpp] | vdm
