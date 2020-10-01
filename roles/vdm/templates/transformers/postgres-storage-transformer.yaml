@@ -1,0 +1,34 @@
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: postgres-storage-transformer
+patch: |-
+  - op: replace
+    path: /spec/ArchiveStorage/storageclass
+    value: "{{ V4_CFG_RWO_STORAGE_CLASS }}"
+  - op: replace
+    path: /spec/ArchiveStorage/storagetype
+    value: dynamic
+  - op: replace
+    path: /spec/BackrestStorage/storageclass
+    value: "{{ V4_CFG_RWO_STORAGE_CLASS }}"
+  - op: replace
+    path: /spec/BackrestStorage/storagetype
+    value: dynamic
+  - op: replace
+    path: /spec/PrimaryStorage/storageclass
+    value: "{{ V4_CFG_RWO_STORAGE_CLASS }}"
+  - op: replace
+    path: /spec/PrimaryStorage/storagetype
+    value: dynamic
+  - op: replace
+    path: /spec/ReplicaStorage/storageclass
+    value: "{{ V4_CFG_RWO_STORAGE_CLASS }}"
+  - op: replace
+    path: /spec/ReplicaStorage/storagetype
+    value: dynamic
+target:
+  group: crunchydata.com
+  kind: Pgcluster
+  name: .*
+  version: v1

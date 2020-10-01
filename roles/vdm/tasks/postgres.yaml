@@ -10,30 +10,6 @@
     - uninstall
     - upgrade
 
-- name: Create pg-storage-class-transformer
-  copy:
-    src: "{{DEPLOY_DIR}}/{{ BUNDLE_ROOT }}/examples/crunchydata/storageclass/storage-class-transformer.yaml"
-    dest: "{{DEPLOY_DIR}}/{{ VDM_TRANSFORMERS_PATH }}/pg-storage-class-transformer.yaml"
-    mode: '0644'
-  when: 
-    - V4_CFG_POSTGRES_TYPE == 'internal'
-  tags:
-    - install
-    - uninstall
-    - upgrade
-
-- name: Patch pg-storage-class-transformer
-  replace:
-    path: "{{DEPLOY_DIR}}/{{ VDM_TRANSFORMERS_PATH }}/pg-storage-class-transformer.yaml"
-    regexp: "trident"
-    replace: "{{ V4_CFG_RWO_STORAGE_CLASS }}"
-  when: 
-    - V4_CFG_POSTGRES_TYPE == 'internal'
-  tags:
-    - install
-    - uninstall
-    - upgrade
-
 - name: Set Postgres Facts (internal)
   include_tasks: vdm_loader.yaml
   vars:
@@ -42,7 +18,7 @@
      - "{{ BUNDLE_ROOT }}/overlays/crunchydata"
     transformers: 
       - "{{ BUNDLE_ROOT }}/overlays/internal-postgres/internal-postgres-transformer.yaml"
-      - "{{ VDM_TRANSFORMERS_PATH }}/pg-storage-class-transformer.yaml"
+      - "{{ VDM_TRANSFORMERS_PATH }}/postgres-storage-transformer.yaml"
   when: 
     - V4_CFG_POSTGRES_TYPE == 'internal'
   tags:
