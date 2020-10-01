@@ -40,6 +40,7 @@ V4_CFG_POSTGRES_TYPE: external
 V4_CFG_POSTGRES_ADMIN_LOGIN: <existing_pg_user> 
 V4_CFG_POSTGRES_PASSWORD: <existing_pg_password> 
 V4_CFG_POSTGRES_FQDN: <existing_pg_fqdn> 
+V4_CFG_POSTGRES_PORT: 5432
 
 ## LDAP
 V4_CFG_ENABLE_EMBEDDED_LDAP: true

@@ -31,6 +31,24 @@
         unsafe_writes: yes
       when: 
         - tfstate_data.rwx_filestore_path is defined
+    - name: Add efs id
+      lineinfile:
+        path: "{{ CONFIG }}"
+        line: "V4_CFG_EFS_FSID: {{ tfstate_data.rwx_filestore_id.value }}"
+        regexp: "^V4_CFG_EFS_FSID:"
+        unsafe_writes: yes
+      when: 
+        - tfstate_data.rwx_filestore_id is defined
+        - ((PROVIDER is defined ) and (PROVIDER == "aws")) or ((tfstate_data.provider is defined) and (tfstate_data.provider == "aws"))
+    - name: Add efs region
+      lineinfile:
+        path: "{{ CONFIG }}"
+        line: "V4_CFG_EFS_REGION: {{ tfstate_data.location.value }}"
+        regexp: "^V4_CFG_EFS_REGION:"
+        unsafe_writes: yes
+      when: 
+        - tfstate_data.location is defined
+        - ((PROVIDER is defined ) and (PROVIDER == "aws")) or ((tfstate_data.provider is defined) and (tfstate_data.provider == "aws"))  
     - name: Create tmp kubeconfig
       tempfile:
         state: file
@@ -68,7 +86,7 @@
     - name: Add Postgres Admin
       lineinfile:
         path: "{{ CONFIG }}"
-        line: "V4_CFG_POSTGRES_ADMIN_LOGIN: {{ tfstate_data.postgres_admin.value + '@' + tfstate_data.postgres_server_name.value }}"
+        line: "V4_CFG_POSTGRES_ADMIN_LOGIN: {{ tfstate_data.postgres_admin.value }}"
         regex: "^V4_CFG_POSTGRES_ADMIN_LOGIN:"
         unsafe_writes: yes
       when:
@@ -76,6 +94,16 @@
         - V4_CFG_POSTGRES_TYPE == "external"
         - tfstate_data.postgres_admin is defined
         - tfstate_data.postgres_server_name is defined
+    - name: Add Postgres Port
+      lineinfile:
+        path: "{{ CONFIG }}"
+        line: "V4_CFG_POSTGRES_PORT: {{ tfstate_data.postgres_server_port.value }}"
+        regex: "^V4_CFG_POSTGRES_PORT:"
+        unsafe_writes: yes
+      when:
+        - V4_CFG_POSTGRES_TYPE is defined
+        - V4_CFG_POSTGRES_TYPE == "external"
+        - tfstate_data.postgres_server_port is defined
     - name: Add Postgres Password
       lineinfile:
         path: "{{ CONFIG }}"
@@ -95,7 +123,7 @@
       when:
         - V4_CFG_POSTGRES_TYPE is defined
         - V4_CFG_POSTGRES_TYPE == "external"
-        - tfstate_data.postgres_fqdn is defined 
+        - tfstate_data.postgres_fqdn is defined
     - name: Add Jump Server
       lineinfile:
         path: "{{ CONFIG }}"

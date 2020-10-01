@@ -20,7 +20,7 @@
     nfs_client_config:
       nfs:
         server: "{{ V4_CFG_NFS_SVR_HOST }}"
-        path: "{{ V4_CFG_NFS_SVR_PATH }}"
+        path: "{{ V4_CFG_NFS_SVR_PATH }}/pvs"
       podSecurityPolicy:
         enabled: true
       storageClass:
@@ -32,6 +32,7 @@
     - V4_CFG_NFS_SVR_PATH is defined
     - V4_CFG_MANAGE_STORAGE is defined
     - V4_CFG_MANAGE_STORAGE
+    - PROVIDER != "aws"
   tags:
     - baseline
 
