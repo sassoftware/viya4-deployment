@@ -33,9 +33,6 @@
         - bin
         - homes
         - data
-      when:
-        - V4_CFG_MANAGE_STORAGE is defined
-        - V4_CFG_MANAGE_STORAGE
       tags:
         - vdm
 
