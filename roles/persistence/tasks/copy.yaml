@@ -3,7 +3,10 @@
     path: "{{ dest }}"
   register: stat_result
   tags:
-    - vdm
+    - install
+    - uninstall
+    - upgrade
+
 
 - name: Copy file {{ src }}
   copy:
@@ -13,4 +16,6 @@
   when:
     - not stat_result.stat.exists
   tags:
-    - vdm
+    - install
+    - uninstall
+    - upgrade
