@@ -15,10 +15,10 @@
   tags:
     - vdm
 
-- copy:
-    src: "{{item.src}}"
-    dest: "{{DEPLOY_DIR}}/site-config/{{item.dest}}"
-    mode: "0600"
+- include_tasks: copy.yaml
+  vars:
+    src: "{{ item.src }}"
+    dest: "{{ DEPLOY_DIR }}/site-config/{{ item.dest }}"
   with_items:
     - { src: "{{ KUBE |default('', true) }}", dest: ".kube" }
     - { src: "{{ CONFIG |default('', true) }}", dest: "defaults.yaml" }
