@@ -128,6 +128,13 @@
     - uninstall
     - upgrade
 
+- name: Include SAS/CONNECT tasks
+  include_tasks: connect.yaml
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
 - name: Include openldap
   include_tasks: vdm_loader.yaml
   vars:

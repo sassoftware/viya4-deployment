@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: sas-connect-spawner-loadbalancer
+spec:
+  ports:
+  - name: service
+    port: 17551
+    protocol: TCP
+    targetPort: service
+  selector:
+    app.kubernetes.io/name: sas-connect-spawner
+    sas.com/deployment: sas-viya
+  type: LoadBalancer
+  loadBalancerSourceRanges: {{ LOADBALANCER_SOURCE_RANGES }}

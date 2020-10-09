@@ -5,7 +5,7 @@ Supported configuration variables are listed in the table below.  All variables 
 - [Cloud info](#cloud-info)
 - [Misc](#misc)
 - [Jump Server](#jump-server)
-- [NFS / Storage](#nfs---storage)
+- [NFS / Storage](#nfs--storage)
   - [Azure](#azure)
   - [AWS](#aws)
   - [GCP](#gcp)
@@ -16,8 +16,9 @@ Supported configuration variables are listed in the table below.  All variables 
 - [Monitoring and Logging](#monitoring-and-logging)
 - [TLS](#tls)
 - [Postgres](#postgres)
-- [LDAP / Consul](#ldap---consul)
+- [LDAP / Consul](#ldap--consul)
 - [CAS](#cas)
+- [SAS/CONNECT](#sasconnect)
 
 ## Cloud info
 
@@ -143,3 +144,9 @@ When setting V4_CFG_MANAGE_STORAGE to true, two new storage classes will be crea
 <sub> 1. CAS MPP setup includes the backup controller. This project strongly recommends the best practice of 1 node per CAS controller, backup  and worker pod. A CAS configuration with 3 CAS workers would require 5 nodes allocated with the CAS label and taint (CAS controller (1), CAS backup (1), CAS workers (3). </sub>
 
 <sub> 2. If multiple CAS pods must share the same node, the V4_CFG_CAS_RAM_PER_NODE must be modified. </sub>
+
+## SAS/CONNECT
+
+| Name | Description | Type | Default | Required | Notes | Actions |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
+| V4_CFG_ENABLE_CONNECT_LOADBALANCER | Setup LB to access SAS/CONNECT | bool | false | false | | vdm |

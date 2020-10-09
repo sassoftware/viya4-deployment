@@ -219,6 +219,10 @@ When running the baseline action an ingress will be created. You will need to re
 - An A record (ex. example.com) points to the <ingress_ip>
 - A wildcard (ex *.example.com) points to the <ingress_ip>
 
+When running the vdm action with V4_CFG_ENABLE_CONNECT_LOADBALANCER _true_ a load balancer will be created to allow external SAS/CONNECT clients to connect to Viya.
+You will need to register this load balancer ip with your dns provider such that
+an A record (ex. connect.example.com) points to the <connect_load_balancer_ip>
+
 ### Examples
 
 - I have a new cluster, deployed using [Viya 4 IaC for Azure](https://github.com/sassoftware/viya4-iac-azure) project, and want to install everything using docker
