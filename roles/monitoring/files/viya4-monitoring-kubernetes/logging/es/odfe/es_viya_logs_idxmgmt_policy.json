@@ -1,0 +1,33 @@
+{
+    "policy": {
+        "policy_id": "viya-logs-idxmgmt-policy",
+        "description": "An index management policy for log messages from SAS Viya deployments.",
+        "last_updated_time": 1581540396819,
+        "schema_version": 1,
+        "error_notification": null,
+        "default_state": "hot",
+        "states": [
+            {
+                "name": "hot",
+                "actions": [],
+                "transitions": [
+                    {
+                        "state_name": "doomed",
+                        "conditions": {
+                            "min_index_age": "3d"
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "doomed",
+                "actions": [
+                    {
+                        "delete": {}
+                    }
+                ],
+                "transitions": []
+            }
+        ]
+    }
+}

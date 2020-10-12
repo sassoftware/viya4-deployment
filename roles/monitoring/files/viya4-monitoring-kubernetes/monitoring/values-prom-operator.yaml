@@ -1,0 +1,245 @@
+# Override values for the Prometheus Operator helm chart
+#
+# Prometheus Operator Helm Chart
+# https://github.com/helm/charts/blob/master/stable/prometheus-operator/README.md
+#
+# CRDs
+# https://github.com/coreos/prometheus-operator/blob/master/Documentation/api.md
+#
+# Default Values
+# https://github.com/helm/charts/blob/master/stable/prometheus-operator/values.yaml
+
+
+# https://github.com/helm/charts/tree/master/stable/prometheus-operator#prometheus-operator-1
+commonLabels:
+  sas.com/monitoring-base: kube-viya-monitoring
+
+# ===================
+# Prometheus Operator
+# ===================
+# https://github.com/coreos/prometheus-operator
+prometheusOperator:
+  # v0.39+ requires Kubernetes 1.16+
+  image:
+    tag: v0.40.0
+  prometheusConfigReloaderImage:
+    tag: v0.40.0
+  logFormat: json
+  logLevel: info
+  createCustomResource: false
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "50Mi"
+    limits:
+      cpu: "250m"
+      memory: "150Mi"
+  tlsProxy:
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "25Mi"
+
+# ======================
+# kubelet ServiceMonitor
+# ======================
+kubelet:
+  serviceMonitor:
+    # Default to use the https-metrics endpoint
+    # Depending on your environment, this may require configuration
+    # changes to the kubelet.
+    # See issue: https://github.com/coreos/prometheus-operator/issues/926
+    https: true
+
+# ======================
+# kube-state-metrics
+# ======================
+# https://github.com/kubernetes/kube-state-metrics
+# https://github.com/helm/charts/tree/master/stable/kube-state-metrics
+kube-state-metrics:
+  image:
+    tag: v1.9.7
+  resources:
+    requests:
+      cpu: "25m"
+      memory: "30Mi"
+    limits:
+      cpu: "100m"
+      memory: "100Mi"
+
+# ==========
+# Prometheus
+# ==========
+# https://github.com/helm/charts/tree/master/stable/prometheus-operator#prometheus
+# https://prometheus.io/
+prometheus:
+  serviceAccount:
+    name: sas-ops-acct
+  service:
+    type: NodePort
+    nodePort: 31090
+  prometheusSpec:
+    image:
+      tag: v2.21.0
+    logLevel: info
+    logFormat: json
+    # Don't restrict ServiceMonitor namespace selection by default
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: false
+    retention: 7d
+    retentionSize: 20GiB
+    replicas: 1
+    resources:
+      # These values may very well need to be overridden to higher
+      # values depending on the scale of the cluster
+      requests:
+        cpu: "1000m"
+        memory: "2Gi"
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          # storageClassName:
+          accessModes:
+          - ReadWriteOnce
+          resources:
+            requests:
+              storage: 25Gi    
+          volumeMode: Filesystem
+    tolerations:
+    - key: workload.sas.com/class
+      value: stateful
+      effect: NoSchedule
+
+# =======================
+# Prometheus AlertManager
+# =======================
+# https://github.com/helm/charts/tree/master/stable/prometheus-operator#alertmanager
+# https://prometheus.io/docs/alerting/alertmanager/
+alertmanager:
+  service:
+    type: NodePort
+    nodePort: 31091
+  alertmanagerSpec:
+    image:
+      tag: v0.21.0
+    logFormat: json
+    retention: 240h
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "50Mi"
+    storage:
+      volumeClaimTemplate:
+        spec:
+          # storageClassName:
+          accessModes:
+          - ReadWriteOnce
+          resources:
+            requests:
+              storage: 10Gi
+          volumeMode: Filesystem
+    tolerations:
+    - key: workload.sas.com/class
+      value: stateful
+      effect: NoSchedule
+
+# =========
+# Exporters
+# =========
+# https://github.com/helm/charts/tree/master/stable/prometheus-operator#exporters
+
+# Prometheus Node Exporter
+# https://github.com/prometheus/node_exporter
+# https://github.com/helm/charts/tree/master/stable/prometheus-node-exporter
+
+prometheus-node-exporter:
+  image:
+    tag: v1.0.1
+  service:
+    # Override the default port of 9100 to avoid potential conflicts
+    port: 9110
+    targetPort: 9110
+  resources:
+    requests:
+      cpu: "30m"
+      memory: "50Mi"
+    limits:
+      cpu: "100m"
+      memory: "100Mi"
+  # Be very tolerant
+  tolerations:
+  - operator: "Exists"
+
+nodeExporter:
+  serviceMonitor:
+    relabelings:
+    - sourceLabels: [__meta_kubernetes_pod_node_name]
+      separator: ;
+      regex: ^(.*)$
+      targetLabel: nodename
+      replacement: $1
+      action: replace
+
+# =======
+# Grafana
+# =======
+# https://github.com/helm/charts/tree/master/stable/grafana
+grafana:
+  image:
+    tag: "7.2.0"
+  "grafana.ini":
+    analytics:
+      check_for_updates: false
+    # dashboards:
+    #   default_home_dashboard_path: 
+    log:
+      mode: console
+    "log.console":
+        format: json
+    dashboards:
+      default_home_dashboard_path: /tmp/dashboards/viya-welcome-dashboard.json
+  service:
+    type: NodePort
+    nodePort: 31100
+  # TODO: Use secret for Grafana admin user/password
+  # See: https://github.com/helm/charts/tree/master/stable/grafana
+  adminPassword: admin
+  plugins:
+  - grafana-piechart-panel
+  - grafana-clock-panel
+  - camptocamp-prometheus-alertmanager-datasource
+  - flant-statusmap-panel
+  - btplc-status-dot-panel
+  resources:
+    requests:
+      cpu: "250m"
+      memory: "150Mi"
+  tolerations:
+  - key: workload.sas.com/class
+    value: stateful
+    effect: NoSchedule
+  sidecar:
+    dashboards:
+      enabled: true
+      label: grafana_dashboard
+    datasources:
+      enabled: true
+      label: grafana_datasource
+      resources:
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "100Mi"
+  persistence:
+    type: pvc
+    enabled: true
+    # storageClassName:
+    accessModes:
+      - ReadWriteOnce
+    size: 5Gi
+    # annotations: {}
+    finalizers:
+      - kubernetes.io/pvc-protection
+    # subPath: ""
+    # existingClaim:

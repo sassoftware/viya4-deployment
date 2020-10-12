@@ -1,0 +1,12 @@
+# Turn off in-cluster Alert Manager
+alertmanager:
+  enabled: false
+
+# Point Prometheus to the 'my-alertmanager' service
+prometheus:
+  prometheusSpec:
+    alertingEndpoints:
+    - name: my-alertmanager
+      namespace: monitoring
+      port: http
+      scheme: http

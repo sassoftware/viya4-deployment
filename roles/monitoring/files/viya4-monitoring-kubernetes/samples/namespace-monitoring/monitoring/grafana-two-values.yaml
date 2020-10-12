@@ -1,0 +1,11 @@
+"grafana.ini":
+  server:
+    protocol: http
+    domain: grafana.viya-two.host.cluster.example.com
+    root_url: http://grafana.viya-two.host.cluster.example.com/
+    serve_from_sub_path: false
+ingress:
+  enabled: true
+  path: /
+  hosts:
+  - grafana.viya-two.host.cluster.example.com

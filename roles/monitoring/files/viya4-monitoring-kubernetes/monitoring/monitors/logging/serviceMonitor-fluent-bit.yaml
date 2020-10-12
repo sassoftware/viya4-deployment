@@ -1,0 +1,22 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: fluent-bit
+  labels:
+    sas.com/monitoring-base: kube-viya-monitoring
+spec:
+  endpoints:
+  - path: /api/v1/metrics/prometheus
+    port: metrics
+    # Add 'node' label for a hostname instead of just an IP address
+    relabelings:
+    - sourceLabels: [__meta_kubernetes_pod_node_name]
+      targetLabel: node
+  selector:
+    matchLabels:
+      app: fluent-bit
+  namespaceSelector:
+    any: true
+    # Optional: change 'any' to 'false' above to limit namespace(s)
+    # matchNames:
+    # - logging

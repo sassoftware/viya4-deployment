@@ -1,0 +1,161 @@
+# This is a sample Prometheus resource that deploys a
+# namespace-only instance of Prometheus
+
+# Note: ClusterRoles and ClusterRoleBindings are still required
+# at the moment. Limiting these to namespace permissions is 
+# still being investigated.
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: prometheus-viya
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRole
+metadata:
+  name: prometheus-viya
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - nodes/metrics
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - nodes
+  - nodes/proxy
+  - services
+  - endpoints
+  - pods
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - extensions
+  - networking.k8s.io
+  resources:
+  - ingresses
+  verbs:
+  - get
+  - list
+  - watch
+- nonResourceURLs:
+  - /metrics
+  verbs:
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: prometheus-viya
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: prometheus-viya
+subjects:
+- kind: ServiceAccount
+  name: prometheus-viya
+  namespace: viya-one
+---
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+metadata:
+  labels:
+    app: prometheus
+  name: prometheus-viya
+spec:
+  image: quay.io/prometheus/prometheus:v2.19.1
+  alerting:
+    alertmanagers:
+    - apiVersion: v2
+      name: prometheus-operator-alertmanager
+      namespace: monitoring
+      pathPrefix: /
+      port: web
+  enableAdminAPI: false
+  externalUrl: http://prometheus.viya-one.host.cluster.example.com
+  listenLocal: false
+  logFormat: json
+  logLevel: info
+  paused: false
+  portName: web
+  replicas: 1
+  retention: 3d
+  retentionSize: 10GiB
+  routePrefix: /
+  securityContext:
+    fsGroup: 2000
+    runAsNonRoot: true
+    runAsUser: 1000
+  serviceAccountName: prometheus-viya
+
+  serviceMonitorNamespaceSelector:
+    matchLabels:
+     sas.com/viya-namespace: viya-one
+  serviceMonitorSelector: {}
+  
+  # Leave commented to find all podmonitors in the target namespace
+  podMonitorNamespaceSelector:
+    matchLabels:
+      sas.com/viya-namespace: viya-one
+  podMonitorSelector: {}
+  
+  ruleNamespaceSelector:
+    matchLabels:
+      sas.com/viya-namespace: viya-one
+  ruleSelector: {}
+
+  version: v2.19.1
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: prometheus
+    self-monitor: "true"
+  name: prometheus
+spec:
+  type: ClusterIP
+  ports:
+  - name: web
+    port: 9090
+    protocol: TCP
+    targetPort: 9090
+  selector:
+    app: prometheus
+    prometheus: prometheus-viya
+  sessionAffinity: None
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    app: prometheus
+  name: sas-prometheus
+spec:
+  endpoints:
+  - path: /metrics
+    port: web
+  selector:
+    matchLabels:
+      app: prometheus
+      self-monitor: "true"
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: prometheus
+spec:
+  rules:
+  - host: prometheus.viya-one.host.cluster.example.com
+    http:
+      paths:
+      - backend:
+          serviceName: prometheus
+          servicePort: 9090
+        path: /

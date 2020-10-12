@@ -1,0 +1,10 @@
+    apiVersion: 1
+    datasources:
+    - name: Prometheus
+      type: prometheus
+      access: proxy
+      isDefault: true
+      jsonData:
+        tlsSkipVerify: true
+      editable: true
+      # url: appened by script

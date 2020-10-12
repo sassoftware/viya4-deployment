@@ -1,0 +1,10 @@
+[
+  {
+    "op": "add","path": "/kibana_user/backend_roles/-","value": "xxNAMESPACExx_kibana_users"
+  },
+  {
+    "op": "add","path": "/kibana_user/backend_roles/-","value": "xxNAMESPACExx_kibana_ro_users"
+  }
+
+]
+

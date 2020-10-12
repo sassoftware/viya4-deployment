@@ -1,0 +1,1652 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": 41,
+  "iteration": 1600096707671,
+  "links": [],
+  "panels": [
+    {
+      "collapsed": false,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 20,
+      "panels": [],
+      "title": "Current Active Totals",
+      "type": "row"
+    },
+    {
+      "cacheTimeout": null,
+      "datasource": "$datasource",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "decimals": 2,
+          "mappings": [],
+          "noValue": "0",
+          "nullValueMode": "connected",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "light-blue",
+                "value": null
+              }
+            ]
+          },
+          "unit": "cores"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 3,
+        "x": 0,
+        "y": 1
+      },
+      "id": 13,
+      "links": [],
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "7.1.5",
+      "targets": [
+        {
+          "expr": "sum (rate(container_cpu_usage_seconds_total{pod=~\"$pod\"}[1m]) * on(pod) group_left(phase) kube_pod_status_phase{pod=~\"$pod\", phase=\"Running\"})",
+          "hide": true,
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 4,
+          "legendFormat": "",
+          "refId": "A"
+        },
+        {
+          "expr": "sum(:sas_launcher_pod_cpu_core_usage:{pod=~\"$pod\"}) or vector(0)",
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 4,
+          "legendFormat": "Total CPU Usage",
+          "refId": "B"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "",
+      "transparent": true,
+      "type": "stat"
+    },
+    {
+      "cacheTimeout": null,
+      "datasource": "$datasource",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "decimals": 2,
+          "mappings": [
+            {
+              "id": 0,
+              "op": "=",
+              "text": "N/A",
+              "type": 1,
+              "value": "null"
+            }
+          ],
+          "min": 0,
+          "nullValueMode": "connected",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "light-blue",
+                "value": null
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 3,
+        "x": 3,
+        "y": 1
+      },
+      "id": 12,
+      "links": [],
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "7.1.5",
+      "targets": [
+        {
+          "expr": "sum(:sas_launcher_pod_mem_working_set_bytes:{pod=~\"$pod\"}) or vector(0)",
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 4,
+          "legendFormat": "Total Memory Usage",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "",
+      "transparent": true,
+      "type": "stat"
+    },
+    {
+      "cacheTimeout": null,
+      "datasource": "$datasource",
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "min": 0,
+          "noValue": "None",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "light-blue",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Pending"
+            },
+            "properties": [
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "light-blue",
+                      "value": null
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "unit",
+                "value": "Jobs"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 3,
+        "x": 9,
+        "y": 1
+      },
+      "id": 14,
+      "links": [],
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "7.1.5",
+      "targets": [
+        {
+          "expr": "sum(kube_pod_status_phase{pod=~\"$pod\", phase=~\"Pending\"}) or vector(0)",
+          "instant": false,
+          "interval": "",
+          "legendFormat": "Pending",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "",
+      "transparent": true,
+      "type": "stat"
+    },
+    {
+      "cacheTimeout": null,
+      "datasource": "$datasource",
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "min": 0,
+          "noValue": "None",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "light-blue",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Running"
+            },
+            "properties": [
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "light-blue",
+                      "value": null
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "unit",
+                "value": "Jobs"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 3,
+        "x": 12,
+        "y": 1
+      },
+      "id": 34,
+      "links": [],
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "7.1.5",
+      "targets": [
+        {
+          "expr": "sum(kube_pod_status_phase{pod=~\"$pod\", phase=~\"Running\"}) or vector(0)",
+          "instant": false,
+          "interval": "",
+          "legendFormat": "Running",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "",
+      "transparent": true,
+      "type": "stat"
+    },
+    {
+      "cacheTimeout": null,
+      "datasource": "$datasource",
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "decimals": 2,
+          "mappings": [
+            {
+              "id": 0,
+              "op": "=",
+              "text": "N/A",
+              "type": 1,
+              "value": "null"
+            }
+          ],
+          "min": 0,
+          "nullValueMode": "connected",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "light-blue",
+                "value": null
+              }
+            ]
+          },
+          "unit": "Bps"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 3,
+        "x": 18,
+        "y": 1
+      },
+      "id": 24,
+      "links": [],
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "7.1.5",
+      "targets": [
+        {
+          "expr": "sum(rate(:sas_launcher_pod_net_transmit_bytes_total:{pod=~\"$pod\"}[1m])) + sum(rate(:sas_launcher_pod_net_receive_bytes_total:{pod=~\"$pod\"}[1m])) or vector(0)",
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 4,
+          "legendFormat": "Network I/O",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "",
+      "transparent": true,
+      "type": "stat"
+    },
+    {
+      "cacheTimeout": null,
+      "datasource": "$datasource",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "decimals": 2,
+          "mappings": [
+            {
+              "id": 0,
+              "op": "=",
+              "text": "N/A",
+              "type": 1,
+              "value": "null"
+            }
+          ],
+          "min": 0,
+          "nullValueMode": "connected",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "light-blue",
+                "value": null
+              }
+            ]
+          },
+          "unit": "Bps"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 3,
+        "x": 21,
+        "y": 1
+      },
+      "id": 23,
+      "links": [],
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "7.1.5",
+      "targets": [
+        {
+          "expr": "sum(rate(:sas_launcher_pod_fs_read_bytes_total:{pod=~\"$pod\"}[1m])) + sum(rate(:sas_launcher_pod_fs_write_bytes_total:{pod=~\"$pod\"}[1m])) or vector(0)",
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 4,
+          "legendFormat": "File I/O",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "",
+      "transparent": true,
+      "type": "stat"
+    },
+    {
+      "cacheTimeout": null,
+      "datasource": "$datasource",
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "min": 0,
+          "noValue": "No active jobs",
+          "nullValueMode": "connected",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "light-blue",
+                "value": null
+              }
+            ]
+          },
+          "unit": "job(s)"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 6
+      },
+      "hideTimeOverride": false,
+      "id": 8,
+      "interval": "",
+      "links": [],
+      "options": {
+        "displayMode": "basic",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "last"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true
+      },
+      "pluginVersion": "7.1.5",
+      "targets": [
+        {
+          "expr": "sort_desc(count(:sas_launcher_pod_status:{pod=~\"$pod\",phase=~\"Pending|Running\"}) by (node))",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{node}}",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Workload Distribution by Node",
+      "transformations": [],
+      "transparent": true,
+      "type": "bargauge"
+    },
+    {
+      "collapsed": false,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 13
+      },
+      "id": 27,
+      "panels": [],
+      "title": "Activity by Node",
+      "type": "row"
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "$datasource",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 14
+      },
+      "hiddenSeries": false,
+      "id": 2,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "hideEmpty": false,
+        "hideZero": false,
+        "max": true,
+        "min": true,
+        "rightSide": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "connected",
+      "percentage": false,
+      "pluginVersion": "7.1.5",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": ":sas_launcher_pod_cpu_core_usage:{pod=~\"$pod\"}",
+          "hide": true,
+          "interval": "",
+          "intervalFactor": 4,
+          "legendFormat": "{{label_launcher_sas_com_username}}({{label_launcher_sas_com_requested_by_client}}) - {{pod}}",
+          "refId": "A"
+        },
+        {
+          "expr": "sum(:sas_launcher_pod_cpu_core_usage:{pod=~\"$pod\"}) by (node)",
+          "interval": "",
+          "intervalFactor": 4,
+          "legendFormat": "{{node}}",
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "CPU Usage by Node",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "transparent": true,
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "decimals": null,
+          "format": "short",
+          "label": "Cores",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": false
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "$datasource",
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 14
+      },
+      "hiddenSeries": false,
+      "id": 4,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "max": true,
+        "min": true,
+        "rightSide": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "percentage": false,
+      "pluginVersion": "7.1.5",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": ":sas_launcher_pod_mem_working_set_bytes:{pod=~\"$pod\"}",
+          "hide": true,
+          "interval": "",
+          "intervalFactor": 4,
+          "legendFormat": "{{label_launcher_sas_com_username}}({{label_launcher_sas_com_requested_by_client}}) - {{pod}}",
+          "refId": "A"
+        },
+        {
+          "expr": "sum(:sas_launcher_pod_mem_working_set_bytes:{pod=~\"$pod\"}) by (node)",
+          "interval": "",
+          "intervalFactor": 4,
+          "legendFormat": "{{node}}",
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Memory Usage by Node",
+      "tooltip": {
+        "shared": true,
+        "sort": 2,
+        "value_type": "individual"
+      },
+      "transparent": true,
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "bytes",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "bytes",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": false
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "$datasource",
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 23
+      },
+      "hiddenSeries": false,
+      "id": 31,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "hideEmpty": false,
+        "hideZero": false,
+        "max": true,
+        "min": true,
+        "rightSide": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "percentage": false,
+      "pluginVersion": "7.1.5",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "sum(kube_pod_labels{pod=~\"$pod\"} + on (pod) group_right(label_launcher_sas_com_username) rate(container_fs_reads_bytes_total{container=\"\",pod=~\"$pod\"}[1m])) by (node)",
+          "hide": true,
+          "interval": "",
+          "legendFormat": "{{node}} - Reads",
+          "refId": "A"
+        },
+        {
+          "expr": "-sum(kube_pod_labels{pod=~\"$pod\"} + on (pod) group_right(label_launcher_sas_com_username) rate(container_fs_writes_bytes_total{container=\"\",pod=~\"$pod\"}[1m])) by (node)",
+          "hide": true,
+          "interval": "",
+          "legendFormat": "{{node}} - Writes",
+          "refId": "B"
+        },
+        {
+          "expr": "sum(rate(:sas_launcher_pod_fs_read_bytes_total:{pod=~\"$pod\"}[1m])) by (node)",
+          "hide": false,
+          "interval": "",
+          "intervalFactor": 4,
+          "legendFormat": "{{node}} - Reads",
+          "refId": "C"
+        },
+        {
+          "expr": "-sum(rate(:sas_launcher_pod_fs_write_bytes_total:{pod=~\"$pod\"}[1m])) by (node)",
+          "hide": false,
+          "interval": "",
+          "intervalFactor": 4,
+          "legendFormat": "{{node}} - Writes",
+          "refId": "D"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Filesystem I/O by Node",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "transparent": true,
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "decimals": null,
+          "format": "Bps",
+          "label": "",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "$datasource",
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 23
+      },
+      "hiddenSeries": false,
+      "id": 33,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "hideEmpty": false,
+        "hideZero": false,
+        "max": true,
+        "min": true,
+        "rightSide": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "percentage": false,
+      "pluginVersion": "7.1.5",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "sum(kube_pod_labels{pod=~\"$pod\"} + on (pod) group_right(label_launcher_sas_com_username) rate(container_network_receive_bytes_total{container=\"POD\",pod=~\"$pod\"}[1m])) by (node)",
+          "hide": true,
+          "interval": "",
+          "legendFormat": "{{node}} - Reads",
+          "refId": "A"
+        },
+        {
+          "expr": "-sum(kube_pod_labels{pod=~\"$pod\"} + on (pod) group_right(label_launcher_sas_com_username) rate(container_network_transmit_bytes_total{container=\"POD\",pod=~\"$pod\"}[1m])) by (node))",
+          "hide": true,
+          "interval": "",
+          "legendFormat": "{{node}} - Writes",
+          "refId": "B"
+        },
+        {
+          "expr": "sum(rate(:sas_launcher_pod_net_receive_bytes_total:{pod=~\"$pod\"}[1m])) by (node)",
+          "interval": "",
+          "intervalFactor": 4,
+          "legendFormat": "{{node}} - Receive",
+          "refId": "C"
+        },
+        {
+          "expr": "-sum(rate(:sas_launcher_pod_net_transmit_bytes_total:{pod=~\"$pod\"}[1m])) by (node)",
+          "interval": "",
+          "intervalFactor": 4,
+          "legendFormat": "{{node}} - Transmit",
+          "refId": "D"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Network I/O by Node",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "transparent": true,
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "decimals": 1,
+          "format": "Bps",
+          "label": "",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "collapsed": true,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 32
+      },
+      "id": 29,
+      "panels": [
+        {
+          "datasource": "$datasource",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "align": null
+              },
+              "decimals": 2,
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Value #B"
+                },
+                "properties": [
+                  {
+                    "id": "unit",
+                    "value": "bytes"
+                  },
+                  {
+                    "id": "displayName",
+                    "value": "Memory Usage"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Value #A"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "CPU Usage"
+                  },
+                  {
+                    "id": "displayName",
+                    "value": "CPU Usage"
+                  },
+                  {
+                    "id": "unit",
+                    "value": "cores"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "label_launcher_sas_com_requested_by_client"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "Client"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "label_launcher_sas_com_username"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "User"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Value #C"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "% CPU Limit"
+                  },
+                  {
+                    "id": "unit",
+                    "value": "percentunit"
+                  },
+                  {
+                    "id": "custom.displayMode",
+                    "value": "color-background"
+                  },
+                  {
+                    "id": "thresholds",
+                    "value": {
+                      "mode": "absolute",
+                      "steps": [
+                        {
+                          "color": "green",
+                          "value": null
+                        },
+                        {
+                          "color": "yellow",
+                          "value": 0.75
+                        },
+                        {
+                          "color": "red",
+                          "value": 0.9
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Value #D"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "% Mem Limit"
+                  },
+                  {
+                    "id": "unit",
+                    "value": "percentunit"
+                  },
+                  {
+                    "id": "thresholds",
+                    "value": {
+                      "mode": "absolute",
+                      "steps": [
+                        {
+                          "color": "green",
+                          "value": null
+                        },
+                        {
+                          "color": "yellow",
+                          "value": 0.75
+                        },
+                        {
+                          "color": "red",
+                          "value": 0.9
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "custom.displayMode",
+                    "value": "color-background"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "% CPU Limit"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 122
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "% Mem Limit"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 131
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "pod"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 471
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Client"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 162
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "label_launcher_sas_com_job_type"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 169
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "label_launcher_sas_com_job_type"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "Job Type"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "namespace"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 173
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Job Type"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 153
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "User"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 150
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Memory Usage"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 125
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "CPU Usage"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 109
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 33
+          },
+          "id": 22,
+          "interval": "",
+          "options": {
+            "showHeader": true,
+            "sortBy": [
+              {
+                "desc": true,
+                "displayName": "% Mem Limit"
+              }
+            ]
+          },
+          "pluginVersion": "7.1.5",
+          "targets": [
+            {
+              "expr": ":sas_launcher_pod_cpu_core_usage:{phase=~\"Pending|Running\",pod=~\"$pod\"}",
+              "format": "table",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "legendFormat": "",
+              "refId": "A"
+            },
+            {
+              "expr": ":sas_launcher_pod_mem_working_set_bytes:{phase=~\"Pending|Running\",pod=~\"$pod\"}",
+              "format": "table",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "legendFormat": "",
+              "refId": "B"
+            },
+            {
+              "expr": "sum(:sas_launcher_pod_cpu_core_usage:{phase=~\"Pending|Running\",pod=~\"$pod\"}) by (pod,namespace) / sum(kube_pod_container_resource_limits{resource=\"cpu\",pod=~\"$pod\"}) by (pod,namespace)",
+              "format": "table",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "legendFormat": "",
+              "refId": "C"
+            },
+            {
+              "expr": "sum(:sas_launcher_pod_mem_working_set_bytes:{phase=~\"Pending|Running\",pod=~\"$pod\"}) by (pod,namespace) / sum(kube_pod_container_resource_limits{resource=\"memory\",pod=~\"$pod\"}) by (pod,namespace)",
+              "format": "table",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "legendFormat": "",
+              "refId": "D"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Active Jobs",
+          "transformations": [
+            {
+              "id": "filterFieldsByName",
+              "options": {
+                "include": {
+                  "names": [
+                    "namespace",
+                    "pod",
+                    "Value #A",
+                    "Value #B",
+                    "label_launcher_sas_com_username",
+                    "label_launcher_sas_com_requested_by_client",
+                    "label_launcher_sas_com_job_type",
+                    "Value #D",
+                    "Value #C"
+                  ]
+                }
+              }
+            },
+            {
+              "id": "merge",
+              "options": {}
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "indexByName": {
+                  "Value #A": 5,
+                  "Value #B": 7,
+                  "Value #C": 6,
+                  "Value #D": 8,
+                  "label_launcher_sas_com_job_type": 2,
+                  "label_launcher_sas_com_requested_by_client": 3,
+                  "label_launcher_sas_com_username": 4,
+                  "namespace": 0,
+                  "pod": 1
+                },
+                "renameByName": {}
+              }
+            }
+          ],
+          "transparent": true,
+          "type": "table"
+        }
+      ],
+      "title": "Active Job Details",
+      "type": "row"
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 26,
+  "style": "dark",
+  "tags": [
+    "sas-viya"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": false,
+          "text": "Prometheus",
+          "value": "Prometheus"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "label": "Datasource",
+        "multi": false,
+        "name": "datasource",
+        "options": [],
+        "query": "prometheus",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      },
+      {
+        "allValue": null,
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": "$datasource",
+        "definition": "label_values(kube_service_info{service=\"sas-launcher\"},namespace)",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Namespace",
+        "multi": true,
+        "name": "namespace",
+        "options": [],
+        "query": "label_values(kube_service_info{service=\"sas-launcher\"},namespace)",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": "$datasource",
+        "definition": "label_values(kube_node_info,node)",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Node",
+        "multi": true,
+        "name": "node",
+        "options": [],
+        "query": "label_values(kube_node_info,node)",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": [
+            "$__all"
+          ]
+        },
+        "hide": 0,
+        "includeAll": true,
+        "label": "Job Type",
+        "multi": true,
+        "name": "jobType",
+        "options": [
+          {
+            "selected": true,
+            "text": "All",
+            "value": "$__all"
+          },
+          {
+            "selected": false,
+            "text": "sas-batch-job",
+            "value": "sas-batch-job"
+          },
+          {
+            "selected": false,
+            "text": "compute-server",
+            "value": "compute-server"
+          },
+          {
+            "selected": false,
+            "text": "sas-launcher-job",
+            "value": "sas-launcher-job"
+          }
+        ],
+        "query": "sas-batch-job,compute-server,sas-launcher-job",
+        "queryValue": "",
+        "skipUrlSync": false,
+        "type": "custom"
+      },
+      {
+        "allValue": null,
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": "$datasource",
+        "definition": "label_values({namespace=~\"$namespace\"},label_launcher_sas_com_username)",
+        "hide": 0,
+        "includeAll": true,
+        "label": "User",
+        "multi": true,
+        "name": "user",
+        "options": [],
+        "query": "label_values({namespace=~\"$namespace\"},label_launcher_sas_com_username)",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": "",
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": "$datasource",
+        "definition": "label_values(:sas_launcher_pod_info:{node=~\"$node\",namespace=~\"$namespace\", label_launcher_sas_com_job_type=~\"$jobType\",label_launcher_sas_com_username=~\"$user\",label_job_name=~\"sas-launcher-.+-.+-.+-.+-.+\"},pod)",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Job",
+        "multi": true,
+        "name": "pod",
+        "options": [],
+        "query": "label_values(:sas_launcher_pod_info:{node=~\"$node\",namespace=~\"$namespace\", label_launcher_sas_com_job_type=~\"$jobType\",label_launcher_sas_com_username=~\"$user\",label_job_name=~\"sas-launcher-.+-.+-.+-.+-.+\"},pod)",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      }
+    ]
+  },
+  "time": {
+    "from": "now-3h",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ]
+  },
+  "timezone": "",
+  "title": "SAS Launched Jobs - Node Activity",
+  "uid": "aBDyaKNGk",
+  "version": 2
+}

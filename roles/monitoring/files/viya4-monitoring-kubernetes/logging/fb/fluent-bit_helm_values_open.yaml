@@ -1,0 +1,55 @@
+image:
+  fluent_bit:
+    tag: 1.5.4
+podAnnotations: 
+  fluentbit.io/parser: fluentbit
+backend:
+  type: es 
+  es:
+    #currently ignored/overwritten by configmap
+    host: v4m-es-client-service
+    http_user: foo
+    http_passwd: bar
+    tls: "on"
+    tls_verify: "off"
+    tls_debug: 2
+metrics:
+  enabled: true
+  service:
+    port: 2020
+  serviceMonitor:
+    enabled: false
+extraVolumeMounts:
+- mountPath: /data01/var/lib/docker/containers
+  name: data01containers
+  readOnly: true
+- mountPath: /fluent-bit/etc/viya-parsers.conf
+  name: parsers-config
+  subPath: viya-parsers.conf
+extraVolumes:
+- hostPath:
+    path: /data01/var/lib/docker/containers
+    type: ""
+  name: data01containers
+- configMap:
+    defaultMode: 420
+    name: fb-viya-parsers
+  name: parsers-config
+fullConfigMap: false
+existingConfigMap: fb-fluent-bit-config
+
+env:
+   - name: ES_LOGCOLLECTOR_USER
+     valueFrom:
+       secretKeyRef:
+         name: internal-user-logcollector
+         key: username
+   - name: ES_LOGCOLLECTOR_PASSWD
+     valueFrom:
+       secretKeyRef:
+         name: internal-user-logcollector
+         key: password
+
+# Be very tolerant
+tolerations:
+- operator: "Exists"

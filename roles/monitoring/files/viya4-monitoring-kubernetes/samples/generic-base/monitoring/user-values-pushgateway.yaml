@@ -1,0 +1,11 @@
+# Chart: https://github.com/helm/charts/tree/master/stable/prometheus-pushgateway
+# Default values: https://github.com/helm/charts/blob/master/stable/prometheus-pushgateway/values.yaml
+
+# image:
+#   repository: prom/pushgateway
+#   tag: v1.2.0
+
+# persistentVolume:
+#   enabled: true
+#   size: 2Gi
+#   storageClass: myStorageClass
