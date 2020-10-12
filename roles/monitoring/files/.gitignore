@@ -1,0 +1,6 @@
+*_gen.yaml
+.DS_Store
+tmp/
+*-tmp.yaml
+user-dir/
+user-dir-*/

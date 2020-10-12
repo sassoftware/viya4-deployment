@@ -1,0 +1,29 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+    sas.com/monitoring-base: kube-viya-monitoring
+  name: sas-launcher-job-rules
+spec:
+  groups:
+  - name: sas-launcher-job.rules
+    interval: 8s
+    rules:
+    - expr: sum(kube_pod_labels{pod=~"sas-launcher-.+-.+-.+-.+"} * on (namespace, pod) group_left(created_by_kind,created_by_name,priority_class,node) kube_pod_info{pod=~"sas-launcher-.+-.+-.+-.+"}) without(endpoint,instance,job,service,uid)
+      record: ':sas_launcher_pod_info:'
+    - expr: sum(:sas_launcher_pod_info:* on (namespace, pod) group_left(phase) (kube_pod_status_phase{pod=~"sas-launcher-.+-.+-.+-.+"}==1)) without (endpoint,instance,job,service)
+      record: ':sas_launcher_pod_status:'
+    - expr: :sas_launcher_pod_status:{phase="Running"} * on (namespace,pod) group_left sum(rate(container_cpu_usage_seconds_total{container="",cpu="total"}[1m])) by (namespace,pod)
+      record: ':sas_launcher_pod_cpu_core_usage:'
+    - expr: :sas_launcher_pod_status:{phase="Running"} * on (namespace,pod) group_left sum(container_memory_working_set_bytes{container=""}) by (namespace,pod)
+      record: ':sas_launcher_pod_mem_working_set_bytes:'
+    - expr: :sas_launcher_pod_status:{phase="Running"} * on (namespace,pod) group_left sum(container_memory_usage_bytes{container=""}) by (namespace,pod)
+      record: ':sas_launcher_pod_mem_usage_bytes:'
+    - expr: :sas_launcher_pod_status:{phase="Running"} * on (namespace,pod) group_left sum(container_fs_reads_bytes_total{container!=""}) by (namespace,pod)
+      record: ':sas_launcher_pod_fs_read_bytes_total:'
+    - expr: :sas_launcher_pod_status:{phase="Running"} * on (namespace,pod) group_left sum(container_fs_writes_bytes_total{container!=""}) by (namespace,pod)
+      record: ':sas_launcher_pod_fs_write_bytes_total:'
+    - expr: :sas_launcher_pod_status:{phase="Running"} * on (namespace,pod) group_left sum(container_network_receive_bytes_total{container="POD"}) by (namespace,pod)
+      record: ':sas_launcher_pod_net_receive_bytes_total:'
+    - expr: :sas_launcher_pod_status:{phase="Running"} * on (namespace,pod) group_left sum(container_network_transmit_bytes_total{container="POD"}) by (namespace,pod)
+      record: ':sas_launcher_pod_net_transmit_bytes_total:'

@@ -1,0 +1,19 @@
+apiVersion: 1
+
+datasources:
+- name: Elastic
+  type: elasticsearch
+  access: proxy
+  database: kubernetes_cluster-*
+  url: https://v4m-es-client-service.logging:9200
+  basicAuth: true
+  basicAuthUser: admin
+  jsonData:
+    tlsSkipVerify: true
+    timeField: "@timestamp"
+    esVersion: 70
+    logMessageField: message
+    logLevelField: level
+  secureJsonData:
+    basicAuthPassword: admin
+  editable: true

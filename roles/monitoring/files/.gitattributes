@@ -1,0 +1,19 @@
+# Linux
+*.sh text eol=lf
+
+# Windows
+*.bat text eol=crlf
+*.ps1 text eol=crlf
+
+# Set default behavior in case core.autocrlf set
+* text=auto
+*.xml text
+*.md text
+*.txt text
+
+*.gif binary
+*.png binary
+*.jpg binary
+*.pdf binary
+*.exe binary
+*.jar binary

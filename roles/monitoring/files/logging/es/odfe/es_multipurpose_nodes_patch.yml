@@ -1,0 +1,17 @@
+spec:
+  template:
+    metadata:
+      labels:
+        esclient: "true"
+        esdata: "true"
+    spec:
+      containers:
+      - name: elasticsearch
+        env:
+        - name: "node.master"
+          value: "true"
+        - name: "node.data"
+          value: "true"
+        - name: "node.ingest"
+          value: "true"
+

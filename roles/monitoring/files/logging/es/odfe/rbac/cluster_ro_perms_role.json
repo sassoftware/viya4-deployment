@@ -1,0 +1,7 @@
+{
+  "index_permissions": [],
+  "tenant_permissions": [],
+  "cluster_permissions": [
+    "cluster_composite_ops_ro"
+  ]
+}

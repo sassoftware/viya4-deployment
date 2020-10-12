@@ -1,0 +1,8 @@
+{
+  "password": "xxPASSWORDxx",
+  "backend_roles": ["xxNAMESPACExx_kibana_users"],
+  "attributes": {
+    "createdBy": "xxCREATEDBYxx",
+    "createdDate": "xxDATETIMExx"
+  }
+}

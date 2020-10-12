@@ -1,0 +1,18 @@
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: alertmanager-tls-cert
+spec:
+  commonName: alertmanager
+  dnsNames:
+  - localhost
+  - prometheus-operator-alertmanager
+  issuerRef:
+    kind: Issuer
+    name: namespace-issuer
+  secretName: alertmanager-tls-secret
+  usages:
+  - digital signature
+  - key encipherment
+  - server auth
+  - client auth

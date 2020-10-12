@@ -1,0 +1,15 @@
+{
+  "cluster_permissions": [],
+  "index_permissions": [
+    {
+      "index_patterns": [
+        "xxIDXPREFIXxx-xxNAMESPACExx-*"
+      ],
+      "dls": "",
+      "fls": [],
+      "masked_fields": [],
+      "allowed_actions": ["search"]
+    }
+  ],
+  "tenant_permissions": []
+}

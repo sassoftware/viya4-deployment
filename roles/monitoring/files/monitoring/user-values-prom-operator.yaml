@@ -1,0 +1,71 @@
+# Place overrides for the Prometheus Operator Helm Chart Here
+
+# Chart: https://github.com/helm/charts/blob/master/stable/prometheus-operator/README.md
+# Default values: https://github.com/helm/charts/blob/master/stable/prometheus-operator/values.yaml
+
+# Subcharts ued by the Prometheus Operator chart
+# Grafana
+# https://github.com/helm/charts/tree/master/stable/grafana#configuration
+# https://grafana.com/
+
+# Prometheus Node Exporter
+# https://github.com/prometheus/node_exporter
+# https://github.com/helm/charts/tree/master/stable/prometheus-node-exporter
+
+# kube-state-metrics
+# https://github.com/kubernetes/kube-state-metrics
+# https://github.com/helm/charts/tree/master/stable/kube-state-metrics
+
+# Custom Resource Definitions for the Prometheus Operator
+# https://github.com/coreos/prometheus-operator/blob/master/Documentation/api.md
+
+# All 'enabled' values default to true. Set the respective 'enabled' value to
+# false to disable deployment of that component.
+
+# Setting the 'externalUrl', 'domain' and 'root_url' values is optional, but will
+# ensure cross-component (e.g. Grafana->Prometheus) and alert links are correct.
+
+# prometheusOperator:
+#   enabled: true
+
+# kubelet:
+  # serviceMonitor:
+    # Default to use the https-metrics endpoint
+    # Depending on your environment, this may require configuration
+    # changes to the kubelet.
+    # See issue: https://github.com/coreos/prometheus-operator/issues/926
+    # https: true
+
+# prometheus:
+#   enabled: true
+#   prometheusSpec:
+#     externalUrl: http://host.mycluster.example.com:31090
+#      storageSpec:
+#        volumeClaimTemplate:
+#          spec:
+#            storageClassName: myCustomStorageClass
+
+
+# alertmanager:
+#   enabled:true
+#   alertManagerSpec:
+#     externalUrl: http://host.mycluster.example.com:31091
+#      storage:
+#        volumeClaimTemplate:
+#          spec:
+#            storageClassName: myCustomStorageClass
+
+# grafana:
+#   enabled: true
+#   adminPassword: yourSecretPasswordHere
+#   "grafana.ini":
+#     # Specifying domain and root_url will create the correct links in alert notifications
+#     server:
+#       domain: host.mycluster.example.com
+#       # This value should change to ingress host/port/path if configured
+#       root_url: http://host.mycluster.example.com:31100/
+#   persistence:
+#     storageClassName: myCustomStorageClass
+
+# nodeExporter:
+#   enabled: true

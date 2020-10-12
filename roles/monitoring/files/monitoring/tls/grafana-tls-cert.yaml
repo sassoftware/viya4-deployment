@@ -1,0 +1,18 @@
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: grafana-tls-cert
+spec:
+  commonName: grafana
+  dnsNames:
+  - localhost
+  - prometheus-operator-grafana
+  issuerRef:
+    kind: Issuer
+    name: namespace-issuer
+  secretName: grafana-tls-secret
+  usages:
+  - digital signature
+  - key encipherment
+  - server auth
+  - client auth

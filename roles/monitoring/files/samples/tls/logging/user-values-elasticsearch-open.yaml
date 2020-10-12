@@ -1,0 +1,29 @@
+kibana:
+  service:
+    type: ClusterIP
+    nodePort: null
+  ingress:
+    # annotations:
+    #   nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+    enabled: true
+    path: /
+    hosts:
+    - kibana.logging.host.cluster.example.com
+    tls:
+    - secretName: kibana-ingress-tls-secret
+      hosts:
+      - kibana.logging.host.cluster.example.com
+
+elasticsearch:
+  client:
+    ingress:
+      annotations:
+        nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+      enabled: true
+      path: /
+      hosts:
+      - elasticsearch.logging.host.cluster.example.com
+      tls:
+      - secretName: elasticsearch-ingress-tls-secret
+        hosts:
+        - elasticsearch.logging.host.cluster.example.com
