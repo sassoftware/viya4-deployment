@@ -1,13 +1,4 @@
 ---
-# - name: Add helm repo
-#   community.kubernetes.helm_repository:
-#     repo_name: stable
-#     repo_url: https://kubernetes-charts.storage.googleapis.com/
-#   tags:
-#     - install
-#     - uninstall
-#     - upgrade
-
 - name: Create tmpdir
   tempfile:
     state: directory
@@ -17,28 +8,28 @@
     - uninstall
     - upgrade
 
-- name: Download viya4-monitoring-kubernetes
-  git:
-    repo: https://github.com/sassoftware/viya4-monitoring-kubernetes.git
-    dest: "{{ tmpdir.path }}"
-    version: 0.1.0
-  tags:
-    - install
-    - uninstall
-    - upgrade
+# - name: Download viya4-monitoring-kubernetes
+#   git:
+#     repo: https://github.com/sassoftware/viya4-monitoring-kubernetes.git
+#     dest: "{{ tmpdir.path }}"
+#     version: 0.1.0
+#   tags:
+#     - install
+#     - uninstall
+#     - upgrade
 
 - name: Include cluster monitoring
-  include_tasks: cluster.yaml
+  include_tasks: cluster-monitoring.yaml
   tags:
     - cluster-monitoring
 
 - name: Include viya monitoring
-  include_tasks: viya.yaml
+  include_tasks: viya-monitoring.yaml
   tags:
     - viya-monitoring
 
 - name: Include cluster logging
-  include_tasks: logging.yaml
+  include_tasks: cluster-logging.yaml
   tags:
     - cluster-logging
 

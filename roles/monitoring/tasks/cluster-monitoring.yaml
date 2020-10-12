@@ -10,7 +10,7 @@
 
 - name: Deploy cluster monitoring
   shell:
-    cmd: "{{ tmpdir.path }}/monitoring/bin/deploy_monitoring_cluster.sh"
+    cmd: "{{ role_path }}/files/viya4-monitoring-kubernetes/monitoring/bin/deploy_monitoring_cluster.sh"
   environment:
     TLS_ENABLE: "{{ tls_enable }}"
     PROM_OPER_USER_YAML: "{{ tmpdir.path }}/user-values.yaml"
@@ -22,7 +22,7 @@
 
 - name: Remove cluster monitoring
   shell:
-    cmd: "{{ tmpdir.path }}/monitoring/bin/remove_monitoring_cluster.sh"
+    cmd: "{{ role_path }}/files/viya4-monitoring-kubernetes/monitoring/bin/remove_monitoring_cluster.sh"
   environment:
     TLS_ENABLE: "{{ tls_enable }}"
     PROM_OPER_USER_YAML: "{{ tmpdir.path }}/user-values.yaml"
