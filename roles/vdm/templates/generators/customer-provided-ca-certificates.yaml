@@ -1,0 +1,9 @@
+apiVersion: builtin
+kind: ConfigMapGenerator
+metadata:
+  name: sas-customer-provided-ca-certificates
+behavior: merge
+files:
+{% for cacert in V4_CFG_TLS_TRUSTED_CA_CERTS %}
+  - cacerts{{loop.index}}.pem={{cacert}}
+{% endfor %}

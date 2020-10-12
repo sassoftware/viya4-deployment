@@ -23,7 +23,7 @@ V4_CFG_CR_PASSWORD: <container_registry_password>
 ## Ingress
 V4_CFG_INGRESS_TYPE: ingress
 V4_CFG_INGRESS_NAME: <desired_fqdn>
-V4_CFG_CONFIGURE_TLS: false
+V4_CFG_TLS_MODE: "full-stack" # [full-stack|front-door|disabled]
 
 V4_CFG_POSTGRES_TYPE: external
 ## If you wish to use the internal cruchy database instead of Azure Postgres 

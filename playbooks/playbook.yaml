@@ -65,7 +65,7 @@
       include_role:
         name: monitoring
       vars:
-        tls_enable: "{{ V4_CFG_CONFIGURE_TLS |default(False,1) }}"
+        tls_enable: "{{ V4_CFG_TLS_MODE != 'disabled' }}"
         base_domain: "{{ V4_CFG_BASE_DOMAIN }}"
         namespace: "{{ NAMESPACE }}"
       tags:

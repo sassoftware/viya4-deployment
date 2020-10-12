@@ -1,6 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
+  annotations: {} # empty here allows multiple transformers to add annotations as necessary without clobbering each other
   name: sas-connect-spawner-loadbalancer
 spec:
   ports:
