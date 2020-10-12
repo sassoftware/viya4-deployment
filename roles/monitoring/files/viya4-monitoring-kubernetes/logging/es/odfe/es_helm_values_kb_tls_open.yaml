@@ -1,0 +1,18 @@
+# Chart: https://github.com/opendistro-for-elasticsearch/opendistro-build/tree/master/helm
+# Default values: https://github.com/opendistro-for-elasticsearch/opendistro-build/blob/master/helm/opendistro-es/values.yaml
+
+# This chart sets values to: REQUIRE HTTPS TO KIBANA
+
+kibana:
+  config:
+    # Kibana TLS Config
+    server.ssl.enabled: true
+    server.ssl.key: /usr/share/kibana/certs/kibana-key.pem
+    server.ssl.certificate: /usr/share/kibana/certs/kibana-crt.pem
+  ssl:
+    kibana:
+      enabled: true
+      existingCertSecret: kibana-tls-secret
+      existingCertSecretCertSubPath: tls.crt
+      existingCertSecretKeySubPath: tls.key
+      existingCertSecretRootCASubPath: ca.crt

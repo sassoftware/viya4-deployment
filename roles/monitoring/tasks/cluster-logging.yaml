@@ -10,7 +10,7 @@
 
 - name: Deploy cluster logging
   shell:
-    cmd: "{{ tmpdir.path }}/logging/bin/deploy_logging_open.sh"
+    cmd: "{{ role_path }}/files/viya4-monitoring-kubernetes/logging/bin/deploy_logging_open.sh"
   environment:
     TLS_ENABLE: "{{ tls_enable }}"
     ES_OPEN_USER_YAML: "{{ tmpdir.path }}/user-values.yaml"
@@ -23,7 +23,7 @@
 
 - name: Remove cluster logging
   shell:
-    cmd: "{{ tmpdir.path }}/logging/bin/remove_logging_open.sh"
+    cmd: "{{ role_path }}/files/viya4-monitoring-kubernetes/logging/bin/remove_logging_open.sh"
   environment:
     TLS_ENABLE: "{{ tls_enable }}"
     ES_OPEN_USER_YAML: "{{ tmpdir.path }}/user-values.yaml"

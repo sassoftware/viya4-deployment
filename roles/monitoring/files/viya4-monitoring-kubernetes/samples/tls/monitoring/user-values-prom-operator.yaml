@@ -1,0 +1,65 @@
+prometheus:
+  # Disable default configuration of NodePort
+  service:
+    type: ClusterIP
+    port: 443
+    targetPort: 443
+    nodePort: null
+  # Define host-based ingress
+  ingress:
+    annotations:
+      nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+    enabled: true
+    tls:
+    - hosts:
+      - prometheus.monitoring.host.cluster.example.com
+      secretName: prometheus-ingress-tls-secret
+    hosts:
+    - prometheus.monitoring.host.cluster.example.com
+  prometheusSpec:
+    # routePrefix: /prometheus
+    externalUrl: https://prometheus.monitoring.host.cluster.example.com
+
+alertmanager:
+  # Disable default configuration of NodePort
+  service:
+    type: ClusterIP
+    nodePort: null
+  # Define host-based ingress
+  ingress:
+    enabled: true
+    tls:
+    - hosts:
+      - alertmanager.monitoring.host.cluster.example.com
+      secretName: alertmanager-ingress-tls-secret
+    hosts:
+    - alertmanager.monitoring.host.cluster.example.com
+  alertmanagerSpec:
+    # routePrefix: /alertmanager
+    externalUrl: https://alertmanager.monitoring.host.cluster.example.com
+
+grafana:
+  image:
+    tag: "7.0.3"
+  # Disable default configuration of NodePort
+  service:
+    type: ClusterIP
+    nodePort: null
+  # Define host-based ingress
+  ingress:
+    annotations:
+      nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+      # nginx.ingress.kubernetes.io/rewrite-target: "/grafana"
+    enabled: true
+    tls:
+    - hosts:
+      - grafana.monitoring.host.cluster.example.com
+      secretName: grafana-ingress-tls-secret
+    hosts:
+    - grafana.monitoring.host.cluster.example.com
+    path: /
+  "grafana.ini":
+    server:
+      domain: monitoring.host.cluster.example.com
+      root_url: https://grafana.monitoring.host.cluster.example.com
+      serve_from_sub_path: false

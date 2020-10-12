@@ -1,0 +1,24 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: pushgateway
+  labels:
+    sas.com/monitoring-base: kube-viya-monitoring
+spec:
+  selector:
+    matchLabels:
+      app: prometheus-pushgateway
+  endpoints:
+  - port: http
+  - relabelings:
+    - sourceLabels: [__meta_kubernetes_pod_annotation_sas_com_tls_enabled_ports]
+      action: replace
+      regex: all|.*http.*
+      targetLabel: __scheme__
+      replacement: https
+    - sourceLabels: [__meta_kubernetes_service_annotation_prometheus_io_scheme]
+      action: replace
+      regex: (https?)
+      targetLabel: __scheme__
+    tlsConfig:
+      insecureSkipVerify: true

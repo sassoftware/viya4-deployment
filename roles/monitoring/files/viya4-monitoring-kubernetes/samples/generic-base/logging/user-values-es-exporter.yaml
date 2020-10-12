@@ -1,0 +1,9 @@
+# Chart: https://github.com/helm/charts/tree/master/stable/elasticsearch-exporter
+# Default values: https://github.com/helm/charts/blob/master/stable/elasticsearch-exporter/values.yaml
+
+# image:
+#   repository: justwatch/elasticsearch_exporter
+#   tag: 1.1.0
+
+# es:
+#   uri: https://admin:admin@v4m-es-client-service.logging:9200

@@ -1,0 +1,6 @@
+{
+    "backend_roles" : [
+      "xxNAMESPACExx_kibana_users",
+      "xxNAMESPACExx_kibana_ro_users"
+    ]
+}
