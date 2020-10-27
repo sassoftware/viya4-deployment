@@ -52,7 +52,6 @@
       - "{{ VDM_GENERATORS_PATH }}/sas-image-pull-secrets.yaml"
       - "{{ VDM_GENERATORS_PATH }}/sas-consul-config.yaml"
     transformers:
-      - "{{ BUNDLE_ROOT }}/overlays/required/transformers.yaml"
       - "{{ VDM_TRANSFORMERS_PATH }}/rabbitmq-transformer.yaml"
       - "{{ VDM_TRANSFORMERS_PATH }}/stateless-affinity.yaml"
       - "{{ VDM_TRANSFORMERS_PATH }}/stateful-affinity.yaml"
@@ -153,6 +152,21 @@
 
 - name: Include Ingress Tasks
   include_tasks: ingress.yaml
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+# NOTE: Transformer application order matters, this transformer must go after the ingress TLS transformers are applied as it
+# modifies the behavior of the sas-certframe init container when customer supplied certificates are applied.
+- name: Configure Customer Provided Server Certificates for SAS/CONNECT
+  include_tasks: vdm_loader.yaml
+  vars:
+    transformers: 
+      - "{{ VDM_TRANSFORMERS_PATH }}/sas-connect-customer-provided-ingress-certificate-tls-certframe-transformer.yaml"
+  when:
+    - V4_CFG_TLS_MODE != "disabled"
+    - V4_CFG_TLS_CERT is not none
   tags:
     - install
     - uninstall

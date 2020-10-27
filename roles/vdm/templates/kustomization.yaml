@@ -37,6 +37,8 @@ transformers:
   - {{ item }}
 {% endfor %}
 
+  ## required transformers must be last so that image names added by other transformers are adjusted to have registry and version specified
+  - "{{BUNDLE_ROOT }}/overlays/required/transformers.yaml"
 
 generators:
   ## vdm defined generators

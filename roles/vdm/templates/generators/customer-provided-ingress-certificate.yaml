@@ -1,0 +1,9 @@
+---
+apiVersion: builtin
+kind: SecretGenerator
+metadata:
+  name: sas-ingress-certificate
+files:
+  - tls.crt={{ V4_CFG_TLS_CERT }}
+  - tls.key={{ V4_CFG_TLS_KEY }}
+type: "kubernetes.io/tls"

@@ -58,7 +58,6 @@
   include_role: 
     name: cert-manager
   when:
-    - V4_CFG_CONFIGURE_TLS is defined
-    - V4_CFG_CONFIGURE_TLS
+    - V4_CFG_TLS_MODE != "disabled"
   tags:
     - baseline

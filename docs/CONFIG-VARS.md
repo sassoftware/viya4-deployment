@@ -15,6 +15,7 @@ Supported configuration variables are listed in the table below.  All variables 
 - [Ingress](#ingress)
 - [Monitoring and Logging](#monitoring-and-logging)
 - [TLS](#tls)
+  - [cert-manager](#cert-manager)
 - [Postgres](#postgres)
 - [LDAP / Consul](#ldap--consul)
 - [CAS](#cas)
@@ -111,7 +112,20 @@ When setting V4_CFG_MANAGE_STORAGE to true, two new storage classes will be crea
 
 | Name | Description | Type | Default | Required | Notes | Actions |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_CONFIGURE_TLS | Install cert-manager | bool | false | false | This also enables tls form monitoring/logging stack | all |
+| V4_CFG_TLS_MODE | Which TLS mode to configure | string | full-stack | false | Valid values are full-stack, front-door and disabled. This also enables tls for monitoring/logging stack | all |
+| V4_CFG_TLS_CERT | Path to ingress certificate file | string | | false | If specified, used instead of cert-manager issued certificates | vdm |
+| V4_CFG_TLS_KEY | Path to ingress key file | string | | false | Required when V4_CFG_TLS_CERT is specified | vdm |
+| V4_CFG_TLS_TRUSTED_CA_CERTS | Paths to additional PEM encoded trusted CA certificates files | list of string | | false | Required when V4_CFG_TLS_CERT is specified. Must include all the CAs in the trust chain for V4_CFG_TLS_CERT. Can be used with or without V4_CFG_TLS_CERT to specify any additionally trusted CAs  | vdm |
+
+### cert-manager
+
+When setting V4_CFG_TLS_MODE to a value other than "disabled" and no V4_CFG_TLS_CERT is specified, cert-manager will be used to issue TLS certificates and the following variables can be set to modify cert-manager behavior:
+
+| Name | Description | Type | Default | Required | Notes | Actions |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
+| V4_CFG_CERT_MANAGER_CERTIFICATE_DURATION | Certificate time to expiry in hours | string | 17531h | false | vdm |
+| V4_CFG_CERT_MANAGER_CERTIFICATE_ADDITIONAL_SAN_DNS | A list of space separated, additional SAN DNS entries, specific to your ingress architecture, that you want added to certificates issued by the sas-viya-issuer.  For example, the aliases of an external load balancer | string | | false | vdm |
+| V4_CFG_CERT_MANAGER_CERTIFICATE_ADDITIONAL_SAN_IP | A list of space separated, additional SAN IP addresses, specific to your ingress architecture, that you want added to certificates issued by the sas-viya-issuer.  For example, the IP address of an external load balancer | string | | false | vdm |
 
 ## Postgres
 
@@ -150,3 +164,4 @@ When setting V4_CFG_MANAGE_STORAGE to true, two new storage classes will be crea
 | Name | Description | Type | Default | Required | Notes | Actions |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_ENABLE_CONNECT_LOADBALANCER | Setup LB to access SAS/CONNECT | bool | false | false | | vdm |
+| V4_CFG_CONNECT_FQDN | FQDN that will be assigned to access SAS/CONNECT | string | | false | Required when V4_CFG_TLS_MODE is not disabled and cert-manager is used to issue TLS certificates. This FQDN will be added to the SAN DNS list of the issued certificates. | vdm |
