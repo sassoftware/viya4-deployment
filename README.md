@@ -36,7 +36,7 @@ This tool supports running both from ansible installed on your local machine or 
 - unzip
 - tar
 - kubectl 1.18
-- kustomize 3.6
+- kustomize 3.7
 - python 3
 - pip 3
 - openshift pip module
