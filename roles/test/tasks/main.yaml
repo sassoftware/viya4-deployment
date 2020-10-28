@@ -2,10 +2,16 @@
 - include_tasks: vdm_loader.yaml
   vars:
     overlays:
+    - { resources: "{{BUNDLE_ROOT }}/base", priority: 0 }
     - { resources: "{{BUNDLE_ROOT }}/overlays/cas-server" }
+    - { resources: "{{BUNDLE_ROOT }}/overlays/network/{{V4_CFG_INGRESS_TYPE}}" }
     - { resources: "{{BUNDLE_ROOT }}/overlays/update-checker" }
-    - { configurations: "{{BUNDLE_ROOT }}/overlays/required/kustomizeconfig.yaml", priority: 9 }
-    - { transformers: "{{BUNDLE_ROOT }}/overlays/required/transformers.yaml", priority: 9 }
-    - { generators: "license.yaml" }
+    - { configurations: "{{BUNDLE_ROOT }}/overlays/required/kustomizeconfig.yaml", priority: 99 }
+    - { transformers: "{{BUNDLE_ROOT }}/overlays/required/transformers.yaml", priority: 25 }
+    - { generators: "{{ VDM_GENERATORS_PATH }}/sas-license.yaml" }
+    - { generators: "{{ VDM_GENERATORS_PATH }}/sas-shared-config.yaml" }
+    - { generators: "{{ VDM_GENERATORS_PATH }}/sas-consul-config.yaml" }
+    - { generators: "{{ VDM_GENERATORS_PATH }}/ingress-input.yaml" }
+    - { generators: "{{ VDM_GENERATORS_PATH }}/sas-image-pull-secrets.yaml" }
 
 - include_tasks: kustomization.yaml

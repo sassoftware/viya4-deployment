@@ -1,4 +1,16 @@
 - hosts: localhost
   connection: local
-  roles:
-    - test
+  # roles:
+  #   - test
+  tasks:
+    - name: Load config file
+      include_vars:
+        file: "{{ CONFIG }}"
+      when: CONFIG is defined
+      tags:
+        - vdm
+    - name: vdm role
+      include_role:
+        name: vdm
+      tags:
+        - vdm

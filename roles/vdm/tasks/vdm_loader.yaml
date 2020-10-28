@@ -1,28 +1,15 @@
-- name: Add Resources
-  set_fact:
-    vdm_resources: "{{ vdm_resources + [item] }}"
-  with_items: "{{resources}}"
-  when: resources is defined
+- name: Add Overlays
+  overlays:
+    add: "{{ overlays }}"
+    existing: "{{ vdm_overlays }}"
+  register: new_overlays
   tags:
     - install
     - uninstall
     - upgrade
 
-- name: Add Transformers
-  set_fact:
-    vdm_transformers: "{{ vdm_transformers + [item] }}"
-  with_items: "{{transformers}}"
-  when: transformers is defined
-  tags:
-    - install
-    - uninstall
-    - upgrade
-
-- name: Add Generators
-  set_fact:
-    vdm_generators: "{{ vdm_generators + [item] }}"
-  with_items: "{{generators}}"
-  when: generators is defined
+- set_fact:
+    vdm_overlays: "{{ new_overlays.result }}"
   tags:
     - install
     - uninstall

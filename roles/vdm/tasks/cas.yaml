@@ -1,0 +1,50 @@
+---
+- name: "cas - auto resources"
+  include_tasks: vdm_loader.yaml
+  vars:
+    overlays:
+      - { resources: "{{ BUNDLE_ROOT }}/overlays/cas-server/auto-resources", priority: 40 }
+      - { transformers: "{{ BUNDLE_ROOT }}/overlays/cas-server/auto-resources/remove-resources.yaml", priority: 60 }
+  when:
+    - V4_CFG_CAS_RAM is none or V4_CFG_CAS_CORES is none
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: "cas - user-defined resources"
+  include_tasks: vdm_loader.yaml
+  vars:
+    overlays:
+      - { transformers: "{{ VDM_TRANSFORMERS_PATH }}/cas-resources.yaml" }
+  when:
+    - V4_CFG_CAS_RAM is not none
+    - V4_CFG_CAS_CORES is not none
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: "cas - MPP workers"
+  include_tasks: vdm_loader.yaml
+  vars:
+    overlays:
+      - { transformers: "{{ VDM_TRANSFORMERS_PATH }}/cas-manage-workers.yaml" }
+  when:
+    - V4_CFG_CAS_WORKER_COUNT |int > 1
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: "cas - External services"
+  include_tasks: vdm_loader.yaml
+  vars:
+    overlays:
+      - { transformers: "{{ VDM_TRANSFORMERS_PATH }}/cas-enable-external-services.yaml" }
+  when:
+    - V4_CFG_CAS_ENABLE_EXTERNAL_SERVICES
+  tags:
+    - install
+    - uninstall
+    - upgrade

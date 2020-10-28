@@ -20,8 +20,7 @@ V4_CFG_NFS_SVR_PATH: '/export'
 V4_CFG_MAS_OS_BIN_NFS_HOST: "{{ V4_CFG_NFS_SVR_HOST }}"
 V4_CFG_MAS_OS_BIN_NFS_PATH: "{{ V4_CFG_NFS_SVR_PATH }}/bin"
 
-V4_CFG_RWO_STORAGE_CLASS: sas-rwo
-V4_CFG_RWX_STORAGE_CLASS: sas-rwx
+V4_CFG_STORAGECLASS: sas
 V4_CFG_MANAGE_STORAGE: false
 
 V4_CFG_POSTGRES_TYPE: internal
@@ -47,12 +46,14 @@ V4_CFG_ENABLE_CONSUL_UI: false
 
 MAS_OS_COPY: false
 
-V4_CFG_CAS_RAM_PER_NODE: null
-V4_CFG_CAS_CORES_PER_NODE: null
-V4_CFG_CAS_WORKER_QTY: null
-V4_CFG_CAS_NODE_COUNT: null
 
-V4_CFG_ENABLE_CONNECT_LOADBALANCER: false
+V4_CFG_CAS_RAM: null
+V4_CFG_CAS_CORES: null
+V4_CFG_CAS_WORKER_COUNT: 2
+V4_CFG_CAS_ENABLE_EXTERNAL_SERVICES: true
+
+
+V4_CFG_ENABLE_CONNECT_LOADBALANCER: true
 V4_CFG_CONNECT_FQDN: null
 
 # In theory the issuer name can be changed; however, there are a few overlays where this value is hard coded. See:
@@ -69,3 +70,22 @@ V4_CFG_CERT_MANAGER_CERTIFICATE_ADDITIONAL_SAN_IP: ""
 # SAS_TRANSFORMERS:
 # SAS_GENERATORS:
 # SAS_RESOURCES:
+
+vdm_overlays:
+  resources:
+    pre: {}
+    post: {}
+  configurations:
+    pre: {}
+    post: {}
+  generators: 
+    pre: {}
+    post: {}
+  transformers: 
+    pre: {}
+    post: {}
+
+
+
+BUNDLE_ROOT: sas-bases
+BASES_LOC: base

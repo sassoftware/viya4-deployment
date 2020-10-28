@@ -19,4 +19,4 @@
 - name: Generate kustomization.yaml
   template:
     src: "kustomization.yaml"
-    dest: "/tmp/kustomization.yaml"
+    dest: "{{ansible_env.HOME}}/Desktop/kustomization.yaml"

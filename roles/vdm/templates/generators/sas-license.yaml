@@ -1,0 +1,8 @@
+apiVersion: builtin
+kind: SecretGenerator
+metadata:
+  name: sas-license
+behavior: merge
+type: sas.com/license
+files:
+  - SAS_LICENSE=license.jwt

@@ -14,7 +14,7 @@ def main():
     if len(module.params['add']) > 0:
       for overlay in module.params['add']:
         priority = str(overlay.setdefault("priority", 1))
-        phase = "pre" if int(priority) < 5 else "post"
+        phase = "pre" if int(priority) < 50 else "post"
         overlay.pop("priority", None)
 
         overlay_type = list(overlay.keys())[0]

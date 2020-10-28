@@ -1,9 +1,9 @@
 ---
-- name: Configure load balancer for SAS/CONNECT
+- name: "connect - Loadbalancer "
   include_tasks: vdm_loader.yaml
   vars:
-    resources: 
-      - "{{ VDM_RESOURCES_PATH }}/sas-connect-spawner-enable-loadbalancer.yaml"
+    overlays:
+      - { resources: "{{ VDM_RESOURCES_PATH }}/sas-connect-spawner-enable-loadbalancer.yaml" }
   when: 
     - V4_CFG_ENABLE_CONNECT_LOADBALANCER
   tags:

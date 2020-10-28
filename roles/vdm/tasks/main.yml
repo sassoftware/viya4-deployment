@@ -1,132 +1,98 @@
 ---
-- name: Create tmp dir
-  tempfile:
-    state: directory
-    prefix: vdm
-  register: vdm_tmp_dir
-  tags:
-    - install
-    - uninstall
-    - upgrade
+# - name: Create tmp dir
+#   tempfile:
+#     state: directory
+#     prefix: vdm
+#   register: vdm_tmp_dir
+#   tags:
+#     - install
+#     - uninstall
+#     - upgrade
 
-- name: VDM folder struct
-  file:
-    state: directory
-    dest: '{{ DEPLOY_DIR }}/site-config/vdm/{{ item }}'
-  with_items:
-    - resources
-    - transformers
-    - generators
-  no_log: yes
-  tags:
-    - install
-    - uninstall
-    - upgrade
+# - name: VDM folder struct
+#   file:
+#     state: directory
+#     dest: '{{ DEPLOY_DIR }}/site-config/vdm/{{ item }}'
+#   with_items:
+#     - resources
+#     - transformers
+#     - generators
+#   no_log: yes
+#   tags:
+#     - install
+#     - uninstall
+#     - upgrade
 
-- name: Copy example sitedefault.yaml
-  copy:
-    src: files/sitedefault.yaml
-    dest: "{{ DEPLOY_DIR }}/site-config/sitedefault.yaml"
-  when: 
-    - SITEDEFAULT is not defined
-  tags:
-    - install
-    - uninstall
-    - upgrade
+# - name: Copy example sitedefault.yaml
+#   copy:
+#     src: files/sitedefault.yaml
+#     dest: "{{ DEPLOY_DIR }}/site-config/sitedefault.yaml"
+#   when: 
+#     - SITEDEFAULT is not defined
+#   tags:
+#     - install
+#     - uninstall
+#     - upgrade
 
-- name: Include Get Order Tasks
-  include_tasks: get-order.yaml
-  tags:
-    - install
-    - uninstall
-    - upgrade
+# - name: Include Get Order Tasks
+#   include_tasks: get-order.yaml
+#   tags:
+#     - install
+#     - uninstall
+#     - upgrade
 
 - include_tasks: vdm_loader.yaml
   vars:
-    resources: 
-      - "{{BUNDLE_ROOT}}/overlays/network/{{V4_CFG_INGRESS_TYPE}}"
-      - "{{BUNDLE_ROOT}}/overlays/cas-{{V4_CFG_CAS_SERVER_TYPE}}"
-    generators:
-      - "{{ VDM_GENERATORS_PATH }}/sas-shared-config.yaml"
-      - "{{ VDM_GENERATORS_PATH }}/ingress-input.yaml"
-      - "{{ VDM_GENERATORS_PATH }}/sas-image-pull-secrets.yaml"
-      - "{{ VDM_GENERATORS_PATH }}/sas-consul-config.yaml"
-    transformers:
-      - "{{ VDM_TRANSFORMERS_PATH }}/rabbitmq-transformer.yaml"
-      - "{{ VDM_TRANSFORMERS_PATH }}/stateless-affinity.yaml"
-      - "{{ VDM_TRANSFORMERS_PATH }}/stateful-affinity.yaml"
-      - "{{ VDM_TRANSFORMERS_PATH }}/compute-affinity.yaml"
-      - "{{ VDM_TRANSFORMERS_PATH }}/compute-podtemplate-affinity.yaml"
-      - "{{ VDM_TRANSFORMERS_PATH }}/cas-affinity.yaml"
-      - "{{ VDM_TRANSFORMERS_PATH }}/ss-storclass.yaml" # Fix
+    overlays:
+    - { resources: "{{BUNDLE_ROOT }}/base", priority: 0 }
+    - { resources: "{{BUNDLE_ROOT }}/overlays/cas-server" }
+    - { resources: "{{BUNDLE_ROOT }}/overlays/network/{{V4_CFG_INGRESS_TYPE}}" }
+    - { resources: "{{BUNDLE_ROOT }}/overlays/network/{{V4_CFG_INGRESS_TYPE}}/security" }
+    - { resources: "{{BUNDLE_ROOT }}/overlays/update-checker" }
+    - { configurations: "{{BUNDLE_ROOT }}/overlays/required/kustomizeconfig.yaml", priority: 99 }
+    - { transformers: "{{BUNDLE_ROOT }}/overlays/required/transformers.yaml", priority: 25 }
+    - { transformers: "{{VDM_TRANSFORMERS_PATH }}/sas-storageclass.yaml", priority: 90 }
+    - { generators: "{{ VDM_GENERATORS_PATH }}/sas-license.yaml" }
+    - { generators: "{{ VDM_GENERATORS_PATH }}/sas-shared-config.yaml" }
+    - { generators: "{{ VDM_GENERATORS_PATH }}/sas-consul-config.yaml" }
+    - { generators: "{{ VDM_GENERATORS_PATH }}/ingress-input.yaml" }
+    - { generators: "{{ VDM_GENERATORS_PATH }}/sas-image-pull-secrets.yaml" }
   tags:
     - install
     - uninstall
     - upgrade
 
-- name: Include Azure tasks
-  include_tasks: azure.yaml
+- name: Include CAS tasks
+  include_tasks: cas.yaml
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: Include Cloud tasks
+  include_tasks: cloud.yaml
   when:
-    - PROVIDER == 'azure'
+    - PROVIDER != 'custom'
   tags:
     - install
     - uninstall
     - upgrade
 
-- name: Include AWS tasks
-  include_tasks: aws.yaml
-  when:
-    - PROVIDER == 'aws'
-  tags:
-    - install
-    - uninstall
-    - upgrade
+# - name: CAS/Compute NFS mounts
+#   include_tasks: vdm_loader.yaml
+#   vars:
+#     transformers:
+#       - "{{ VDM_TRANSFORMERS_PATH }}/compute-template-nfs.yaml"
+#       - "{{ VDM_TRANSFORMERS_PATH }}/cas-transformer-volumes.yaml"
+#   when:
+#     - V4_CFG_NFS_SVR_HOST is not none
+#     - V4_CFG_NFS_SVR_PATH is not none
+#   tags:
+#     - install
+#     - uninstall
+#     - upgrade
 
-- name: Include GCP tasks
-  include_tasks: gcp.yaml
-  when:
-    - PROVIDER == 'gcp'
-  tags:
-    - install
-    - uninstall
-    - upgrade
-
-- name: CAS/Compute NFS mounts
-  include_tasks: vdm_loader.yaml
-  vars:
-    transformers:
-      - "{{ VDM_TRANSFORMERS_PATH }}/compute-template-nfs.yaml"
-      - "{{ VDM_TRANSFORMERS_PATH }}/cas-transformer-volumes.yaml"
-  when:
-    - V4_CFG_NFS_SVR_HOST is not none
-    - V4_CFG_NFS_SVR_PATH is not none
-  tags:
-    - install
-    - uninstall
-    - upgrade
-
-- name: MPP cas workers
-  include_tasks: vdm_loader.yaml
-  vars:
-    transformers:
-      - "{{ VDM_TRANSFORMERS_PATH }}/cas-transformer-workers.yaml"
-  when:
-    - V4_CFG_CAS_SERVER_TYPE == "mpp"
-  tags:
-    - install
-    - uninstall
-    - upgrade
-    
-- name: Include PDB Tasks
-  include_tasks: pdb.yaml
-
-- name: Include Resources Tasks
-  include_tasks: resources.yaml
-  tags:
-    - install
-    - uninstall
-    - upgrade
-
+   
 - name: Include SAS/CONNECT tasks
   include_tasks: connect.yaml
   tags:
@@ -134,127 +100,168 @@
     - uninstall
     - upgrade
 
-- name: Include openldap
-  include_tasks: vdm_loader.yaml
-  vars:
-    resources: 
-      - "{{ VDM_RESOURCES_PATH }}/openldap.yaml"
-    generators:
-      - "{{ VDM_GENERATORS_PATH }}/openldap-bootstrap-config.yaml"
-    transformers:
-      - "{{ VDM_TRANSFORMERS_PATH }}/openldap.yaml"
-  when: 
-    - V4_CFG_ENABLE_EMBEDDED_LDAP 
+# - name: Include openldap
+#   include_tasks: vdm_loader.yaml
+#   vars:
+#     resources: 
+#       - "{{ VDM_RESOURCES_PATH }}/openldap.yaml"
+#     generators:
+#       - "{{ VDM_GENERATORS_PATH }}/openldap-bootstrap-config.yaml"
+#     transformers:
+#       - "{{ VDM_TRANSFORMERS_PATH }}/openldap.yaml"
+#   when: 
+#     - V4_CFG_ENABLE_EMBEDDED_LDAP 
+#   tags:
+#     - install
+#     - uninstall
+#     - upgrade
+
+# - name: Include Ingress Tasks
+#   include_tasks: ingress.yaml
+#   tags:
+#     - install
+#     - uninstall
+#     - upgrade
+
+# # NOTE: Transformer application order matters, this transformer must go after the ingress TLS transformers are applied as it
+# # modifies the behavior of the sas-certframe init container when customer supplied certificates are applied.
+# - name: Configure Customer Provided Server Certificates for SAS/CONNECT
+#   include_tasks: vdm_loader.yaml
+#   vars:
+#     transformers: 
+#       - "{{ VDM_TRANSFORMERS_PATH }}/sas-connect-customer-provided-ingress-certificate-tls-certframe-transformer.yaml"
+#   when:
+#     - V4_CFG_TLS_MODE != "disabled"
+#     - V4_CFG_TLS_CERT is not none
+#   tags:
+#     - install
+#     - uninstall
+#     - upgrade
+
+# - name: Include Postgres tasks
+#   include_tasks: postgres.yaml
+#   tags:
+#     - install
+#     - uninstall
+#     - upgrade
+
+# - name: Include Kustomize Tasks
+#   include_tasks: kustomize.yaml
+#   tags:
+#     - install
+#     - uninstall
+#     - upgrade
+
+# - name: Create namespace
+#   community.kubernetes.k8s:
+#     api_version: v1
+#     kind: Namespace
+#     name: "{{ NAMESPACE }}"
+#     wait: true
+#     kubeconfig: "{{ kubeconfig }}"
+#   when: 
+#     - DEPLOY
+#   tags:
+#     - install
+#     - upgrade
+
+# - name: Deploy PreReqs
+#   shell: |
+#     kubectl --kubeconfig {{ kubeconfig }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=cluster-wide" -f {{ DEPLOY_DIR }}/site.yaml
+#     kubectl --kubeconfig {{ kubeconfig }} wait --for condition=established --timeout=60s -l "sas.com/admin=cluster-wide" crd
+#     kubectl --kubeconfig {{ kubeconfig }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=cluster-local" --prune -f {{ DEPLOY_DIR }}/site.yaml
+#   when: 
+#     - DEPLOY
+#   tags:
+#     - install
+#     - upgrade
+
+# - name: Deploy Manifest
+#   shell: |
+#     kubectl --kubeconfig {{ kubeconfig }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=namespace" --prune -f {{ DEPLOY_DIR }}/site.yaml
+#   when: 
+#     - DEPLOY
+#   tags:
+#     - install
+#     - upgrade
+
+# - name: Deploy Manifest for Istio
+#   shell: |
+#     kubectl --kubeconfig {{ kubeconfig }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=namespace" --prune --prune-whitelist=networking.istio.io/v1alpha3/DestinationRule --prune-whitelist=networking.istio.io/v1alpha3/VirtualService -f {{ DEPLOY_DIR }}/site.yaml
+#   when: 
+#     - DEPLOY
+#     - V4_CFG_INGRESS_TYPE == "istio"
+#   tags:
+#     - install
+#     - upgrade
+
+# - name: Remove Manifest
+#   shell: |
+#     kubectl --kubeconfig {{ kubeconfig }} delete -n {{ NAMESPACE }} -f {{ DEPLOY_DIR }}/site.yaml
+#   ignore_errors: yes
+#   when: 
+#   - DEPLOY
+#   tags:
+#     - uninstall
+
+# - name: Delete namespace
+#   community.kubernetes.k8s:
+#     api_version: v1
+#     kind: Namespace
+#     name: "{{ NAMESPACE }}"
+#     wait: true
+#     kubeconfig: "{{ kubeconfig }}"
+#     state: absent
+#   when: 
+#     - DEPLOY
+#   tags:
+#     - uninstall
+
+# - name: Delete tmp dir
+#   file:
+#     path: "{{ vdm_tmp_dir.path }}"
+#     state: absent
+#   tags:
+#     - install
+#     - uninstall
+#     - upgrade
+
+
+
+
+- name: Get order overlays
+  overlays:
+    existing: "{{ vdm_overlays }}"
+  register: ordered_overlays
   tags:
     - install
     - uninstall
     - upgrade
 
-- name: Include Ingress Tasks
-  include_tasks: ingress.yaml
-  tags:
-    - install
-    - uninstall
-    - upgrade
-
-# NOTE: Transformer application order matters, this transformer must go after the ingress TLS transformers are applied as it
-# modifies the behavior of the sas-certframe init container when customer supplied certificates are applied.
-- name: Configure Customer Provided Server Certificates for SAS/CONNECT
-  include_tasks: vdm_loader.yaml
-  vars:
-    transformers: 
-      - "{{ VDM_TRANSFORMERS_PATH }}/sas-connect-customer-provided-ingress-certificate-tls-certframe-transformer.yaml"
-  when:
-    - V4_CFG_TLS_MODE != "disabled"
-    - V4_CFG_TLS_CERT is not none
-  tags:
-    - install
-    - uninstall
-    - upgrade
-
-- name: Include Postgres tasks
-  include_tasks: postgres.yaml
-  tags:
-    - install
-    - uninstall
-    - upgrade
-
-- name: Include Kustomize Tasks
-  include_tasks: kustomize.yaml
-  tags:
-    - install
-    - uninstall
-    - upgrade
-
-- name: Create namespace
-  community.kubernetes.k8s:
-    api_version: v1
-    kind: Namespace
-    name: "{{ NAMESPACE }}"
-    wait: true
-    kubeconfig: "{{ kubeconfig }}"
-  when: 
-    - DEPLOY
-  tags:
-    - install
-    - upgrade
-
-- name: Deploy PreReqs
-  shell: |
-    kubectl --kubeconfig {{ kubeconfig }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=cluster-wide" -f {{ DEPLOY_DIR }}/site.yaml
-    kubectl --kubeconfig {{ kubeconfig }} wait --for condition=established --timeout=60s -l "sas.com/admin=cluster-wide" crd
-    kubectl --kubeconfig {{ kubeconfig }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=cluster-local" --prune -f {{ DEPLOY_DIR }}/site.yaml
-  when: 
-    - DEPLOY
-  tags:
-    - install
-    - upgrade
-
-- name: Deploy Manifest
-  shell: |
-    kubectl --kubeconfig {{ kubeconfig }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=namespace" --prune -f {{ DEPLOY_DIR }}/site.yaml
-  when: 
-    - DEPLOY
-  tags:
-    - install
-    - upgrade
-
-- name: Deploy Manifest for Istio
-  shell: |
-    kubectl --kubeconfig {{ kubeconfig }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=namespace" --prune --prune-whitelist=networking.istio.io/v1alpha3/DestinationRule --prune-whitelist=networking.istio.io/v1alpha3/VirtualService -f {{ DEPLOY_DIR }}/site.yaml
-  when: 
-    - DEPLOY
-    - V4_CFG_INGRESS_TYPE == "istio"
-  tags:
-    - install
-    - upgrade
-
-- name: Remove Manifest
-  shell: |
-    kubectl --kubeconfig {{ kubeconfig }} delete -n {{ NAMESPACE }} -f {{ DEPLOY_DIR }}/site.yaml
-  ignore_errors: yes
-  when: 
-  - DEPLOY
-  tags:
-    - uninstall
-
-- name: Delete namespace
-  community.kubernetes.k8s:
-    api_version: v1
-    kind: Namespace
-    name: "{{ NAMESPACE }}"
-    wait: true
-    kubeconfig: "{{ kubeconfig }}"
-    state: absent
-  when: 
-    - DEPLOY
-  tags:
-    - uninstall
-
-- name: Delete tmp dir
+- name: create site-cofnig tmpdir
   file:
-    path: "{{ vdm_tmp_dir.path }}"
-    state: absent
+    path: "/tmp/site-config"
+    state: directory
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: Get user's customizations
+  siteconfig_folder:
+    path: "/tmp"
+    exclude: 
+      - vdm
+  register: user_customizations
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: Generate kustomization.yaml
+  template:
+    src: "kustomization.yaml"
+    dest: "{{ansible_env.HOME}}/Desktop/kustomization.yaml"
   tags:
     - install
     - uninstall

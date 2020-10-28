@@ -3,50 +3,19 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 
 namespace: {{ NAMESPACE }} 
 
-
-configurations:
-  ## user defined configurations
-{% for item in user_customizations.configurations|sort %}
+{% for resource in ordered_overlays.result %}
+{{ resource }}:
+## vdm defined {{resource}} (pre)
+{% for overlay in ordered_overlays.result[resource]['pre'] %}
+  - {{ overlay }}
+{% endfor %}
+## user defined {{resource}}
+{% for item in user_customizations[resource]|sort %}
   - {{ item }}
 {% endfor %}
-
-
-resources:
-  ## sas base
-  - {{BUNDLE_ROOT }}/{{BASES_LOC }}
-
-  ## vdm defined resources
-{% for item in vdm_resources %}
-  - {{ item }}
+## vdm defined {{resource}} (post)
+{% for overlay in ordered_overlays.result[resource]['post'] %}
+  - {{ overlay }}
 {% endfor %}
 
-  ## user defined resources
-{% for item in user_customizations.resources|sort %}
-  - {{ item }}
-{% endfor %}
-
-
-transformers:
-  ## vdm defined transformers
-{% for item in vdm_transformers %}
-  - {{ item  }}
-{% endfor %}
-
-  ## user defined transformers
-{% for item in user_customizations.transformers|sort %}
-  - {{ item }}
-{% endfor %}
-
-  ## required transformers must be last so that image names added by other transformers are adjusted to have registry and version specified
-  - "{{BUNDLE_ROOT }}/overlays/required/transformers.yaml"
-
-generators:
-  ## vdm defined generators
-{% for item in vdm_generators %}
-  - {{ item  }}
-{% endfor %}
-
-  ## user defined generators
-{% for item in user_customizations.generators|sort%}
-  - {{ item }}
 {% endfor %}
