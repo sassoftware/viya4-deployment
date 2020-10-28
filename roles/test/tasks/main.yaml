@@ -1,0 +1,11 @@
+---
+- include_tasks: vdm_loader.yaml
+  vars:
+    overlays:
+    - { resources: "{{BUNDLE_ROOT }}/overlays/cas-server" }
+    - { resources: "{{BUNDLE_ROOT }}/overlays/update-checker" }
+    - { configurations: "{{BUNDLE_ROOT }}/overlays/required/kustomizeconfig.yaml", priority: 9 }
+    - { transformers: "{{BUNDLE_ROOT }}/overlays/required/transformers.yaml", priority: 9 }
+    - { generators: "license.yaml" }
+
+- include_tasks: kustomization.yaml

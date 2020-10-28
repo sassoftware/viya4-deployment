@@ -1,0 +1,22 @@
+---
+- name: Get order overlays
+  overlays:
+    existing: "{{ vdm_overlays }}"
+  register: ordered_overlays
+
+- name: create site-cofnig tmpdir
+  file:
+    path: "/tmp/site-config"
+    state: directory
+
+- name: Get user's customizations
+  siteconfig_folder:
+    path: "/tmp"
+    exclude: 
+      - vdm
+  register: user_customizations
+
+- name: Generate kustomization.yaml
+  template:
+    src: "kustomization.yaml"
+    dest: "/tmp/kustomization.yaml"
