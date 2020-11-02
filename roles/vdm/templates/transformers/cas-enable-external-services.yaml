@@ -4,26 +4,6 @@ kind: PatchTransformer
 metadata:
   name: cas-enable-external-services
 patch: |-
-  # After you set publishBinaryService to true, apply
-  # the manifest, you can view the Service with
-  # `kubectl get svc sas-cas-server-default-bin`
-  - op: add
-    path: /spec/publishBinaryService
-    value: true
-  # After you set publishHTTPService to true, apply
-  # the manifest, you can view the Service with
-  # `kubectl get svc sas-cas-server-default-http`
-  #- op: add
-  #  path: /spec/publishHTTPService
-  #  value: true
-  # By default, the services are added as NodePorts.
-  # To configure them as LoadBalancers, uncomment the following
-  # service template and optionally, set source ranges.
-  #
-  # Note: Setting the service template to LoadBalancer
-  #       affects all CAS services, including the publishDCServices
-  #       and publishEPCSService if those are set for SAS/ACCESS and
-  #       Data Connectors.
   - op: add
     path: /spec/serviceTemplate
     value:

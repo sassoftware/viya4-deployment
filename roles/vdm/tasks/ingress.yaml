@@ -4,7 +4,7 @@
 # Regardless of type or source of certificates, additional root CA certs can be provided
 # See sas-bases/examples/security/README.md for full details
 
-- name: Set URL prefix and port for HTTP ingress
+- name: ingress - http facts
   set_fact:
     V4_CFG_DEPLOYMENT_URL_PREFIX: 'http://'
     V4_CFG_DEPLOYMENT_URL_PORT: ':80'
@@ -15,7 +15,7 @@
     - uninstall
     - upgrade
 
-- name: Set URL prefix and port for HTTPS ingress
+- name: ingress - https facts
   set_fact:
     V4_CFG_DEPLOYMENT_URL_PREFIX: 'https://'
     V4_CFG_DEPLOYMENT_URL_PORT: ':443'
@@ -26,14 +26,13 @@
     - uninstall
     - upgrade
 
-- name: Configure Ingress Security
-  include_tasks: vdm_loader.yaml
-  vars:
-    resources: 
-      - "{{ BUNDLE_ROOT }}/overlays/cert-manager-issuer"
-      - "{{ BUNDLE_ROOT }}/overlays/network/ingress/security"
-    transformers: 
-      - "{{ BUNDLE_ROOT }}/overlays/network/ingress/security/transformers/ingress-tls-transformers.yaml"
+- name: ingress - Security
+  overlay_facts:
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { resources: "{{ BUNDLE_ROOT }}/overlays/cert-manager-issuer" }
+      - { resources: "{{ BUNDLE_ROOT }}/overlays/network/ingress/security" }
+      - { transformers: "{{ BUNDLE_ROOT }}/overlays/network/ingress/security/transformers/ingress-tls-transformers.yaml" }
   when:
     - V4_CFG_TLS_MODE != "disabled"
   tags:
@@ -41,11 +40,11 @@
     - uninstall
     - upgrade
 
-- name: Configure Customer Provided CA Certificates
-  include_tasks: vdm_loader.yaml
-  vars:
-    generators: 
-      - "{{ VDM_GENERATORS_PATH }}/customer-provided-ca-certificates.yaml"
+- name: ingress - Customer Provided CA Certificates
+  overlay_facts:
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { generators: "{{ VDM_GENERATORS_PATH }}/customer-provided-ca-certificates.yaml" }
   when:
     # NOTE: These can be provided to add to the trust store even when TLS mode is "disabled" to establish outbound trust
     - V4_CFG_TLS_TRUSTED_CA_CERTS is not none
@@ -54,11 +53,11 @@
     - uninstall
     - upgrade
 
-- name: Configure Customer Provided Server Certificates
-  include_tasks: vdm_loader.yaml
-  vars:
-    generators: 
-      - "{{ VDM_GENERATORS_PATH }}/customer-provided-ingress-certificate.yaml"
+- name: ingress - Customer Provided Server Certificates
+  overlay_facts:
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { generators: "{{ VDM_GENERATORS_PATH }}/customer-provided-ingress-certificate.yaml" }
   when:
     - V4_CFG_TLS_MODE != "disabled"
     - V4_CFG_TLS_CERT is not none
@@ -68,13 +67,12 @@
     - uninstall
     - upgrade
 
-- name: Configure cert-manager Certificate Generation
-  include_tasks: vdm_loader.yaml
-  vars:
-    transformers:
-      - "{{ VDM_TRANSFORMERS_PATH }}/cert-manager-provided-ingress-certificate.yaml"
-    generators:
-      - "{{ VDM_GENERATORS_PATH }}/customer-provided-merge-sas-certframe-configmap.yaml"
+- name: ingress - Cert-manager Certificate Generation
+  overlay_facts:
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { transformers: "{{ VDM_TRANSFORMERS_PATH }}/cert-manager-provided-ingress-certificate.yaml" }
+      - { generators: "{{ VDM_GENERATORS_PATH }}/customer-provided-merge-sas-certframe-configmap.yaml" }
   when:
     - V4_CFG_TLS_MODE != "disabled"
     - V4_CFG_TLS_CERT is none
@@ -84,12 +82,12 @@
     - uninstall
     - upgrade
 
-- name: Configure full-stack TLS
-  include_tasks: vdm_loader.yaml
-  vars:
-    transformers: 
-      - "{{ BUNDLE_ROOT }}/overlays/network/ingress/security/transformers/product-tls-transformers.yaml"
-      - "{{ BUNDLE_ROOT }}/overlays/network/ingress/security/transformers/backend-tls-transformers.yaml"
+- name: ingress - Full-stack TLS
+  overlay_facts:
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { transformers: "{{ BUNDLE_ROOT }}/overlays/network/ingress/security/transformers/product-tls-transformers.yaml" }
+      - { transformers: "{{ BUNDLE_ROOT }}/overlays/network/ingress/security/transformers/backend-tls-transformers.yaml" }
   when:
     - V4_CFG_TLS_MODE == "full-stack"
   tags:
@@ -97,11 +95,11 @@
     - uninstall
     - upgrade
 
-- name: Configure front-door TLS
-  include_tasks: vdm_loader.yaml
-  vars:
-    transformers: 
-      - "{{ BUNDLE_ROOT }}/overlays/network/ingress/security/transformers/cas-connect-tls-transformers.yaml"
+- name: ingress - Front-door TLS
+  overlay_facts:
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { transformers: "{{ BUNDLE_ROOT }}/overlays/network/ingress/security/transformers/cas-connect-tls-transformers.yaml" }
   when:
     - V4_CFG_TLS_MODE == "front-door"
   tags:
@@ -109,11 +107,11 @@
     - uninstall
     - upgrade
 
-- name: Configure disabled TLS
-  include_tasks: vdm_loader.yaml
-  vars:
-    transformers: 
-      - "{{ BUNDLE_ROOT }}/overlays/network/ingress/security/transformers/truststore-transformers-without-backend-tls.yaml "
+- name: ingress - Disabled TLS
+  overlay_facts:
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { transformers: "{{ BUNDLE_ROOT }}/overlays/network/ingress/security/transformers/truststore-transformers-without-backend-tls.yaml" }
   when:
     - V4_CFG_TLS_MODE == "disabled"
     - V4_CFG_TLS_TRUSTED_CA_CERTS is not none
@@ -122,10 +120,11 @@
     - uninstall
     - upgrade
 
-- include_tasks: vdm_loader.yaml
-  vars:
-    resources:
-      - "{{ VDM_RESOURCES_PATH }}/consul-ui.yaml"
+- name: ingress - Consul UI
+  overlay_facts:
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { resources: "{{ VDM_RESOURCES_PATH }}/consul-ui.yaml" }
   when: 
     - V4_CFG_ENABLE_CONSUL_UI
   tags:

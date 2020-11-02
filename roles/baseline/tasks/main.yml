@@ -1,4 +1,13 @@
 
+---
+- name: Add EFS csi drivers
+  command: kubectl apply --kubeconfig {{ kubeconfig }} -k "github.com/kubernetes-sigs/aws-efs-csi-driver/deploy/kubernetes/overlays/stable/?ref=master"
+  when:
+    - V4_CFG_MANAGE_STORAGE
+    - PROVIDER == "aws"
+  tags:
+    - baseline
+
 - name: Include efs-provisioner
   include_role: 
     name: efs-provisioner

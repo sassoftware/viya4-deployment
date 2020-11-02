@@ -9,8 +9,11 @@
       when: CONFIG is defined
       tags:
         - vdm
+
     - name: vdm role
       include_role:
         name: vdm
       tags:
         - vdm
+  vars:
+    loadBalancerSourceRanges: "{{ LOADBALANCER_SOURCE_RANGES }}"
