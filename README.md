@@ -12,7 +12,7 @@ This project contains Ansible code that creates a baseline in an existing kubern
   - Deploy [nfs-client-provisioner](https://github.com/helm/charts/tree/master/stable/nfs-client-provisioner) for PVs
   - Deploy [efs-client-provisioner](https://hub.helm.sh/charts/stable/efs-provisioner) for PVs in aws
   - Deploy [cert-manager](https://github.com/jetstack/cert-manager) if TLS to be configured
-  - Manage storage classes for RWO and RWX storage
+  - Manage storageclass
 - Deploy Viya
   - Retrieve the deployment assets using [Viya Orders CLI](https://github.com/sassoftware/viya4-orders-cli)
   - Retrieve cloud configuration from tfstate if using a Viya 4 IaC project

@@ -1,10 +1,21 @@
 ---
+- name: "cas - base"
+  overlay_facts:
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { resources: "{{BUNDLE_ROOT }}/overlays/cas-server" }
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+
 - name: "cas - auto resources"
   overlay_facts:
     existing: "{{ vdm_overlays }}"
     add:
       - { resources: "{{ BUNDLE_ROOT }}/overlays/cas-server/auto-resources", priority: 40 }
-      - { transformers: "{{ BUNDLE_ROOT }}/overlays/cas-server/auto-resources/remove-resources.yaml", priority: 60 }
+      - { transformers: "{{ BUNDLE_ROOT }}/overlays/cas-server/auto-resources/remove-resources.yaml", priority: 90 }
   when:
     - V4_CFG_CAS_RAM is none or V4_CFG_CAS_CORES is none
   tags:

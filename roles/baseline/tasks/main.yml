@@ -33,7 +33,7 @@
       podSecurityPolicy:
         enabled: true
       storageClass:
-        name: "sas-rwx"
+        name: "sas"
         defaultClass: false
         archiveOnDelete: false
   when:

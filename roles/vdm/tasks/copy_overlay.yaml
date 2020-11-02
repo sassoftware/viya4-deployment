@@ -9,7 +9,7 @@
     - uninstall
     - upgrade
 
-- name: copy - {{ resource }} overlays
+- name: copy - VDM {{ resource }}
   template:
     src: "{{ resource }}/{{ overlay|basename }}"
     dest: "{{ DEPLOY_DIR| regex_replace('\\/$', '')  }}/{{ overlay }}"

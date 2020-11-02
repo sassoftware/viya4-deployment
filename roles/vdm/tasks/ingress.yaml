@@ -30,9 +30,10 @@
   overlay_facts:
     existing: "{{ vdm_overlays }}"
     add:
+      - { resources: "{{BUNDLE_ROOT }}/overlays/network/{{V4_CFG_INGRESS_TYPE}}" }
+      - { resources: "{{BUNDLE_ROOT }}/overlays/network/{{V4_CFG_INGRESS_TYPE}}/security" }
       - { resources: "{{ BUNDLE_ROOT }}/overlays/cert-manager-issuer" }
-      - { resources: "{{ BUNDLE_ROOT }}/overlays/network/ingress/security" }
-      - { transformers: "{{ BUNDLE_ROOT }}/overlays/network/ingress/security/transformers/ingress-tls-transformers.yaml" }
+      - { transformers: "{{ BUNDLE_ROOT }}/overlays/network/ingress/security/transformers/ingress-tls-transformers.yaml", priority: 51 }
   when:
     - V4_CFG_TLS_MODE != "disabled"
   tags:
@@ -44,9 +45,10 @@
   overlay_facts:
     existing: "{{ vdm_overlays }}"
     add:
-      - { generators: "{{ VDM_GENERATORS_PATH }}/customer-provided-ca-certificates.yaml" }
+      - { generators: "{{ VDM_GENERATORS_PATH }}/customer-provided-ca-certificates.yaml", priority: 51 }
   when:
     # NOTE: These can be provided to add to the trust store even when TLS mode is "disabled" to establish outbound trust
+    - V4_CFG_TLS_MODE != "disabled"
     - V4_CFG_TLS_TRUSTED_CA_CERTS is not none
   tags:
     - install
@@ -57,7 +59,7 @@
   overlay_facts:
     existing: "{{ vdm_overlays }}"
     add:
-      - { generators: "{{ VDM_GENERATORS_PATH }}/customer-provided-ingress-certificate.yaml" }
+      - { generators: "{{ VDM_GENERATORS_PATH }}/customer-provided-ingress-certificate.yaml", priority: 70 }
   when:
     - V4_CFG_TLS_MODE != "disabled"
     - V4_CFG_TLS_CERT is not none
@@ -71,8 +73,8 @@
   overlay_facts:
     existing: "{{ vdm_overlays }}"
     add:
-      - { transformers: "{{ VDM_TRANSFORMERS_PATH }}/cert-manager-provided-ingress-certificate.yaml" }
-      - { generators: "{{ VDM_GENERATORS_PATH }}/customer-provided-merge-sas-certframe-configmap.yaml" }
+      - { transformers: "{{ VDM_TRANSFORMERS_PATH }}/cert-manager-provided-ingress-certificate.yaml", priority: 70 }
+      - { generators: "{{ VDM_GENERATORS_PATH }}/customer-provided-merge-sas-certframe-configmap.yaml", priority: 70 }
   when:
     - V4_CFG_TLS_MODE != "disabled"
     - V4_CFG_TLS_CERT is none
@@ -86,8 +88,8 @@
   overlay_facts:
     existing: "{{ vdm_overlays }}"
     add:
-      - { transformers: "{{ BUNDLE_ROOT }}/overlays/network/ingress/security/transformers/product-tls-transformers.yaml" }
-      - { transformers: "{{ BUNDLE_ROOT }}/overlays/network/ingress/security/transformers/backend-tls-transformers.yaml" }
+      - { transformers: "{{ BUNDLE_ROOT }}/overlays/network/ingress/security/transformers/product-tls-transformers.yaml", priority: 51 }
+      - { transformers: "{{ BUNDLE_ROOT }}/overlays/network/ingress/security/transformers/backend-tls-transformers.yaml", priority: 51 }
   when:
     - V4_CFG_TLS_MODE == "full-stack"
   tags:
@@ -99,7 +101,7 @@
   overlay_facts:
     existing: "{{ vdm_overlays }}"
     add:
-      - { transformers: "{{ BUNDLE_ROOT }}/overlays/network/ingress/security/transformers/cas-connect-tls-transformers.yaml" }
+      - { transformers: "{{ BUNDLE_ROOT }}/overlays/network/ingress/security/transformers/cas-connect-tls-transformers.yaml",priority: 51 }
   when:
     - V4_CFG_TLS_MODE == "front-door"
   tags:
@@ -111,7 +113,7 @@
   overlay_facts:
     existing: "{{ vdm_overlays }}"
     add:
-      - { transformers: "{{ BUNDLE_ROOT }}/overlays/network/ingress/security/transformers/truststore-transformers-without-backend-tls.yaml" }
+      - { transformers: "{{ BUNDLE_ROOT }}/overlays/network/ingress/security/transformers/truststore-transformers-without-backend-tls.yaml",priority: 51 }
   when:
     - V4_CFG_TLS_MODE == "disabled"
     - V4_CFG_TLS_TRUSTED_CA_CERTS is not none

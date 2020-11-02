@@ -45,10 +45,9 @@ def main():
       for resource_type, phases in module.params['existing'].items():
         results['result'][resource_type] = {}
         for phase in phases:
-            results['result'][resource_type][phase] = []
-            for overlays in phases[phase].values():
-              results['result'][resource_type][phase] += overlays
-
+          results['result'][resource_type][phase] = []
+          for priority in sorted(module.params['existing'][resource_type][phase]):
+            results['result'][resource_type][phase] += module.params['existing'][resource_type][phase][priority]
       module.exit_json(**results)
   except Exception as e:
     module.fail_json(error=e,msg="Error HERE")

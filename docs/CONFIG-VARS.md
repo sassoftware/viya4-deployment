@@ -52,16 +52,15 @@ JUMP_SVR_PRIVATE_KEY | ssh user private key to access the jump host | | string |
 | V4_CFG_NFS_SVR_HOST | NFS ip/host | string | | false | Required for Azure deploys, GCP deploys, or custom nfs setups | baseline, vdm |
 | V4_CFG_NFS_SVR_PATH | NFS export path | string | /export | false | Required for Azure deploys, GCP deploys, or custom nfs setups | baseline, vdm |
 | V4_CFG_MANAGE_STORAGE | Whether to manage the storage class in k8s | bool | true | false | If you wish to manage the storage class yourself, set to false. | baseline, vdm |
-| V4_CFG_RWO_STORAGE_CLASS | ReadWriteOnce storage class name | string | "sas-rwo" | false | When V4_CFG_MANAGE_STORAGE is false, set to the name of your preexisting storage class that supports ReadWriteOnce | all |
-| V4_CFG_RWX_STORAGE_CLASS | ReadWriteMany storage class name | string | "sas-rwx" | false | When V4_CFG_MANAGE_STORAGE is false, set to the name of your preexisting storage class that supports ReadWritMany | all |
+| V4_CFG_STORAGECLASS | Storageclass name | string | "sas" | false | When V4_CFG_MANAGE_STORAGE is false, set to the name of your preexisting storage class that supports ReadWriteOnce | all |
 
 ### Azure
 
-When setting V4_CFG_MANAGE_STORAGE to true, two new storage classes will be created: sas-rwo (Azure disk) and sas-rwx (Azure File, Azure Netapp, or NFS)
+When setting V4_CFG_MANAGE_STORAGE to true, A new storage classes will be created: sas (Azure Netapp or NFS)
 
 ### AWS
 
-When setting V4_CFG_MANAGE_STORAGE to true, the efs-provisioner will be deployed. Two new storage classes will be created: sas-rwo (ebs) and sas-rwx (efs provided by the efs-provisioner)
+When setting V4_CFG_MANAGE_STORAGE to true, the efs-provisioner will be deployed. A new storage classes will be created: sas (EFS or NFS)
 
 | Name | Description | Type | Default | Required | Notes | Actions |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -70,7 +69,7 @@ When setting V4_CFG_MANAGE_STORAGE to true, the efs-provisioner will be deployed
 
 ### GCP
 
-When setting V4_CFG_MANAGE_STORAGE to true, two new storage classes will be created: sas-rwo (gce-pd) and sas-rwx (gcp filestore provided by the nfs-client-provisioner)
+When setting V4_CFG_MANAGE_STORAGE to true, A new storage classes will be created: sas (Google Filestore or NFS)
 
 ## Order
 

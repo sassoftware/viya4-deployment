@@ -1,7 +1,8 @@
 - hosts: localhost
   connection: local
-  # roles:
-  #   - test
+  roles:
+    - common
+    # - persistence
   tasks:
     - name: Load config file
       include_vars:
@@ -17,3 +18,4 @@
         - vdm
   vars:
     loadBalancerSourceRanges: "{{ LOADBALANCER_SOURCE_RANGES }}"
+    kubeconfig: "{{ KUBE }}"

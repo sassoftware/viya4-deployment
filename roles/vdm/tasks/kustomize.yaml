@@ -1,4 +1,4 @@
-- name: kustomize - copy cr_access.json
+- name: kustomize - Create cr_access.json
   template:
     src: "cr_access.json"
     dest: "{{ DEPLOY_DIR }}/cr_access.json"
@@ -7,16 +7,25 @@
     - uninstall
     - upgrade
 
-# - name: kustomize - Get user's customizations
-#   siteconfig_folder:
-#     path: "{{ DEPLOY_DIR }}"
-#     exclude: 
-#       - vdm
-#   register: user_customizations
-#   tags:
-#     - install
-#     - uninstall
-#     - upgrade
+- name: kustomize - Get user's customizations
+  siteconfig_info:
+    path: "{{ DEPLOY_DIR }}"
+    exclude: 
+      - vdm
+  register: user_customizations
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: kustomize - Ordered overlays
+  overlay_facts:
+    existing: "{{ vdm_overlays }}"
+  register: ordered_overlays
+  tags:
+    - install
+    - uninstall
+    - upgrade
 
 - name: kustomize - Copy VDM overlays
   include_tasks: copy_overlay.yaml
@@ -29,19 +38,19 @@
     - uninstall
     - upgrade
 
-# - name: kustomize - Generate kustomization.yaml
-#   template:
-#     src: "kustomization.yaml"
-#     dest: "{{ DEPLOY_DIR }}/kustomization.yaml"
-#   tags:
-#     - install
-#     - uninstall
-#     - upgrade
+- name: kustomize - Generate kustomization.yaml
+  template:
+    src: "kustomization.yaml"
+    dest: "{{ DEPLOY_DIR }}/kustomization.yaml"
+  tags:
+    - install
+    - uninstall
+    - upgrade
 
-# - name: kustomize - Generate deployment manifest
-#   shell: |
-#     kustomize build {{ DEPLOY_DIR }} --load_restrictor='none' -o {{ DEPLOY_DIR }}/site.yaml
-#   tags:
-#     - install
-#     - uninstall
-#     - upgrade
+- name: kustomize - Generate deployment manifest
+  shell: |
+    kustomize build {{ DEPLOY_DIR }} --load_restrictor='none' -o {{ DEPLOY_DIR }}/site.yaml
+  tags:
+    - install
+    - uninstall
+    - upgrade

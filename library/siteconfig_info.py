@@ -1,6 +1,7 @@
 from ansible.module_utils.basic import *
 import glob
 import yaml
+import os
 
 class siteConfig(object):
   def __init__(self, basedir):
@@ -82,11 +83,11 @@ def main():
     "exclude": {"default": [], "type": list},
   }
   module = AnsibleModule(argument_spec=fields)
-
   try:
     sc = siteConfig(module.params['path'])
     scFolder = os.path.join(module.params['path'], 'site-config')
-    for folder in next(os.walk(scFolder))[1]:
+    _, folders, _ = next(os.walk(scFolder))
+    for folder in folders:
       skip = False
       for exclude in module.params['exclude']:
         if folder == exclude:

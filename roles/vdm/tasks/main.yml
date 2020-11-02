@@ -1,55 +1,49 @@
 ---
-# - name: Create tmp dir
-#   tempfile:
-#     state: directory
-#     prefix: vdm
-#   register: vdm_tmp_dir
-#   tags:
-#     - install
-#     - uninstall
-#     - upgrade
+- name: Create tmp dir
+  tempfile:
+    state: directory
+    prefix: vdm
+  register: vdm_tmp_dir
+  tags:
+    - install
+    - uninstall
+    - upgrade
 
+- file:
+    state: directory
+    dest: '{{ DEPLOY_DIR }}/site-config/'
+  no_log: yes
+  tags:
+    - install
+    - uninstall
+    - upgrade
 
+- name: Copy example sitedefault.yaml
+  copy:
+    src: files/sitedefault.yaml
+    dest: "{{ DEPLOY_DIR }}/site-config/sitedefault.yaml"
+  when: 
+    - SITEDEFAULT is not defined
+  tags:
+    - install
+    - uninstall
+    - upgrade
 
-# - name: Copy example sitedefault.yaml
-#   copy:
-#     src: files/sitedefault.yaml
-#     dest: "{{ DEPLOY_DIR }}/site-config/sitedefault.yaml"
-#   when: 
-#     - SITEDEFAULT is not defined
-#   tags:
-#     - install
-#     - uninstall
-#     - upgrade
-
-# - meta: clear_facts
-
-# - set_fact:
-#     vdm_overlay_facts: {}
-#   tags:
-#     - install
-#     - uninstall
-#     - upgrade
-
-# - name: Include Deployment assets
-#   include_tasks: assets.yaml
-#   tags:
-#     - install
-#     - uninstall
-#     - upgrade
+- name: Include Deployment assets
+  include_tasks: assets.yaml
+  tags:
+    - install
+    - uninstall
+    - upgrade
 
 - name: Base overlays
   overlay_facts:
     existing: "{{ vdm_overlays }}"
     add:
       - { resources: "{{BUNDLE_ROOT }}/base", priority: 0 }
-      - { resources: "{{BUNDLE_ROOT }}/overlays/cas-server" }
-      - { resources: "{{BUNDLE_ROOT }}/overlays/network/{{V4_CFG_INGRESS_TYPE}}" }
-      - { resources: "{{BUNDLE_ROOT }}/overlays/network/{{V4_CFG_INGRESS_TYPE}}/security" }
       - { resources: "{{BUNDLE_ROOT }}/overlays/update-checker" }
-      - { configurations: "{{BUNDLE_ROOT }}/overlays/required/kustomizeconfig.yaml", priority: 99 }
-      - { transformers: "{{BUNDLE_ROOT }}/overlays/required/transformers.yaml", priority: 25 }
-      - { transformers: "{{VDM_TRANSFORMERS_PATH }}/sas-storageclass.yaml", priority: 90 }
+      - { configurations: "{{BUNDLE_ROOT }}/overlays/required/kustomizeconfig.yaml", priority: 51 }
+      - { transformers: "{{BUNDLE_ROOT }}/overlays/required/transformers.yaml", priority: 60 }
       - { generators: "{{ VDM_GENERATORS_PATH }}/sas-license.yaml" }
       - { generators: "{{ VDM_GENERATORS_PATH }}/sas-shared-config.yaml" }
       - { generators: "{{ VDM_GENERATORS_PATH }}/sas-consul-config.yaml" }
@@ -67,20 +61,6 @@
     - uninstall
     - upgrade
 
-# - name: CAS/Compute NFS mounts
-#   include_tasks: vdm_loader.yaml
-#   vars:
-#     transformers:
-#       - "{{ VDM_TRANSFORMERS_PATH }}/compute-template-nfs.yaml"
-#       - "{{ VDM_TRANSFORMERS_PATH }}/cas-transformer-volumes.yaml"
-#   when:
-#     - V4_CFG_NFS_SVR_HOST is not none
-#     - V4_CFG_NFS_SVR_PATH is not none
-#   tags:
-#     - install
-#     - uninstall
-#     - upgrade
-
 - name: Include Connect
   include_tasks: connect.yaml
   tags:
@@ -88,7 +68,7 @@
     - uninstall
     - upgrade
 
-- name: Include openldap
+- name: Include Openldap
   overlay_facts:
     existing: "{{ vdm_overlays }}"
     add:
@@ -116,116 +96,31 @@
     - uninstall
     - upgrade
 
-
-- name: Get order overlays
-  overlay_facts:
-    existing: "{{ vdm_overlays }}"
-  register: ordered_overlays
+- name: Include Storage
+  include_tasks: storage.yaml
   tags:
     - install
     - uninstall
     - upgrade
 
-# - debug:
-#     var: vdm_overlays
-#   tags:
-#     - install
-#     - uninstall
-#     - upgrade
-
-
-# - debug:
-#     var: ordered_overlays
-#   tags:
-#     - install
-#     - uninstall
-#     - upgrade
-
-# - fail:
-#     msg: "FORCED"
-#   tags:
-#     - install
-#     - uninstall
-#     - upgrade
-
-- name: Include Kustomize Tasks
+- name: Include Kustomize
   include_tasks: kustomize.yaml
   tags:
     - install
     - uninstall
     - upgrade
 
-# - name: Create namespace
-#   community.kubernetes.k8s:
-#     api_version: v1
-#     kind: Namespace
-#     name: "{{ NAMESPACE }}"
-#     wait: true
-#     kubeconfig: "{{ kubeconfig }}"
-#   when: 
-#     - DEPLOY
-#   tags:
-#     - install
-#     - upgrade
+- name: Include Deploy
+  include_tasks: deploy.yaml
+  tags:
+    - install
+    - uninstall
+    - upgrade
 
-##### DEPLOY GOES HERE
-
-# - name: Remove Manifest
-#   shell: |
-#     kubectl --kubeconfig {{ kubeconfig }} delete -n {{ NAMESPACE }} -f {{ DEPLOY_DIR }}/site.yaml
-#   ignore_errors: yes
-#   when: 
-#   - DEPLOY
-#   tags:
-#     - uninstall
-
-# - name: Delete namespace
-#   community.kubernetes.k8s:
-#     api_version: v1
-#     kind: Namespace
-#     name: "{{ NAMESPACE }}"
-#     wait: true
-#     kubeconfig: "{{ kubeconfig }}"
-#     state: absent
-#   when: 
-#     - DEPLOY
-#   tags:
-#     - uninstall
-
-# - name: Delete tmp dir
-#   file:
-#     path: "{{ vdm_tmp_dir.path }}"
-#     state: absent
-#   tags:
-#     - install
-#     - uninstall
-#     - upgrade
-
-    
-- name: create site-config tmpdir
+- name: Delete tmp dir
   file:
-    path: "/tmp/site-config"
-    state: directory
-  tags:
-    - install
-    - uninstall
-    - upgrade
-
-- name: Get user's customizations
-  siteconfig_info:
-    path: "/tmp"
-    exclude: 
-      - vdm
-  register: user_customizations
-  tags:
-    - install
-    - uninstall
-    - upgrade
-
-- name: Generate kustomization.yaml
-  template:
-    src: "kustomization.yaml"
-    dest: "{{ansible_env.HOME}}/Desktop/kustomization.yaml"
+    path: "{{ vdm_tmp_dir.path }}"
+    state: absent
   tags:
     - install
     - uninstall
