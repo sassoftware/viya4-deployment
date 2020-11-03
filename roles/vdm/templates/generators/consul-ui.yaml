@@ -1,8 +1,0 @@
----
-apiVersion: builtin
-kind: ConfigMapGenerator
-metadata:
-  name: sas-shared-config
-behavior: merge
-literals:
-  - CONSUL_OPTIONS=-client 0.0.0.0 -ui

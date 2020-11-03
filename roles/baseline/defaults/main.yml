@@ -1,0 +1,1 @@
+V4_CFG_TLS_MODE: "full-stack" # other valid values are front-door and disabled

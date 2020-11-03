@@ -1,0 +1,25 @@
+---
+apiVersion: builtin
+kind: PatchTransformer
+metadata: 
+  name: sas-pv-storageclass
+patch: |-
+  kind: PersistentStorageClass
+  metadata:
+    name: wildcard
+  spec:
+    storageClassName: "{{ V4_CFG_STORAGECLASS }}"
+target:
+  kind: PersistentVolumeClaim
+---
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: sas-ss-storageclass
+patch: |-
+  - op: add
+    path: /spec/volumeClaimTemplates/0/spec/storageClassName
+    value: {{ V4_CFG_STORAGECLASS }}
+target:
+  group: apps
+  kind: StatefulSet
