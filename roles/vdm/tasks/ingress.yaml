@@ -128,7 +128,7 @@
     add:
       - { resources: "{{ VDM_RESOURCES_PATH }}/consul-ui.yaml" }
   when: 
-    - V4_CFG_ENABLE_CONSUL_UI
+    - V4_CFG_CONSUL_ENABLE_LOADBALANCER
   tags:
     - install
     - uninstall

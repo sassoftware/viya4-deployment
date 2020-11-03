@@ -76,7 +76,7 @@
       - { transformers: "{{ VDM_TRANSFORMERS_PATH }}/openldap.yaml" }
       - { generators: "{{ VDM_GENERATORS_PATH }}/openldap-bootstrap-config.yaml" }
   when: 
-    - V4_CFG_ENABLE_EMBEDDED_LDAP 
+    - V4_CFG_EMBEDDED_LDAP_ENABLE 
   tags:
     - install
     - uninstall

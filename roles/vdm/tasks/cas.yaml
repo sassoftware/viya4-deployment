@@ -54,7 +54,7 @@
     add:
       - { transformers: "{{ VDM_TRANSFORMERS_PATH }}/cas-enable-external-services.yaml" }
   when:
-    - V4_CFG_CAS_ENABLE_EXTERNAL_SERVICES
+    - V4_CFG_CAS_ENABLE_LOADBALANCER
   tags:
     - install
     - uninstall

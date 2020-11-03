@@ -5,7 +5,7 @@ Supported configuration variables are listed in the table below.  All variables 
 - [Cloud info](#cloud-info)
 - [Misc](#misc)
 - [Jump Server](#jump-server)
-- [NFS / Storage](#nfs--storage)
+- [Storage](#storage)
   - [Azure](#azure)
   - [AWS](#aws)
   - [GCP](#gcp)
@@ -19,7 +19,7 @@ Supported configuration variables are listed in the table below.  All variables 
 - [Postgres](#postgres)
 - [LDAP / Consul](#ldap--consul)
 - [CAS](#cas)
-- [SAS/CONNECT](#sasconnect)
+- [CONNECT](#connect)
 
 ## Cloud info
 
@@ -45,14 +45,18 @@ JUMP_SVR_HOST | ip/fqn to the jump host | string | | true | Tool uses the jump s
 JUMP_SVR_USER | ssh user to access the jump host | | string | true | Tool uses the jump server to interact with nfs storage. | baseline, vdm |
 JUMP_SVR_PRIVATE_KEY | ssh user private key to access the jump host | | string | true | Tool uses the jump server to interact with nfs storage. | baseline, vdm |
 
-## NFS / Storage
+## Storage
 
 | Name | Description | Type | Default | Required | Notes | Actions |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_NFS_SVR_HOST | NFS ip/host | string | | false | Required for Azure deploys, GCP deploys, or custom nfs setups | baseline, vdm |
-| V4_CFG_NFS_SVR_PATH | NFS export path | string | /export | false | Required for Azure deploys, GCP deploys, or custom nfs setups | baseline, vdm |
 | V4_CFG_MANAGE_STORAGE | Whether to manage the storage class in k8s | bool | true | false | If you wish to manage the storage class yourself, set to false. | baseline, vdm |
 | V4_CFG_STORAGECLASS | Storageclass name | string | "sas" | false | When V4_CFG_MANAGE_STORAGE is false, set to the name of your preexisting storage class that supports ReadWriteOnce | all |
+| V4_CFG_NFS_SVR_HOST | NFS ip/host | string | | false | | baseline, vdm |
+| V4_CFG_NFS_SVR_PATH | NFS export path | string | /export | false | | baseline, vdm |
+| V4_CFG_NFS_ASTORES_PATH | NFS export path for astores | string | <V4_CFG_NFS_SVR_PATH>/<CLUSTER_NAME>/astores | false | | vdm |
+| V4_CFG_NFS_BIN_PATH | NFS export path for bin | string | <V4_CFG_NFS_SVR_PATH>/<CLUSTER_NAME>/bin | false | | vdm |
+| V4_CFG_NFS_DATA_PATH | NFS export path for data | string | <V4_CFG_NFS_SVR_PATH>/<CLUSTER_NAME>/data | false | | vdm |
+| V4_CFG_NFS_HOMES_PATH | NFS export path for homes | string | <V4_CFG_NFS_SVR_PATH>/<CLUSTER_NAME>/homes | false | | vdm |
 
 ### Azure
 
@@ -78,6 +82,8 @@ When setting V4_CFG_MANAGE_STORAGE to true, A new storage classes will be create
 | V4_CFG_SAS_ORDER_NUMBER | SAS order number | string | | true | | vdm |
 | V4_CFG_SAS_CADENCE_NAME | Cadence name | string | fast | false | [stable,fast,lts] | vdm |
 | V4_CFG_SAS_CADENCE_VERSION | Cadence version | string | (latest version) | false | | vdm |
+| V4_CFG_DEPLOYMENT_ASSETS | Full path to pre-downloaded deployment assets | string | | false | Leave blank to download deployment assets | vdm |
+| V4_CFG_LICENSE | Full path to pre-downloaded license file | | false | Leave blank to download license file | vdm |
 
 ## SAS API Access
 
@@ -116,7 +122,7 @@ When setting V4_CFG_MANAGE_STORAGE to true, A new storage classes will be create
 | V4_CFG_TLS_KEY | Path to ingress key file | string | | false | Required when V4_CFG_TLS_CERT is specified | vdm |
 | V4_CFG_TLS_TRUSTED_CA_CERTS | Paths to additional PEM encoded trusted CA certificates files | list of string | | false | Required when V4_CFG_TLS_CERT is specified. Must include all the CAs in the trust chain for V4_CFG_TLS_CERT. Can be used with or without V4_CFG_TLS_CERT to specify any additionally trusted CAs  | vdm |
 
-### cert-manager
+### Cert-manager
 
 When setting V4_CFG_TLS_MODE to a value other than "disabled" and no V4_CFG_TLS_CERT is specified, cert-manager will be used to issue TLS certificates and the following variables can be set to modify cert-manager behavior:
 
@@ -141,26 +147,21 @@ When setting V4_CFG_TLS_MODE to a value other than "disabled" and no V4_CFG_TLS_
 
 | Name | Description | Type | Default | Required | Notes | Actions |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_ENABLE_EMBEDDED_LDAP | Deploy openldap in the namespace for authentication | bool | false | false | Default admin credentials are: user - viya_admin, password - Password123 | vdm |
-| V4_CFG_ENABLE_CONSUL_UI | Setup LB to access consul ui | bool | false | false | | vdm |
+| V4_CFG_EMBEDDED_LDAP_ENABLE | Deploy openldap in the namespace for authentication | bool | false | false | Default admin credentials are: user - viya_admin, password - Password123 | vdm |
+| V4_CFG_CONSUL_ENABLE_LOADBALANCER | Expose conusl ui | bool | false | false | | vdm | Consul ui is exposed via service of type LoadBalancer on port 8500 that is accessible via the <LOADBALANCER_SOURCE_RANGES>.
 
 ## CAS
 
 | Name | Description | Type | Default | Required | Notes | Actions |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_CAS_SERVER_TYPE <sub>1</sub> | CAS deployment type | string | smp | false | [smp,mpp] | vdm
-| V4_CFG_CAS_RAM_PER_NODE <sub>2</sub>| Amount of ram to allocate to per CAS node | string | 90% of the available RAM - 500.5Mi  | false | Numeric value followed by the units, such as 32Gi for 32 gigabytes. In Kubernetes, the units for gigabytes is Gi. | vdm |
-| V4_CFG_CAS_CORES_PER_NODE | Amount of cpu cores to allocate per CAS node | string | CAS node cpu count - 1 | false | Either a whole number, representing that number of cores, or a number followed by m, indicating that number of milli-cores.| vdm |
-| V4_CFG_CAS_WORKER_QTY <sub>1</sub> | Number of CAS workers | int | # of K8s nodes designated for CAS - 1 | false | Used when V4_CFG_CAS_SERVER_TYPE is set to mpp | vdm |
+| V4_CFG_CAS_RAM | Amount of ram to allocate to per CAS node | string | | false | Numeric value followed by the units, such as 32Gi for 32 gigabytes. In Kubernetes, the units for gigabytes is Gi. Leave empty to enable auto-resource assignment | vdm |
+| V4_CFG_CAS_CORES | Amount of cpu cores to allocate per CAS node | string | | false | Either a whole number, representing that number of cores, or a number followed by m, indicating that number of milli-cores. Leave empty to enable auto-resource assignment | vdm |
+| V4_CFG_CAS_WORKER_COUNT | Number of CAS workers | int | 1 | false | Setting to more than one triggers MPP deployment | vdm |
+| V4_CFG_CAS_ENABLE_LOADBALANCER | Expose CAS binary ports | bool | false | false | Binary ports are exposed via service of type LoadBalancer that is accessible via the <LOADBALANCER_SOURCE_RANGES> | vdm |
 
-
-<sub> 1. CAS MPP setup includes the backup controller. This project strongly recommends the best practice of 1 node per CAS controller, backup  and worker pod. A CAS configuration with 3 CAS workers would require 5 nodes allocated with the CAS label and taint (CAS controller (1), CAS backup (1), CAS workers (3). </sub>
-
-<sub> 2. If multiple CAS pods must share the same node, the V4_CFG_CAS_RAM_PER_NODE must be modified. </sub>
-
-## SAS/CONNECT
+## CONNECT
 
 | Name | Description | Type | Default | Required | Notes | Actions |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_ENABLE_CONNECT_LOADBALANCER | Setup LB to access SAS/CONNECT | bool | false | false | | vdm |
+| V4_CFG_CONNECT_ENABLE_LOADBALANCER | Setup LB to access SAS/CONNECT | bool | false | false | | vdm |
 | V4_CFG_CONNECT_FQDN | FQDN that will be assigned to access SAS/CONNECT | string | | false | Required when V4_CFG_TLS_MODE is not disabled and cert-manager is used to issue TLS certificates. This FQDN will be added to the SAN DNS list of the issued certificates. | vdm |

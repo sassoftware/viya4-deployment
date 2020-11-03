@@ -5,7 +5,7 @@
     add:
       - { resources: "{{ VDM_RESOURCES_PATH }}/sas-connect-spawner-enable-loadbalancer.yaml" }
   when: 
-    - V4_CFG_ENABLE_CONNECT_LOADBALANCER
+    - V4_CFG_CONNECT_ENABLE_LOADBALANCER
   tags:
     - install
     - uninstall
