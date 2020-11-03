@@ -157,6 +157,7 @@ When setting V4_CFG_TLS_MODE to a value other than "disabled" and no V4_CFG_TLS_
 | V4_CFG_CAS_RAM | Amount of ram to allocate to per CAS node | string | | false | Numeric value followed by the units, such as 32Gi for 32 gigabytes. In Kubernetes, the units for gigabytes is Gi. Leave empty to enable auto-resource assignment | vdm |
 | V4_CFG_CAS_CORES | Amount of cpu cores to allocate per CAS node | string | | false | Either a whole number, representing that number of cores, or a number followed by m, indicating that number of milli-cores. Leave empty to enable auto-resource assignment | vdm |
 | V4_CFG_CAS_WORKER_COUNT | Number of CAS workers | int | 1 | false | Setting to more than one triggers MPP deployment | vdm |
+| V4_CFG_CAS_ENABLE_BACKUP_CONTROLLER | Enable backup cas controller | bool | false | false | | vdm |
 | V4_CFG_CAS_ENABLE_LOADBALANCER | Expose CAS binary ports | bool | false | false | Binary ports are exposed via service of type LoadBalancer that is accessible via the <LOADBALANCER_SOURCE_RANGES> | vdm |
 
 ## CONNECT
