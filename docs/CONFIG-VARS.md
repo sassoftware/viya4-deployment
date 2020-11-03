@@ -16,7 +16,7 @@ Supported configuration variables are listed in the table below.  All variables 
 - [Ingress](#ingress)
 - [Monitoring and Logging](#monitoring-and-logging)
 - [TLS](#tls)
-  - [cert-manager](#cert-manager)
+  - [Cert-manager](#cert-manager)
 - [Postgres](#postgres)
 - [LDAP / Consul](#ldap--consul)
 - [CAS](#cas)
