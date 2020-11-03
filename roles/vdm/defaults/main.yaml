@@ -36,7 +36,7 @@ V4_CFG_POSTGRES_PORT: '5432'
 
 V4_CFG_DEPLOYMENT_URL_PREFIX: null
 V4_CFG_DEPLOYMENT_URL_PORT: null
-V4_CFG_INGRESS_NAME: null
+V4_CFG_INGRESS_FQDN: null
 V4_CFG_INGRESS_TYPE: ingress
 
 V4_CFG_TLS_MODE: "full-stack" # other valid values are front-door and disabled
