@@ -87,9 +87,9 @@ When setting V4_CFG_MANAGE_STORAGE to true, A new storage classes will be create
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_ORDER_NUMBER | SAS order number | string | | true | | vdm |
 | V4_CFG_CADENCE_NAME | Cadence name | string | fast | false | [stable,fast,lts] | vdm |
-| V4_CFG_CADENCE_VERSION | Cadence version | string | "" | true | | vdm |
-| V4_CFG_DEPLOYMENT_ASSETS | Full path to pre-downloaded deployment assets | string | "" | false | Leave blank to download deployment assets | vdm |
-| V4_CFG_LICENSE | Full path to pre-downloaded license file | string | "" | false| Leave blank to download license file | vdm |
+| V4_CFG_CADENCE_VERSION | Cadence version | string | | true | | vdm |
+| V4_CFG_DEPLOYMENT_ASSETS | Full path to pre-downloaded deployment assets | string | | false | Leave blank to download deployment assets | vdm |
+| V4_CFG_LICENSE | Full path to pre-downloaded license file | string | | false| Leave blank to download license file | vdm |
 
 ## SAS API Access
 
