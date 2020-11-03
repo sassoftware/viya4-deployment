@@ -50,7 +50,7 @@ JUMP_SVR_PRIVATE_KEY | ssh user private key to access the jump host | | string |
 | Name | Description | Type | Default | Required | Notes | Actions |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_MANAGE_STORAGE | Whether to manage the storage class in k8s | bool | true | false | If you wish to manage the storage class yourself, set to false. | baseline, vdm |
-| V4_CFG_STORAGECLASS | Storageclass name | string | "sas" | false | When V4_CFG_MANAGE_STORAGE is false, set to the name of your preexisting storage class that supports ReadWriteOnce | all |
+| V4_CFG_STORAGECLASS | Storageclass name | string | "sas" | false | When V4_CFG_MANAGE_STORAGE is false, set to the name of your preexisting storage class that supports ReadWriteMany | all |
 | V4_CFG_NFS_SVR_HOST | NFS ip/host | string | | false | | baseline, vdm |
 | V4_CFG_NFS_SVR_PATH | NFS export path | string | /export | false | | baseline, vdm |
 | V4_CFG_NFS_ASTORES_PATH | NFS export path for astores | string | <V4_CFG_NFS_SVR_PATH>/<CLUSTER_NAME>/astores | false | | vdm |
