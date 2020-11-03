@@ -62,9 +62,9 @@ V4_CFG_CONNECT_FQDN: null
 # - $deploy/sas-bases/overlays/network/ingress/security/generators/backend-tls-generators.yaml
 # - $deploy/sas-bases/overlays/network/istio/security/generators/truststore-only-tls-generators.yaml
 # therefore, we will not document this variable.
-V4_CFG_CERT_MANAGER_ISSUER_NAME: sas-viya-issuer
-V4_CFG_CERT_MANAGER_CERTIFICATE_DURATION: 17531h
-V4_CFG_CERT_MANAGER_CERTIFICATE_ADDITIONAL_SAN_DNS: ""
-V4_CFG_CERT_MANAGER_CERTIFICATE_ADDITIONAL_SAN_IP: ""
+V4_CFG_CM_ISSUER_NAME: sas-viya-issuer
+V4_CFG_CM_CERTIFICATE_DURATION: 17531h
+V4_CFG_CM_CERTIFICATE_ADDITIONAL_SAN_DNS: ""
+V4_CFG_CM_CERTIFICATE_ADDITIONAL_SAN_IP: ""
 
 vdm_overlays: {}
