@@ -155,6 +155,7 @@ When setting V4_CFG_TLS_MODE to a value other than "disabled" and no V4_CFG_TLS_
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_EMBEDDED_LDAP_ENABLE | Deploy openldap in the namespace for authentication | bool | false | false | [Openldap Config](../roles/vdm/templates/generators/openldap-bootstrap-config.yaml) | vdm |
 | V4_CFG_CONSUL_ENABLE_LOADBALANCER | Setup LB to access consul ui | bool | false | false | Consul ui port is 8500 | vdm |
+
 ## CAS
 
 | Name | Description | Type | Default | Required | Notes | Actions |
