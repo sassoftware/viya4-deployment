@@ -53,10 +53,10 @@ JUMP_SVR_PRIVATE_KEY | ssh user private key to access the jump host | | string |
 | V4_CFG_STORAGECLASS | Storageclass name | string | "sas" | false | When V4_CFG_MANAGE_STORAGE is false, set to the name of your preexisting storage class that supports ReadWriteMany | all |
 | V4_CFG_NFS_SVR_HOST | NFS ip/host | string | | false | | baseline, vdm |
 | V4_CFG_NFS_SVR_PATH | NFS export path | string | /export | false | | baseline, vdm |
-| V4_CFG_NFS_ASTORES_PATH | NFS export path for astores | string | <V4_CFG_NFS_SVR_PATH>/<CLUSTER_NAME>/astores | false | | vdm |
-| V4_CFG_NFS_BIN_PATH | NFS export path for bin | string | <V4_CFG_NFS_SVR_PATH>/<CLUSTER_NAME>/bin | false | | vdm |
-| V4_CFG_NFS_DATA_PATH | NFS export path for data | string | <V4_CFG_NFS_SVR_PATH>/<CLUSTER_NAME>/data | false | | vdm |
-| V4_CFG_NFS_HOMES_PATH | NFS export path for homes | string | <V4_CFG_NFS_SVR_PATH>/<CLUSTER_NAME>/homes | false | | vdm |
+| V4_CFG_NFS_ASTORES_PATH | NFS export path for astores | string | <V4_CFG_NFS_SVR_PATH>/\<NAMESPACE>/astores | false | | vdm |
+| V4_CFG_NFS_BIN_PATH | NFS export path for bin | string | <V4_CFG_NFS_SVR_PATH>/\<NAMESPACE>/bin | false | | vdm |
+| V4_CFG_NFS_DATA_PATH | NFS export path for data | string | <V4_CFG_NFS_SVR_PATH>/\<NAMESPACE>/data | false | | vdm |
+| V4_CFG_NFS_HOMES_PATH | NFS export path for homes | string | <V4_CFG_NFS_SVR_PATH>/\<NAMESPACE>/homes | false | | vdm |
 
 ### Azure
 
