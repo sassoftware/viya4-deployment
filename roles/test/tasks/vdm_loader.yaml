@@ -1,8 +1,0 @@
-- name: Add Overlays
-  overlays:
-    add: "{{ overlays }}"
-    existing: "{{ vdm_overlays }}"
-  register: new_overlays
-
-- set_fact:
-    vdm_overlays: "{{ new_overlays.result }}"
