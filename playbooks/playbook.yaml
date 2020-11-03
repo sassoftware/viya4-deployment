@@ -25,7 +25,7 @@
   tasks:
     - file:
         state: directory
-        path: "/mnt/viya-share/{{ hostvars['localhost']['CLUSTER_NAME']}}/{{item}}"
+        path: "/mnt/viya-share/{{ NAMESPACE }}/{{item}}"
         owner: "nobody"
         group: "nobody"
         mode: "0777"
@@ -33,6 +33,7 @@
         - bin
         - homes
         - data
+        - astores
       tags:
         - vdm
 
