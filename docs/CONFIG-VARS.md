@@ -154,8 +154,7 @@ When setting V4_CFG_TLS_MODE to a value other than "disabled" and no V4_CFG_TLS_
 | Name | Description | Type | Default | Required | Notes | Actions |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_EMBEDDED_LDAP_ENABLE | Deploy openldap in the namespace for authentication | bool | false | false | Default admin credentials are: user - viya_admin, password - Password123 | vdm |
-| V4_CFG_CONSUL_ENABLE_LOADBALANCER | Expose conusl ui | bool | false | false | | vdm | Consul ui is exposed via service of type LoadBalancer on port 8500 that is accessible via the <LOADBALANCER_SOURCE_RANGES>.
-
+| V4_CFG_CONSUL_ENABLE_LOADBALANCER | Setup LB to access consul ui | bool | false | false | | vdm | |
 ## CAS
 
 | Name | Description | Type | Default | Required | Notes | Actions |
@@ -164,7 +163,7 @@ When setting V4_CFG_TLS_MODE to a value other than "disabled" and no V4_CFG_TLS_
 | V4_CFG_CAS_CORES | Amount of cpu cores to allocate per CAS node | string | | false | Either a whole number, representing that number of cores, or a number followed by m, indicating that number of milli-cores. Leave empty to enable auto-resource assignment | vdm |
 | V4_CFG_CAS_WORKER_COUNT | Number of CAS workers | int | 1 | false | Setting to more than one triggers MPP deployment | vdm |
 | V4_CFG_CAS_ENABLE_BACKUP_CONTROLLER | Enable backup cas controller | bool | false | false | | vdm |
-| V4_CFG_CAS_ENABLE_LOADBALANCER | Expose CAS binary ports | bool | false | false | Binary ports are exposed via service of type LoadBalancer that is accessible via the <LOADBALANCER_SOURCE_RANGES> | vdm |
+| V4_CFG_CAS_ENABLE_LOADBALANCER | Setup LB to access CAS binary ports | bool | false | false | | vdm |
 
 ## CONNECT
 
