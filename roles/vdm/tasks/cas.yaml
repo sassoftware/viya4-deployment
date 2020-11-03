@@ -9,6 +9,17 @@
     - uninstall
     - upgrade
 
+    - name: "cas - backup controller"
+  overlay_facts:
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { transformers: "{{ VDM_TRANSFORMERS_PATH }}/cas-manage-backup.yaml" }
+  when:
+    - V4_CFG_CAS_ENABLE_BACKUP_CONTROLLER
+  tags:
+    - install
+    - uninstall
+    - upgrade
 
 - name: "cas - auto resources"
   overlay_facts:

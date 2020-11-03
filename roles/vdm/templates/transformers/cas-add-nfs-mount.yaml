@@ -3,7 +3,7 @@
 apiVersion: builtin
 kind: PatchTransformer
 metadata:
-  name: cas-add-mount
+  name: cas-add-nfs-mount
 patch: |-
   - op: add
     path: /spec/controllerTemplate/spec/volumes/-
