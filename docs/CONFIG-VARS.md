@@ -105,7 +105,7 @@ When setting V4_CFG_MANAGE_STORAGE to true, A new storage classes will be create
 | Name | Description | Type | Default | Required | Notes | Actions |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_INGRESS_TYPE | Which ingress to deploy | string | | true | [ingress,istio] | baseline, vdm |
-| V4_CFG_INGRESS_FQDN | DNS name to VIYA install | string | | true | Desired FQDN to access viya | vdm |
+| V4_CFG_INGRESS_FQDN | FQDN to for viya installation | string | | true | | vdm |
 
 ## Monitoring and Logging
 
