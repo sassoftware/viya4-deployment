@@ -32,7 +32,7 @@ V4_CFG_CR_PASSWORD: <container_registry_password>
 
 ## Ingress
 V4_CFG_INGRESS_TYPE: ingress
-V4_CFG_INGRESS_NAME: <desired_fqdn>
+V4_CFG_INGRESS_FQDN: <desired_fqdn>
 V4_CFG_TLS_MODE: "full-stack" # [full-stack|front-door|disabled]
 
 ## Postgres

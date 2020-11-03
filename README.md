@@ -62,10 +62,11 @@ Prior to running this playbook some infrastructure needs to be in place
   ```bash
   <export_dir>        <- nfs export path
     /pvs              <- location for persistent volumes
-    /<cluster_name>   <- folder per k8s cluster
+    /<namespace>      <- folder per namespace
       /bin            <- location for open source directories
       /data           <- location for SAS and CAS Data
       /homes          <- location for user home directories to be mounted
+      /astores        <- location for astores
   ```
 
 - Jump Box: This tool can manage nfs folders if you provide ssh access to a JumpBox that has the nfs storage mounted to it at /mnt/viya-share. The Viya 4 IAC projects automate the needed NFS/Jumpbox setup if desired. If you wish to manage the nfs server yourself, the Jumpbox is not required. Below is the Jumpbox folder structure
@@ -73,10 +74,11 @@ Prior to running this playbook some infrastructure needs to be in place
   ```bash
   /mnt/viya-share/    <- mounted nfs export
     /pvs              <- location for persistent volumes
-    /<cluster_name>   <- folder per k8s cluster
+    /<namespace>      <- folder per namespace
       /bin            <- location for open source directories
       /data           <- location for SAS and CAS Data
       /homes          <- location for user home directories to be mounted
+      /astores        <- location for astores
   ```
 
 ### Installation

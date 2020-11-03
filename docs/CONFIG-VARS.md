@@ -50,7 +50,7 @@ JUMP_SVR_PRIVATE_KEY | ssh user private key to access the jump host | | string |
 | Name | Description | Type | Default | Required | Notes | Actions |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_MANAGE_STORAGE | Whether to manage the storage class in k8s | bool | true | false | If you wish to manage the storage class yourself, set to false. | baseline, vdm |
-| V4_CFG_STORAGECLASS | Storageclass name | string | "sas" | false | When V4_CFG_MANAGE_STORAGE is false, set to the name of your preexisting storage class that supports ReadWriteOnce | all |
+| V4_CFG_STORAGECLASS | Storageclass name | string | "sas" | false | When V4_CFG_MANAGE_STORAGE is false, set to the name of your preexisting storage class that supports ReadWriteMany | all |
 | V4_CFG_NFS_SVR_HOST | NFS ip/host | string | | false | | baseline, vdm |
 | V4_CFG_NFS_SVR_PATH | NFS export path | string | /export | false | | baseline, vdm |
 | V4_CFG_NFS_ASTORES_PATH | NFS export path for astores | string | <V4_CFG_NFS_SVR_PATH>/<CLUSTER_NAME>/astores | false | | vdm |
@@ -105,7 +105,7 @@ When setting V4_CFG_MANAGE_STORAGE to true, A new storage classes will be create
 | Name | Description | Type | Default | Required | Notes | Actions |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_INGRESS_TYPE | Which ingress to deploy | string | | true | [ingress,istio] | baseline, vdm |
-| V4_CFG_INGRESS_NAME | DNS name to VIYA install | string | | true | Desired FQDN to access viya | vdm |
+| V4_CFG_INGRESS_FQDN | FQDN to for viya installation | string | | true | | vdm |
 
 ## Monitoring and Logging
 
@@ -128,9 +128,9 @@ When setting V4_CFG_TLS_MODE to a value other than "disabled" and no V4_CFG_TLS_
 
 | Name | Description | Type | Default | Required | Notes | Actions |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_CERT_MANAGER_CERTIFICATE_DURATION | Certificate time to expiry in hours | string | 17531h | false | vdm |
-| V4_CFG_CERT_MANAGER_CERTIFICATE_ADDITIONAL_SAN_DNS | A list of space separated, additional SAN DNS entries, specific to your ingress architecture, that you want added to certificates issued by the sas-viya-issuer.  For example, the aliases of an external load balancer | string | | false | vdm |
-| V4_CFG_CERT_MANAGER_CERTIFICATE_ADDITIONAL_SAN_IP | A list of space separated, additional SAN IP addresses, specific to your ingress architecture, that you want added to certificates issued by the sas-viya-issuer.  For example, the IP address of an external load balancer | string | | false | vdm |
+| V4_CFG_CM_CERTIFICATE_DURATION | Certificate time to expiry in hours | string | 17531h | false | vdm |
+| V4_CFG_CM_CERTIFICATE_ADDITIONAL_SAN_DNS | A list of space separated, additional SAN DNS entries, specific to your ingress architecture, that you want added to certificates issued by the sas-viya-issuer.  For example, the aliases of an external load balancer | string | | false | vdm |
+| V4_CFG_CM_CERTIFICATE_ADDITIONAL_SAN_IP | A list of space separated, additional SAN IP addresses, specific to your ingress architecture, that you want added to certificates issued by the sas-viya-issuer.  For example, the IP address of an external load balancer | string | | false | vdm |
 
 ## Postgres
 
@@ -157,6 +157,7 @@ When setting V4_CFG_TLS_MODE to a value other than "disabled" and no V4_CFG_TLS_
 | V4_CFG_CAS_RAM | Amount of ram to allocate to per CAS node | string | | false | Numeric value followed by the units, such as 32Gi for 32 gigabytes. In Kubernetes, the units for gigabytes is Gi. Leave empty to enable auto-resource assignment | vdm |
 | V4_CFG_CAS_CORES | Amount of cpu cores to allocate per CAS node | string | | false | Either a whole number, representing that number of cores, or a number followed by m, indicating that number of milli-cores. Leave empty to enable auto-resource assignment | vdm |
 | V4_CFG_CAS_WORKER_COUNT | Number of CAS workers | int | 1 | false | Setting to more than one triggers MPP deployment | vdm |
+| V4_CFG_CAS_ENABLE_BACKUP_CONTROLLER | Enable backup cas controller | bool | false | false | | vdm |
 | V4_CFG_CAS_ENABLE_LOADBALANCER | Expose CAS binary ports | bool | false | false | Binary ports are exposed via service of type LoadBalancer that is accessible via the <LOADBALANCER_SOURCE_RANGES> | vdm |
 
 ## CONNECT

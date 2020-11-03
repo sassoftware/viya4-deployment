@@ -5,4 +5,4 @@ metadata:
   name: ingress-input
 behavior: merge
 literals:
-  - INGRESS_HOST={{ V4_CFG_INGRESS_NAME }}
+  - INGRESS_HOST={{ V4_CFG_INGRESS_FQDN }}
