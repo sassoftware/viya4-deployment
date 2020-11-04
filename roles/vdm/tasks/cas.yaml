@@ -9,7 +9,7 @@
     - uninstall
     - upgrade
 
-    - name: "cas - backup controller"
+- name: "cas - backup controller"
   overlay_facts:
     existing: "{{ vdm_overlays }}"
     add:
