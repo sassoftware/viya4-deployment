@@ -16,7 +16,7 @@
     CLIENTCREDENTIALSID: "{{ V4_CFG_SAS_API_KEY | string | b64encode }}"
     CLIENTCREDENTIALSSECRET: "{{ V4_CFG_SAS_API_SECRET | string | b64encode }}"
   when:
-    - V4_CFG_DEPLOYMENT_ASSETS is none
+    - V4_CFG_LICENSE is none
   tags:
     - install
     - uninstall
