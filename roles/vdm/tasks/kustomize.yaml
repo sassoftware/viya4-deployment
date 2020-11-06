@@ -1,4 +1,8 @@
 - name: kustomize - Create cr_access.json
+  vars:
+    # The template uses a concatenation which does not work if V4_CFG_CR_PASSWORD is encrypted so we set
+    # a new var for the template which Ansible will decrypt for us if necessary
+    V4_CFG_CR_PASSWORD_DECRYPTED: "{{ V4_CFG_CR_PASSWORD }}"
   template:
     src: "cr_access.json"
     dest: "{{ DEPLOY_DIR }}/cr_access.json"

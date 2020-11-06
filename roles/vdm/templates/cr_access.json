@@ -2,8 +2,8 @@
 	"auths": {
 		"{{ V4_CFG_CR_URL }}": {
 			"username": "{{ V4_CFG_CR_USER }}",
-			"password": "{{ V4_CFG_CR_PASSWORD }}",
-			"auth": "{{ (V4_CFG_CR_USER + ':' + V4_CFG_CR_PASSWORD) |b64encode }}"
+			"password": "{{ V4_CFG_CR_PASSWORD_DECRYPTED }}",
+			"auth": "{{ (V4_CFG_CR_USER + ':' + V4_CFG_CR_PASSWORD_DECRYPTED) |b64encode }}"
 		}
 	}
 }
