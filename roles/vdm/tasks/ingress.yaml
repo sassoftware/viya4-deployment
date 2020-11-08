@@ -3,6 +3,16 @@
 # Each can have either customer provided certs or cert-manager generated certs
 # Regardless of type or source of certificates, additional root CA certs can be provided
 # See sas-bases/examples/security/README.md for full details
+- name: ingress - base
+  overlay_facts:
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { resources: "{{BUNDLE_ROOT }}/overlays/network/{{V4_CFG_INGRESS_TYPE}}" }
+      - { resources: "{{BUNDLE_ROOT }}/overlays/network/{{V4_CFG_INGRESS_TYPE}}/security" }
+  tags:
+    - install
+    - uninstall
+    - upgrade
 
 - name: ingress - http facts
   set_fact:
@@ -30,8 +40,6 @@
   overlay_facts:
     existing: "{{ vdm_overlays }}"
     add:
-      - { resources: "{{BUNDLE_ROOT }}/overlays/network/{{V4_CFG_INGRESS_TYPE}}" }
-      - { resources: "{{BUNDLE_ROOT }}/overlays/network/{{V4_CFG_INGRESS_TYPE}}/security" }
       - { resources: "{{ BUNDLE_ROOT }}/overlays/cert-manager-issuer" }
       - { transformers: "{{ BUNDLE_ROOT }}/overlays/network/ingress/security/transformers/ingress-tls-transformers.yaml", priority: 51 }
   when:
