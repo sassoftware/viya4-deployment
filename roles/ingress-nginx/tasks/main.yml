@@ -32,29 +32,6 @@
     - install
     - upgrade
 
-- name: Lookup ingress
-  community.kubernetes.k8s_info:
-    api_version: v1
-    kind: Service
-    name: ingress-nginx-controller
-    namespace: "{{ nginx_namespace }}"
-    kubeconfig: "{{ kubeconfig }}"
-  until: "ingress_config.resources[0].status.loadBalancer.ingress is defined and (ingress_config.resources[0].status.loadBalancer.ingress[0].ip is defined or ingress_config.resources[0].status.loadBalancer.ingress[0].hostname is defined)"  
-  register: ingress_config
-  tags:
-    - install
-    - upgrade
-    - uninstall
-
-- set_fact: 
-    ingress_endpoint: "{{ ingress_config.resources[0].status.loadBalancer.ingress[0].ip |default(ingress_config.resources[0].status.loadBalancer.ingress[0].hostname, true) }}"
-    ingress_type: "{{ 'ip' if (ingress_config.resources[0].status.loadBalancer.ingress[0].ip is defined) else 'dns' }}"
-    cacheable: yes
-  tags:
-    - install
-    - upgrade
-    - uninstall
-
 - name: Remove ingress-nginx
   community.kubernetes.helm:
     name: "{{ nginx_name }}"

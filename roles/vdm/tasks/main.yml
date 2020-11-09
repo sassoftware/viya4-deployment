@@ -49,6 +49,7 @@
       - { generators: "{{ VDM_GENERATORS_PATH }}/sas-consul-config.yaml" }
       - { generators: "{{ VDM_GENERATORS_PATH }}/ingress-input.yaml" }
       - { generators: "{{ VDM_GENERATORS_PATH }}/sas-image-pull-secrets.yaml" }
+      - { transformers: "{{VDM_TRANSFORMERS_PATH }}/mirror.yaml", priority: 98 }
   tags:
     - install
     - uninstall
