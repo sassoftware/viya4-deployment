@@ -1,0 +1,58 @@
+---
+apiVersion: builtin
+kind: PatchTransformer
+metadata: 
+  name: openldap-users
+patch: |-
+  - op: replace
+    path: /data/LDAP_USERS_CONF
+    value: |-
+      dn: uid=viya_admin,ou=people,dc=example,dc=com
+      changetype: add
+      objectClass: inetOrgPerson
+      objectclass: extensibleObject
+      uid: viya_admin
+      uidNumber: 2001
+      gidNumber: 2000
+      cn: administrator
+      sn: Admin
+      homeDirectory: /home/viya_admin
+      mail: viya_admin@example.com
+      distinguishedName: uid=viya_admin,ou=people,dc=example,dc=com
+      displayName: Viya Administrator
+      userPassword: Password123
+
+      dn: uid=basic_user1,ou=people,dc=example,dc=com
+      changetype: add
+      objectClass: inetOrgPerson
+      objectclass: extensibleObject
+      uid: basic_user1
+      uidNumber: 1001
+      gidNumber: 1000
+      cn: basic_user1
+      sn: BasicUser
+      distinguishedName: uid=basic_user1,ou=people,dc=example,dc=com
+      displayName: Basic User 1
+      userPassword: mySuperSecretPassword
+      homeDirectory: /home/basic_user1
+      mail: basic_user1@example.com
+
+      dn: cn=users,ou=groups,dc=example,dc=com
+      changetype: add
+      objectclass: groupofUniqueNames
+      objectclass: extensibleObject
+      gidNumber: 1000
+      distinguishedName: cn=group1,ou=groups,dc=example,dc=com
+      uniqueMember:uid=basic_user1,ou=people,dc=example,dc=com
+
+      dn: cn=admins,ou=groups,dc=example,dc=com
+      changetype: add
+      objectclass: groupofUniqueNames
+      objectclass: extensibleObject
+      gidNumber: 2000
+      distinguishedName: cn=admins,ou=groups,dc=example,dc=com
+      uniqueMember:uid=viya_admin,ou=people,dc=example,dc=com
+target:
+  kind: ConfigMap
+  name: openldap-bootstrap-config
+  version: v1
