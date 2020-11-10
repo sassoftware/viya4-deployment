@@ -54,12 +54,6 @@
         public: yes
       tags:
         - baseline
-    - name: persistence role
-      include_role:
-        name: persistence
-        public: yes
-      tags:
-        - vdm
     - include_vars:
         file: "{{DEPLOY_DIR}}/site-config/defaults.yaml"
       when: CONFIG is not defined
