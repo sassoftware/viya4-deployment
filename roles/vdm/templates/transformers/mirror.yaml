@@ -4,975 +4,1495 @@
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
+  name: image-transformer-sas-adaptive-learning-app-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-adaptive-learning-app
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-adaptive-learning-app
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-adaptiveml-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-adaptiveml
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-adaptiveml
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
   name: image-transformer-sas-analytics-components-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-analytics-components
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-analytics-components
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-analytics-components
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-analytics-components
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-analytics-events-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-analytics-events
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-analytics-events
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-analytics-events
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-analytics-events
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-analytics-services-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-analytics-services
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-analytics-services
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-analytics-services
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-analytics-services
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-analytics-services-2-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-analytics-services-2
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-analytics-services-2
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-analytics-services-2
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-analytics-services-2
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-annotations-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-annotations
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-annotations
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-annotations
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-annotations
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-app-registry-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-app-registry
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-app-registry
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-app-registry
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-app-registry
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-arke-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-arke
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-arke
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-arke
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-arke
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-audit-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-audit
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-audit
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-audit
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-audit
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-authorization-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-authorization
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-authorization
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-authorization
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-authorization
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-backup-agent-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-backup-agent
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-backup-agent
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-backup-agent
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-backup-agent
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-backup-job-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-backup-job
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-backup-job
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-backup-job
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-backup-job
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-batch-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-batch
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-batch
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-batch
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-batch
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-business-rules-services-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-business-rules-services
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-business-rules-services
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-cachelocator-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-cachelocator
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-cachelocator
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-cachelocator
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-cachelocator
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-cacheserver-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-cacheserver
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-cacheserver
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-cacheserver
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-cacheserver
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-cas-administration-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-cas-administration
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-cas-administration
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-cas-administration
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-cas-administration
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-cas-control-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-cas-control
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-cas-control
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-cas-control
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-cas-control
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-cas-operator-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-cas-operator
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-cas-operator
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-cas-operator
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-cas-operator
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-cas-server-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-cas-server
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-cas-server
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-cas-server
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-cas-server
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-certframe-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-certframe
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-certframe
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-certframe
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-certframe
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-code-debugger-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-code-debugger
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-code-debugger
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-code-debugger-app-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-code-debugger-app
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-code-debugger-app
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-comments-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-comments
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-comments
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-comments
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-comments
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-compute-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-compute
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-compute
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-compute
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-compute
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-config-init-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-config-init
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-config-init
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-config-init
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-config-init
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-config-reconciler-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-config-reconciler
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-config-reconciler
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-config-reconciler
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-config-reconciler
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-configuration-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-configuration
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-configuration
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-configuration
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-configuration
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-connect-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-connect
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-connect
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-connect
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-connect
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-connect-spawner-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-connect-spawner
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-connect-spawner
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-connect-spawner
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-connect-spawner
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-consul-server-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-consul-server
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-consul-server
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-consul-server
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-consul-server
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-conversation-designer-app-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-conversation-designer-app
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-conversation-designer-app
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-conversation-designer-app
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-conversation-designer-app
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-credentials-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-credentials
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-credentials
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-credentials
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-credentials
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-crossdomainproxy-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-crossdomainproxy
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-crossdomainproxy
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-crossdomainproxy
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-crossdomainproxy
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-crunchy-data-backrest-restore-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-crunchy-data-backrest-restore
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-crunchy-data-backrest-restore
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-crunchy-data-backrest-restore
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-crunchy-data-backrest-restore
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-crunchy-data-collect-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-crunchy-data-collect
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-crunchy-data-collect
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-crunchy-data-collect
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-crunchy-data-collect
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-crunchy-data-delete-postgres-cluster-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-crunchy-data-delete-postgres-cluster
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-crunchy-data-delete-postgres-cluster
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-crunchy-data-delete-postgres-cluster
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-crunchy-data-delete-postgres-cluster
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-crunchy-data-operator-api-server-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-crunchy-data-operator-api-server
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-crunchy-data-operator-api-server
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-crunchy-data-operator-api-server
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-crunchy-data-operator-api-server
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-crunchy-data-operator-event-manager-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-crunchy-data-operator-event-manager
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-crunchy-data-operator-event-manager
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-crunchy-data-operator-event-manager
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-crunchy-data-operator-event-manager
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-crunchy-data-operator-scheduler-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-crunchy-data-operator-scheduler
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-crunchy-data-operator-scheduler
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-crunchy-data-operator-scheduler
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-crunchy-data-operator-scheduler
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-crunchy-data-pgadmin-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-crunchy-data-pgadmin
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-crunchy-data-pgadmin
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-crunchy-data-pgadmin
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-crunchy-data-pgadmin
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-crunchy-data-pgbackrest-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-crunchy-data-pgbackrest
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-crunchy-data-pgbackrest
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-crunchy-data-pgbackrest
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-crunchy-data-pgbackrest
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-crunchy-data-pgbackrest-job-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-crunchy-data-pgbackrest-job
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-crunchy-data-pgbackrest-job
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-crunchy-data-pgbackrest-job
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-crunchy-data-pgbackrest-job
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-crunchy-data-pgbadger-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-crunchy-data-pgbadger
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-crunchy-data-pgbadger
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-crunchy-data-pgbadger
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-crunchy-data-pgbadger
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-crunchy-data-pgdump-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-crunchy-data-pgdump
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-crunchy-data-pgdump
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-crunchy-data-pgdump
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-crunchy-data-pgdump
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-crunchy-data-pgo-client-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-crunchy-data-pgo-client
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-crunchy-data-pgo-client
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-crunchy-data-pgo-client
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-crunchy-data-pgo-client
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-crunchy-data-pgrestore-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-crunchy-data-pgrestore
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-crunchy-data-pgrestore
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-crunchy-data-pgrestore
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-crunchy-data-pgrestore
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-crunchy-data-postgres-12-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-crunchy-data-postgres-12
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-crunchy-data-postgres-12
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-crunchy-data-postgres-12
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-crunchy-data-postgres-12
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-crunchy-data-postgres-operator-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-crunchy-data-postgres-operator
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-crunchy-data-postgres-operator
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-crunchy-data-postgres-operator
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-crunchy-data-postgres-operator
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-data-explorer-app-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-data-explorer-app
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-data-explorer-app
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-data-explorer-app
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-data-explorer-app
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-data-flows-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-data-flows
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-data-flows
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-data-flows
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-data-flows
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-data-mining-models-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-data-mining-models
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-data-mining-models
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-data-mining-models
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-data-mining-models
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-data-mining-project-settings-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-data-mining-project-settings
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-data-mining-project-settings
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-data-mining-project-settings
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-data-mining-project-settings
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-data-mining-results-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-data-mining-results
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-data-mining-results
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-data-mining-results
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-data-mining-results
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-data-mining-services-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-data-mining-services
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-data-mining-services
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-data-mining-services
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-data-mining-services
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-data-plans-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-data-plans
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-data-plans
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-data-plans
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-data-plans
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-data-profiles-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-data-profiles
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-data-profiles
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-data-profiles
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-data-profiles
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-data-quality-services-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-data-quality-services
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-data-quality-services
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-data-server-utility-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-data-server-utility
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-data-server-utility
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-data-server-utility
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-data-server-utility
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-data-sources-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-data-sources
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-data-sources
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-data-sources
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-data-sources
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-data-studio-app-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-data-studio-app
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-data-studio-app
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-data-studio-app
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-data-studio-app
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-db-migrator-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-db-migrator
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-db-migrator
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-db-migrator
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-db-migrator
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-decision-manager-app-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-decision-manager-app
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-decision-manager-app
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-decisions-definitions-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-decisions-definitions
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-decisions-definitions
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-deployment-data-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-deployment-data
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-deployment-data
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-deployment-data
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-deployment-data
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-device-management-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-device-management
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-device-management
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-device-management
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-device-management
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-drive-app-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-drive-app
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-drive-app
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-drive-app
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-drive-app
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-elasticsearch-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-elasticsearch
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-elasticsearch
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-elasticsearch-exporter-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-elasticsearch-exporter
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-elasticsearch-exporter
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-environment-manager-app-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-environment-manager-app
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-environment-manager-app
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-environment-manager-app
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-environment-manager-app
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-esp-load-balancer-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-esp-load-balancer
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-esp-load-balancer
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-esp-oauth2-proxy-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-esp-oauth2-proxy
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-esp-oauth2-proxy
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-esp-operator-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-esp-operator
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-esp-operator
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-event-stream-manager-app-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-event-stream-manager-app
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-event-stream-manager-app
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-event-stream-processing-metering-app-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-event-stream-processing-metering-app
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-event-stream-processing-metering-app
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-event-stream-processing-server-app-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-event-stream-processing-server-app
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-event-stream-processing-server-app
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-event-stream-processing-streamviewer-app-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-event-stream-processing-streamviewer-app
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-event-stream-processing-streamviewer-app
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-event-stream-processing-studio-app-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-event-stream-processing-studio-app
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-event-stream-processing-studio-app
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-files-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-files
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-files
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-files
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-files
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-folders-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-folders
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-folders
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-folders
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-folders
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-fonts-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-fonts
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-fonts
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-fonts
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-fonts
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-forecasting-comparison-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-forecasting-comparison
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-forecasting-comparison
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-forecasting-events-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-forecasting-events
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-forecasting-events
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-forecasting-exploration-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-forecasting-exploration
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-forecasting-exploration
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-forecasting-filters-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-forecasting-filters
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-forecasting-filters
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-forecasting-pipelines-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-forecasting-pipelines
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-forecasting-pipelines
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-forecasting-services-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-forecasting-services
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-forecasting-services
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-geo-enrichment-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-geo-enrichment
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-geo-enrichment
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-geo-enrichment
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-geo-enrichment
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-gpu-server-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-gpu-server
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-gpu-server
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-gpu-server
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-gpu-server
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-graph-builder-app-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-graph-builder-app
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-graph-builder-app
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-graph-builder-app
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-graph-builder-app
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-graph-templates-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-graph-templates
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-graph-templates
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-graph-templates
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-graph-templates
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-identities-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-identities
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-identities
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-identities
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-identities
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-import-9-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-import-9
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-import-9
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-import-9
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-import-9
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-job-execution-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-job-execution
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-job-execution
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-job-execution
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-job-execution
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-job-execution-app-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-job-execution-app
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-job-execution-app
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-job-execution-app
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-job-execution-app
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-job-flow-scheduling-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-job-flow-scheduling
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-job-flow-scheduling
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-kaniko-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-kaniko
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-kaniko
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-launcher-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-launcher
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-launcher
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-launcher
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-launcher
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-lineage-app-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-lineage-app
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-lineage-app
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-lineage-app
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-lineage-app
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-links-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-links
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-links
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-links
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-links
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-localization-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-localization
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-localization
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-localization
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-localization
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-logon-app-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-logon-app
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-logon-app
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-logon-app
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-logon-app
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-mail-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-mail
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-mail
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-mail
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-mail
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-maps-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-maps
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-maps
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-maps
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-maps
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-merchandise-planning-app-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-merchandise-planning-app
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-merchandise-planning-app
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-microanalytic-score-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-microanalytic-score
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-microanalytic-score
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-microanalytic-score
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-microanalytic-score
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-mobile-investigator-app-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-mobile-investigator-app
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-mobile-investigator-app
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-model-management-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-model-management
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-model-management
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-model-management
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-model-management
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-model-manager-app-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-model-manager-app
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-model-manager-app
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-model-manager-app
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-model-manager-app
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-model-publish-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-model-publish
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-model-publish
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-model-publish
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-model-publish
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-model-repository-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-model-repository
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-model-repository
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-model-repository
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-model-repository
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-model-studio-app-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-model-studio-app
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-model-studio-app
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-model-studio-app
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-model-studio-app
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-natural-language-conversations-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-natural-language-conversations
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-natural-language-conversations
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-natural-language-conversations
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-natural-language-conversations
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-natural-language-generation-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-natural-language-generation
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-natural-language-generation
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-natural-language-generation
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-natural-language-generation
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-natural-language-understanding-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-natural-language-understanding
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-natural-language-understanding
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-natural-language-understanding
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-natural-language-understanding
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-notifications-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-notifications
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-notifications
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-notifications
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-notifications
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-orchestration-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-orchestration
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-orchestration
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-orchestration
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-orchestration
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-planning-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-planning
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-planning
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-planning-app-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-planning-app
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-planning-app
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-planning-grid-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-planning-grid
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-planning-grid
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-planning-process-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-planning-process
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-planning-process
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-preferences-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-preferences
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-preferences
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-preferences
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-preferences
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-prepull-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-prepull
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-prepull
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-prepull
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-prepull
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-process-flow-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-process-flow
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-process-flow
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-programming-environment-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-programming-environment
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-programming-environment
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-programming-environment
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-programming-environment
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-projects-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-projects
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-projects
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-projects
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-projects
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-quality-knowledge-base-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-quality-knowledge-base
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-quality-knowledge-base
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-rabbitmq-server-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-rabbitmq-server
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-rabbitmq-server
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-rabbitmq-server
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-rabbitmq-server
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-readiness-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-readiness
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-readiness
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-readiness
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-readiness
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-relationships-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-relationships
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-relationships
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-relationships
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-relationships
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-report-distribution-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-report-distribution
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-report-distribution
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-report-distribution
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-report-distribution
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-report-execution-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-report-execution
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-report-execution
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-report-execution
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-report-execution
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-report-renderer-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-report-renderer
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-report-renderer
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-report-renderer
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-report-renderer
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-report-services-group-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-report-services-group
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-report-services-group
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-report-services-group
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-report-services-group
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-restore-job-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-restore-job
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-restore-job
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-restore-job
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-restore-job
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-retail-pricing-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-retail-pricing
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-retail-pricing
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-revenue-optimization-app-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-revenue-optimization-app
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-revenue-optimization-app
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-risk-modeling-app-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-risk-modeling-app
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-risk-modeling-app
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-risk-modeling-core-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-risk-modeling-core
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-risk-modeling-core
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-risk-performance-monitor-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-risk-performance-monitor
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-risk-performance-monitor
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-scheduler-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-scheduler
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-scheduler
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-scheduler
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-scheduler
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-score-definitions-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-score-definitions
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-score-definitions
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-score-definitions
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-score-definitions
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-score-execution-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-score-execution
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-score-execution
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-score-execution
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-score-execution
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-search-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-search
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-search
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-search
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-search
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-sssd-server-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-sssd-server
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-sssd-server
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-sssd-server
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-sssd-server
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-studio-app-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-studio-app
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-studio-app
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-studio-app
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-studio-app
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-subject-contacts-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-subject-contacts
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-subject-contacts
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-svi-ai-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-svi-ai
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-svi-ai
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-svi-alert-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-svi-alert
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-svi-alert
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-svi-audit-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-svi-audit
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-svi-audit
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-svi-data-export-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-svi-data-export
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-svi-data-export
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-svi-datahub-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-svi-datahub
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-svi-datahub
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-svi-elasticsearch-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-svi-elasticsearch
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-svi-elasticsearch
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-svi-entity-resolution-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-svi-entity-resolution
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-svi-entity-resolution
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-svi-feature-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-svi-feature
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-svi-feature
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-svi-import-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-svi-import
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-svi-import
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-svi-indexer-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-svi-indexer
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-svi-indexer
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-svi-intelligence-management-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-svi-intelligence-management
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-svi-intelligence-management
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-svi-network-analytics-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-svi-network-analytics
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-svi-network-analytics
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-svi-sand-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-svi-sand
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-svi-sand
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-svi-scorecard-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-svi-scorecard
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-svi-scorecard
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-svi-transport-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-svi-transport
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-svi-transport
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-svi-vsd-service-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-svi-vsd-service
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-svi-vsd-service
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-templates-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-templates
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-templates
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-templates
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-templates
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-text-analytics-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-text-analytics
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-text-analytics
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-text-cas-data-management-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-text-cas-data-management
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-text-cas-data-management
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-text-categorization-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-text-categorization
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-text-categorization
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-text-concepts-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-text-concepts
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-text-concepts
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-text-parsing-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-text-parsing
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-text-parsing
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-text-sentiment-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-text-sentiment
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-text-sentiment
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-text-topics-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-text-topics
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-text-topics
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-theme-content-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-theme-content
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-theme-content
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-theme-content
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-theme-content
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-theme-designer-app-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-theme-designer-app
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-theme-designer-app
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-theme-designer-app
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-theme-designer-app
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-themes-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-themes
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-themes
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-themes
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-themes
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-thumbnails-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-thumbnails
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-thumbnails
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-thumbnails
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-thumbnails
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-topic-management-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-topic-management
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-topic-management
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-transfer-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-transfer
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-transfer
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-transfer
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-transfer
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-transformations-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-transformations
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-transformations
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-transformations
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-transformations
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-types-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-types
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-types
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-types
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-types
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-visual-analytics-administration-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-visual-analytics-administration
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-visual-analytics-administration
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-visual-analytics-administration
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-visual-analytics-administration
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-visual-analytics-app-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-visual-analytics-app
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-visual-analytics-app
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-visual-analytics-app
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-visual-analytics-app
+---
+apiVersion: builtin
+kind: ImageTagTransformer
+metadata:
+  name: image-transformer-sas-visual-investigator-app-mirror
+imageTag:
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-visual-investigator-app
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-visual-investigator-app
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-web-data-access-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-web-data-access
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-web-data-access
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-web-data-access
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-web-data-access
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-workflow-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-workflow
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-workflow
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-workflow
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-workflow
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-workflow-definition-history-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-workflow-definition-history
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-workflow-definition-history
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-workflow-definition-history
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-workflow-definition-history
 ---
 apiVersion: builtin
 kind: ImageTagTransformer
 metadata:
   name: image-transformer-sas-workflow-manager-app-mirror
 imageTag:
-  name: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-workflow-manager-app
-  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker/sas-workflow-manager-app
+  name: cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-workflow-manager-app
+  newName: {{ V4_CFG_CR_HOST }}/viya-4-x64_oci_linux_2-docker-testready/sas-workflow-manager-app

@@ -1,14 +1,4 @@
 ---
-- name: Create tmp dir
-  tempfile:
-    state: directory
-    prefix: vdm
-  register: vdm_tmp_dir
-  tags:
-    - install
-    - uninstall
-    - upgrade
-
 - file:
     state: directory
     dest: '{{ DEPLOY_DIR }}/site-config/'
@@ -113,15 +103,6 @@
 
 - name: Include Deploy
   include_tasks: deploy.yaml
-  tags:
-    - install
-    - uninstall
-    - upgrade
-
-- name: Delete tmp dir
-  file:
-    path: "{{ vdm_tmp_dir.path }}"
-    state: absent
   tags:
     - install
     - uninstall

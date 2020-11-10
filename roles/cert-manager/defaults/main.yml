@@ -5,3 +5,5 @@ kubeconfig: "~/.kube/config"
 
 cert_manager_config: 
   installCRDs: "true"
+  extraArgs:
+    - --enable-certificate-owner-ref=true

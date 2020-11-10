@@ -1,9 +1,23 @@
 - hosts: localhost
   connection: local
-  roles:
-    - common
   tasks:
-    - add_host:
+    - name: global tmp dir
+      tempfile:
+        state: directory
+      register: tmpdir
+      tags:
+        - install
+        - uninstall
+        - upgrade
+    - name: common role
+      include_role: 
+        name: common
+      tags:
+        - install
+        - uninstall
+        - upgrade
+    - name: Add jump host
+      add_host:
         hostname: "{{ JUMP_SVR_HOST }}"
         ansible_ssh_user: "{{ JUMP_SVR_USER }}"
         ansible_ssh_private_key_file: "{{ JUMP_SVR_PRIVATE_KEY }}"
@@ -11,19 +25,15 @@
         groups:
           - "jump"
       when:
-        - V4_CFG_MANAGE_STORAGE is defined
-        - V4_CFG_MANAGE_STORAGE
         - JUMP_SVR_HOST is defined
         - JUMP_SVR_USER is defined
         - JUMP_SVR_PRIVATE_KEY is defined
+        - V4_CFG_MANAGE_STORAGE is defined
+        - V4_CFG_MANAGE_STORAGE
       tags:
         - vdm
-
-- hosts: "jump"
-  become: yes
-  become_user: root
-  tasks:
-    - file:
+    - name: Setup storage folders
+      file:
         state: directory
         path: "/mnt/viya-share/{{ hostvars['localhost']['NAMESPACE']}}/{{item}}"
         owner: "nobody"
@@ -36,10 +46,9 @@
         - astores
       tags:
         - vdm
-
-- hosts: localhost
-  connection: local
-  tasks:
+      when:
+        - (groups['jump'] |length) == 1
+      delegate_to: "{{ groups['jump'][0] }}"
     - name: baseline role
       include_role:
         name: baseline
@@ -73,19 +82,14 @@
         - cluster-monitoring
         - cluster-logging
         - viya-monitoring
-    - name: Delete tmp files
+    - name: Delete tmpdir
       file:
-        path: "{{ item.path }}"
+        path: "{{ tmpdir.path }}"
         state: absent
-      when:
-        - item is defined
-        - item.path is defined
-      with_items:
-        - tmp_kubeconfig
-        - tmp_ssh_key
       tags:
-        - vdm
-        - baseline
+        - install
+        - uninstall
+        - upgrade
   vars:
     kubeconfig: "{{ KUBE }}"
     loadBalancerSourceRanges: "{{ LOADBALANCER_SOURCE_RANGES }}"

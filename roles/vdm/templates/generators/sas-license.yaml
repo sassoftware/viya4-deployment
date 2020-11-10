@@ -5,4 +5,4 @@ metadata:
 behavior: merge
 type: sas.com/license
 files:
-  - SAS_LICENSE=license.jwt
+  - SAS_LICENSE=site-config/license.jwt

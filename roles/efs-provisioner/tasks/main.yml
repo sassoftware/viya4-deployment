@@ -1,8 +1,13 @@
 ---
-- name: Add helm repo
+- name: Add helm repos
   community.kubernetes.helm_repository:
-    repo_name: stable
-    repo_url: https://charts.helm.sh/stable/
+    repo_name: "{{ item.name }}"
+    repo_url: "{{ item.url }}"
+  with_items:
+    - name: "stable" 
+      url: "https://charts.helm.sh/stable/"
+    - name: "aws-efs-csi-driver" 
+      url: "https://kubernetes-sigs.github.io/aws-efs-csi-driver/"
   tags:
     - install
     - uninstall
@@ -19,19 +24,42 @@
     - install
     - upgrade
 
-- name: Deploy efs-provisioner
+- name: Deploy aws-efs-csi-driver
   community.kubernetes.helm:
-    name: "{{ efs_name }}"
-    chart_ref: stable/efs-provisioner
-    namespace: "{{ efs_namespace }}"
-    values: "{{ efs_provisioner_config }}"
-    chart_version: "{{ chart_version }}"
+    name: "{{ efs_csi_name }}"
+    chart_ref: aws-efs-csi-driver/aws-efs-csi-driver
+    namespace: "{{ efs_csi_namespace }}"
+    chart_version: "{{ efs_csi_chart_version }}"
     kubeconfig: "{{ kubeconfig }}"
     wait: true
     update_repo_cache: true
   tags:
     - install
     - upgrade
+
+- name: Deploy efs-provisioner
+  community.kubernetes.helm:
+    name: "{{ efs_name }}"
+    chart_ref: stable/efs-provisioner
+    namespace: "{{ efs_namespace }}"
+    values: "{{ efs_provisioner_config }}"
+    chart_version: "{{ efs_chart_version }}"
+    kubeconfig: "{{ kubeconfig }}"
+    wait: true
+    update_repo_cache: true
+  tags:
+    - install
+    - upgrade
+
+- name: Remove aws-efs-csi-driver
+  community.kubernetes.helm:
+    name: "{{ efs_csi_name }}"
+    namespace: "{{ efs_csi_namespace }}"
+    kubeconfig: "{{ kubeconfig }}"
+    wait: true
+    state: absent
+  tags:
+    - uninstall
 
 - name: Remove efs-provisioner
   community.kubernetes.helm:

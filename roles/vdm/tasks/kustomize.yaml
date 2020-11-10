@@ -1,7 +1,7 @@
 - name: kustomize - Create cr_access.json
   template:
     src: "cr_access.json"
-    dest: "{{ DEPLOY_DIR }}/cr_access.json"
+    dest: "{{ DEPLOY_DIR }}/site-config/cr_access.json"
   tags:
     - install
     - uninstall
