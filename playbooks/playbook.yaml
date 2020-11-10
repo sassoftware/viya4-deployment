@@ -1,5 +1,4 @@
 - hosts: localhost
-  connection: local
   tasks:
     - name: global tmp dir
       tempfile:
@@ -47,7 +46,7 @@
       tags:
         - vdm
       when:
-        - (groups['jump'] |length) == 1
+        - ("jump" in groups)
       delegate_to: "{{ groups['jump'][0] }}"
     - name: baseline role
       include_role:

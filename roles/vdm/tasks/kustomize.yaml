@@ -7,6 +7,22 @@
     - uninstall
     - upgrade
 
+- command: |
+    git log -1 --format=format:"%H"
+  register: githash
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- set_fact:
+    timestamp: "{{ansible_date_time.8601}}"
+    githash: "{{ githash.stdout }}""
+  tags:
+    - install
+    - uninstall
+    - upgrade
+    
 - name: kustomize - Get user's customizations
   siteconfig_info:
     path: "{{ DEPLOY_DIR }}"
