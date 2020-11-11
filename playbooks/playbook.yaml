@@ -43,11 +43,12 @@
         - homes
         - data
         - astores
-      tags:
-        - vdm
       when:
         - ("jump" in groups)
       delegate_to: "{{ groups['jump'][0] }}"
+      become: yes
+      tags:
+        - vdm
     - name: baseline role
       include_role:
         name: baseline
