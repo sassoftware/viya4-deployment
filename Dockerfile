@@ -14,7 +14,7 @@ RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 1 \
 FROM baseline as tool_builder
 ENV terraform_version=0.13.2
 ENV kubectl_version=1.18.8
-ENV kustomize_version=3.6.1
+ENV kustomize_version=3.7.0
 RUN curl -sLO https://releases.hashicorp.com/terraform/${terraform_version}/terraform_${terraform_version}_linux_amd64.zip && unzip ./terraform_${terraform_version}_linux_amd64.zip \
   && curl -sLO https://storage.googleapis.com/kubernetes-release/release/v{$kubectl_version}/bin/linux/amd64/kubectl && chmod 755 ./kubectl \
   && curl -s https://sdk.cloud.google.com | bash \
