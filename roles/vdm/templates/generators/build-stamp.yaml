@@ -1,8 +1,0 @@
-apiVersion: builtin
-kind: SecretGenerator
-metadata:
-  name: sas-deployment-buildinfo
-literals:
-  - githash=
-  - timestamp=
-  - md5=

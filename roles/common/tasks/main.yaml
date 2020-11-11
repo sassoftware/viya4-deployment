@@ -110,17 +110,18 @@
         JUMP_SVR_USER: "{{ tfstate.jump_admin_username.value }}"
       when:
         - tfstate.jump_admin_username is defined
-    - name: tfstate - jump private key
+    - name: tfstate - ssh private key
       copy:
-        content: "{{ tfstate.jump_private_key_pem.value }}"
+        content: "{{ tfstate.ssh_private_key.value }}"
         dest: "{{tmpdir.path}}/.ssh"
+        mode: "0600"
       when:
-        - tfstate.jump_private_key_pem is defined
+        - tfstate.ssh_private_key is defined
     - name: tfstate - jump private key var
       set_fact:
         JUMP_SVR_PRIVATE_KEY: "{{tmpdir.path}}/.ssh"
       when:
-        - tfstate.jump_private_key_pem is defined
+        - tfstate.ssh_private_key is defined
     - set_fact:
         tfstate: ""
   when:

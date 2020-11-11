@@ -7,21 +7,31 @@
     - uninstall
     - upgrade
 
-# - command: |
-#     git log -1 --format=format:"%H"
-#   register: githash
-#   tags:
-#     - install
-#     - uninstall
-#     - upgrade
+- command: |
+    git log -1 --format=format:"%H"
+  register: githash
+  tags:
+    - install
+    - uninstall
+    - upgrade
 
-# - set_fact:
-#     timestamp: "{{ansible_date_time.8601}}"
-#     githash: "{{ githash.stdout }}""
-#   tags:
-#     - install
-#     - uninstall
-#     - upgrade
+- set_fact:
+    timestamp: "{{ ansible_date_time.iso8601 }}"
+    githash: "{{ githash.stdout }}"
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: kustomize - buildinfo
+  overlay_facts:
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { generators: "{{ VDM_GENERATORS_PATH }}/sas-deployment-buildinfo.yaml" }
+  tags:
+    - install
+    - uninstall
+    - upgrade
 
 - name: kustomize - Get user's customizations
   siteconfig_info:
