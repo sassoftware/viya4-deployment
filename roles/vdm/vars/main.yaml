@@ -1,0 +1,4 @@
+VDM_DIR: "site-config/vdm"
+VDM_RESOURCES_PATH: "{{ VDM_DIR }}/resources"
+VDM_TRANSFORMERS_PATH: "{{ VDM_DIR }}/transformers"
+VDM_GENERATORS_PATH: "{{ VDM_DIR }}/generators"

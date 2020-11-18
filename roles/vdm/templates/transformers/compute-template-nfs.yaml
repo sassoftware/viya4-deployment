@@ -1,0 +1,34 @@
+---
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: compute-template-nfs-0
+patch: |-
+  - op: add
+    path: /template/spec/containers/0/volumeMounts/-
+    value:
+      mountPath: /mnt/viya-share/data
+      name: nfs-data
+  - op: add
+    path: /template/spec/containers/0/volumeMounts/-
+    value:
+      mountPath: /mnt/viya-share/homes
+      name: nfs-homes
+  - op: add
+    path: /template/spec/volumes/-
+    value:
+      name: nfs-data
+      nfs:
+        server: {{V4_CFG_NFS_SVR_HOST }}
+        path: {{ V4_CFG_NFS_DATA_PATH }}
+  - op: add
+    path: /template/spec/volumes/-
+    value:
+      name: nfs-homes
+      nfs:
+        server: {{V4_CFG_NFS_SVR_HOST }}
+        path: {{ V4_CFG_NFS_HOMES_PATH }}
+target:
+  kind: PodTemplate
+  name: sas-launcher-job-config
+  version: v1

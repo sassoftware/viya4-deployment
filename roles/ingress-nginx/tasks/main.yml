@@ -1,0 +1,56 @@
+---
+- name: Add helm repo
+  community.kubernetes.helm_repository:
+    repo_name: ingress-nginx
+    repo_url: https://kubernetes.github.io/ingress-nginx
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: Create namespace
+  community.kubernetes.k8s:
+    api_version: v1
+    kind: Namespace
+    name: "{{ nginx_namespace }}"
+    wait: true
+    kubeconfig: "{{ kubeconfig }}"
+  tags:
+    - install
+    - upgrade
+
+- name: Deploy ingress-nginx
+  community.kubernetes.helm:
+    name: "{{ nginx_name }}"
+    chart_ref: ingress-nginx/ingress-nginx
+    namespace: "{{ nginx_namespace }}"
+    values: "{{ nginx_config }}"
+    kubeconfig_path: "{{ kubeconfig }}"
+    chart_version: "{{ chart_version }}"
+    wait: true
+  tags:
+    - install
+    - upgrade
+
+- name: Remove ingress-nginx
+  community.kubernetes.helm:
+    name: "{{ nginx_name }}"
+    namespace: "{{ nginx_namespace }}"
+    kubeconfig: "{{ kubeconfig }}"
+    wait: true
+    values: "{{ nginx_config }}"
+    state: absent
+  tags:
+    - uninstall
+
+- name: Remove namespace
+  community.kubernetes.k8s:
+    api_version: v1
+    kind: Namespace
+    name: "{{ nginx_namespace }}"
+    wait: true
+    wait_timeout: 600
+    state: absent
+    kubeconfig: "{{ kubeconfig }}"
+  tags:
+    - uninstall

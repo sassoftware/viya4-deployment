@@ -1,0 +1,40 @@
+- name: postgres - global
+  overlay_facts:
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { generators: "{{ VDM_GENERATORS_PATH }}/postgres-sas-user.yaml" }
+  when: 
+    - V4_CFG_POSTGRES_TYPE is not none
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: postgres - internal
+  overlay_facts:
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { resources: "{{ BUNDLE_ROOT }}/overlays/internal-postgres" }
+      - { resources: "{{ BUNDLE_ROOT }}/overlays/crunchydata" }
+      - { transformers: "{{ BUNDLE_ROOT }}/overlays/internal-postgres/internal-postgres-transformer.yaml" }
+      - { transformers: "{{ VDM_TRANSFORMERS_PATH }}/postgres-storage-transformer.yaml" }
+  when: 
+    - V4_CFG_POSTGRES_TYPE == 'internal'
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: postgres - external
+  overlay_facts:
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { transformers: "{{ BUNDLE_ROOT }}/overlays/external-postgres/external-postgres-transformer.yaml" }
+      - { generators: "{{ VDM_GENERATORS_PATH }}/sas-go-config.yaml" }
+      - { generators: "{{ VDM_GENERATORS_PATH }}/sas-postgres-config.yaml" }
+  when: 
+    - V4_CFG_POSTGRES_TYPE == 'external'
+  tags:
+    - install
+    - uninstall
+    - upgrade

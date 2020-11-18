@@ -1,0 +1,12 @@
+---
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: sas-cert-manager-ingress-annotation-transformer
+patch: |-
+  - op: add
+    path: /metadata/annotations/cert-manager.io~1issuer
+    value: {{ V4_CFG_CM_ISSUER_NAME }} # name of the cert-manager issuer that will supply the ingress cert
+target:
+  kind: Ingress
+  name: .*

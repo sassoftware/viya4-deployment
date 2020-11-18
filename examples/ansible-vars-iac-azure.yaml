@@ -1,0 +1,46 @@
+## Cluster
+NAMESPACE: <namespace>
+
+## MISC
+DEPLOY: true # Set to false to stop at generating the manifest
+LOADBALANCER_SOURCE_RANGES: ['<cluster_nat_ip>/32']
+
+## CAS
+V4_CFG_CAS_SERVER_TYPE: smp
+
+## Storage 
+V4_CFG_MANAGE_STORAGE: true
+
+## SAS API Access
+V4_CFG_SAS_API_KEY: '<api_client_id>'
+V4_CFG_SAS_API_SECRET: '<api_client_secret>'
+V4_CFG_ORDER_NUMBER:  <order_number>
+
+## CR Access
+V4_CFG_CR_USER: <container_registry_user>
+V4_CFG_CR_PASSWORD: <container_registry_password>
+
+## Ingress
+V4_CFG_INGRESS_TYPE: ingress
+V4_CFG_INGRESS_FQDN: <desired_fqdn>
+V4_CFG_TLS_MODE: "full-stack" # [full-stack|front-door|disabled]
+
+V4_CFG_POSTGRES_TYPE: external
+## If you wish to use the internal cruchy database instead of Azure Postgres 
+## set V4_CFG_POSTGRES_TYPE to internal and uncomment 
+## then update the section below.
+# V4_CFG_POSTGRES_ADMIN_LOGIN: <desired_pg_user> 
+# V4_CFG_POSTGRES_PASSWORD: <desired_pg_password> 
+
+## LDAP
+V4_CFG_EMBEDDED_LDAP_ENABLE: true
+
+## Consul UI
+V4_CFG_CONSUL_ENABLE_LOADBALANCER: false
+
+## SAS/CONNECT
+V4_CFG_CONNECT_ENABLE_LOADBALANCER: false
+
+## Monitoring and Logging
+## uncomment and update the below values when deploying the viya4-monitoring-kubernetes stack
+#V4M_BASE_DOMAIN: <base_domain>

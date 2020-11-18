@@ -1,0 +1,102 @@
+---
+- name: cluster-monitoring - user values
+  template:
+    src: "user-values-prom-host.yaml"    
+    dest: "{{ tmpdir.path }}/user-values.yaml"
+  tags:
+    - install
+    - update
+    - uninstall
+
+- name: cluster-monitoring - deploy
+  shell:
+    cmd: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/monitoring/bin/deploy_monitoring_cluster.sh"
+  environment:
+    TLS_ENABLE: "{{ tls_enable }}"
+    PROM_OPER_USER_YAML: "{{ tmpdir.path }}/user-values.yaml"
+    KUBECONFIG: "{{ kubeconfig }}"
+    LOG_COLOR_ENABLE: false
+    NODE_PLACEMENT_ENABLE: "{{V4M_NODE_PLACEMENT_ENABLE}}"
+  tags:
+    - install
+    - update
+
+- name: cluster-monitoring - grafana cert
+  community.kubernetes.k8s:
+    kubeconfig: "{{ kubeconfig }}"
+    state: present
+    definition:
+      kind: Secret
+      apiVersion: v1
+      metadata:
+        name: "grafana-ingress-tls-secret"
+        namespace: "monitoring"
+      data:
+        tls.crt: >-
+          {{ lookup('file', V4M_GRAFANA_CERT ) |b64encode }}
+        tls.key: >-
+          {{ lookup('file', V4M_GRAFANA_KEY ) |b64encode }}
+      type: kubernetes.io/tls
+  when: 
+    - V4M_GRAFANA_CERT is not none
+    - V4M_GRAFANA_KEY is not none
+  tags:
+    - install
+    - update
+
+- name: cluster-monitoring - prometheus cert
+  community.kubernetes.k8s:
+    kubeconfig: "{{ kubeconfig }}"
+    state: present
+    definition:
+      kind: Secret
+      apiVersion: v1
+      metadata:
+        name: "prometheus-ingress-tls-secret"
+        namespace: "monitoring"
+      data:
+        tls.crt: >-
+          {{ lookup('file', V4M_PROMETHEUS_CERT ) |b64encode }}
+        tls.key: >-
+          {{ lookup('file', V4M_PROMETHEUS_KEY ) |b64encode }}
+      type: kubernetes.io/tls
+  when: 
+    - V4M_PROMETHEUS_CERT is not none
+    - V4M_PROMETHEUS_KEY is not none
+  tags:
+    - install
+    - update
+
+- name: cluster-monitoring - alertmanager cert
+  community.kubernetes.k8s:
+    kubeconfig: "{{ kubeconfig }}"
+    state: present
+    definition:
+      kind: Secret
+      apiVersion: v1
+      metadata:
+        name: "alertmanager-ingress-tls-secret"
+        namespace: "monitoring"
+      data:
+        tls.crt: >-
+          {{ lookup('file', V4M_ALERTMANAGER_CERT ) |b64encode }}
+        tls.key: >-
+          {{ lookup('file', V4M_ALERTMANAGER_CERT ) |b64encode }}
+      type: kubernetes.io/tls
+  when: 
+    - V4M_ALERTMANAGER_CERT is not none
+    - V4M_ALERTMANAGER_KEY is not none
+  tags:
+    - install
+    - update
+
+- name: cluster-monitoring - remove
+  shell:
+    cmd: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/monitoring/bin/remove_monitoring_cluster.sh"
+  environment:
+    TLS_ENABLE: "{{ tls_enable }}"
+    PROM_OPER_USER_YAML: "{{ tmpdir.path }}/user-values.yaml"
+    KUBECONFIG: "{{ kubeconfig }}"
+    LOG_COLOR_ENABLE: false
+  tags:
+    - uninstall

@@ -1,0 +1,7 @@
+apiVersion: builtin
+kind: SecretGenerator
+metadata:
+  name: sas-sssd-config
+files:
+  - SSSD_CONF=site-config/cas-server/sssd.conf
+type: Opaque

@@ -1,0 +1,35 @@
+---
+- name: "connect - Loadbalancer "
+  overlay_facts:
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { resources: "{{ VDM_RESOURCES_PATH }}/sas-connect-spawner-enable-loadbalancer.yaml" }
+  when: 
+    - V4_CFG_CONNECT_ENABLE_LOADBALANCER
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: connect -  SAS/CONNECT FQDN to the SAN DNS list for cert-manager
+  set_fact:
+    V4_CFG_CM_CERTIFICATE_ADDITIONAL_SAN_DNS: "{{V4_CFG_CM_CERTIFICATE_ADDITIONAL_SAN_DNS}} {{V4_CFG_CONNECT_FQDN}}"
+  when:
+    - V4_CFG_CONNECT_FQDN is not none
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: connect - Configure Customer Provided Server Certificates
+  overlay_facts:
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { transformers: "{{ VDM_TRANSFORMERS_PATH }}/sas-connect-customer-provided-ingress-certificate-tls-certframe-transformer.yaml", priority: 60 }
+  when:
+    - V4_CFG_TLS_MODE != "disabled"
+    - V4_CFG_TLS_CERT is not none
+  tags:
+    - install
+    - uninstall
+    - upgrade

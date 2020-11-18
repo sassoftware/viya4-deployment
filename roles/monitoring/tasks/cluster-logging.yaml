@@ -1,0 +1,80 @@
+---
+- name: cluster-logging - user values
+  template:
+    src: "user-values-elasticsearch-open.yaml"    
+    dest: "{{ tmpdir.path }}/user-values.yaml"
+  tags:
+    - install
+    - update
+    - uninstall
+
+- name: cluster-logging - deploy
+  shell:
+    cmd: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/logging/bin/deploy_logging_open.sh"
+  environment:
+    TLS_ENABLE: "{{ tls_enable }}"
+    ES_OPEN_USER_YAML: "{{ tmpdir.path }}/user-values.yaml"
+    KUBECONFIG: "{{ kubeconfig }}"
+    LOG_COLOR_ENABLE: false
+    NODE_PLACEMENT_ENABLE: "{{V4M_NODE_PLACEMENT_ENABLE}}"
+  ignore_errors: yes
+  tags:
+    - install
+    - update
+
+- name: cluster-monitoring - elasticsearch cert
+  community.kubernetes.k8s:
+    kubeconfig: "{{ kubeconfig }}"
+    state: present
+    definition:
+      kind: Secret
+      apiVersion: v1
+      metadata:
+        name: "elasticsearch-ingress-tls-secret"
+        namespace: "logging"
+      data:
+        tls.crt: >-
+          {{ lookup('file', V4M_ELASTICSEARCH_CERT ) |b64encode }}
+        tls.key: >-
+          {{ lookup('file', V4M_ELASTICSEARCH_KEY ) |b64encode }}
+      type: kubernetes.io/tls
+  when: 
+    - V4M_ELASTICSEARCH_CERT is not none
+    - V4M_ELASTICSEARCH_KEY is not none
+  tags:
+    - install
+    - update
+
+- name: cluster-monitoring - kibana cert
+  community.kubernetes.k8s:
+    kubeconfig: "{{ kubeconfig }}"
+    state: present
+    definition:
+      kind: Secret
+      apiVersion: v1
+      metadata:
+        name: "kibana-ingress-tls-secret"
+        namespace: "logging"
+      data:
+        tls.crt: >-
+          {{ lookup('file', V4M_KIBANA_CERT ) |b64encode }}
+        tls.key: >-
+          {{ lookup('file', V4M_KIBANA_KEY ) |b64encode }}
+      type: kubernetes.io/tls
+  when: 
+    - V4M_KIBANA_CERT is not none
+    - V4M_KIBANA_KEY is not none
+  tags:
+    - install
+    - update
+
+- name: cluster-logging - remove
+  shell:
+    cmd: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/logging/bin/remove_logging_open.sh"
+  environment:
+    TLS_ENABLE: "{{ tls_enable }}"
+    ES_OPEN_USER_YAML: "{{ tmpdir.path }}/user-values.yaml"
+    KUBECONFIG: "{{ kubeconfig }}"
+    LOG_COLOR_ENABLE: false
+  tags:
+    - uninstall

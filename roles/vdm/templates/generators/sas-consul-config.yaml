@@ -1,0 +1,7 @@
+apiVersion: builtin
+kind: ConfigMapGenerator
+metadata:
+  name: sas-consul-config
+behavior: merge
+files:
+  - SITEDEFAULT_CONF=site-config/sitedefault.yaml

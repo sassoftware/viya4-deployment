@@ -1,0 +1,126 @@
+---
+- file:
+    state: directory
+    dest: '{{ DEPLOY_DIR }}/site-config/'
+  no_log: yes
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- stat:
+    path: "{{ DEPLOY_DIR }}/site-config/sitedefault.yaml"
+  register: stat_result
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: Sitedefault
+  block:
+    - copy:
+        src: "{{ V4_CFG_SITEDEFAULT }}"
+        dest: "{{ DEPLOY_DIR }}/site-config/sitedefault.yaml"
+  when:
+    - not stat_result.stat.exists
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: Include Deployment assets
+  include_tasks: assets.yaml
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: Base overlays
+  overlay_facts:
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { resources: "{{BUNDLE_ROOT }}/base", priority: 0 }
+      - { resources: "{{BUNDLE_ROOT }}/overlays/update-checker" }
+      - { configurations: "{{BUNDLE_ROOT }}/overlays/required/kustomizeconfig.yaml", priority: 51 }
+      - { transformers: "{{BUNDLE_ROOT }}/overlays/required/transformers.yaml", priority: 60 }
+      - { generators: "{{ VDM_GENERATORS_PATH }}/sas-license.yaml" }
+      - { generators: "{{ VDM_GENERATORS_PATH }}/sas-shared-config.yaml" }
+      - { generators: "{{ VDM_GENERATORS_PATH }}/sas-consul-config.yaml" }
+      - { generators: "{{ VDM_GENERATORS_PATH }}/ingress-input.yaml" }
+      - { generators: "{{ VDM_GENERATORS_PATH }}/sas-image-pull-secrets.yaml" }
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: Include Mirror
+  include_tasks: mirror.yaml
+  when:
+    V4_CFG_CR_HOST != "cr.sas.com"
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: Include CAS
+  include_tasks: cas.yaml
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: Include Connect
+  include_tasks: connect.yaml
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: Include Openldap
+  overlay_facts:
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { resources: "{{ VDM_RESOURCES_PATH }}/openldap.yaml" }
+      - { transformers: "{{ VDM_TRANSFORMERS_PATH }}/openldap.yaml" }
+      - { generators: "{{ VDM_GENERATORS_PATH }}/openldap-bootstrap-config.yaml" }
+  when: 
+    - V4_CFG_EMBEDDED_LDAP_ENABLE 
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: Include Postgres
+  include_tasks: postgres.yaml
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: Include Ingress
+  include_tasks: ingress.yaml
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: Include Storage
+  include_tasks: storage.yaml
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: Include Kustomize
+  include_tasks: kustomize.yaml
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: Include Deploy
+  include_tasks: deploy.yaml
+  tags:
+    - install
+    - uninstall
+    - upgrade

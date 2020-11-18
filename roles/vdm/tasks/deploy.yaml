@@ -1,0 +1,65 @@
+---
+- name: Create namespace
+  community.kubernetes.k8s:
+    api_version: v1
+    kind: Namespace
+    name: "{{ NAMESPACE }}"
+    wait: true
+    kubeconfig: "{{ kubeconfig }}"
+  when: 
+    - DEPLOY
+  tags:
+    - install
+    - upgrade
+
+- name: Deploy PreReqs
+  shell: |
+    kubectl --kubeconfig {{ kubeconfig }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=cluster-wide" -f {{ DEPLOY_DIR }}/site.yaml
+    kubectl --kubeconfig {{ kubeconfig }} wait --for condition=established --timeout=60s -l "sas.com/admin=cluster-wide" crd
+    kubectl --kubeconfig {{ kubeconfig }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=cluster-local" --prune -f {{ DEPLOY_DIR }}/site.yaml
+  when: 
+    - DEPLOY
+  tags:
+    - install
+    - upgrade
+
+- name: Deploy Manifest
+  shell: |
+    kubectl --kubeconfig {{ kubeconfig }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=namespace" --prune -f {{ DEPLOY_DIR }}/site.yaml
+  when: 
+    - DEPLOY
+  tags:
+    - install
+    - upgrade
+
+- name: Deploy Manifest for Istio
+  shell: |
+    kubectl --kubeconfig {{ kubeconfig }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=namespace" --prune --prune-whitelist=networking.istio.io/v1alpha3/DestinationRule --prune-whitelist=networking.istio.io/v1alpha3/VirtualService -f {{ DEPLOY_DIR }}/site.yaml
+  when: 
+    - DEPLOY
+    - V4_CFG_INGRESS_TYPE == "istio"
+  tags:
+    - install
+    - upgrade
+
+- name: Remove Viya
+  shell: |
+    kubectl --kubeconfig {{ kubeconfig }} delete -n {{ NAMESPACE }} -f {{ DEPLOY_DIR }}/site.yaml
+  ignore_errors: yes
+  when: 
+  - DEPLOY
+  tags:
+    - uninstall
+
+- name: Delete namespace
+  community.kubernetes.k8s:
+    api_version: v1
+    kind: Namespace
+    name: "{{ NAMESPACE }}"
+    wait: true
+    kubeconfig: "{{ kubeconfig }}"
+    state: absent
+  when: 
+    - DEPLOY
+  tags:
+    - uninstall

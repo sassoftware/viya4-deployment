@@ -1,0 +1,18 @@
+nginx_name: ingress-nginx
+nginx_namespace: ingress-nginx
+kubeconfig: "~/.kube/config"
+chart_version: 2.16.0
+
+loadBalancerSourceRanges: ["0.0.0.0/0"]
+
+nginx_config:
+  controller:
+    service: 
+      externalTrafficPolicy: Local
+      sessionAffinity: None 
+      loadBalancerSourceRanges: "{{ loadBalancerSourceRanges }}"
+    config:
+      use-forwarded-headers: "true"
+    tcp: {}
+    udp: {}
+

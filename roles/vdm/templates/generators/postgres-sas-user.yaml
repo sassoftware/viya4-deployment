@@ -1,0 +1,7 @@
+apiVersion: builtin
+kind: SecretGenerator
+metadata:
+  name: postgres-sas-user
+literals:
+  - username={{V4_CFG_POSTGRES_ADMIN_LOGIN }}
+  - password={{V4_CFG_POSTGRES_PASSWORD }}

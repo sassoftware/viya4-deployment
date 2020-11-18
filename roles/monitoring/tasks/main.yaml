@@ -1,0 +1,25 @@
+---
+- name: Download viya4-monitoring-kubernetes
+  git:
+    repo: https://github.com/sassoftware/viya4-monitoring-kubernetes.git
+    dest: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/"
+    version: "{{ V4M_VERSION }}"
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: Include cluster monitoring
+  include_tasks: cluster-monitoring.yaml
+  tags:
+    - cluster-monitoring
+
+- name: Include viya monitoring
+  include_tasks: viya-monitoring.yaml
+  tags:
+    - viya-monitoring
+
+- name: Include cluster logging
+  include_tasks: cluster-logging.yaml
+  tags:
+    - cluster-logging

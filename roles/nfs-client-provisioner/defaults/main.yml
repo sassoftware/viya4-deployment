@@ -1,0 +1,17 @@
+chart_version: 1.2.8
+nfs_name: nfs-client
+nfs_namespace: nfs-client
+kubeconfig: ~/.kube/config
+
+nfs_server: nfs.example.org
+nfs_path: /pvs
+
+nfs_client_config:
+  nfs:
+    server: "{{ nfs_server }}"
+    path: "{{ nfs_path }}"
+  podSecurityPolicy:
+    enabled: "true"
+  storageClass:
+    defaultClass: "true"
+    archiveOnDelete: "false"

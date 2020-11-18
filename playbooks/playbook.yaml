@@ -1,0 +1,91 @@
+- hosts: localhost
+  tasks:
+    - name: global tmp dir
+      tempfile:
+        state: directory
+      register: tmpdir
+      tags:
+        - install
+        - uninstall
+        - upgrade
+    - name: common role
+      include_role: 
+        name: common
+      tags:
+        - install
+        - uninstall
+        - upgrade
+    - name: Add jump host
+      add_host:
+        hostname: "{{ JUMP_SVR_HOST }}"
+        ansible_ssh_user: "{{ JUMP_SVR_USER }}"
+        ansible_ssh_private_key_file: "{{ JUMP_SVR_PRIVATE_KEY }}"
+        ansible_ssh_common_args: "-o UserKnownHostsFile=/dev/null"
+        groups:
+          - "jump"
+      when:
+        - JUMP_SVR_HOST is defined
+        - JUMP_SVR_USER is defined
+        - JUMP_SVR_PRIVATE_KEY is defined
+        - V4_CFG_MANAGE_STORAGE is defined
+        - V4_CFG_MANAGE_STORAGE
+      tags:
+        - viya
+    - name: Setup storage folders
+      file:
+        state: directory
+        path: "/mnt/viya-share/{{ hostvars['localhost']['NAMESPACE']}}/{{item}}"
+        owner: "nobody"
+        group: "nobody"
+        mode: "0777"
+      with_items:
+        - bin
+        - homes
+        - data
+        - astores
+      when:
+        - ("jump" in groups)
+      delegate_to: "{{ groups['jump'][0] }}"
+      become: yes
+      tags:
+        - viya
+    - name: baseline role
+      include_role:
+        name: baseline
+        public: yes
+      tags:
+        - baseline
+    - include_vars:
+        file: "{{DEPLOY_DIR}}/site-config/defaults.yaml"
+      when: CONFIG is not defined
+      tags:
+        - viya
+    - name: vdm role
+      include_role:
+        name: vdm
+      tags:
+        - viya
+    - name: monitoring role
+      include_role:
+        name: monitoring
+      vars:
+        tls_enable: "{{ V4_CFG_TLS_MODE != 'disabled' }}"
+        base_domain: "{{ V4_CFG_BASE_DOMAIN }}"
+        namespace: "{{ NAMESPACE }}"
+      tags:
+        - cluster-monitoring
+        - cluster-logging
+        - viya-monitoring
+    - name: Delete tmpdir
+      file:
+        path: "{{ tmpdir.path }}"
+        state: absent
+      tags:
+        - install
+        - uninstall
+        - upgrade
+  vars:
+    kubeconfig: "{{ KUBECONFIG|default(null, -1) }}"
+    loadBalancerSourceRanges: "{{ LOADBALANCER_SOURCE_RANGES }}"
+    user: "{{ USER }}"
+    password: "{{ PASSWORD }}"

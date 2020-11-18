@@ -1,0 +1,25 @@
+---
+target_arch: x86_64
+loadBalancerSourceRanges: ["109.232.56.224/27", "149.173.0.0/16", "194.206.69.176/28"]
+
+istio_ver: 1.6.8
+
+istio_config: |
+  {% for loadBalancerSourceRange in loadBalancerSourceRanges%} --set values.gateways.istio-ingressgateway.loadBalancerSourceRanges[{{ loop.index }}]="{{loadBalancerSourceRange}}" {% endfor %} --set values.sidecarInjectorWebhook.rewriteAppHTTPProbe=true --set values.global.mtls.enabled=true --set values.global.controlPlaneSecurityEnabled=true --set values.grafana.enabled=true --set values.tracing.enabled=true --set values.kiali.enabled=true --set values.prometheus.enabled=true --set "values.kiali.dashboard.jaegerURL=http://jaeger-query:16686" --set "values.kiali.dashboard.grafanaURL=http://grafana:3000" --set values.global.sds.enabled=true --set values.gateways.istio-ingressgateway.enabled=true --set values.gateways.istio-ingressgateway.sds.enabled=true
+
+kiali_username: admin
+kiali_password: admin
+grafana_username: admin
+grafana_password: admin
+
+grafana_ingress_enabled: false
+grafana_ingress_host: grafana.example.org
+
+prometheus_ingress_enabled: false
+prometheus_ingress_host: prometheus.example.org
+
+kiali_ingress_enabled: false
+kiali_ingress_host: kiali.example.org
+
+tracing_ingress_enabled: false
+tracing_ingress_host: tracing.example.org

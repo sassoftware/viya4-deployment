@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sas-deployment-buildinfo
+data:
+  git-hash: "{{ git_hash }}"
+  timestamp: "{{ timestamp }}"
+  deployment-tooling: "{{ deployment_tooling }}"

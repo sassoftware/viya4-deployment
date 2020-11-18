@@ -1,0 +1,8 @@
+---
+apiVersion: builtin
+kind: ConfigMapGenerator
+metadata:
+  name: sas-go-config
+behavior: merge
+literals:
+  - SAS_DATABASE_DATABASE={{ V4_CFG_POSTGRES_DATABASE }}

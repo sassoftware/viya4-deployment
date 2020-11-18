@@ -1,0 +1,23 @@
+---
+- name: copy - create VDM {{ resource }} folder
+  file:
+    state: directory
+    dest: '{{ DEPLOY_DIR }}/site-config/vdm/{{ resource }}'
+  when: overlays|length > 0
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: copy - VDM {{ resource }}
+  template:
+    src: "{{ resource }}/{{ overlay|basename }}"
+    dest: "{{ DEPLOY_DIR| regex_replace('\\/$', '')  }}/{{ overlay }}"
+  with_items: "{{ overlays }}"
+  loop_control:
+    loop_var: overlay
+  when: "'/vdm/' in overlay"
+  tags:
+    - install
+    - uninstall
+    - upgrade

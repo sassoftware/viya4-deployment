@@ -1,0 +1,8 @@
+---
+apiVersion: builtin
+kind: ConfigMapGenerator
+metadata:
+  name: ingress-input
+behavior: merge
+literals:
+  - INGRESS_HOST={{ V4_CFG_INGRESS_FQDN }}

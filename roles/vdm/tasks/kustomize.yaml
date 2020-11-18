@@ -1,0 +1,84 @@
+- name: kustomize - Create cr_access.json
+  template:
+    src: "cr_access.json"
+    dest: "{{ DEPLOY_DIR }}/site-config/cr_access.json"
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- command: |
+    git log -1 --format=format:"%H"
+  register: githash
+  ignore_errors: yes
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- set_fact:
+    timestamp: "{{ ansible_date_time.iso8601 }}"
+    git_hash: "{{ githash.stdout |default('unknown', -1)}}"
+    deployment_tooling: "{{ lookup('env', 'VIYA4_DEPLOYMENT_TOOLING') |default('ansible', -1)}}"
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: kustomize - buildinfo
+  overlay_facts:
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { resources: "{{ VDM_RESOURCES_PATH }}/sas-deployment-buildinfo.yaml" }
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: kustomize - Get user's customizations
+  siteconfig_info:
+    path: "{{ DEPLOY_DIR }}"
+    exclude: 
+      - vdm
+  register: user_customizations
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: kustomize - Ordered overlays
+  overlay_facts:
+    existing: "{{ vdm_overlays }}"
+  register: ordered_overlays
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: kustomize - Copy VDM overlays
+  include_tasks: copy_overlay.yaml
+  vars:
+    resource: "{{ item.key }}"
+    overlays: "{{ item.value.pre|default([], true) + item.value.post|default([], true) }}"
+  with_dict: "{{ ordered_overlays.result }}"
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: kustomize - Generate kustomization.yaml
+  template:
+    src: "kustomization.yaml"
+    dest: "{{ DEPLOY_DIR }}/kustomization.yaml"
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: kustomize - Generate deployment manifest
+  shell: |
+    kustomize build {{ DEPLOY_DIR }} --load_restrictor='none' -o {{ DEPLOY_DIR }}/site.yaml
+  tags:
+    - install
+    - uninstall
+    - upgrade

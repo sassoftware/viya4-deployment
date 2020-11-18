@@ -1,0 +1,17 @@
+---
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: cas-enable-external-services
+patch: |-
+  - op: add
+    path: /spec/serviceTemplate
+    value:
+      spec:
+        type: LoadBalancer
+        loadBalancerSourceRanges: {{ loadBalancerSourceRanges }}
+target:
+  group: viya.sas.com
+  kind: CASDeployment
+  name: .*
+  version: v1alpha1

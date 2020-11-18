@@ -1,0 +1,46 @@
+# Add additional mounts needed to conform to deployment pattern
+---
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: cas-add-nfs-mount
+patch: |-
+  - op: add
+    path: /spec/controllerTemplate/spec/volumes/-
+    value:
+      name: cas-admin
+  - op: add
+    path: /spec/controllerTemplate/spec/volumes/-
+    value:
+      name: nfs-data
+      nfs:
+        server: {{V4_CFG_NFS_SVR_HOST }}
+        path: {{ V4_CFG_NFS_DATA_PATH }}
+  - op: add
+    path: /spec/controllerTemplate/spec/volumes/-
+    value:
+      name: nfs-homes
+      nfs:
+        server: {{V4_CFG_NFS_SVR_HOST }}
+        path: {{ V4_CFG_NFS_HOMES_PATH }}
+  - op: add
+    path: /spec/controllerTemplate/spec/containers/0/volumeMounts/-
+    value:
+      name: cas-admin
+      mountPath: /cas/cas-admin
+      readOnly: true
+  - op: add
+    path: /spec/controllerTemplate/spec/containers/0/volumeMounts/-
+    value:
+      name: nfs-data
+      mountPath: /mnt/viya-share/data
+  - op: add
+    path: /spec/controllerTemplate/spec/containers/0/volumeMounts/-
+    value:
+      name: nfs-homes
+      mountPath: /mnt/viya-share/homes
+target:
+  group: viya.sas.com
+  kind: CASDeployment
+  name: .*
+  version: v1alpha1

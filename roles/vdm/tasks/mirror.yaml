@@ -1,0 +1,28 @@
+- name: mirror - copy example
+  copy:
+    src: "{{ DEPLOY_DIR }}/{{ BUNDLE_ROOT }}/examples/mirror/mirror.yaml"
+    dest: "{{ role_path }}/templates/transformers/mirror.yaml"
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: mirror - update example
+  replace:
+    path: "{{ role_path }}/templates/transformers/mirror.yaml"
+    regexp: "MIRROR-HOST"
+    replace: "V4_CFG_CR_HOST"  
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: mirror - overlay
+  overlay_facts:
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { transformers: "{{ VDM_TRANSFORMERS_PATH }}/mirror.yaml", priority: 65 }
+  tags:
+    - install
+    - uninstall
+    - upgrade

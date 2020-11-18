@@ -1,0 +1,72 @@
+PROVIDER: custom #[azure|aws|gcp|custom]
+NAMESPACE: null
+CLUSTER_NAME: null
+DEPLOY: True
+
+V4_CFG_LICENSE: null
+V4_CFG_DEPLOYMENT_ASSETS: null
+V4_CFG_ORDER_NUMBER: null
+V4_CFG_CADENCE_NAME: lts
+V4_CFG_CADENCE_VERSION: 2020.1
+
+V4_CFG_CR_USER: null
+V4_CFG_CR_PASSWORD: null
+V4_CFG_CR_URL: https://cr.sas.com
+V4_CFG_CR_HOST: "{{ V4_CFG_CR_URL | regex_replace('^https?:\/\/(.*)\/?', '\\1') }}"
+
+V4_CFG_SAS_API_KEY: null
+V4_CFG_SAS_API_SECRET: null
+
+V4_CFG_NFS_SVR_HOST: null
+V4_CFG_NFS_SVR_PATH: '/export'
+V4_CFG_NFS_DATA_PATH: "{{ V4_CFG_NFS_SVR_PATH | replace('/$', '') }}/{{ NAMESPACE }}/data"
+V4_CFG_NFS_HOMES_PATH: "{{ V4_CFG_NFS_SVR_PATH | replace('/$', '') }}/{{ NAMESPACE }}/homes"
+V4_CFG_NFS_ASTORES_PATH: "{{ V4_CFG_NFS_SVR_PATH | replace('/$', '') }}/{{ NAMESPACE }}/astores"
+V4_CFG_NFS_BIN_PATH: "{{ V4_CFG_NFS_SVR_PATH | replace('/$', '') }}/{{ NAMESPACE }}/bin"
+
+V4_CFG_STORAGECLASS: sas
+V4_CFG_MANAGE_STORAGE: false
+
+V4_CFG_POSTGRES_TYPE: "internal"
+V4_CFG_POSTGRES_FQDN: null
+V4_CFG_POSTGRES_ADMIN_LOGIN: null
+V4_CFG_POSTGRES_PASSWORD: null
+V4_CFG_POSTGRES_DATABASE: 'SharedServices'
+V4_CFG_POSTGRES_PORT: '5432'
+
+V4_CFG_DEPLOYMENT_URL_PREFIX: null
+V4_CFG_DEPLOYMENT_URL_PORT: null
+V4_CFG_INGRESS_FQDN: null
+V4_CFG_INGRESS_TYPE: ingress
+
+V4_CFG_TLS_MODE: "front-door" # other valid values are full-stack and disabled
+V4_CFG_TLS_CERT: null
+V4_CFG_TLS_KEY: null
+V4_CFG_TLS_TRUSTED_CA_CERTS: null
+
+V4_CFG_CONSUL_ENABLE_LOADBALANCER: false
+V4_CFG_EMBEDDED_LDAP_ENABLE: false
+V4_CFG_SSSD: null
+V4_CFG_SITEDEFAULT: 'files/sitedefault.yaml'
+
+V4_CFG_CAS_RAM: null
+V4_CFG_CAS_CORES: null
+V4_CFG_CAS_WORKER_COUNT: 1
+V4_CFG_CAS_ENABLE_LOADBALANCER: false
+V4_CFG_CAS_ENABLE_BACKUP_CONTROLLER: false
+V4_CFG_CONNECT_ENABLE_LOADBALANCER: false
+V4_CFG_CONNECT_FQDN: null
+
+# In theory the issuer name can be changed; however, there are a few overlays where this value is hard coded. See:
+# - $deploy/sas-bases/overlays/cert-manager-issuer/resources.yaml
+# - $deploy/sas-bases/overlays/network/ingress/security/generators/backend-tls-generators.yaml
+# - $deploy/sas-bases/overlays/network/istio/security/generators/truststore-only-tls-generators.yaml
+# therefore, we will not document this variable.
+V4_CFG_CM_ISSUER_NAME: sas-viya-issuer
+V4_CFG_CM_CERTIFICATE_DURATION: 17531h
+V4_CFG_CM_CERTIFICATE_ADDITIONAL_SAN_DNS: ""
+V4_CFG_CM_CERTIFICATE_ADDITIONAL_SAN_IP: ""
+
+vdm_overlays: {}
+
+V4_ORDERS_CLI_VERSION: 1.0.0

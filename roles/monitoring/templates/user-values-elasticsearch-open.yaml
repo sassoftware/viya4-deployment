@@ -1,0 +1,27 @@
+kibana:
+  service:
+    type: ClusterIP
+    nodePort: null
+  ingress:
+    enabled: true
+    path: /
+    hosts:
+    - {{ V4M_KIBANA_FQDN }}
+    tls:
+    - secretName: kibana-ingress-tls-secret
+      hosts:
+      - {{ V4M_KIBANA_FQDN }}
+
+elasticsearch:
+  client:
+    ingress:
+      annotations:
+        nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+      enabled: true
+      path: /
+      hosts:
+      - {{ V4M_ELASTICSEARCH_FQDN }}
+      tls:
+      - secretName: elasticsearch-ingress-tls-secret
+        hosts:
+        - {{ V4M_ELASTICSEARCH_FQDN }}
