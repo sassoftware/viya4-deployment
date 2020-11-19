@@ -20,6 +20,7 @@ Supported configuration variables are listed in the table below.  All variables 
 - [TLS](#tls)
   - [Cert-manager](#cert-manager)
 - [Postgres](#postgres)
+  - [External Postgres](#external-postgres)
 - [LDAP / Consul](#ldap--consul)
 - [CAS](#cas)
 - [CONNECT](#connect)
@@ -179,11 +180,16 @@ When setting V4_CFG_TLS_MODE to a value other than "disabled" and no V4_CFG_TLS_
 | Name | Description | Type | Default | Required | Notes | Actions |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_POSTGRES_TYPE | Postgres installation type | string | | true | [internal,external] | vdm |
-| V4_CFG_POSTGRES_ADMIN_LOGIN | Existing postgres username | string | | true | Required for external postgres | vdm |
-| V4_CFG_POSTGRES_PASSWORD | Existing postgres password | string | | true | Required for external postgres | vdm |
-| V4_CFG_POSTGRES_FQDN | Existing postgres ip/fqdn | string | | false | Required for external postgres | vdm |
-| V4_CFG_POSTGRES_PORT | Existing postgres port | string | 5432 | false | Required for external postgres | vdm |
-| V4_CFG_POSTGRES_DATABASE | Postgres database name | string | "SharedServices" | false | Must be unique when using single Postgres cluster for multiple Viya deployments | vdm |
+
+### External Postgres
+
+| Name | Description | Type | Default | Required | Notes | Actions |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
+| V4_CFG_POSTGRES_ADMIN_LOGIN | Existing postgres username | string | | true | | vdm |
+| V4_CFG_POSTGRES_PASSWORD | Existing postgres password | string | | true | | vdm |
+| V4_CFG_POSTGRES_FQDN | Existing postgres ip/fqdn | string | | true | | vdm |
+| V4_CFG_POSTGRES_PORT | Existing postgres port | string | 5432 | false | | vdm |
+| V4_CFG_POSTGRES_DATABASE | Postgres database name | string | "SharedServices" | false | | vdm |
 
 ## LDAP / Consul
 
