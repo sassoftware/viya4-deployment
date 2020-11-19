@@ -189,7 +189,7 @@ When setting V4_CFG_TLS_MODE to a value other than "disabled" and no V4_CFG_TLS_
 | V4_CFG_POSTGRES_PASSWORD | Existing postgres password | string | | true | | vdm |
 | V4_CFG_POSTGRES_FQDN | Existing postgres ip/fqdn | string | | true | | vdm |
 | V4_CFG_POSTGRES_PORT | Existing postgres port | string | 5432 | false | | vdm |
-| V4_CFG_POSTGRES_DATABASE | Postgres database name | string | "SharedServices" | false | | vdm |
+| V4_CFG_POSTGRES_DATABASE | Existing postgres database name | string | "SharedServices" | false | | vdm |
 
 ## LDAP / Consul
 
