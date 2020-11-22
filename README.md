@@ -206,12 +206,13 @@ For Example:
 
 ### Running
 
-All configs needed by ansible are also needed to be mounted into the docker container. In general any file/folder path set via an ansible flag are equivalent to the file/folder being mounted to the docker container at /config/lower_case_variable_name.
+All configs needed by ansible are also needed to be mounted into the docker container. In general any file/folder path set via an ansible flag are equivalent to the file/folder being mounted to the docker container at /config/<lower_case_variable_name>.
 
 Examples:
 
 - The ansible flag `-e KUBECONFIG` is equivalent to `-v <path_to_file>:/config/kubeconfig` when running the docker container
 - The ansible flag `-e JUMP_SVR_PRIVATE_KEY` is equivalent to `-v <path_to_file>:/config/jump_svr_private_key` when running the docker container
+- The ansible flag `-e V4_CFG_SITEDEFAULT` is equivalent to `-v <path_to_file>:/config/v4_cfg_sitedefault` when running the docker container
 
 Below are the only exceptions:
 
