@@ -171,9 +171,9 @@ When setting V4_CFG_TLS_MODE to a value other than "disabled" and no V4_CFG_TLS_
 
 | Name | Description | Type | Default | Required | Notes | Actions |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_CM_CERTIFICATE_DURATION | Certificate time to expiry in hours | string | 17531h | false | viya |
-| V4_CFG_CM_CERTIFICATE_ADDITIONAL_SAN_DNS | A list of space separated, additional SAN DNS entries, specific to your ingress architecture, that you want added to certificates issued by the sas-viya-issuer.  For example, the aliases of an external load balancer | string | | false | viya |
-| V4_CFG_CM_CERTIFICATE_ADDITIONAL_SAN_IP | A list of space separated, additional SAN IP addresses, specific to your ingress architecture, that you want added to certificates issued by the sas-viya-issuer.  For example, the IP address of an external load balancer | string | | false | viya |
+| V4_CFG_CM_CERTIFICATE_DURATION | Certificate time to expiry in hours | string | 17531h | false | | viya |
+| V4_CFG_CM_CERTIFICATE_ADDITIONAL_SAN_DNS | A list of space separated, additional SAN DNS entries, specific to your ingress architecture, that you want added to certificates issued by the sas-viya-issuer.  For example, the aliases of an external load balancer | string | | false | | viya |
+| V4_CFG_CM_CERTIFICATE_ADDITIONAL_SAN_IP | A list of space separated, additional SAN IP addresses, specific to your ingress architecture, that you want added to certificates issued by the sas-viya-issuer.  For example, the IP address of an external load balancer | string | | false | | viya |
 
 ## Postgres
 
