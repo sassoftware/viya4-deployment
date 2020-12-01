@@ -114,15 +114,11 @@ The playbook uses ansible vars for configuration. It is recommended to encrypt b
 
 ### Ansible Vars
 
-[Definitions](docs/CONFIG-VARS.md)
-
-[Azure Sample](examples/ansible-vars-azure.yaml)
+The ansible vars file is the main configuration file. Create a file named ansible-vars.yaml to customize any input variable value. For starters, you can copy one of the provided example variable definition files in ./examples folder. For more details on the variables declared in [ansible-vars-azure.yaml](examples/ansible-vars-azure.yaml) refer to [CONFIG-VARS.md](docs/CONFIG-VARS.md).
 
 ### Sitedefault
 
-Normal VIYA sitedefault file. When not specified, the following will be used:
-
-[Sample](examples/sitedefault.yaml)
+This is a normal VIYA sitedefault file. If none is supplied, the example [sitedefault.yaml](examples/sitedefault.yaml) will be used.
 
 ### Kubeconfig
 
@@ -130,9 +126,7 @@ Kubernetes access config file. When not integrating with SAS Viya 4 IaC projects
 
 ### Terraform state file
 
-When integrating with SAS Viya 4 IaC projects, you can provide the tfstate file to have the kubeconfig and other setting auto-discovered. The following example file shows the values that need to be set when using the iac integration
-
-[IAC Azure Sample](examples/ansible-vars-iac-azure.yaml)
+When integrating with SAS Viya 4 IaC projects, you can provide the tfstate file to have the kubeconfig and other setting auto-discovered. The [ansible-vars-iac-azure.yaml](examples/ansible-vars-iac-azure.yaml) example file shows the values that need to be set when using the iac integration.
 
 This following information is parsed from the integration:
 
