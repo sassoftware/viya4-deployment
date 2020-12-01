@@ -5,6 +5,9 @@ metadata:
   name: compute-template-nfs-0
 patch: |-
   - op: add
+    path: "/metadata/annotations/launcher.sas.com~1nfs-server"
+    value: {{V4_CFG_NFS_SVR_HOST }}
+  - op: add
     path: /template/spec/containers/0/volumeMounts/-
     value:
       mountPath: /mnt/viya-share/data

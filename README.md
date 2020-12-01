@@ -114,15 +114,11 @@ The playbook uses ansible vars for configuration. It is recommended to encrypt b
 
 ### Ansible Vars
 
-[Definitions](docs/CONFIG-VARS.md)
-
-[Azure Sample](examples/ansible-vars-azure.yaml)
+The ansible vars file is the main configuration file. Create a file named ansible-vars.yaml to customize any input variable value. For starters, you can copy one of the provided example variable definition files in ./examples folder. For more details on the variables declared in [ansible-vars-azure.yaml](examples/ansible-vars-azure.yaml) refer to [CONFIG-VARS.md](docs/CONFIG-VARS.md).
 
 ### Sitedefault
 
-Normal VIYA sitedefault file. When not specified, the following will be used:
-
-[Sample](examples/sitedefault.yaml)
+This is a normal VIYA sitedefault file. If none is supplied, the example [sitedefault.yaml](examples/sitedefault.yaml) will be used.
 
 ### Kubeconfig
 
@@ -130,7 +126,9 @@ Kubernetes access config file. When not integrating with SAS Viya 4 IaC projects
 
 ### Terraform state file
 
-When integrating with SAS Viya 4 IaC projects, you can provide the tfstate file to have the kubeconfig and other setting auto-discovered. This information includes
+When integrating with SAS Viya 4 IaC projects, you can provide the tfstate file to have the kubeconfig and other setting auto-discovered. The [ansible-vars-iac-azure.yaml](examples/ansible-vars-iac-azure.yaml) example file shows the values that need to be set when using the iac integration.
+
+This following information is parsed from the integration:
 
 - Cloud
   - PROVIDER
@@ -162,7 +160,7 @@ viya4-deployment fully manages the kustomize.yaml file. Users can make change by
 
 #### Viya Customizations
 
-Viya customizations are automatically read in from folders under site-config. To do so, first create the folder structure detailed in the [customizations](customizations) section above. Afterwards you can copy the desired overlays into a sub-folder under site-config. Once complete you can run the viya4-deployment tool and it will detect and add the overlays to the proper section in the kustomize.yaml
+Viya customizations are automatically read in from folders under site-config. To do so, first create the folder structure detailed in the [customizations](#customizations) section above. Afterwards you can copy the desired overlays into a sub-folder under site-config. Once complete you can run the viya4-deployment tool and it will detect and add the overlays to the proper section in the kustomize.yaml
 
 <sub> Note that you do not need to modify the kustomize.yaml. The tool will automatically add the custom overlays to the kustomize.yaml file.<sub>
 
@@ -184,7 +182,7 @@ For Example:
 
 #### Openldap Customizations
 
-If you enable the embedded openldap server, it is likely you would like to change the users/groups that will be created. This can be done like any other customizations. First create the folder structure detailed in the [customizations](customizations) section above. Afterwards copy the examples/openldap folder into the site-config folder. Inside the openldap folder is openldap-modify-users.yaml file. Modify it to match your desired setup. Once complete you can run the viya4-deployment tool and it will see and use this setup when creating the openldap server.
+If you enable the embedded openldap server, it is likely you would like to change the users/groups that will be created. This can be done like any other customizations. First create the folder structure detailed in the [customizations](#customizations) section above. Afterwards copy the examples/openldap folder into the site-config folder. Inside the openldap folder is openldap-modify-users.yaml file. Modify it to match your desired setup. Once complete you can run the viya4-deployment tool and it will see and use this setup when creating the openldap server.
 
 <sub>Note that then can only be used when first deploying the openldap server. Afterwards, you can either delete and redeploy the openldap server with a new config or add users via ldapadd.</sub>
 
@@ -288,19 +286,30 @@ an A record (ex. connect.example.com) points to the <connect_load_balancer_ip>
 
   ```bash
   docker run \
-  -v $HOME:/data \
-  -v $HOME/ansible-vars.yaml:/config/config \
-  -v $HOME/viya4-iac-azure/terraform.tfstate:/config/tfstate \
-  viya4-deployment --tags "baseline,viya,cluster-logging,cluster-monitoring,viya-monitoring,install"
+    -v $HOME:/data \
+    -v $HOME/ansible-vars.yaml:/config/config \
+    -v $HOME/viya4-iac-azure/terraform.tfstate:/config/tfstate \
+    viya4-deployment --tags "baseline,viya,cluster-logging,cluster-monitoring,viya-monitoring,install"
+  ```
+
+- I have a new cluster, deployed using [Viya 4 IaC for Azure](https://github.com/sassoftware/viya4-iac-azure) project, and want to install everything using ansible
+
+  ```bash
+  ansible-playbook \
+    -e BASE_DIR=$HOME \
+    -e CONFIG=$HOME/ansible-vars.yaml \
+    -e TFSTATE=$HOME/viya4-iac-azure/terraform.tfstate \
+    viya4-deployment --tags "baseline,viya,cluster-logging,cluster-monitoring,viya-monitoring,install"
   ```
 
 - I have a custom built cluster and want to baseline and deploy viya only using ansible
 
   ```bash
   ansible-playbook \
+    -e BASE_DIR=$HOME \
     -e KUBECONFIG=$HOME/.kube/config \
-    -e CONFIG=$HOME/ansible-vars.yaml\
-    -e JUMP_SVR_PRIVATE_KEY=$HOME/.ssh/id_rsa\
+    -e CONFIG=$HOME/ansible-vars.yaml \
+    -e JUMP_SVR_PRIVATE_KEY=$HOME/.ssh/id_rsa \
     playbooks/playbook.yaml --tags "baseline,viya,install"
   ```
 
@@ -308,21 +317,21 @@ an A record (ex. connect.example.com) points to the <connect_load_balancer_ip>
 
   ```bash
   docker run \
-  -v $HOME:/data \
-  -v $HOME/viya-deployments/deployments/azure/my_az_account/demo-aks/namespace2/site-config/defaults.yaml:/config/config \
-  -v $HOME/viya-deployments/deployments/azure/my_az_account/demo-aks/namespace2/site-config/.ssh:/config/jump_svr_private_key \
-  -v $HOME/viya-deployments/deployments/azure/my_az_account/demo-aks/namespace2/site-config/.kube:/config/kubeconfig \
-  viya4-deployment --tags "viya,viya-monitoring,install"
+    -v $HOME:/data \
+    -v $HOME/viya-deployments/deployments/azure/my_az_account/demo-aks/namespace2/site-config/defaults.yaml:/config/config \
+    -v $HOME/viya-deployments/deployments/azure/my_az_account/demo-aks/namespace2/site-config/.ssh:/config/jump_svr_private_key \
+    -v $HOME/viya-deployments/deployments/azure/my_az_account/demo-aks/namespace2/site-config/.kube:/config/kubeconfig \
+    viya4-deployment --tags "viya,viya-monitoring,install"
   ```
 
 - I have a cluster with everything installed and want to uninstall everything using docker
 
   ```bash
   docker run \
-  -v $HOME:/data \
-  -v $HOME/ansible-vars.yaml:/config/config \
-  -v $HOME/viya4-iac-azure/terraform.tfstate:/config/tfstate \
-  viya4-deployment --tags "baseline,viya,cluster-logging,cluster-monitoring,viya-monitoring,uninstall"
+    -v $HOME:/data \
+    -v $HOME/ansible-vars.yaml:/config/config \
+    -v $HOME/viya4-iac-azure/terraform.tfstate:/config/tfstate \
+    viya4-deployment --tags "baseline,viya,cluster-logging,cluster-monitoring,viya-monitoring,uninstall"
   ```
 
 ### Troubleshooting
