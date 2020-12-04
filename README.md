@@ -148,7 +148,7 @@ This following information is parsed from the integration:
 
 ### Customizations
 
-viya4-deployment fully manages the kustomize.yaml file. Users can make change by adding custom overlays into sub-folders under the site-config folder. If this is the first time you are running the tool and you need customizations, you can create the folder structure below.
+viya4-deployment fully manages the kustomization.yaml file. Users can make change by adding custom overlays into sub-folders under the site-config folder. If this is the first time you are running the tool and you need customizations, you can create the folder structure below.
 
 ```bash
 <base_dir>            <- parent directory
@@ -160,9 +160,9 @@ viya4-deployment fully manages the kustomize.yaml file. Users can make change by
 
 #### Viya Customizations
 
-Viya customizations are automatically read in from folders under site-config. To do so, first create the folder structure detailed in the [customizations](#customizations) section above. Afterwards you can copy the desired overlays into a sub-folder under site-config. Once complete you can run the viya4-deployment tool and it will detect and add the overlays to the proper section in the kustomize.yaml
+Viya customizations are automatically read in from folders under site-config. To do so, first create the folder structure detailed in the [customizations](#customizations) section above. Afterwards you can copy the desired overlays into a sub-folder under site-config. Once complete you can run the viya4-deployment tool and it will detect and add the overlays to the proper section in the kustomization.yaml
 
-<sub> Note that you do not need to modify the kustomize.yaml. The tool will automatically add the custom overlays to the kustomize.yaml file.<sub>
+<sub> Note that you do not need to modify the kustomization.yaml. The tool will automatically add the custom overlays to the kustomization.yaml file.<sub>
 
 For Example:
 
