@@ -16,12 +16,16 @@ RUN curl -sLO https://releases.hashicorp.com/terraform/${terraform_version}/terr
   && curl -sLO https://storage.googleapis.com/kubernetes-release/release/v{$kubectl_version}/bin/linux/amd64/kubectl && chmod 755 ./kubectl \
   && curl -sLO https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v${kustomize_version}/kustomize_v${kustomize_version}_linux_amd64.tar.gz && gunzip -c ./kustomize_v${kustomize_version}_linux_amd64.tar.gz | tar xvf - && chmod 755 ./kustomize
 
+RUN curl -o aws-iam-authenticator https://amazon-eks.s3.us-west-2.amazonaws.com/1.18.9/2020-11-02/bin/linux/amd64/aws-iam-authenticator && chmod 755 aws-iam-authenticator 
+
+
 # Installation
 FROM baseline
 
 COPY --from=tool_builder /build/terraform /usr/local/bin/terraform
 COPY --from=tool_builder /build/kubectl /usr/local/bin/kubectl
 COPY --from=tool_builder /build/kustomize /usr/local/bin/kustomize
+COPY --from=tool_builder /build/aws-iam-authenticator /usr/local/bin/aws-iam-authenticator
 
 # Add extra packages
 RUN apt-get -y install gzip wget git git-lfs jq sshpass \
