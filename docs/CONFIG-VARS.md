@@ -127,6 +127,7 @@ When setting V4_CFG_MANAGE_STORAGE to true, A new storage classes will be create
 | V4M_BASE_DOMAIN | Base domain in which subdomains for elasticsearch, kibana, grafana, prometheus and alertmanager will be created | string | | false | This or the per service fqdn's must be set | cluster-logging, cluster-monitoring, viya-monitoring |
 | V4M_CERT | Path to tls certificate to use for all monitoring/logging services | string | | false | Alternately you can set the per service cert | cluster-logging, cluster-monitoring, viya-monitoring |
 | V4M_KEY | Path to tls key to use for all monitoring/logging services | string | | false | Alternately you can set the per service cert | cluster-logging, cluster-monitoring, viya-monitoring |
+| V4M_NODE_PLACEMENT_ENABLE | Enable workload node placement for monitor componenets | bool | false | false | cluster-logging, cluster-monitoring, viya-monitoring |
 
 ### Monitoring
 
