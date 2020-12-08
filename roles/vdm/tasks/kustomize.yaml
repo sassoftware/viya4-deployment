@@ -1,12 +1,3 @@
-- name: kustomize - Create cr_access.json
-  template:
-    src: "cr_access.json"
-    dest: "{{ DEPLOY_DIR }}/site-config/cr_access.json"
-  tags:
-    - install
-    - uninstall
-    - upgrade
-
 - command: |
     git log -1 --format=format:"%H"
   register: githash

@@ -47,7 +47,22 @@
       - { generators: "{{ VDM_GENERATORS_PATH }}/sas-shared-config.yaml" }
       - { generators: "{{ VDM_GENERATORS_PATH }}/sas-consul-config.yaml" }
       - { generators: "{{ VDM_GENERATORS_PATH }}/ingress-input.yaml" }
-      - { generators: "{{ VDM_GENERATORS_PATH }}/sas-image-pull-secrets.yaml" }
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: CR access
+  block:
+    - template:
+        src: "cr_access.json"
+        dest: "{{ DEPLOY_DIR }}/site-config/cr_access.json"
+    - overlay_facts:
+        existing: "{{ vdm_overlays }}"
+        add:
+          - { generators: "{{ VDM_GENERATORS_PATH }}/sas-image-pull-secrets.yaml" }
+  when:
+    - V4_CFG_CR_USER is not none
   tags:
     - install
     - uninstall

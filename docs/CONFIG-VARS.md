@@ -108,8 +108,8 @@ When setting V4_CFG_MANAGE_STORAGE to true, A new storage classes will be create
 
 | Name | Description | Type | Default | Required | Notes | Actions |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_CR_USER | Container registry username | string | | true | | viya |
-| V4_CFG_CR_PASSWORD | Container registry password | string | | true | | viya |
+| V4_CFG_CR_USER | Container registry username | string | | false | By default, credentials are already included in the downloaded deploymentAssets | viya |
+| V4_CFG_CR_PASSWORD | Container registry password | string | | false | By default, credentials are already included in the downloaded deploymentAssets | viya |
 | V4_CFG_CR_URL | Container registry server | string | https://cr.sas.com | false | | viya |
 
 ## Ingress
