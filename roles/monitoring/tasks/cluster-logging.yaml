@@ -12,7 +12,7 @@
   shell:
     cmd: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/logging/bin/deploy_logging_open.sh"
   environment:
-    TLS_ENABLE: "{{ tls_enable }}"
+    TLS_ENABLE: "true"
     ES_OPEN_USER_YAML: "{{ tmpdir.path }}/user-values.yaml"
     KUBECONFIG: "{{ kubeconfig }}"
     LOG_COLOR_ENABLE: false

@@ -12,7 +12,7 @@
   shell:
     cmd: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/monitoring/bin/deploy_monitoring_cluster.sh"
   environment:
-    TLS_ENABLE: "{{ tls_enable }}"
+    TLS_ENABLE: "true"
     PROM_OPER_USER_YAML: "{{ tmpdir.path }}/user-values.yaml"
     KUBECONFIG: "{{ kubeconfig }}"
     LOG_COLOR_ENABLE: false
@@ -94,7 +94,7 @@
   shell:
     cmd: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/monitoring/bin/remove_monitoring_cluster.sh"
   environment:
-    TLS_ENABLE: "{{ tls_enable }}"
+    TLS_ENABLE: "true"
     PROM_OPER_USER_YAML: "{{ tmpdir.path }}/user-values.yaml"
     KUBECONFIG: "{{ kubeconfig }}"
     LOG_COLOR_ENABLE: false
