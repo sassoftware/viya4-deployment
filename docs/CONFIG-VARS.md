@@ -140,6 +140,7 @@ When setting V4_CFG_MANAGE_STORAGE to true, A new storage classes will be create
 | V4M_GRAFANA_FQDN | FQDN to use for grafana ingress | string | grafana.<V4M_BASE_DOMAIN> | false | | cluster-monitoring |
 | V4M_GRAFANA_CERT | Path to tls certificate to use for grafana ingress | string |<V4M_CERT> | false | If both this and V4M_CERT are not set a self-signed cert will be used | cluster-monitoring |
 | V4M_GRAFANA_KEY | Path to tls key to use for grafana ingress | string | <V4M_KEY> | false | If both this and V4M_KEY are not set a self-signed cert will be used | cluster-monitoring |
+| V4M_GRAFANA_PASSWORD | Grafana admin password | string | randomly generated | false | If not provided, a random password will be generated and written to the log output | cluster-monitoring |
 | | | | | | | |
 | V4M_ALERTMANAGER_FQDN | FQDN to use for alertmanager ingress | string | alertmanager.<V4M_BASE_DOMAIN> | false | | cluster-monitoring |
 | V4M_ALERTMANAGER_CERT | Path to tls certificate to use for alertmanager ingress | string |<V4M_CERT> | false | If both this and V4M_CERT are not set a self-signed cert will be used | cluster-monitoring |
@@ -152,6 +153,7 @@ When setting V4_CFG_MANAGE_STORAGE to true, A new storage classes will be create
 | V4M_KIBANA_FQDN | FQDN to use for kibana ingress | string | kibana.<V4M_BASE_DOMAIN> | false | | cluster-logging |
 | V4M_KIBANA_CERT | Path to tls certificate to use for kibana ingress | string |<V4M_CERT> | false | If both this and V4M_CERT are not set a self-signed cert will be used | cluster-logging |
 | V4M_KIBANA_KEY | Path to tls key to use for kibana ingress | string | <V4M_KEY> | false | If both this and V4M_KEY are not set a self-signed cert will be used | cluster-logging |
+| V4M_KIBANA_PASSWORD | Kibana admin password | string | randomly generated | false | If not provided, a random password will be generated and written to the log output | cluster-logging |
 | | | | | | | |
 | V4M_ELASTICSEARCH_FQDN | FQDN to use for elasticsearch ingress  | string | elasticsearch.<V4M_BASE_DOMAIN> | false | | cluster-logging |
 | V4M_ELASTICSEARCH_CERT | Path to tls certificate to use for elasticsearch ingress | string |<V4M_CERT> | false | If both this and V4M_CERT are not set a self-signed cert will be used | cluster-logging |
