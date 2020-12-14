@@ -1,4 +1,20 @@
 ---
+- name: cluster-monitoring - generate grafana password
+  set_fact:
+    V4M_GRAFANA_PASSWORD: "{{ lookup('password', '/tmp/passwordfile chars=ascii_letters,digits,hexdigits,punctuation') }}"
+  tags:
+    - install
+    - update
+    - uninstall
+  when:
+    - V4M_GRAFANA_PASSWORD is none
+
+- debug:
+    msg: "Grafana password: {{ V4M_KIBANA_PASSWORD }}"
+  tags:
+    - install
+    - update
+
 - name: cluster-monitoring - user values
   template:
     src: "user-values-prom-host.yaml"    
@@ -17,6 +33,7 @@
     KUBECONFIG: "{{ kubeconfig }}"
     LOG_COLOR_ENABLE: false
     NODE_PLACEMENT_ENABLE: "{{V4M_NODE_PLACEMENT_ENABLE}}"
+    GRAFANA_ADMIN_PASSWORD: "{{ V4M_GRAFANA_PASSWORD }}"
   tags:
     - install
     - update
