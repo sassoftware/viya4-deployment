@@ -10,7 +10,7 @@
     - V4M_GRAFANA_PASSWORD is none
 
 - debug:
-    msg: "Grafana password: {{ V4M_KIBANA_PASSWORD }}"
+    msg: "Grafana password: {{ V4M_GRAFANA_PASSWORD }}"
   tags:
     - install
     - update
