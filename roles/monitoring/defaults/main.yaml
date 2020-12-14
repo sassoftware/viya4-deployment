@@ -1,6 +1,6 @@
 kubeconfig: ~/.kube/config
 
-V4M_VERSION: master
+V4M_VERSION: stable
 V4M_NODE_PLACEMENT_ENABLE: false
 V4M_BASE_DOMAIN: example.com
 V4M_CERT: null
