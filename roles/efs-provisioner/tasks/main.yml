@@ -8,7 +8,7 @@
     chart_version: "{{ efs_chart_version }}"
     kubeconfig: "{{ kubeconfig }}"
     wait: true
-    update_repo_cache: true
+    update_repo_cache: false
     create_namespace: true
   tags:
     - install
