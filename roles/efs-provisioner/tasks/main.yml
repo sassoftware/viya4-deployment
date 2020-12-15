@@ -1,17 +1,8 @@
 ---
-- name: Add helm repos
-  community.kubernetes.helm_repository:
-    repo_name: "stable"
-    repo_url: "https://kubernetes-sigs.github.io/aws-efs-csi-driver/"
-  tags:
-    - install
-    - uninstall
-    - upgrade
-
 - name: Deploy efs-provisioner
   community.kubernetes.helm:
     name: "{{ efs_name }}"
-    chart_ref: "files/efs-provisioner-{{ efs_chart_version }}.tgz"
+    chart_ref: "{{ role_path }}/files/efs-provisioner-{{ efs_chart_version }}.tgz"
     namespace: "{{ efs_namespace }}"
     values: "{{ efs_provisioner_config }}"
     chart_version: "{{ efs_chart_version }}"
