@@ -11,7 +11,7 @@
 - name: Deploy efs-provisioner
   community.kubernetes.helm:
     name: "{{ efs_name }}"
-    chart_ref: stable/efs-provisioner
+    chart_ref: "files/efs-provisioner-{{ efs_chart_version }}.tgz"
     namespace: "{{ efs_namespace }}"
     values: "{{ efs_provisioner_config }}"
     chart_version: "{{ efs_chart_version }}"
