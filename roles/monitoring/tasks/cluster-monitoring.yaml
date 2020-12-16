@@ -1,7 +1,7 @@
 ---
 - name: cluster-monitoring - generate grafana password
   set_fact:
-    V4M_GRAFANA_PASSWORD: "{{ lookup('password', '/tmp/passwordfile chars=ascii_letters,digits,hexdigits,punctuation') }}"
+    V4M_GRAFANA_PASSWORD: "{{ lookup('password', '/dev/null chars=ascii_letters,digits') }}"
   tags:
     - install
   when:
