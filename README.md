@@ -9,7 +9,7 @@ This project contains Ansible code that creates a baseline in an existing kubern
 - Prepare K8s cluster
   - Deploy [ingress-nginx](https://kubernetes.github.io/ingress-nginx)
   - Deploy [nfs-client-provisioner](https://github.com/helm/charts/tree/master/stable/nfs-client-provisioner) for PVs
-  - Deploy [efs-client-provisioner](https://hub.helm.sh/charts/stable/efs-provisioner) for PVs in aws
+  - Deploy efs-provisioner for PVs in aws
   - Deploy [cert-manager](https://github.com/jetstack/cert-manager) if TLS to be configured
   - Manage storageclass
 - Deploy Viya
