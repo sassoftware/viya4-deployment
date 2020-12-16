@@ -14,7 +14,7 @@
 
 - name: cluster-monitoring - user values
   template:
-    src: "user-values-prom-host.yaml"    
+    src: "user-values-prom-host.yaml"
     dest: "{{ tmpdir.path }}/user-values.yaml"
   tags:
     - install

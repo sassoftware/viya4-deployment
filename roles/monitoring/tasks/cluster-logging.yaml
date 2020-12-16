@@ -14,7 +14,7 @@
 
 - name: cluster-logging - user values
   template:
-    src: "user-values-elasticsearch-open.yaml"    
+    src: "user-values-elasticsearch-open.yaml"
     dest: "{{ tmpdir.path }}/user-values.yaml"
   tags:
     - install
