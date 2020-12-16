@@ -1,7 +1,20 @@
 ---
+- name: cluster-logging - generate kibana password
+  set_fact:
+    V4M_KIBANA_PASSWORD: "{{ lookup('password', '/dev/null chars=ascii_letters,digits') }}"
+  tags:
+    - install
+  when:
+    - V4M_KIBANA_PASSWORD is none
+
+- debug:
+    msg: "Kibana password: {{ V4M_KIBANA_PASSWORD }}"
+  tags:
+    - install
+
 - name: cluster-logging - user values
   template:
-    src: "user-values-elasticsearch-open.yaml"    
+    src: "user-values-elasticsearch-open.yaml"
     dest: "{{ tmpdir.path }}/user-values.yaml"
   tags:
     - install
@@ -16,7 +29,8 @@
     ES_OPEN_USER_YAML: "{{ tmpdir.path }}/user-values.yaml"
     KUBECONFIG: "{{ kubeconfig }}"
     LOG_COLOR_ENABLE: false
-    NODE_PLACEMENT_ENABLE: "{{V4M_NODE_PLACEMENT_ENABLE}}"
+    NODE_PLACEMENT_ENABLE: "{{ V4M_NODE_PLACEMENT_ENABLE }}"
+    ES_ADMIN_PASSWD: "{{ V4M_KIBANA_PASSWORD }}"
   ignore_errors: yes
   tags:
     - install
