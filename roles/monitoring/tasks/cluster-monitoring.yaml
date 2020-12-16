@@ -4,7 +4,6 @@
     V4M_GRAFANA_PASSWORD: "{{ lookup('password', '/tmp/passwordfile chars=ascii_letters,digits,hexdigits,punctuation') }}"
   tags:
     - install
-    - update
     - uninstall
   when:
     - V4M_GRAFANA_PASSWORD is none
@@ -13,7 +12,6 @@
     msg: "Grafana password: {{ V4M_GRAFANA_PASSWORD }}"
   tags:
     - install
-    - update
 
 - name: cluster-monitoring - user values
   template:
@@ -32,7 +30,7 @@
     PROM_OPER_USER_YAML: "{{ tmpdir.path }}/user-values.yaml"
     KUBECONFIG: "{{ kubeconfig }}"
     LOG_COLOR_ENABLE: false
-    NODE_PLACEMENT_ENABLE: "{{V4M_NODE_PLACEMENT_ENABLE}}"
+    NODE_PLACEMENT_ENABLE: "{{ V4M_NODE_PLACEMENT_ENABLE }}"
     GRAFANA_ADMIN_PASSWORD: "{{ V4M_GRAFANA_PASSWORD }}"
   tags:
     - install
