@@ -37,6 +37,11 @@
         V4_CFG_NFS_SVR_PATH: "{{ tfstate.rwx_filestore_path.value }}"
       when: 
         - tfstate.rwx_filestore_path is defined
+    - name: tfstate - nfs private ip
+      set_fact:
+        V4_CFG_NFS_PRIVATE_IP: "{{  tfstate.nfs_private_ip.value }}"
+      when: 
+        - tfstate.nfs_private_ip is defined
     - name: tfstate - efs id
       set_fact:
         V4_CFG_EFS_FSID: "{{ tfstate.rwx_filestore_id.value }}"
