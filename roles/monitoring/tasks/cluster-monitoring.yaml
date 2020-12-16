@@ -4,7 +4,6 @@
     V4M_GRAFANA_PASSWORD: "{{ lookup('password', '/tmp/passwordfile chars=ascii_letters,digits,hexdigits,punctuation') }}"
   tags:
     - install
-    - uninstall
   when:
     - V4M_GRAFANA_PASSWORD is none
 
