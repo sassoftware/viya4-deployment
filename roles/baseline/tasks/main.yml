@@ -7,10 +7,9 @@
     efsFileSystemId: "{{ V4_CFG_EFS_FSID }}"
     awsRegion: "{{ V4_CFG_EFS_REGION }}"
   when:
-    - PROVIDER is defined
-    - PROVIDER == "aws"
     - V4_CFG_MANAGE_STORAGE is defined
     - V4_CFG_MANAGE_STORAGE
+    - CREATE_EFS_STORAGE_CLASS is defined
   tags:
     - baseline
 
@@ -33,7 +32,7 @@
     - V4_CFG_NFS_SVR_PATH is defined
     - V4_CFG_MANAGE_STORAGE is defined
     - V4_CFG_MANAGE_STORAGE
-    - PROVIDER != "aws"
+    - CREATE_NFS_STORAGE_CLASS is defined
   tags:
     - baseline
 
