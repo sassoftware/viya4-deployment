@@ -9,7 +9,7 @@
   when:
     - V4_CFG_MANAGE_STORAGE is defined
     - V4_CFG_MANAGE_STORAGE
-    - CREATE_EFS_STORAGE_CLASS is defined
+    - V4_CFG_EFS_FSID is defined
   tags:
     - baseline
 
@@ -32,7 +32,7 @@
     - V4_CFG_NFS_SVR_PATH is defined
     - V4_CFG_MANAGE_STORAGE is defined
     - V4_CFG_MANAGE_STORAGE
-    - CREATE_NFS_STORAGE_CLASS is defined
+    - V4_CFG_NFS_PRIVATE_IP is defined
   tags:
     - baseline
 
