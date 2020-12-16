@@ -1,10 +1,6 @@
-efs_chart_version: 0.12.0
+efs_chart_version: 0.13.1
 efs_name: efs-provisioner
 efs_namespace: efs-provisioner
-
-efs_csi_chart_version: 1.0.0
-efs_csi_name: aws-efs-csi-driver
-efs_csi_namespace: kube-system
 
 kubeconfig: ~/.kube/config
 storageClassname: sas
