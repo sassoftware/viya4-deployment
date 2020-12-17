@@ -6,3 +6,12 @@ metadata:
 behavior: merge
 literals:
   - IMAGE_REGISTRY={{ V4_CFG_CR_HOST }}
+---
+apiVersion: builtin
+kind: ConfigMapGenerator
+metadata:
+  name: ccp-image-location
+behavior: merge
+literals:
+  - CCP_IMAGE_REPO={{ V4_CFG_CR_HOST }}
+  - CCP_IMAGE_PATH={{ V4_CFG_CR_HOST }}
