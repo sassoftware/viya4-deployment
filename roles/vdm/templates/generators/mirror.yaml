@@ -5,4 +5,4 @@ metadata:
   name: input
 behavior: merge
 literals:
-    IMAGE_REGISTRY={{ V4_CFG_CR_HOST }}
+  - IMAGE_REGISTRY={{ V4_CFG_CR_HOST }}
