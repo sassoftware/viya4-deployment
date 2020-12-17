@@ -23,6 +23,7 @@
     add:
       - { transformers: "{{ VDM_TRANSFORMERS_PATH }}/mirror.yaml", priority: 65 }
       - { generators: "{{ VDM_GENERATORS_PATH }}/mirror.yaml" }
+  tags: 
     - install
     - uninstall
     - upgrade
