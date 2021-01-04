@@ -5,6 +5,9 @@ metadata:
   name: cas-enable-external-services
 patch: |-
   - op: add
+    path: /spec/publishBinaryService
+    value: true
+  - op: add
     path: /spec/serviceTemplate
     value:
       spec:
