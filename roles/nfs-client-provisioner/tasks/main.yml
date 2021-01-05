@@ -1,8 +1,8 @@
 ---
 - name: Add helm repo
   community.kubernetes.helm_repository:
-    repo_name: stable
-    repo_url: https://charts.helm.sh/stable
+    repo_name: ckotzbauer
+    repo_url: https://ckotzbauer.github.io/helm-charts
   tags:
     - install
     - uninstall
@@ -22,7 +22,7 @@
 - name: Deploy nfs-client
   community.kubernetes.helm:
     name: "{{ nfs_name }}"
-    chart_ref: stable/nfs-client-provisioner
+    chart_ref: ckotzbauer/nfs-client-provisioner
     namespace: "{{ nfs_namespace }}"
     values: "{{ nfs_client_config }}"
     chart_version: "{{ chart_version }}"
