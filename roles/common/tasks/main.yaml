@@ -25,7 +25,7 @@
         LOADBALANCER_SOURCE_RANGES: "{{LOADBALANCER_SOURCE_RANGES + [tfstate.nat_ip.value+'/32'] }}"
       when: 
         - tfstate.nat_ip is defined
-        - tfstate.nat_ip is not none
+        - tfstate.nat_ip|length > 0
         - LOADBALANCER_SOURCE_RANGES is defined
         - (tfstate.nat_ip.value+'/32') not in LOADBALANCER_SOURCE_RANGES
     - name: tfstate - nfs endpoint
@@ -33,13 +33,13 @@
         V4_CFG_NFS_SVR_HOST: "{{ tfstate.rwx_filestore_endpoint.value }}"
       when: 
         - tfstate.rwx_filestore_endpoint is defined
-        - tfstate.rwx_filestore_endpoint is not none
+        - tfstate.rwx_filestore_endpoint|length > 0
     - name: tfstate - nfs path
       set_fact:
         V4_CFG_NFS_SVR_PATH: "{{ tfstate.rwx_filestore_path.value }}"
       when: 
         - tfstate.rwx_filestore_path is defined
-        - tfstate.rwx_filestore_path is not none
+        - tfstate.rwx_filestore_path|length > 0
     - name: tfstate - nfs private ip
       set_fact:
         V4_CFG_NFS_PRIVATE_IP: "{{  tfstate.nfs_private_ip.value }}"
@@ -50,14 +50,14 @@
         V4_CFG_EFS_FSID: "{{ tfstate.rwx_filestore_id.value }}"
       when: 
         - tfstate.rwx_filestore_id is defined
-        - tfstate.rwx_filestore_id is not none
+        - tfstate.rwx_filestore_id|length > 0
         - ((PROVIDER is defined ) and (PROVIDER == "aws")) or ((tfstate.provider is defined) and (tfstate.provider == "aws"))
     - name: tfstate - efs region
       set_fact:
         V4_CFG_EFS_REGION: "{{ tfstate.location.value }}"
       when: 
         - tfstate.location is defined
-        - tfstate.location is not none
+        - tfstate.location|length > 0
         - ((PROVIDER is defined ) and (PROVIDER == "aws")) or ((tfstate.provider is defined) and (tfstate.provider == "aws"))  
     - name: tfstate - export kubeconfig
       copy:
@@ -67,25 +67,25 @@
         mode: "0600"
       when:
         - tfstate.kube_config is defined
-        - tfstate.kube_config is not none
+        - tfstate.kube_config|length > 0
     - name: tfstate - kubeconfig var
       set_fact:
         KUBECONFIG: "{{ tmpdir.path }}/.kube"
       when:
         - tfstate.kube_config is defined
-        - tfstate.kube_config is not none
+        - tfstate.kube_config|length > 0
     - name: tfstate - provider
       set_fact: 
         PROVIDER: "{{ tfstate.provider.value }}"
       when:
         - tfstate.provider is defined
-        - tfstate.provider is not none
+        - tfstate.provider|length > 0
     - name: tfstate - cluster name
       set_fact: 
         CLUSTER_NAME: "{{ tfstate.cluster_name.value }}"
       when:
         - tfstate.cluster_name is defined
-        - tfstate.cluster_name is not none
+        - tfstate.cluster_name|length > 0
     - name: tfstate - postgres admin
       set_fact:
         V4_CFG_POSTGRES_ADMIN_LOGIN: "{{ tfstate.postgres_admin.value }}"
@@ -120,13 +120,13 @@
         JUMP_SVR_HOST: "{{ tfstate.jump_public_ip.value }}"
       when:
         - tfstate.jump_public_ip is defined
-        - tfstate.jump_public_ip is not none
+        - tfstate.jump_public_ip|length > 0
     - name: tfstate - jump user
       set_fact:
         JUMP_SVR_USER: "{{ tfstate.jump_admin_username.value }}"
       when:
         - tfstate.jump_admin_username is defined
-        - tfstate.jump_admin_username is not none
+        - tfstate.jump_admin_username|length > 0
     - name: tfstate - ssh private key
       copy:
         content: "{{ tfstate.ssh_private_key.value }}"
@@ -134,13 +134,13 @@
         mode: "0600"
       when:
         - tfstate.ssh_private_key is defined
-        - tfstate.ssh_private_key is not none
+        - tfstate.ssh_private_key|length > 0
     - name: tfstate - jump private key var
       set_fact:
         JUMP_SVR_PRIVATE_KEY: "{{tmpdir.path}}/.ssh"
       when:
         - tfstate.ssh_private_key is defined
-        - tfstate.ssh_private_key is not none
+        - tfstate.ssh_private_key|length > 0
     - set_fact:
         tfstate: ""
   when:
