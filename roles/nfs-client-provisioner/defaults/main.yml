@@ -1,4 +1,4 @@
-chart_version: 1.2.8
+chart_version: 1.0.2
 nfs_name: nfs-client
 nfs_namespace: nfs-client
 kubeconfig: ~/.kube/config
@@ -10,6 +10,7 @@ nfs_client_config:
   nfs:
     server: "{{ nfs_server }}"
     path: "{{ nfs_path }}"
+    mountOptions: "noatime,nodiratime,rsize=262144,wsize=262144"
   podSecurityPolicy:
     enabled: "true"
   storageClass:
