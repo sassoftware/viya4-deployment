@@ -10,7 +10,11 @@ nfs_client_config:
   nfs:
     server: "{{ nfs_server }}"
     path: "{{ nfs_path }}"
-    mountOptions: "noatime,nodiratime,rsize=262144,wsize=262144"
+    mountOptions: 
+      - noatime
+      - nodiratime
+      - 'rsize=262144'
+      - 'wsize=262144'
   podSecurityPolicy:
     enabled: "true"
   storageClass:
