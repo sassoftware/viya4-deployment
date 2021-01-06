@@ -11,6 +11,8 @@
     - V4_CFG_MANAGE_STORAGE
     - V4_CFG_RWX_FILESTORE_ID is defined
     - PROVIDER == 'aws' 
+    - V4_CFG_RWX_FILESTORE_ID is defined
+    - V4_CFG_RWX_FILESTORE_ID is not none
   tags:
     - baseline
 
@@ -33,7 +35,8 @@
     - V4_CFG_RWX_FILESTORE_PATH is defined
     - V4_CFG_MANAGE_STORAGE is defined
     - V4_CFG_MANAGE_STORAGE
-    - ( PROVIDER == 'aws' ) and (( V4_CFG_RWX_FILESTORE_ID is not defined ) or ( V4_CFG_RWX_FILESTORE_ID is none ))
+    - PROVIDER == 'aws'
+    - ( V4_CFG_RWX_FILESTORE_ID is not defined ) or ( V4_CFG_RWX_FILESTORE_ID is none )
   tags:
     - baseline
 
