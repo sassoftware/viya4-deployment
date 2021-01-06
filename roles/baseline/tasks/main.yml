@@ -5,7 +5,7 @@
     name: efs-provisioner
   vars:
     efsFileSystemId: "{{ V4_CFG_RWX_FILESTORE_ID }}"
-    awsRegion: "{{ V4_CFG_RWX_FILESTORE_REGION }}"
+    awsRegion: "{{ V4_CFG_RWX_FILESTORE_LOCATION }}"
   when:
     - V4_CFG_MANAGE_STORAGE is defined
     - V4_CFG_MANAGE_STORAGE

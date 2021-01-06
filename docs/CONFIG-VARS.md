@@ -81,7 +81,7 @@ When setting V4_CFG_MANAGE_STORAGE to true, the efs-provisioner will be deployed
 | Name | Description | Type | Default | Required | Notes | Actions |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_RWX_FILESTORE_ID | AWS EFS FSID | string | | false | Required for AWS deploys | baseline, viya |
-| V4_CFG_RWX_FILESTORE_REGION | AWS EFS Region | string | | false | Required for AWS deploys | baseline, viya |
+| V4_CFG_RWX_FILESTORE_LOCATION | AWS EFS Region | string | | false | Required for AWS deploys | baseline, viya |
 
 ### GCP
 
