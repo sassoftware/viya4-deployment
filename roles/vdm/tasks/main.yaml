@@ -39,10 +39,10 @@
   overlay_facts:
     existing: "{{ vdm_overlays }}"
     add:
-      - { resources: "{{BUNDLE_ROOT }}/base", priority: 0 }
-      - { resources: "{{BUNDLE_ROOT }}/overlays/update-checker" }
-      - { configurations: "{{BUNDLE_ROOT }}/overlays/required/kustomizeconfig.yaml", priority: 51 }
-      - { transformers: "{{BUNDLE_ROOT }}/overlays/required/transformers.yaml", priority: 60 }
+      - { resources: "{{ BUNDLE_ROOT }}/base", priority: 0 }
+      - { resources: "{{ BUNDLE_ROOT }}/overlays/update-checker" }
+      - { configurations: "{{ BUNDLE_ROOT }}/overlays/required/kustomizeconfig.yaml", priority: 51 }
+      - { transformers: "{{ BUNDLE_ROOT }}/overlays/required/transformers.yaml", priority: 60 }
       - { generators: "{{ VDM_GENERATORS_PATH }}/sas-license.yaml" }
       - { generators: "{{ VDM_GENERATORS_PATH }}/sas-shared-config.yaml" }
       - { generators: "{{ VDM_GENERATORS_PATH }}/sas-consul-config.yaml" }

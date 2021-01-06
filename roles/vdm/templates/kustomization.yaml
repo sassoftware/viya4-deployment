@@ -6,19 +6,19 @@ namespace: {{ NAMESPACE }}
 {% for resource in ordered_overlays.result %}
 {{ resource }}:
 {% if 'pre' in ordered_overlays.result[resource] and ordered_overlays.result[resource]['pre']|length > 0 %}
-## vdm defined {{resource}} (pre)
+## vdm defined {{ resource }} (pre)
 {% for overlay in ordered_overlays.result[resource]['pre'] %}
   - {{ overlay }}
 {% endfor %}
 {% endif %}
 {% if user_customizations[resource]|length > 0 %}
-## user defined {{resource}}
+## user defined {{ resource }}
 {% for item in user_customizations[resource]|sort %}
   - {{ item }}
 {% endfor %}
 {% endif %}
 {% if 'post' in ordered_overlays.result[resource] and ordered_overlays.result[resource]['post']|length > 0 %}
-## vdm defined {{resource}} (post)
+## vdm defined {{ resource }} (post)
 {% for overlay in ordered_overlays.result[resource]['post'] %}
   - {{ overlay }}
 {% endfor %}

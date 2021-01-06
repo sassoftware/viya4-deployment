@@ -7,8 +7,8 @@
   overlay_facts:
     existing: "{{ vdm_overlays }}"
     add:
-      - { resources: "{{BUNDLE_ROOT }}/overlays/network/{{ V4_CFG_INGRESS_TYPE}}" }
-      - { resources: "{{BUNDLE_ROOT }}/overlays/network/{{ V4_CFG_INGRESS_TYPE}}/security" }
+      - { resources: "{{ BUNDLE_ROOT }}/overlays/network/{{ V4_CFG_INGRESS_TYPE }}" }
+      - { resources: "{{ BUNDLE_ROOT }}/overlays/network/{{ V4_CFG_INGRESS_TYPE }}/security" }
   tags:
     - install
     - uninstall

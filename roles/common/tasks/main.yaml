@@ -9,7 +9,7 @@
 
 - name: Set BASE_DIR default path
   set_fact:
-    BASE_DIR="{{ansible_env.HOME}}"
+    BASE_DIR="{{ ansible_env.HOME }}"
   when: BASE_DIR is not defined
   tags:
     - install
@@ -22,7 +22,7 @@
         tfstate: "{{ lookup('tfstate', TFSTATE) }}"
     - name: Add nat ip to LOADBALANCER_SOURCE_RANGES
       set_fact:
-        LOADBALANCER_SOURCE_RANGES: "{{LOADBALANCER_SOURCE_RANGES + [tfstate.nat_ip.value+'/32'] }}"
+        LOADBALANCER_SOURCE_RANGES: "{{ LOADBALANCER_SOURCE_RANGES + [tfstate.nat_ip.value+'/32'] }}"
       when: 
         - tfstate.nat_ip is defined
         - tfstate.nat_ip.value|length > 0
@@ -54,7 +54,7 @@
         - tfstate.location.value|length > 0
     - name: tfstate - export kubeconfig
       copy:
-        dest: "{{tmpdir.path}}/.kube"
+        dest: "{{ tmpdir.path }}/.kube"
         content: |
           {{ tfstate.kube_config.value }}
         mode: "0600"
@@ -123,14 +123,14 @@
     - name: tfstate - ssh private key
       copy:
         content: "{{ tfstate.ssh_private_key.value }}"
-        dest: "{{tmpdir.path}}/.ssh"
+        dest: "{{ tmpdir.path }}/.ssh"
         mode: "0600"
       when:
         - tfstate.ssh_private_key is defined
         - tfstate.ssh_private_key.value|length > 0
     - name: tfstate - jump private key var
       set_fact:
-        JUMP_SVR_PRIVATE_KEY: "{{tmpdir.path}}/.ssh"
+        JUMP_SVR_PRIVATE_KEY: "{{ tmpdir.path }}/.ssh"
       when:
         - tfstate.ssh_private_key is defined
         - tfstate.ssh_private_key.value|length > 0
@@ -145,7 +145,7 @@
 
 - name: Set DEPLOY_DIR
   set_fact:
-    DEPLOY_DIR="{{BASE_DIR}}/{{CLUSTER_NAME}}/{{NAMESPACE}}"
+    DEPLOY_DIR="{{ BASE_DIR }}/{{ CLUSTER_NAME }}/{{ NAMESPACE }}"
   when: DEPLOY_DIR is not defined
   tags:
     - install
