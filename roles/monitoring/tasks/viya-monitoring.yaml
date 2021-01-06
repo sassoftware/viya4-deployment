@@ -6,7 +6,7 @@
     VIYA_NS: "{{ namespace }}"
     KUBECONFIG: "{{ kubeconfig }}"
     LOG_COLOR_ENABLE: false
-    NODE_PLACEMENT_ENABLE: "{{V4M_NODE_PLACEMENT_ENABLE}}"
+    NODE_PLACEMENT_ENABLE: "{{ V4M_NODE_PLACEMENT_ENABLE}}"
   tags:
     - install
     - update

@@ -5,7 +5,7 @@ metadata:
   name: sas-postgres-config
 behavior: merge
 literals:
-  - DATABASE_HOST={{V4_CFG_POSTGRES_FQDN }}
+  - DATABASE_HOST={{ V4_CFG_POSTGRES_FQDN }}
   - DATABASE_PORT={{ V4_CFG_POSTGRES_PORT }}
   - DATABASE_SSL_ENABLED="false"
   - DATABASE_NAME={{ V4_CFG_POSTGRES_DATABASE }}

@@ -3,7 +3,7 @@
   overlay_facts:
     existing: "{{ vdm_overlays }}"
     add:
-      - { transformers: "{{VDM_TRANSFORMERS_PATH }}/sas-storageclass.yaml", priority: 99 }
+      - { transformers: "{{ VDM_TRANSFORMERS_PATH }}/sas-storageclass.yaml", priority: 99 }
   tags:
     - install
     - uninstall
