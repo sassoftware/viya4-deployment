@@ -16,8 +16,8 @@
       - { transformers: "{{ VDM_TRANSFORMERS_PATH }}/compute-template-nfs.yaml" }
       - { transformers: "{{ VDM_TRANSFORMERS_PATH }}/cas-add-nfs-mount.yaml" }
   when:
-    - V4_CFG_NFS_SVR_HOST is not none
-    - V4_CFG_NFS_SVR_PATH is not none
+    - V4_CFG_RWX_FILESTORE_ENDPOINT is not none
+    - V4_CFG_RWX_FILESTORE_PATH is not none
   tags:
     - install
     - uninstall

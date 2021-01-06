@@ -14,15 +14,15 @@ patch: |-
     value:
       name: nfs-data
       nfs:
-        server: {{V4_CFG_NFS_SVR_HOST }}
-        path: {{ V4_CFG_NFS_DATA_PATH }}
+        server: {{V4_CFG_RWX_FILESTORE_ENDPOINT }}
+        path: {{ V4_CFG_RWX_FILESTORE_DATA_PATH }}
   - op: add
     path: /spec/controllerTemplate/spec/volumes/-
     value:
       name: nfs-homes
       nfs:
-        server: {{V4_CFG_NFS_SVR_HOST }}
-        path: {{ V4_CFG_NFS_HOMES_PATH }}
+        server: {{V4_CFG_RWX_FILESTORE_ENDPOINT }}
+        path: {{ V4_CFG_RWX_FILESTORE_HOMES_PATH }}
   - op: add
     path: /spec/controllerTemplate/spec/containers/0/volumeMounts/-
     value:

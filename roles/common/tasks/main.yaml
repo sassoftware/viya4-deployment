@@ -30,35 +30,28 @@
         - (tfstate.nat_ip.value+'/32') not in LOADBALANCER_SOURCE_RANGES
     - name: tfstate - nfs endpoint
       set_fact:
-        V4_CFG_NFS_SVR_HOST: "{{ tfstate.rwx_filestore_endpoint.value }}"
+        V4_CFG_RWX_FILESTORE_ENDPOINT: "{{ tfstate.rwx_filestore_endpoint.value }}"
       when: 
         - tfstate.rwx_filestore_endpoint is defined
         - tfstate.rwx_filestore_endpoint.value|length > 0
     - name: tfstate - nfs path
       set_fact:
-        V4_CFG_NFS_SVR_PATH: "{{ tfstate.rwx_filestore_path.value }}"
+        V4_CFG_RWX_FILESTORE_PATH: "{{ tfstate.rwx_filestore_path.value }}"
       when: 
         - tfstate.rwx_filestore_path is defined
         - tfstate.rwx_filestore_path.value|length > 0
-    - name: tfstate - nfs private ip
+    - name: tfstate - filestore id
       set_fact:
-        V4_CFG_NFS_PRIVATE_IP: "{{  tfstate.nfs_private_ip.value }}"
-      when: 
-        - tfstate.nfs_private_ip is defined
-    - name: tfstate - efs id
-      set_fact:
-        V4_CFG_EFS_FSID: "{{ tfstate.rwx_filestore_id.value }}"
+        V4_CFG_RWX_FILESTORE_ID: "{{ tfstate.rwx_filestore_id.value }}"
       when: 
         - tfstate.rwx_filestore_id is defined
         - tfstate.rwx_filestore_id.value|length > 0
-        - ((PROVIDER is defined ) and (PROVIDER == "aws")) or ((tfstate.provider is defined) and (tfstate.provider == "aws"))
-    - name: tfstate - efs region
+    - name: tfstate - filestore location
       set_fact:
-        V4_CFG_EFS_REGION: "{{ tfstate.location.value }}"
+        V4_CFG_RWX_FILESTORE_LOCATION: "{{ tfstate.location.value }}"
       when: 
         - tfstate.location is defined
         - tfstate.location.value|length > 0
-        - ((PROVIDER is defined ) and (PROVIDER == "aws")) or ((tfstate.provider is defined) and (tfstate.provider == "aws"))  
     - name: tfstate - export kubeconfig
       copy:
         dest: "{{tmpdir.path}}/.kube"
