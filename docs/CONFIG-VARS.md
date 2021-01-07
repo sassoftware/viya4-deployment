@@ -6,7 +6,7 @@ Supported configuration variables are listed in the table below.  All variables 
 - [Misc](#misc)
 - [Jump Server](#jump-server)
 - [Storage](#storage)
-  - [NFS](#nfs)
+  - [RWX Filestore](#rwx-filestore)
   - [Azure](#azure)
   - [AWS](#aws)
   - [GCP](#gcp)
@@ -50,7 +50,7 @@ Supported configuration variables are listed in the table below.  All variables 
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 JUMP_SVR_HOST | ip/fqn to the jump host | string | | true | Tool uses the jump server to interact with nfs storage. | baseline, viya |
 JUMP_SVR_USER | ssh user to access the jump host | | string | true | Tool uses the jump server to interact with nfs storage. | baseline, viya |
-JUMP_SVR_PRIVATE_KEY | Path to ssh user private key to access the jump host | | string | true | Tool uses the jump server to interact with nfs storage. | baseline, viya |
+JUMP_SVR_PRIVATE_KEY | Path to ssh user private key to access the jump host | | string | true | Tool uses the jump server to interact with rwx filestore. | baseline, viya |
 
 ## Storage
 
@@ -59,7 +59,7 @@ JUMP_SVR_PRIVATE_KEY | Path to ssh user private key to access the jump host | | 
 | V4_CFG_MANAGE_STORAGE | Should the tool manage the storageclass | bool | true | false | Set to false if you wish to manage the storage class | baseline, viya |
 | V4_CFG_STORAGECLASS | Storageclass name | string | "sas" | false | When V4_CFG_MANAGE_STORAGE is false, set to the name of your preexisting storage class that supports ReadWriteMany | all |
 
-### NFS
+### RWX Filestorage
 
 | Name | Description | Type | Default | Required | Notes | Actions |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
