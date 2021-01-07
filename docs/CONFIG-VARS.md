@@ -6,7 +6,7 @@ Supported configuration variables are listed in the table below.  All variables 
 - [Misc](#misc)
 - [Jump Server](#jump-server)
 - [Storage](#storage)
-  - [RWX Filestore](#rwx-filestore)
+  - [RWX Filestorage](#rwx-filestorage)
   - [Azure](#azure)
   - [AWS](#aws)
   - [GCP](#gcp)
