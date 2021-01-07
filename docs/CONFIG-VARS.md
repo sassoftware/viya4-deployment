@@ -63,12 +63,12 @@ JUMP_SVR_PRIVATE_KEY | Path to ssh user private key to access the jump host | | 
 
 | Name | Description | Type | Default | Required | Notes | Actions |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_NFS_SVR_HOST | NFS ip/host | string | | false | | baseline, viya |
-| V4_CFG_NFS_SVR_PATH | NFS export path | string | /export | false | | baseline, viya |
-| V4_CFG_NFS_ASTORES_PATH | NFS path to astores dir | string | <V4_CFG_NFS_SVR_PATH>/\<NAMESPACE>/astores | false | | viya |
-| V4_CFG_NFS_BIN_PATH | NFS path to bin dir | string | <V4_CFG_NFS_SVR_PATH>/\<NAMESPACE>/bin | false | | viya |
-| V4_CFG_NFS_DATA_PATH | NFS path to data dir | string | <V4_CFG_NFS_SVR_PATH>/\<NAMESPACE>/data | false | | viya |
-| V4_CFG_NFS_HOMES_PATH | NFS path to homes dir | string | <V4_CFG_NFS_SVR_PATH>/\<NAMESPACE>/homes | false | | viya |
+| V4_CFG_RWX_FILESTORE_ENDPOINT | NFS ip/host | string | | false | | baseline, viya |
+| V4_CFG_RWX_FILESTORE_PATH | NFS export path | string | /export | false | | baseline, viya |
+| V4_CFG_RWX_FILESTORE_ASTORES_PATH | NFS path to astores dir | string | <V4_CFG_RWX_FILESTORE_PATH>/\<NAMESPACE>/astores | false | | viya |
+| V4_CFG_RWX_FILESTORE_BIN_PATH | NFS path to bin dir | string | <V4_CFG_RWX_FILESTORE_PATH>/\<NAMESPACE>/bin | false | | viya |
+| V4_CFG_RWX_FILESTORE_DATA_PATH | NFS path to data dir | string | <V4_CFG_RWX_FILESTORE_PATH>/\<NAMESPACE>/data | false | | viya |
+| V4_CFG_RWX_FILESTORE_HOMES_PATH | NFS path to homes dir | string | <V4_CFG_RWX_FILESTORE_PATH>/\<NAMESPACE>/homes | false | | viya |
 
 ### Azure
 
@@ -80,8 +80,8 @@ When setting V4_CFG_MANAGE_STORAGE to true, the efs-provisioner will be deployed
 
 | Name | Description | Type | Default | Required | Notes | Actions |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_EFS_FSID | AWS EFS FSID | string | | false | Required for AWS deploys | baseline, viya |
-| V4_CFG_EFS_REGION | AWS EFS Region | string | | false | Required for AWS deploys | baseline, viya |
+| V4_CFG_RWX_FILESTORE_ID | AWS EFS FSID | string | | false | Required for AWS deploys | baseline, viya |
+| V4_CFG_RWX_FILESTORE_LOCATION | AWS EFS Region | string | | false | Required for AWS deploys | baseline, viya |
 
 ### GCP
 

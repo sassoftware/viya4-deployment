@@ -11,9 +11,9 @@ LOADBALANCER_SOURCE_RANGES: ['<cluster_nat_ip>/32']
 JUMP_SVR_HOST: <jump_host>
 JUMP_SVR_USER: <jump_user>
 
-## NFS
-V4_CFG_NFS_SVR_HOST: <nfs_host>
-V4_CFG_NFS_SVR_PATH: <nfs_export_path>
+## RWX Filestore
+V4_CFG_RWX_FILESTORE_ENDPOINT: <nfs_host>
+V4_CFG_RWX_FILESTORE_PATH: <nfs_export_path>
 
 ## Storage 
 V4_CFG_MANAGE_STORAGE: true

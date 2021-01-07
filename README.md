@@ -134,9 +134,9 @@ This following information is parsed from the integration:
   - PROVIDER
   - CLUSTER_NAME
   - Cloud NAT IP address
-- NFS
-  - V4_CFG_NFS_SVR_HOST
-  - V4_CFG_NFS_SVR_PATH
+- RWX Filestore
+  - V4_CFG_RWX_FILESTORE_ENDPOINT
+  - V4_CFG_RWX_FILESTORE_PATH
 - JumpBox
   - JUMP_SVR_HOST
   - JUMP_SVR_USER

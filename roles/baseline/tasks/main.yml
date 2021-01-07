@@ -4,12 +4,15 @@
   include_role: 
     name: efs-provisioner
   vars:
-    efsFileSystemId: "{{ V4_CFG_EFS_FSID }}"
-    awsRegion: "{{ V4_CFG_EFS_REGION }}"
+    efsFileSystemId: "{{ V4_CFG_RWX_FILESTORE_ID }}"
+    awsRegion: "{{ V4_CFG_RWX_FILESTORE_LOCATION }}"
   when:
     - V4_CFG_MANAGE_STORAGE is defined
     - V4_CFG_MANAGE_STORAGE
-    - V4_CFG_EFS_FSID is defined
+    - V4_CFG_RWX_FILESTORE_ID is defined
+    - PROVIDER == 'aws' 
+    - V4_CFG_RWX_FILESTORE_ID is defined
+    - V4_CFG_RWX_FILESTORE_ID is not none
   tags:
     - baseline
 
@@ -19,8 +22,8 @@
   vars:
     nfs_client_config:
       nfs:
-        server: "{{ V4_CFG_NFS_SVR_HOST }}"
-        path: "{{ V4_CFG_NFS_SVR_PATH }}/pvs"
+        server: "{{ V4_CFG_RWX_FILESTORE_ENDPOINT }}"
+        path: "{{ V4_CFG_RWX_FILESTORE_PATH }}/pvs"
       podSecurityPolicy:
         enabled: true
       storageClass:
@@ -28,11 +31,11 @@
         defaultClass: false
         archiveOnDelete: false
   when:
-    - V4_CFG_NFS_SVR_HOST is defined
-    - V4_CFG_NFS_SVR_PATH is defined
+    - V4_CFG_RWX_FILESTORE_ENDPOINT is defined
+    - V4_CFG_RWX_FILESTORE_PATH is defined
     - V4_CFG_MANAGE_STORAGE is defined
     - V4_CFG_MANAGE_STORAGE
-    - V4_CFG_NFS_PRIVATE_IP is defined
+    - ( PROVIDER == 'aws' ) and (( V4_CFG_RWX_FILESTORE_ID is not defined ) or ( V4_CFG_RWX_FILESTORE_ID is none ))
   tags:
     - baseline
 

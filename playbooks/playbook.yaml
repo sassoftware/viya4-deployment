@@ -34,7 +34,7 @@
     - name: Setup storage folders
       file:
         state: directory
-        path: "/mnt/viya-share/{{ hostvars['localhost']['NAMESPACE']}}/{{item}}"
+        path: "/mnt/viya-share/{{ hostvars['localhost']['NAMESPACE']}}/{{ item }}"
         owner: "nobody"
         group: "nobody"
         mode: "0777"
@@ -56,7 +56,7 @@
       tags:
         - baseline
     - include_vars:
-        file: "{{DEPLOY_DIR}}/site-config/defaults.yaml"
+        file: "{{ DEPLOY_DIR }}/site-config/defaults.yaml"
       when: CONFIG is not defined
       tags:
         - viya

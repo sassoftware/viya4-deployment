@@ -9,7 +9,7 @@
 
 - name: Set BASE_DIR default path
   set_fact:
-    BASE_DIR="{{ansible_env.HOME}}"
+    BASE_DIR="{{ ansible_env.HOME }}"
   when: BASE_DIR is not defined
   tags:
     - install
@@ -22,7 +22,7 @@
         tfstate: "{{ lookup('tfstate', TFSTATE) }}"
     - name: Add nat ip to LOADBALANCER_SOURCE_RANGES
       set_fact:
-        LOADBALANCER_SOURCE_RANGES: "{{LOADBALANCER_SOURCE_RANGES + [tfstate.nat_ip.value+'/32'] }}"
+        LOADBALANCER_SOURCE_RANGES: "{{ LOADBALANCER_SOURCE_RANGES + [tfstate.nat_ip.value+'/32'] }}"
       when: 
         - tfstate.nat_ip is defined
         - tfstate.nat_ip.value|length > 0
@@ -30,38 +30,31 @@
         - (tfstate.nat_ip.value+'/32') not in LOADBALANCER_SOURCE_RANGES
     - name: tfstate - nfs endpoint
       set_fact:
-        V4_CFG_NFS_SVR_HOST: "{{ tfstate.rwx_filestore_endpoint.value }}"
+        V4_CFG_RWX_FILESTORE_ENDPOINT: "{{ tfstate.rwx_filestore_endpoint.value }}"
       when: 
         - tfstate.rwx_filestore_endpoint is defined
         - tfstate.rwx_filestore_endpoint.value|length > 0
     - name: tfstate - nfs path
       set_fact:
-        V4_CFG_NFS_SVR_PATH: "{{ tfstate.rwx_filestore_path.value }}"
+        V4_CFG_RWX_FILESTORE_PATH: "{{ tfstate.rwx_filestore_path.value }}"
       when: 
         - tfstate.rwx_filestore_path is defined
         - tfstate.rwx_filestore_path.value|length > 0
-    - name: tfstate - nfs private ip
+    - name: tfstate - filestore id
       set_fact:
-        V4_CFG_NFS_PRIVATE_IP: "{{  tfstate.nfs_private_ip.value }}"
-      when: 
-        - tfstate.nfs_private_ip is defined
-    - name: tfstate - efs id
-      set_fact:
-        V4_CFG_EFS_FSID: "{{ tfstate.rwx_filestore_id.value }}"
+        V4_CFG_RWX_FILESTORE_ID: "{{ tfstate.rwx_filestore_id.value }}"
       when: 
         - tfstate.rwx_filestore_id is defined
         - tfstate.rwx_filestore_id.value|length > 0
-        - ((PROVIDER is defined ) and (PROVIDER == "aws")) or ((tfstate.provider is defined) and (tfstate.provider == "aws"))
-    - name: tfstate - efs region
+    - name: tfstate - filestore location
       set_fact:
-        V4_CFG_EFS_REGION: "{{ tfstate.location.value }}"
+        V4_CFG_RWX_FILESTORE_LOCATION: "{{ tfstate.location.value }}"
       when: 
         - tfstate.location is defined
         - tfstate.location.value|length > 0
-        - ((PROVIDER is defined ) and (PROVIDER == "aws")) or ((tfstate.provider is defined) and (tfstate.provider == "aws"))  
     - name: tfstate - export kubeconfig
       copy:
-        dest: "{{tmpdir.path}}/.kube"
+        dest: "{{ tmpdir.path }}/.kube"
         content: |
           {{ tfstate.kube_config.value }}
         mode: "0600"
@@ -130,14 +123,14 @@
     - name: tfstate - ssh private key
       copy:
         content: "{{ tfstate.ssh_private_key.value }}"
-        dest: "{{tmpdir.path}}/.ssh"
+        dest: "{{ tmpdir.path }}/.ssh"
         mode: "0600"
       when:
         - tfstate.ssh_private_key is defined
         - tfstate.ssh_private_key.value|length > 0
     - name: tfstate - jump private key var
       set_fact:
-        JUMP_SVR_PRIVATE_KEY: "{{tmpdir.path}}/.ssh"
+        JUMP_SVR_PRIVATE_KEY: "{{ tmpdir.path }}/.ssh"
       when:
         - tfstate.ssh_private_key is defined
         - tfstate.ssh_private_key.value|length > 0
@@ -152,7 +145,7 @@
 
 - name: Set DEPLOY_DIR
   set_fact:
-    DEPLOY_DIR="{{BASE_DIR}}/{{CLUSTER_NAME}}/{{NAMESPACE}}"
+    DEPLOY_DIR="{{ BASE_DIR }}/{{ CLUSTER_NAME }}/{{ NAMESPACE }}"
   when: DEPLOY_DIR is not defined
   tags:
     - install
