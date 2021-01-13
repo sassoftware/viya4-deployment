@@ -13,8 +13,9 @@
   overlay_facts:
     existing: "{{ vdm_overlays }}"
     add:
-      - { transformers: "{{ VDM_TRANSFORMERS_PATH }}/compute-template-nfs.yaml" }
       - { transformers: "{{ VDM_TRANSFORMERS_PATH }}/cas-add-nfs-mount.yaml" }
+      - { transformers: "{{ VDM_TRANSFORMERS_PATH }}/compute-server-add-nfs-mount.yaml" }
+      - { transformers: "{{ VDM_TRANSFORMERS_PATH }}/launcher-service-add-nfs.yaml" }
   when:
     - V4_CFG_RWX_FILESTORE_ENDPOINT is not none
     - V4_CFG_RWX_FILESTORE_PATH is not none
