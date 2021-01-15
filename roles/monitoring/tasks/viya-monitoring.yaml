@@ -1,5 +1,5 @@
 ---
-- name: Deploy viya monitoring
+- name: viya-monitoring - deploy
   shell:
     cmd: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/monitoring/bin/deploy_monitoring_viya.sh"
   environment:
@@ -10,9 +10,8 @@
   tags:
     - install
     - update
-    - uninstall
 
-- name: Remove viya monitoring
+- name: viya-monitoring - remove
   shell:
     cmd: "{{ role_path }}/viya4-monitoring-kubernetes/monitoring/bin/remove_monitoring_viya.sh"
   environment:
