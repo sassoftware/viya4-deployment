@@ -13,7 +13,7 @@
 
 - name: viya-monitoring - remove
   shell:
-    cmd: "{{ role_path }}/viya4-monitoring-kubernetes/monitoring/bin/remove_monitoring_viya.sh"
+    cmd: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/monitoring/bin/remove_monitoring_viya.sh"
   environment:
     VIYA_NS: "{{ NAMESPACE }}"
     KUBECONFIG: "{{ KUBECONFIG }}"
