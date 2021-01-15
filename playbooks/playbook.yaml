@@ -52,7 +52,6 @@
     - name: baseline role
       include_role:
         name: baseline
-        public: yes
       tags:
         - baseline
     - include_vars:
@@ -68,10 +67,6 @@
     - name: monitoring role
       include_role:
         name: monitoring
-      vars:
-        tls_enable: "{{ V4_CFG_TLS_MODE != 'disabled' }}"
-        base_domain: "{{ V4_CFG_BASE_DOMAIN }}"
-        namespace: "{{ NAMESPACE }}"
       tags:
         - cluster-monitoring
         - cluster-logging

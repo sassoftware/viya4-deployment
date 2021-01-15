@@ -27,7 +27,7 @@
   environment:
     TLS_ENABLE: "true"
     ES_OPEN_USER_YAML: "{{ tmpdir.path }}/user-values.yaml"
-    KUBECONFIG: "{{ kubeconfig }}"
+    KUBECONFIG: "{{ KUBECONFIG }}"
     LOG_COLOR_ENABLE: false
     NODE_PLACEMENT_ENABLE: "{{ V4M_NODE_PLACEMENT_ENABLE }}"
     ES_ADMIN_PASSWD: "{{ V4M_KIBANA_PASSWORD }}"
@@ -38,7 +38,7 @@
 
 - name: cluster-monitoring - elasticsearch cert
   community.kubernetes.k8s:
-    kubeconfig: "{{ kubeconfig }}"
+    KUBECONFIG: "{{ KUBECONFIG }}"
     state: present
     definition:
       kind: Secret
@@ -61,7 +61,7 @@
 
 - name: cluster-monitoring - kibana cert
   community.kubernetes.k8s:
-    kubeconfig: "{{ kubeconfig }}"
+    KUBECONFIG: "{{ KUBECONFIG }}"
     state: present
     definition:
       kind: Secret
@@ -86,9 +86,9 @@
   shell:
     cmd: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/logging/bin/remove_logging_open.sh"
   environment:
-    TLS_ENABLE: "{{ tls_enable }}"
+    TLS_ENABLE: "true"
     ES_OPEN_USER_YAML: "{{ tmpdir.path }}/user-values.yaml"
-    KUBECONFIG: "{{ kubeconfig }}"
+    KUBECONFIG: "{{ KUBECONFIG }}"
     LOG_COLOR_ENABLE: false
   tags:
     - uninstall

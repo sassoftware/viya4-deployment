@@ -1,4 +1,5 @@
-kubeconfig: ~/.kube/config
+KUBECONFIG: ~/.kube/config
+NAMESPACE: default
 
 V4M_VERSION: stable
 V4M_NODE_PLACEMENT_ENABLE: false
