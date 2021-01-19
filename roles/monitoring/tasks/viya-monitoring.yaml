@@ -1,23 +1,22 @@
 ---
-- name: Deploy viya monitoring
+- name: viya-monitoring - deploy
   shell:
     cmd: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/monitoring/bin/deploy_monitoring_viya.sh"
   environment:
-    VIYA_NS: "{{ namespace }}"
-    KUBECONFIG: "{{ kubeconfig }}"
+    VIYA_NS: "{{ NAMESPACE }}"
+    KUBECONFIG: "{{ KUBECONFIG }}"
     LOG_COLOR_ENABLE: false
     NODE_PLACEMENT_ENABLE: "{{ V4M_NODE_PLACEMENT_ENABLE }}"
   tags:
     - install
     - update
-    - uninstall
 
-- name: Remove viya monitoring
+- name: viya-monitoring - remove
   shell:
-    cmd: "{{ role_path }}/viya4-monitoring-kubernetes/monitoring/bin/remove_monitoring_viya.sh"
+    cmd: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/monitoring/bin/remove_monitoring_viya.sh"
   environment:
-    VIYA_NS: "{{ namespace }}"
-    KUBECONFIG: "{{ kubeconfig }}"
+    VIYA_NS: "{{ NAMESPACE }}"
+    KUBECONFIG: "{{ KUBECONFIG }}"
     LOG_COLOR_ENABLE: false
   tags:
     - uninstall

@@ -6,7 +6,7 @@ RUN apt-get update && apt-get -y upgrade \
   && update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
 
 FROM baseline as tool_builder
-ARG terraform_version=0.13.4
+ARG terraform_version=0.13.6
 ARG kustomize_version=3.7.0
 ARG kubectl_version=1.18.8
 ARG aws_iam_authenticator_version="1.18.9/2020-11-02"

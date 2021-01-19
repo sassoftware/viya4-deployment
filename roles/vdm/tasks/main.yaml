@@ -2,7 +2,6 @@
 - file:
     state: directory
     dest: '{{ DEPLOY_DIR }}/site-config/'
-  no_log: yes
   tags:
     - install
     - uninstall

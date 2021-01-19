@@ -27,7 +27,7 @@
   environment:
     TLS_ENABLE: "true"
     PROM_OPER_USER_YAML: "{{ tmpdir.path }}/user-values.yaml"
-    KUBECONFIG: "{{ kubeconfig }}"
+    KUBECONFIG: "{{ KUBECONFIG }}"
     LOG_COLOR_ENABLE: false
     NODE_PLACEMENT_ENABLE: "{{ V4M_NODE_PLACEMENT_ENABLE }}"
     GRAFANA_ADMIN_PASSWORD: "{{ V4M_GRAFANA_PASSWORD }}"
@@ -37,7 +37,7 @@
 
 - name: cluster-monitoring - grafana cert
   community.kubernetes.k8s:
-    kubeconfig: "{{ kubeconfig }}"
+    kubeconfig: "{{ KUBECONFIG }}"
     state: present
     definition:
       kind: Secret
@@ -60,7 +60,7 @@
 
 - name: cluster-monitoring - prometheus cert
   community.kubernetes.k8s:
-    kubeconfig: "{{ kubeconfig }}"
+    kubeconfig: "{{ KUBECONFIG }}"
     state: present
     definition:
       kind: Secret
@@ -83,7 +83,7 @@
 
 - name: cluster-monitoring - alertmanager cert
   community.kubernetes.k8s:
-    kubeconfig: "{{ kubeconfig }}"
+    kubeconfig: "{{ KUBECONFIG }}"
     state: present
     definition:
       kind: Secret
@@ -110,7 +110,7 @@
   environment:
     TLS_ENABLE: "true"
     PROM_OPER_USER_YAML: "{{ tmpdir.path }}/user-values.yaml"
-    KUBECONFIG: "{{ kubeconfig }}"
+    KUBECONFIG: "{{ KUBECONFIG }}"
     LOG_COLOR_ENABLE: false
   tags:
     - uninstall
