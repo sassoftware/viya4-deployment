@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-# setup temp user
+# setup container user
 echo "viya4-deploynent:*:$(id -u):$(id -g):,,,:/viya4-deployment:/bin/bash" >> /etc/passwd
 echo "viya4-deployment:*:$(id -G | cut -d' ' -f 2)" >> /etc/group
 
