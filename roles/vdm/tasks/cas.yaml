@@ -59,7 +59,7 @@
   overlay_facts:
     existing: "{{ vdm_overlays }}"
     add:
-      - { transformers: "{{ VDM_TRANSFORMERS_PATH }}/cas-resources.yaml" }
+      - { transformers: "{{ VDM_TRANSFORMERS_PATH }}/cas-manage-cpu-and-memory.yaml" }
   when:
     - V4_CFG_CAS_RAM is not none
     - V4_CFG_CAS_CORES is not none
