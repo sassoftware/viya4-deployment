@@ -38,7 +38,7 @@
 
 - name: cluster-monitoring - elasticsearch cert
   community.kubernetes.k8s:
-    KUBECONFIG: "{{ KUBECONFIG }}"
+    kubeconfig: "{{ KUBECONFIG }}"
     state: present
     definition:
       kind: Secret
@@ -61,7 +61,7 @@
 
 - name: cluster-monitoring - kibana cert
   community.kubernetes.k8s:
-    KUBECONFIG: "{{ KUBECONFIG }}"
+    kubeconfig: "{{ KUBECONFIG }}"
     state: present
     definition:
       kind: Secret

@@ -37,7 +37,7 @@
 
 - name: cluster-monitoring - grafana cert
   community.kubernetes.k8s:
-    KUBECONFIG: "{{ KUBECONFIG }}"
+    kubeconfig: "{{ KUBECONFIG }}"
     state: present
     definition:
       kind: Secret
@@ -60,7 +60,7 @@
 
 - name: cluster-monitoring - prometheus cert
   community.kubernetes.k8s:
-    KUBECONFIG: "{{ KUBECONFIG }}"
+    kubeconfig: "{{ KUBECONFIG }}"
     state: present
     definition:
       kind: Secret
@@ -83,7 +83,7 @@
 
 - name: cluster-monitoring - alertmanager cert
   community.kubernetes.k8s:
-    KUBECONFIG: "{{ KUBECONFIG }}"
+    kubeconfig: "{{ KUBECONFIG }}"
     state: present
     definition:
       kind: Secret
