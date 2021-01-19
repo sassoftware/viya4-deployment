@@ -18,7 +18,6 @@ RUN curl -sLO https://releases.hashicorp.com/terraform/${terraform_version}/terr
   && curl -sLO https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v${kustomize_version}/kustomize_v${kustomize_version}_linux_amd64.tar.gz && gunzip -c ./kustomize_v${kustomize_version}_linux_amd64.tar.gz | tar xvf - && chmod 755 ./kustomize \
   && curl -sLO https://amazon-eks.s3.us-west-2.amazonaws.com/${aws_iam_authenticator_version}/bin/linux/amd64/aws-iam-authenticator && chmod 755 aws-iam-authenticator 
 
-
 # Installation
 FROM baseline
 
@@ -30,18 +29,19 @@ COPY --from=tool_builder /build/aws-iam-authenticator /usr/local/bin/aws-iam-aut
 # Add extra packages
 RUN apt-get -y install gzip wget git git-lfs jq sshpass \
   && curl -s https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash \
-  && pip install openshift ansible dnspython \
-  && useradd -ms /bin/bash -d /viya4-deployment viya4-deployment
+  && pip install openshift ansible dnspython 
 
 WORKDIR /viya4-deployment/
-USER viya4-deployment
-COPY --chown=viya4-deployment:viya4-deployment . /viya4-deployment/
+COPY . /viya4-deployment/
 
-RUN chmod +x /viya4-deployment/docker-entrypoint.sh \
-  && ansible-galaxy collection install -r requirements.yaml -f 
+RUN ansible-galaxy collection install -r requirements.yaml -f \
+  && chmod -R g=u /etc/passwd /etc/group /viya4-deployment/ \
+  && chmod 755 /viya4-deployment/docker-entrypoint.sh
 
 ENV PLAYBOOK=playbook.yaml 
 ENV VIYA4_DEPLOYMENT_TOOLING=docker
+ENV HOME=/viya4-deployment
+ENV ANSIBLE_CONFIG=/viya4-deployment/ansible.cfg
 
 VOLUME ["/data", "/config"]
 ENTRYPOINT ["/viya4-deployment/docker-entrypoint.sh"]
