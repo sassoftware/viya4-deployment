@@ -21,15 +21,15 @@ RUN curl -sLO https://releases.hashicorp.com/terraform/${terraform_version}/terr
 # Installation
 FROM baseline
 
-COPY --from=tool_builder /build/terraform /usr/local/bin/terraform
-COPY --from=tool_builder /build/kubectl /usr/local/bin/kubectl
-COPY --from=tool_builder /build/kustomize /usr/local/bin/kustomize
-COPY --from=tool_builder /build/aws-iam-authenticator /usr/local/bin/aws-iam-authenticator
-
 # Add extra packages
 RUN apt-get -y install gzip wget git git-lfs jq sshpass \
   && curl -s https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash \
   && pip install openshift ansible dnspython 
+
+COPY --from=tool_builder /build/terraform /usr/local/bin/terraform
+COPY --from=tool_builder /build/kubectl /usr/local/bin/kubectl
+COPY --from=tool_builder /build/kustomize /usr/local/bin/kustomize
+COPY --from=tool_builder /build/aws-iam-authenticator /usr/local/bin/aws-iam-authenticator
 
 WORKDIR /viya4-deployment/
 COPY . /viya4-deployment/
@@ -43,5 +43,5 @@ ENV VIYA4_DEPLOYMENT_TOOLING=docker
 ENV HOME=/viya4-deployment
 ENV ANSIBLE_CONFIG=/viya4-deployment/ansible.cfg
 
-VOLUME ["/data", "/config"]
+VOLUME ["/data", "/config", "/vault"]
 ENTRYPOINT ["/viya4-deployment/docker-entrypoint.sh"]
