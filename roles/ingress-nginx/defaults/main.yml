@@ -1,7 +1,7 @@
 nginx_name: ingress-nginx
 nginx_namespace: ingress-nginx
 kubeconfig: "~/.kube/config"
-chart_version: 2.16.0
+chart_version: 3.20.1
 
 loadBalancerSourceRanges: ["0.0.0.0/0"]
 
@@ -15,4 +15,9 @@ nginx_config:
       use-forwarded-headers: "true"
     tcp: {}
     udp: {}
+    lifecycle:
+      preStop:
+        exec:
+          command: ["/bin/sh", "-c", "sleep 5; /usr/local/nginx/sbin/nginx -c /etc/nginx/nginx.conf -s quit; while pgrep -x nginx; do sleep 1; done"]
+    terminationGracePeriodSeconds: 600
 
