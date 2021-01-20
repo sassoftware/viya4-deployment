@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -e
 
+# setup container user
+echo "viya4-deploynent:*:$(id -u):$(id -g):,,,:/viya4-deployment:/bin/bash" >> /etc/passwd
+echo "viya4-deployment:*:$(id -G | cut -d' ' -f 2)" >> /etc/group
+
 OPTS="-e BASE_DIR=/data"
 
 for MOUNT in "/config"/*

@@ -208,9 +208,9 @@ All configs needed by ansible are also needed to be mounted into the docker cont
 
 Examples:
 
-- The ansible flag `-e KUBECONFIG` is equivalent to `-v <path_to_file>:/config/kubeconfig` when running the docker container
-- The ansible flag `-e JUMP_SVR_PRIVATE_KEY` is equivalent to `-v <path_to_file>:/config/jump_svr_private_key` when running the docker container
-- The ansible flag `-e V4_CFG_SITEDEFAULT` is equivalent to `-v <path_to_file>:/config/v4_cfg_sitedefault` when running the docker container
+- The ansible flag `-e KUBECONFIG` is equivalent to `--volume <path_to_file>:/config/kubeconfig` when running the docker container
+- The ansible flag `-e JUMP_SVR_PRIVATE_KEY` is equivalent to `--volume <path_to_file>:/config/jump_svr_private_key` when running the docker container
+- The ansible flag `-e V4_CFG_SITEDEFAULT` is equivalent to `--volume <path_to_file>:/config/v4_cfg_sitedefault` when running the docker container
 
 Below are the only exceptions:
 
@@ -240,11 +240,13 @@ In the example command line below, replace each of the <> values, such as "<path
 
 ```bash
 docker run \
-  -v <path_to_store_files>:/data \
-  -v <path_to_kubeconfig_file>:/config/kubeconfig \
-  -v <path_to_ansible_vars_file>:/config/config \
-  -v <path_to_tfstate_file>:/config/tfstate \
-  -v <path_ssh_private_key>:/config/jump_svr_private_key \
+  --group-add root \
+  --user $(id -u):$(id -g) \
+  --volume <path_to_store_files>:/data \
+  --volume <path_to_kubeconfig_file>:/config/kubeconfig \
+  --volume <path_to_ansible_vars_file>:/config/config \
+  --volume <path_to_tfstate_file>:/config/tfstate \
+  --volume <path_ssh_private_key>:/config/jump_svr_private_key \
   viya4-deployment --tags "<desired_tasks>,<desired_action>"
 ```
 
@@ -286,9 +288,11 @@ an A record (ex. connect.example.com) points to the <connect_load_balancer_ip>
 
   ```bash
   docker run \
-    -v $HOME:/data \
-    -v $HOME/ansible-vars.yaml:/config/config \
-    -v $HOME/viya4-iac-azure/terraform.tfstate:/config/tfstate \
+    --group-add root \
+    --user $(id -u):$(id -g) \
+    --volume $HOME:/data \
+    --volume $HOME/ansible-vars.yaml:/config/config \
+    --volume $HOME/viya4-iac-azure/terraform.tfstate:/config/tfstate \
     viya4-deployment --tags "baseline,viya,cluster-logging,cluster-monitoring,viya-monitoring,install"
   ```
 
@@ -317,10 +321,12 @@ an A record (ex. connect.example.com) points to the <connect_load_balancer_ip>
 
   ```bash
   docker run \
-    -v $HOME:/data \
-    -v $HOME/viya-deployments/deployments/azure/my_az_account/demo-aks/namespace2/site-config/defaults.yaml:/config/config \
-    -v $HOME/viya-deployments/deployments/azure/my_az_account/demo-aks/namespace2/site-config/.ssh:/config/jump_svr_private_key \
-    -v $HOME/viya-deployments/deployments/azure/my_az_account/demo-aks/namespace2/site-config/.kube:/config/kubeconfig \
+    --group-add root \
+    --user $(id -u):$(id -g) \
+    --volume $HOME:/data \
+    --volume $HOME/viya-deployments/deployments/azure/my_az_account/demo-aks/namespace2/site-config/defaults.yaml:/config/config \
+    --volume $HOME/viya-deployments/deployments/azure/my_az_account/demo-aks/namespace2/site-config/.ssh:/config/jump_svr_private_key \
+    --volume $HOME/viya-deployments/deployments/azure/my_az_account/demo-aks/namespace2/site-config/.kube:/config/kubeconfig \
     viya4-deployment --tags "viya,viya-monitoring,install"
   ```
 
@@ -328,9 +334,11 @@ an A record (ex. connect.example.com) points to the <connect_load_balancer_ip>
 
   ```bash
   docker run \
-    -v $HOME:/data \
-    -v $HOME/ansible-vars.yaml:/config/config \
-    -v $HOME/viya4-iac-azure/terraform.tfstate:/config/tfstate \
+    --group-add root \
+    --user $(id -u):$(id -g) \
+    --volume $HOME:/data \
+    --volume $HOME/ansible-vars.yaml:/config/config \
+    --volume $HOME/viya4-iac-azure/terraform.tfstate:/config/tfstate \
     viya4-deployment --tags "baseline,viya,cluster-logging,cluster-monitoring,viya-monitoring,uninstall"
   ```
 
