@@ -61,4 +61,3 @@ grafana:
       domain: {{ V4M_BASE_DOMAIN }}
       root_url: https://{{ V4M_GRAFANA_FQDN }}
       serve_from_sub_path: false
-      
