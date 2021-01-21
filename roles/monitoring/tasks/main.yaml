@@ -9,6 +9,15 @@
     - uninstall
     - upgrade
 
+- name: Create monitoring and logging userdir
+  file:
+    path: "{{ tmpdir.path }}/v4m"
+    state: directory
+  tags:
+    - install
+    - uninstall
+    - upgrade
+      
 - name: Include cluster monitoring
   include_tasks: cluster-monitoring.yaml
   tags:

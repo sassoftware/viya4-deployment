@@ -25,8 +25,8 @@
   shell:
     cmd: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/monitoring/bin/deploy_monitoring_cluster.sh"
   environment:
+    USER_DIR: "{{ tmpdir.path }}/v4m"
     TLS_ENABLE: "true"
-    PROM_OPER_USER_YAML: "{{ tmpdir.path }}/user-values.yaml"
     KUBECONFIG: "{{ KUBECONFIG }}"
     LOG_COLOR_ENABLE: false
     NODE_PLACEMENT_ENABLE: "{{ V4M_NODE_PLACEMENT_ENABLE }}"

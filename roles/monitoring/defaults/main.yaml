@@ -1,9 +1,12 @@
 KUBECONFIG: ~/.kube/config
 NAMESPACE: null
 
+V4M_STORAGECLASS: azuredisk-v4m
+V4M_MANAGE_STORAGE: true
+
 V4M_VERSION: stable
 V4M_NODE_PLACEMENT_ENABLE: false
-V4M_BASE_DOMAIN: example.com
+# V4M_BASE_DOMAIN: example.com
 V4M_CERT: null
 V4M_KEY: null
 

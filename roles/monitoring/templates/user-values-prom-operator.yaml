@@ -18,6 +18,10 @@ prometheus:
     - {{ V4M_PROMETHEUS_FQDN }}
   prometheusSpec:
     externalUrl: "https://{{ V4M_PROMETHEUS_FQDN }}"
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+         storageClassName: {{ V4M_STORAGECLASS }}
 
 alertmanager:
   # Disable default configuration of NodePort
@@ -35,10 +39,12 @@ alertmanager:
     - {{ V4M_ALERTMANAGER_FQDN  }}
   alertManagerSpec:
     externalUrl: "https://{{ V4M_ALERTMANAGER_FQDN }}"
+    storage:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: {{ V4M_STORAGECLASS }}
 
 grafana:
-  image:
-    tag: "7.0.3"
   # Disable default configuration of NodePort
   service:
     type: ClusterIP
@@ -61,3 +67,7 @@ grafana:
       domain: {{ V4M_BASE_DOMAIN }}
       root_url: https://{{ V4M_GRAFANA_FQDN }}
       serve_from_sub_path: false
+  testFramework:
+    enabled: false
+  persistence:
+    storageClassName: {{ V4M_STORAGECLASS }}
