@@ -13,6 +13,12 @@ kibana:
       - {{ V4M_KIBANA_FQDN }}
 
 elasticsearch:
+  master:
+    persistence:
+      storageClass: {{ V4M_STORAGECLASS }}
+  data:
+    persistence:
+      storageClass: {{ V4M_STORAGECLASS }}
   client:
     ingress:
       annotations:

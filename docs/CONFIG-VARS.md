@@ -2,28 +2,29 @@
 
 Supported configuration variables are listed in the table below.  All variables can also be specified on the command line.  Values specified on the command line will override all values in configuration defaults files.
 
-- [Cloud info](#cloud-info)
-- [Misc](#misc)
-- [Jump Server](#jump-server)
-- [Storage](#storage)
-  - [RWX Filestore](#rwx-filestore)
-  - [Azure](#azure)
-  - [AWS](#aws)
-  - [GCP](#gcp)
-- [Order](#order)
-- [SAS API Access](#sas-api-access)
-- [Container Registry Access](#container-registry-access)
-- [Ingress](#ingress)
-- [Monitoring and Logging](#monitoring-and-logging)
-  - [Monitoring](#monitoring)
-  - [Logging](#logging)
-- [TLS](#tls)
-  - [Cert-manager](#cert-manager)
-- [Postgres](#postgres)
-  - [External Postgres](#external-postgres)
-- [LDAP / Consul](#ldap--consul)
-- [CAS](#cas)
-- [CONNECT](#connect)
+- [List of valid configuration variables](#list-of-valid-configuration-variables)
+  - [Cloud info](#cloud-info)
+  - [BASE](#base)
+  - [Jump Server](#jump-server)
+  - [Storage](#storage)
+    - [RWX Filestore](#rwx-filestore)
+    - [Azure](#azure)
+    - [AWS](#aws)
+    - [GCP](#gcp)
+  - [Order](#order)
+  - [SAS API Access](#sas-api-access)
+  - [Container Registry Access](#container-registry-access)
+  - [Ingress](#ingress)
+  - [Monitoring and Logging](#monitoring-and-logging)
+    - [Monitoring](#monitoring)
+    - [Logging](#logging)
+  - [TLS](#tls)
+    - [Cert-manager](#cert-manager)
+  - [Postgres](#postgres)
+    - [External Postgres](#external-postgres)
+  - [LDAP / Consul](#ldap--consul)
+  - [CAS](#cas)
+  - [CONNECT](#connect)
 
 ## Cloud info
 
@@ -56,8 +57,8 @@ JUMP_SVR_PRIVATE_KEY | Path to ssh user private key to access the jump host | | 
 
 | Name | Description | Type | Default | Required | Notes | Actions |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_MANAGE_STORAGE | Should the tool manage the storageclass | bool | true | false | Set to false if you wish to manage the storage class | baseline, viya |
-| V4_CFG_STORAGECLASS | Storageclass name | string | "sas" | false | When V4_CFG_MANAGE_STORAGE is false, set to the name of your preexisting storage class that supports ReadWriteMany | all |
+| V4_CFG_MANAGE_STORAGE | Should the tool manage the storageclass | bool | true | false | Set to false if you wish to manage the storage class | all |
+| V4_CFG_STORAGECLASS | Storageclass name | string | "sas" | false | When V4_CFG_MANAGE_STORAGE is false, set to the name of your preexisting storage class that supports ReadWriteMany | baseline, viya |
 
 ### RWX Filestore
 
@@ -128,6 +129,7 @@ When setting V4_CFG_MANAGE_STORAGE to true, A new storage classes will be create
 | V4M_CERT | Path to tls certificate to use for all monitoring/logging services | string | | false | Alternately you can set the per service cert | cluster-logging, cluster-monitoring, viya-monitoring |
 | V4M_KEY | Path to tls key to use for all monitoring/logging services | string | | false | Alternately you can set the per service cert | cluster-logging, cluster-monitoring, viya-monitoring |
 | V4M_NODE_PLACEMENT_ENABLE | Enable workload node placement for viya4-monitoring-kubernetes stack | bool | false | false | | cluster-logging, cluster-monitoring, viya-monitoring |
+| V4M_STORAGECLASS | Storageclass name | string | v4m | false | When V4_CFG_MANAGE_STORAGE is false, set to the name of your pre-existing storage class that supports ReadWriteOnce | cluster-logging, cluster-monitoring, viya-monitoring |
 
 ### Monitoring
 
