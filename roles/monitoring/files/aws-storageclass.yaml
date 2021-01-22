@@ -6,9 +6,10 @@ metadata:
     addonmanager.kubernetes.io/mode: EnsureExists
     kubernetes.io/cluster-service: "true"
   name: v4m
+provisioner: kubernetes.io/aws-ebs
 parameters:
-  skuName: Standard_LRS
-provisioner: kubernetes.io/azure-disk
+  fsType: ext4
+  type: gp2
 reclaimPolicy: Delete
 # Set binding mode to WaitForFirstConsumer to avoid
 # volume node affinity issues

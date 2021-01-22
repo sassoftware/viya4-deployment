@@ -1,7 +1,7 @@
 KUBECONFIG: ~/.kube/config
 NAMESPACE: null
 
-V4M_STORAGECLASS: azuredisk-v4m
+V4M_STORAGECLASS: v4m
 V4M_MANAGE_STORAGE: true
 
 V4M_VERSION: stable
