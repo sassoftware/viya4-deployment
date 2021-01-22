@@ -7,7 +7,8 @@
   when:
     - V4M_KIBANA_PASSWORD is none
 
-- debug:
+- name: cluster-logging - credentials
+  debug:
     msg: "Kibana password: {{ V4M_KIBANA_PASSWORD }}"
   tags:
     - install
@@ -25,8 +26,8 @@
   shell:
     cmd: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/logging/bin/deploy_logging_open.sh"
   environment:
+    USER_DIR: "{{ tmpdir.path }}/v4m"
     TLS_ENABLE: "true"
-    ES_OPEN_USER_YAML: "{{ tmpdir.path }}/user-values.yaml"
     KUBECONFIG: "{{ KUBECONFIG }}"
     LOG_COLOR_ENABLE: false
     NODE_PLACEMENT_ENABLE: "{{ V4M_NODE_PLACEMENT_ENABLE }}"
@@ -86,8 +87,8 @@
   shell:
     cmd: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/logging/bin/remove_logging_open.sh"
   environment:
+    USER_DIR: "{{ tmpdir.path }}/v4m"
     TLS_ENABLE: "true"
-    ES_OPEN_USER_YAML: "{{ tmpdir.path }}/user-values.yaml"
     KUBECONFIG: "{{ KUBECONFIG }}"
     LOG_COLOR_ENABLE: false
   tags:

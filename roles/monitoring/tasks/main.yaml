@@ -1,5 +1,5 @@
 ---
-- name: Download viya4-monitoring-kubernetes
+- name: v4m - download
   git:
     repo: https://github.com/sassoftware/viya4-monitoring-kubernetes.git
     dest: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/"
@@ -9,7 +9,21 @@
     - uninstall
     - upgrade
 
-- name: Create monitoring and logging userdir
+- name: v4m - add storageclass
+  community.kubernetes.k8s:
+    kubeconfig: "{{ KUBECONFIG }}"
+    state: present
+    src: "{{ role_path }}/files/{{ PROVIDER }}-storageclass.yaml"
+  when: 
+    - PROVIDER is not none
+    - PROVIDER in ["azure"]
+    - V4_CFG_MANAGE_STORAGE is not none
+    - V4_CFG_MANAGE_STORAGE
+  tags:
+    - install
+    - update
+
+- name: v4m - create userdir
   file:
     path: "{{ tmpdir.path }}/v4m"
     state: directory
@@ -18,17 +32,30 @@
     - uninstall
     - upgrade
       
-- name: Include cluster monitoring
+- name: v4m - cluster monitoring
   include_tasks: cluster-monitoring.yaml
   tags:
     - cluster-monitoring
 
-- name: Include viya monitoring
+- name: v4m - viya monitoring
   include_tasks: viya-monitoring.yaml
   tags:
     - viya-monitoring
 
-- name: Include cluster logging
+- name: v4m - cluster logging
   include_tasks: cluster-logging.yaml
   tags:
     - cluster-logging
+
+- name: v4m - remove storageclass
+  community.kubernetes.k8s:
+    kubeconfig: "{{ KUBECONFIG }}"
+    state: absent
+    src: "{{ role_path }}/files/{{ PROVIDER }}-storageclass.yaml"
+  when: 
+    - PROVIDER is not none
+    - PROVIDER == "azure"
+    - V4_CFG_MANAGE_STORAGE is not none
+    - V4_CFG_MANAGE_STORAGE
+  tags:
+    - uninstall

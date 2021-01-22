@@ -7,7 +7,8 @@
   when:
     - V4M_GRAFANA_PASSWORD is none
 
-- debug:
+- name: cluster-monitoring - credentials
+  debug:
     msg: "Grafana password: {{ V4M_GRAFANA_PASSWORD }}"
   tags:
     - install
@@ -108,8 +109,8 @@
   shell:
     cmd: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/monitoring/bin/remove_monitoring_cluster.sh"
   environment:
+    USER_DIR: "{{ tmpdir.path }}/v4m"
     TLS_ENABLE: "true"
-    PROM_OPER_USER_YAML: "{{ tmpdir.path }}/user-values.yaml"
     KUBECONFIG: "{{ KUBECONFIG }}"
     LOG_COLOR_ENABLE: false
   tags:
