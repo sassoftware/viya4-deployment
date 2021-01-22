@@ -92,7 +92,7 @@
     - install
     - update
 
-- name: cluster-logging - remove
+- name: cluster-logging - uninstall
   shell:
     cmd: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/logging/bin/remove_logging_open.sh"
   environment:

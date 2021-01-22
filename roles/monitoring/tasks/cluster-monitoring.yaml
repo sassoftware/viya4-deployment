@@ -114,7 +114,7 @@
     - install
     - update
 
-- name: cluster-monitoring - remove
+- name: cluster-monitoring - uninstall
   shell:
     cmd: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/monitoring/bin/remove_monitoring_cluster.sh"
   environment:
