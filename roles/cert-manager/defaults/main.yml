@@ -1,6 +1,6 @@
 cert_manager_name: cert-manager
 cert_manager_namespace: cert-manager
-chart_version: 0.15.0
+chart_version: 1.1.0
 kubeconfig: "~/.kube/config"
 
 cert_manager_config: 
