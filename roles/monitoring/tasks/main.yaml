@@ -22,16 +22,7 @@
   tags:
     - install
     - update
-
-- name: v4m - create userdir
-  file:
-    path: "{{ tmpdir.path }}/v4m"
-    state: directory
-  tags:
-    - install
-    - uninstall
-    - upgrade
-      
+     
 - name: v4m - cluster monitoring
   include_tasks: cluster-monitoring.yaml
   tags:

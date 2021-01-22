@@ -1,4 +1,13 @@
 ---
+- name: cluster-monitoring - create userdir
+  file:
+    path: "{{ tmpdir.path }}/monitoring/"
+    state: directory
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
 - name: cluster-monitoring - generate grafana password
   set_fact:
     V4M_GRAFANA_PASSWORD: "{{ lookup('password', '/dev/null chars=ascii_letters,digits') }}"
@@ -16,7 +25,7 @@
 - name: cluster-monitoring - user values
   template:
     src: "user-values-prom-operator.yaml"
-    dest: "{{ tmpdir.path }}/user-values.yaml"
+    dest: "{{ tmpdir.path }}/monitoring/user-values-prom-operator.yaml"
   tags:
     - install
     - update
@@ -26,7 +35,7 @@
   shell:
     cmd: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/monitoring/bin/deploy_monitoring_cluster.sh"
   environment:
-    USER_DIR: "{{ tmpdir.path }}/v4m"
+    USER_DIR: "{{ tmpdir.path }}"
     TLS_ENABLE: "true"
     KUBECONFIG: "{{ KUBECONFIG }}"
     LOG_COLOR_ENABLE: false
@@ -109,7 +118,7 @@
   shell:
     cmd: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/monitoring/bin/remove_monitoring_cluster.sh"
   environment:
-    USER_DIR: "{{ tmpdir.path }}/v4m"
+    USER_DIR: "{{ tmpdir.path }}"
     TLS_ENABLE: "true"
     KUBECONFIG: "{{ KUBECONFIG }}"
     LOG_COLOR_ENABLE: false
