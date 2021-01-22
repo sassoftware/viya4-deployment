@@ -11,7 +11,7 @@
     - install
     - update
 
-- name: viya-monitoring - remove
+- name: viya-monitoring - uninstall
   shell:
     cmd: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/monitoring/bin/remove_monitoring_viya.sh"
   environment:
