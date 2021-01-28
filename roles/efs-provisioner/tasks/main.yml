@@ -22,6 +22,7 @@
     wait: true
     values: "{{ efs_provisioner_config }}"
     state: absent
+    update_repo_cache: true
   tags:
     - uninstall
 

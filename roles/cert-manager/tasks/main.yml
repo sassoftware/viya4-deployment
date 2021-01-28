@@ -27,6 +27,7 @@
     values: "{{ cert_manager_config }}"
     chart_version: "{{ chart_version }}"
     kubeconfig: "{{ kubeconfig }}"
+    update_repo_cache: true
     wait: true
   tags:
     - install
@@ -38,6 +39,7 @@
     namespace: "{{ cert_manager_namespace }}"
     kubeconfig: "{{ kubeconfig }}"
     wait: true
+    update_repo_cache: true
     values: "{{ cert_manager_config }}"
     state: absent
   tags:

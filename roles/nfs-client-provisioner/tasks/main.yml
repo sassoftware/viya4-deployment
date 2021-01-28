@@ -41,6 +41,7 @@
     wait: true
     values: "{{ nfs_client_config }}"
     state: absent
+    update_repo_cache: true
   tags:
     - uninstall
 
