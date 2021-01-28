@@ -11,6 +11,7 @@ This project contains Ansible code that creates a baseline in an existing kubern
   - Deploy [nfs-client-provisioner](https://artifacthub.io/packages/helm/ckotzbauer/nfs-client-provisioner) for PVs
   - Deploy efs-provisioner for PVs in aws
   - Deploy [cert-manager](https://github.com/jetstack/cert-manager) if TLS to be configured
+  - Deploy [metrics-server](https://github.com/bitnami/charts/tree/master/bitnami/metrics-server/)
   - Manage storageclass
 - Deploy Viya
   - Retrieve the deployment assets using [Viya Orders CLI](https://github.com/sassoftware/viya4-orders-cli)
