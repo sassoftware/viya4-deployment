@@ -28,6 +28,7 @@
     kubeconfig_path: "{{ kubeconfig }}"
     chart_version: "{{ chart_version }}"
     wait: true
+    update_repo_cache: true
   tags:
     - install
     - upgrade
@@ -40,6 +41,7 @@
     wait: true
     values: "{{ nginx_config }}"
     state: absent
+    update_repo_cache: true
   tags:
     - uninstall
 

@@ -1,0 +1,50 @@
+---
+- name: Check for metrics service
+  community.kubernetes.k8s_info:
+    api_version: v1
+    kind: Service
+    name: metrics-server
+    namespace: kube-system
+    kubeconfig: "{{ kubeconfig }}"
+  register: metrics_service
+  tags:
+    - install
+    - upgrade
+    - uninstall
+
+- name: Add helm repo
+  community.kubernetes.helm_repository:
+    repo_name: bitnami
+    repo_url: https://charts.bitnami.com/bitnami/
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: Deploy metrics-server
+  community.kubernetes.helm:
+    name: "{{ metrics_server_name }}"
+    chart_ref: bitnami/metrics-server
+    namespace: "kube-system"
+    values: "{{ metrics_server_config }}"
+    chart_version: "{{ chart_version }}"
+    kubeconfig: "{{ kubeconfig }}"
+    update_repo_cache: true
+    wait: true
+  tags:
+    - install
+    - upgrade
+  when:
+    - (metrics_service.resources | length) == 0
+
+- name: Remove metrics-server
+  community.kubernetes.helm:
+    name: "{{ metrics_server_name }}"
+    namespace: "kube-system"
+    kubeconfig: "{{ kubeconfig }}"
+    values: "{{ metrics_server_config }}"
+    state: absent
+    update_repo_cache: true
+    wait: true
+  tags:
+    - uninstall

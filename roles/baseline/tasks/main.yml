@@ -62,3 +62,9 @@
     name: cert-manager
   tags:
     - baseline
+
+- name: Include metrics-server
+  include_role: 
+    name: metrics-server
+  tags:
+    - baseline
