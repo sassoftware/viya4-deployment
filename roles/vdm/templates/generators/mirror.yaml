@@ -6,6 +6,7 @@ metadata:
 behavior: merge
 literals:
   - IMAGE_REGISTRY={{ V4_CFG_CR_HOST }}
+{% if V4_CFG_POSTGRES_TYPE is defined and V4_CFG_POSTGRES_TYPE == "internal" %}
 ---
 apiVersion: builtin
 kind: ConfigMapGenerator
@@ -15,3 +16,4 @@ behavior: merge
 literals:
   - CCP_IMAGE_REPO={{ V4_CFG_CR_HOST }}
   - CCP_IMAGE_PATH={{ V4_CFG_CR_HOST }}
+{% endif %}
