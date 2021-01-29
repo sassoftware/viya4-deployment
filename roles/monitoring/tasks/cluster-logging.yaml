@@ -8,6 +8,28 @@
     - uninstall
     - upgrade
 
+- name: cluster-logging - lookup creds
+  community.kubernetes.k8s_info:
+    api_version: v1
+    kind: Secret
+    name: internal-user-admin
+    namespace: logging
+    kubeconfig: "{{ kubeconfig }}"
+  register: logging_creds
+  tags:
+    - install
+    - upgrade
+    - uninstall
+
+- set_fact:
+    V4M_KIBANA_PASSWORD: "{{logging_creds.resources[0].data.password|b64decode}}"
+  tags:
+    - install
+    - upgrade
+    - uninstall
+  when:
+    - (logging_creds.resources | length) == 1
+    
 - name: cluster-logging - generate kibana password
   set_fact:
     V4M_KIBANA_PASSWORD: "{{ lookup('password', '/dev/null chars=ascii_letters,digits') }}"
@@ -18,7 +40,9 @@
 
 - name: cluster-logging - credentials
   debug:
-    msg: "Kibana password: {{ V4M_KIBANA_PASSWORD }}"
+    msg:
+      - "Kibana username: admin" 
+      - "Kibana password: {{ V4M_KIBANA_PASSWORD }}"
   tags:
     - install
 
