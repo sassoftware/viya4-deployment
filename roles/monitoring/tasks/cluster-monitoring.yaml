@@ -8,6 +8,28 @@
     - uninstall
     - upgrade
 
+- name: cluster-monitoring - lookup creds
+  community.kubernetes.k8s_info:
+    api_version: v1
+    kind: Secret
+    name: v4m-grafana
+    namespace: monitoring
+    kubeconfig: "{{ kubeconfig }}"
+  register: monitoring_creds
+  tags:
+    - install
+    - upgrade
+    - uninstall
+
+- set_fact:
+    V4M_GRAFANA_PASSWORD: "{{monitoring_creds.resources[0].data['admin-password']|b64decode}}"
+  tags:
+    - install
+    - upgrade
+    - uninstall
+  when:
+    - (monitoring_creds.resources | length) == 1
+
 - name: cluster-monitoring - generate grafana password
   set_fact:
     V4M_GRAFANA_PASSWORD: "{{ lookup('password', '/dev/null chars=ascii_letters,digits') }}"
@@ -18,7 +40,9 @@
 
 - name: cluster-monitoring - credentials
   debug:
-    msg: "Grafana password: {{ V4M_GRAFANA_PASSWORD }}"
+    msg: 
+      - "Grafana username: admin" 
+      - "Grafana password: {{ V4M_GRAFANA_PASSWORD }}"
   tags:
     - install
 
