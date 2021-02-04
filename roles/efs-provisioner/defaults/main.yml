@@ -11,7 +11,6 @@ path: /pvs
 efs_provisioner_config:
   global:
     deployEnv: production
-
   efsProvisioner:
     efsFileSystemId: "{{ efsFileSystemId }}"
     awsRegion: "{{ awsRegion }}"
@@ -25,10 +24,12 @@ efs_provisioner_config:
         gidMin: 40000
         gidMax: 50000
       reclaimPolicy: Delete
-      mountOptions: []
-
+      mountOptions:
+        - noatime
+        - nodiratime
+        - 'rsize=262144'
+        - 'wsize=262144'
   rbac:
     create: true
-
   podSecurityPolicy:
     enabled: true
