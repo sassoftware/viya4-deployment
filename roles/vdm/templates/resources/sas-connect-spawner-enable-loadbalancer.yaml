@@ -14,6 +14,6 @@ spec:
     sas.com/deployment: sas-viya
   type: LoadBalancer
   loadBalancerSourceRanges: {{ LOADBALANCER_SOURCE_RANGES }}
-  {% if PROVIDER == "azure" %}
+  {% if PROVIDER == "azure" -%}
   externalTrafficPolicy: Local
   {% endif %}
