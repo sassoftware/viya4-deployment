@@ -1,5 +1,5 @@
 ---
-- name: opendistro - base
+- name: optional - elasticsearch
   overlay_facts:
     existing: "{{ vdm_overlays }}"
     add:
