@@ -118,6 +118,13 @@
     - uninstall
     - upgrade
 
+- name: Include Optional Overlays
+  include_tasks: optional.yaml
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
 - name: Include Storage
   include_tasks: storage.yaml
   tags:
