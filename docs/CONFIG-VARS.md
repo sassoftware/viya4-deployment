@@ -22,9 +22,9 @@ Supported configuration variables are listed in the table below.  All variables 
     - [Cert-manager](#cert-manager)
   - [Postgres](#postgres)
     - [External Postgres](#external-postgres)
-  - [LDAP / Consul](#ldap--consul)
   - [CAS](#cas)
   - [CONNECT](#connect)
+  - [Miscellaneous](#miscellaneous)
 
 ## Cloud info
 
@@ -196,13 +196,6 @@ When setting V4_CFG_TLS_MODE to a value other than "disabled" and no V4_CFG_TLS_
 | V4_CFG_POSTGRES_PORT | Existing postgres port | string | 5432 | false | | viya |
 | V4_CFG_POSTGRES_DATABASE | Existing postgres database name | string | "SharedServices" | false | | viya |
 
-## LDAP / Consul
-
-| Name | Description | Type | Default | Required | Notes | Actions |
-| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_EMBEDDED_LDAP_ENABLE | Deploy openldap in the namespace for authentication | bool | false | false | [Openldap Config](../roles/vdm/templates/generators/openldap-bootstrap-config.yaml) | viya |
-| V4_CFG_CONSUL_ENABLE_LOADBALANCER | Setup LB to access consul ui | bool | false | false | Consul ui port is 8500 | viya |
-
 ## CAS
 
 | Name | Description | Type | Default | Required | Notes | Actions |
@@ -219,3 +212,12 @@ When setting V4_CFG_TLS_MODE to a value other than "disabled" and no V4_CFG_TLS_
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_CONNECT_ENABLE_LOADBALANCER | Setup LB to access SAS/CONNECT | bool | false | false | | viya |
 | V4_CFG_CONNECT_FQDN | FQDN that will be assigned to access SAS/CONNECT | string | | false | Required when V4_CFG_TLS_MODE is not disabled and cert-manager is used to issue TLS certificates. This FQDN will be added to the SAN DNS list of the issued certificates. | viya |
+
+## Miscellaneous
+
+| Name | Description | Type | Default | Required | Notes | Actions |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
+| V4_CFG_EMBEDDED_LDAP_ENABLE | Deploy openldap in the namespace for authentication | bool | false | false | [Openldap Config](../roles/vdm/templates/generators/openldap-bootstrap-config.yaml) | viya |
+| V4_CFG_CONSUL_ENABLE_LOADBALANCER | Setup LB to access consul ui | bool | false | false | Consul ui port is 8500 | viya |
+| V4_CFG_ELASTICSEARCH_ENABLE | Enable opendistro elasticsearch | bool | false | false | | viya |
+
