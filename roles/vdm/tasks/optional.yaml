@@ -1,0 +1,15 @@
+---
+- name: opendistro - base
+  overlay_facts:
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { resources: "{{ BUNDLE_ROOT }}/overlays/internal-elasticsearch" }
+      - { transformers: "{{ BUNDLE_ROOT }}/overlays/internal-elasticsearch/internal-elasticsearch-transformer.yaml" }
+      - { transformers: "{{ BUNDLE_ROOT }}/overlays/internal-elasticsearch/sysctl-transformer.yaml", priority: 55 }
+  when:
+    - V4_CFG_ELASTICSEARCH_ENABLE is not none
+    - V4_CFG_ELASTICSEARCH_ENABLE
+  tags:
+    - install
+    - uninstall
+    - upgrade
