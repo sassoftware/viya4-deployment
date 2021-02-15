@@ -15,7 +15,7 @@
         - install
         - uninstall
         - upgrade
-    - name: jump role
+    - name: jump-server role
       include_role:
         name: jump-server
       when:
