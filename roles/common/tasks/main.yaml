@@ -120,6 +120,12 @@
       when:
         - tfstate.jump_admin_username is defined
         - tfstate.jump_admin_username.value|length > 0
+    - name: tfstate - jump rwx filestore path
+      set_fact:
+        JUMP_SVR_RWX_FILESTORE_PATH: "{{ tfstate.jump_rwx_filestore_path.value }}"
+      when:
+        - tfstate.jump_rwx_filestore_path is defined
+        - tfstate.jump_rwx_filestore_path.value|length > 0
     - name: tfstate - ssh private key
       copy:
         content: "{{ tfstate.ssh_private_key.value }}"
