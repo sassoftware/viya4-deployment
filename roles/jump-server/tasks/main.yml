@@ -1,0 +1,42 @@
+---
+- name: jump-server - lookup groups
+  getent:
+    database: group
+  delegate_to: "{{ groups['jump'][0] }}"
+  become: yes
+  tags:
+    - install
+
+- name: jumps-server - group nfsnobody
+  set_fact:
+    folder_group: "nfsnobody"
+    folder_owner: "nfsnobody"
+  when: 
+    - '"nfsnobody" in ansible_facts.getent_group'
+  tags:
+    - install
+
+- name: jumps-server - group nogroup
+  set_fact:
+    folder_group: "nogroup"
+  when: 
+    - '"nogroup" in ansible_facts.getent_group'
+  tags:
+    - install
+
+- name: jump-server - create folders
+  file:
+    state: directory
+    path: "{{ JUMP_SVR_RWX_FILESTORE_PATH | replace('/$', '') }}/{{ hostvars['localhost']['NAMESPACE']}}/{{ item }}"
+    owner: "{{ folder_owner }}"
+    group: "{{ folder_group }}"
+    mode: "0777"
+  with_items:
+    - bin
+    - homes
+    - data
+    - astores
+  delegate_to: "{{ groups['jump'][0] }}"
+  become: yes
+  tags:
+    - install

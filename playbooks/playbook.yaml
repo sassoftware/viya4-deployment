@@ -31,22 +31,11 @@
         - V4_CFG_MANAGE_STORAGE
       tags:
         - viya
-    - name: Setup storage folders
-      file:
-        state: directory
-        path: "/mnt/viya-share/{{ hostvars['localhost']['NAMESPACE']}}/{{ item }}"
-        owner: "nobody"
-        group: "nobody"
-        mode: "0777"
-      with_items:
-        - bin
-        - homes
-        - data
-        - astores
+    - name: jump role
+      include_role:
+        name: jump-server
       when:
         - ("jump" in groups)
-      delegate_to: "{{ groups['jump'][0] }}"
-      become: yes
       tags:
         - viya
     - name: baseline role
