@@ -1,4 +1,15 @@
 ---
+- name: jump-server - add host
+  add_host:
+    hostname: "{{ JUMP_SVR_HOST }}"
+    ansible_ssh_user: "{{ JUMP_SVR_USER }}"
+    ansible_ssh_private_key_file: "{{ JUMP_SVR_PRIVATE_KEY }}"
+    ansible_ssh_common_args: "-o UserKnownHostsFile=/dev/null"
+    groups:
+      - "jump"
+  tags:
+    - install
+
 - name: jump-server - lookup groups
   getent:
     database: group

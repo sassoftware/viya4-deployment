@@ -15,27 +15,15 @@
         - install
         - uninstall
         - upgrade
-    - name: Add jump host
-      add_host:
-        hostname: "{{ JUMP_SVR_HOST }}"
-        ansible_ssh_user: "{{ JUMP_SVR_USER }}"
-        ansible_ssh_private_key_file: "{{ JUMP_SVR_PRIVATE_KEY }}"
-        ansible_ssh_common_args: "-o UserKnownHostsFile=/dev/null"
-        groups:
-          - "jump"
-      when:
-        - JUMP_SVR_HOST is defined
-        - JUMP_SVR_USER is defined
-        - JUMP_SVR_PRIVATE_KEY is defined
-        - V4_CFG_MANAGE_STORAGE is defined
-        - V4_CFG_MANAGE_STORAGE
-      tags:
-        - viya
     - name: jump role
       include_role:
         name: jump-server
       when:
-        - ("jump" in groups)
+      - JUMP_SVR_HOST is defined
+      - JUMP_SVR_USER is defined
+      - JUMP_SVR_PRIVATE_KEY is defined
+      - V4_CFG_MANAGE_STORAGE is defined
+      - V4_CFG_MANAGE_STORAGE
       tags:
         - viya
     - name: baseline role
