@@ -46,12 +46,14 @@ Supported configuration variables are listed in the table below.  All variables 
 | V4_CFG_SSSD | Path to sssd file | string | | false | | viya |
 
 ## Jump Server
+Tool uses the jump server to interact with rwx filestore, that needs to be pre-mounted to JUMP_SVR_RWX_FILESTORE_PATH, when V4_CFG_MANAGE_STORAGE is set true.
 
 | Name | Description | Type | Default | Required | Notes | Actions |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-JUMP_SVR_HOST | ip/fqn to the jump host | string | | true | Tool uses the jump server to interact with nfs storage. | baseline, viya |
-JUMP_SVR_USER | ssh user to access the jump host | | string | true | Tool uses the jump server to interact with nfs storage. | baseline, viya |
-JUMP_SVR_PRIVATE_KEY | Path to ssh user private key to access the jump host | | string | true | Tool uses the jump server to interact with rwx filestore. | baseline, viya |
+| JUMP_SVR_HOST | ip/fqn to the jump host | string | | true | | baseline, viya |
+| JUMP_SVR_USER | ssh user to access the jump host | string | | true | | baseline, viya |
+| JUMP_SVR_PRIVATE_KEY | Path to ssh user private key to access the jump host | string |  | true | | baseline, viya |
+| JUMP_SVR_RWX_FILESTORE_PATH | Path on jump server to nfs mount | string | /viya-share | false | | viya |
 
 ## Storage
 
