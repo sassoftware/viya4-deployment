@@ -1,10 +1,12 @@
 from ansible.module_utils.basic import AnsibleModule
+from packaging.version import parse as parse_version
 
 
 def main():
   module_args = {
     "add": {"default": [], "type": list},
     "existing": {"required": True, "type": dict},
+    "version": {"default": "0.0.0", "type": str},
   }
 
   results = dict(
@@ -25,6 +27,13 @@ def main():
     if len(module.params['add']) > 0:
       for overlay in module.params['add']:
         priority = str(overlay.setdefault("priority", 1))
+        minVersion = parse_version(str(overlay.setdefult("min", "0.0.0")))
+        maxVersion = parse_version(str(overlay.setdefult("max", "9999.9999.9999")))
+        existingVersion = parse_version(module.params['version'])
+
+        if existingVersion < minVersion or existingVersion > maxVersion:
+          continue
+
         phase = "pre" if int(priority) < 50 else "post"
         overlay.pop("priority", None)
 
