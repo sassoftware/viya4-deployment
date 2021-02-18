@@ -1,13 +1,15 @@
 from ansible.module_utils.basic import AnsibleModule
 from packaging.version import parse as parse_version
+import os
 
 
 def main():
   module_args = {
     "add": {"default": [], "type": list},
     "existing": {"required": True, "type": dict},
-    "version": {"default": "0.0.0", "type": str},
-  }
+    "cadence_number": {"default": "0.0.0", "type": str},
+    "cadence_name": {"default": "lts", "type": str},
+}
 
   results = dict(
     changed=False,
@@ -26,19 +28,25 @@ def main():
   try:
     if len(module.params['add']) > 0:
       for overlay in module.params['add']:
-        priority = str(overlay.setdefault("priority", 1))
-        minVersion = parse_version(str(overlay.setdefult("min", "0.0.0")))
-        maxVersion = parse_version(str(overlay.setdefult("max", "9999.9999.9999")))
-        existingVersion = parse_version(module.params['version'])
-
-        if existingVersion < minVersion or existingVersion > maxVersion:
+        # Version checks
+        minVersion = parse_version(str(overlay.setdefault("min", "0.0.0")))
+        if "max" in overlay and module.params["cadence_name"] == "fast":
+          # skip when running fast ignore and overlays that havea max version
+          continue
+        maxVersion = parse_version(str(overlay.setdefault("max", "9999.9999.9999")))
+        existingVersion = parse_version(module.params['cadence_number'])
+        if (existingVersion < minVersion) or (existingVersion > maxVersion):
+          # skip when not a supported version
           continue
 
+        priority = str(overlay.setdefault("priority", 1))
         phase = "pre" if int(priority) < 50 else "post"
         overlay.pop("priority", None)
-
         overlay_type = list(overlay.keys())[0]
-        overlay_path = overlay[overlay_type]
+
+        # set correct path for vdm or sas-bases patches
+        folderPath = os.path.join("site-config/vdm", overlay_type) if bool(overlay.setdefault("vdm", False)) else "sas-bases/"
+        overlay_path = os.path.join(folderPath, overlay[overlay_type])
         
         module.params['existing'].setdefault(overlay_type, {})
         module.params['existing'][overlay_type].setdefault(phase, {})
@@ -59,7 +67,7 @@ def main():
             results['result'][resource_type][phase] += module.params['existing'][resource_type][phase][priority]
       module.exit_json(**results)
   except Exception as e:
-    module.fail_json(error=e)
+    module.fail_json(error=e, msg=module.params['add'])
     raise
 
 

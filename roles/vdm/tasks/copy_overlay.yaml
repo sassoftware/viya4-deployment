@@ -12,7 +12,7 @@
 - name: copy - VDM {{ resource }}
   template:
     src: "{{ resource }}/{{ overlay|basename }}"
-    dest: "{{ DEPLOY_DIR| regex_replace('\\/$', '')  }}/{{ overlay }}"
+    dest: "{{ DEPLOY_DIR| regex_replace('\\/$', '')  }}/{{ overlay |dirname }}/{{ overlay | basename | splitext | first }}.yaml"
   with_items: "{{ overlays }}"
   loop_control:
     loop_var: overlay
