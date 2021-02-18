@@ -48,11 +48,8 @@
 
 - name: assets - Remove old bases
   file:
-    path: "{{ DEPLOY_DIR }}/{{ item }}"
+    path: "{{ DEPLOY_DIR }}/sas-bases"
     state: absent
-  with_items:
-    - "sas-bases"
-    - "bundles"
   tags:
     - install
     - uninstall
