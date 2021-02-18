@@ -53,15 +53,6 @@
     - uninstall
     - upgrade
 
-- debug:
-    var: vdm_overlays
-  tags: 
-    - viya
-
-- fail:
-  tags: 
-    - viya
-
 - name: CR access
   block:
     - template:

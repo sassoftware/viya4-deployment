@@ -37,7 +37,8 @@
 - name: "cas - backup controller"
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
-    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"    existing: "{{ vdm_overlays }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+    existing: "{{ vdm_overlays }}"
     add:
       - { transformers: "cas-manage-backup.yaml", vdm: true }
   when:
