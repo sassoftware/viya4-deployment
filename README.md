@@ -67,16 +67,16 @@ Prior to running this playbook some infrastructure needs to be in place
       /astores        <- location for astores
   ```
 
-- JumpBox: This tool can manage nfs folders if you provide ssh access to a JumpBox that has the nfs storage mounted to it at /mnt/viya-share. The Viya 4 IAC projects automate the needed NFS/JumpBox setup if desired. If you wish to manage the nfs server yourself, the JumpBox is not required. Below is the JumpBox folder structure
+- JumpBox: This tool can manage nfs folders if you provide ssh access to a JumpBox that has the nfs storage mounted to it at <JUMP_SVR_RWX_FILESTORE_PATH>. The Viya 4 IAC projects automate the needed NFS/JumpBox setup if desired. If you wish to manage the nfs server yourself, the JumpBox is not required. Below is the JumpBox folder structure
 
   ```bash
-  /mnt/viya-share/    <- mounted nfs export
-    /pvs              <- location for persistent volumes
-    /<namespace>      <- folder per namespace
-      /bin            <- location for open source directories
-      /data           <- location for SAS and CAS Data
-      /homes          <- location for user home directories to be mounted
-      /astores        <- location for astores
+  <JUMP_SVR_RWX_FILESTORE_PATH>     <- mounted nfs export
+    /pvs                            <- location for persistent volumes
+    /<namespace>                    <- folder per namespace
+      /bin                          <- location for open source directories
+      /data                         <- location for SAS and CAS Data
+      /homes                        <- location for user home directories to be mounted
+      /astores                      <- location for astores
   ```
 
 ### Installation
