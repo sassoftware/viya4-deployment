@@ -54,6 +54,8 @@ Prior to running this playbook some infrastructure needs to be in place
 
 - Kubernetes cluster: You can either bring your own K8s cluster or use one of the Viya 4 IAC projects to create a cluster using terraform.
   - [Viya 4 IaC for Azure](https://github.com/sassoftware/viya4-iac-azure)
+  - [Viya 4 IaC for AWS](https://github.com/sassoftware/viya4-iac-aws)
+
 
 - Storage: When using nfs based storage (like Azure NetApp or EFS), then the storage needs certain folders setup. There needs to be a PVs folder created under the export path. This is used for PVs. Additionally, a folder needs to be created for each cluster with sub-folders for bin, data, and homes. Below is the required nfs exports folder structure
 
@@ -115,7 +117,7 @@ The playbook uses ansible vars for configuration. It is recommended to encrypt b
 
 ### Ansible Vars
 
-The ansible vars file is the main configuration file. Create a file named ansible-vars.yaml to customize any input variable value. For starters, you can copy one of the provided example variable definition files in ./examples folder. For more details on the variables declared in [ansible-vars-azure.yaml](examples/ansible-vars-azure.yaml) refer to [CONFIG-VARS.md](docs/CONFIG-VARS.md).
+The ansible vars file is the main configuration file. Create a file named ansible-vars.yaml to customize any input variable value. For starters, you can copy one of the provided example variable definition files in ./examples folder. For more details on the variables declared in [ansible-vars.yaml](examples/ansible-vars.yaml) refer to [CONFIG-VARS.md](docs/CONFIG-VARS.md).
 
 ### Sitedefault
 
@@ -127,7 +129,7 @@ Kubernetes access config file. When not integrating with SAS Viya 4 IaC projects
 
 ### Terraform state file
 
-When integrating with SAS Viya 4 IaC projects, you can provide the tfstate file to have the kubeconfig and other setting auto-discovered. The [ansible-vars-iac-azure.yaml](examples/ansible-vars-iac-azure.yaml) example file shows the values that need to be set when using the iac integration.
+When integrating with SAS Viya 4 IaC projects, you can provide the tfstate file to have the kubeconfig and other setting auto-discovered. The [ansible-vars-iac.yaml](examples/ansible-vars-iac.yaml) example file shows the values that need to be set when using the iac integration.
 
 This following information is parsed from the integration:
 
@@ -285,7 +287,7 @@ an A record (ex. connect.example.com) points to the <connect_load_balancer_ip>
 
 ### Examples
 
-- I have a new cluster, deployed using [Viya 4 IaC for Azure](https://github.com/sassoftware/viya4-iac-azure) project, and want to install everything using docker
+- I have a new cluster, deployed using one of the Viya4 IAC projects, and want to install everything using docker
 
   ```bash
   docker run \
@@ -297,13 +299,13 @@ an A record (ex. connect.example.com) points to the <connect_load_balancer_ip>
     viya4-deployment --tags "baseline,viya,cluster-logging,cluster-monitoring,viya-monitoring,install"
   ```
 
-- I have a new cluster, deployed using [Viya 4 IaC for Azure](https://github.com/sassoftware/viya4-iac-azure) project, and want to install everything using ansible
+- I have a new cluster, deployed using one of the Viya4 IAC projects, and want to install everything using ansible
 
   ```bash
   ansible-playbook \
     -e BASE_DIR=$HOME \
     -e CONFIG=$HOME/ansible-vars.yaml \
-    -e TFSTATE=$HOME/viya4-iac-azure/terraform.tfstate \
+    -e TFSTATE=$HOME/viya4-iac-aws/terraform.tfstate \
     viya4-deployment --tags "baseline,viya,cluster-logging,cluster-monitoring,viya-monitoring,install"
   ```
 
@@ -339,7 +341,7 @@ an A record (ex. connect.example.com) points to the <connect_load_balancer_ip>
     --user $(id -u):$(id -g) \
     --volume $HOME:/data \
     --volume $HOME/ansible-vars.yaml:/config/config \
-    --volume $HOME/viya4-iac-azure/terraform.tfstate:/config/tfstate \
+    --volume $HOME/viya4-iac-aws/terraform.tfstate:/config/tfstate \
     viya4-deployment --tags "baseline,viya,cluster-logging,cluster-monitoring,viya-monitoring,uninstall"
   ```
 
@@ -359,5 +361,6 @@ Debug mode can be enabled by adding "-vvv" to the end of the docker or ansible c
 
 - [Viya Resource Guide](https://github.com/sassoftware/viya4-resource-guide)
 - [Viya 4 IaC for Azure](https://github.com/sassoftware/viya4-iac-azure)
+- [Viya 4 IaC for AWS](https://github.com/sassoftware/viya4-iac-aws)
 - [Viya Monitoring for Kubernetes](https://github.com/sassoftware/viya4-monitoring-kubernetes)
 - [Viya Orders CLI](https://github.com/sassoftware/viya4-orders-cli)
