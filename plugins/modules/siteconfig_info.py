@@ -111,7 +111,7 @@ def main():
   except StopIteration:
     pass
   except Exception as e:
-    module.fail_json(error=e,msg="Error pasing site-config path")
+    module.fail_json(error=e,msg="Error parsing site-config path")
     raise
 
 if __name__ == '__main__':
