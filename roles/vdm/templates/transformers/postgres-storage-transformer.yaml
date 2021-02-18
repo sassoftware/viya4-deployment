@@ -32,3 +32,20 @@ target:
   kind: Pgcluster
   name: .*
   version: v1
+---
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: replica-postgres-storage-transformer
+patch: |-
+  - op: replace
+    path: /spec/replicastorage/storageclass
+    value: "{{ V4_CFG_STORAGECLASS }}"
+  - op: replace
+    path: /spec/replicastorage/storagetype
+    value: dynamic
+target:
+  group: crunchydata.com
+  kind: Pgreplica
+  name: .*
+  version: v1
