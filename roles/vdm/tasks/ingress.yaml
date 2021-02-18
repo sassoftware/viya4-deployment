@@ -51,9 +51,9 @@
   block:
     - copy:
         src: "{{ (V4_CFG_TLS_TRUSTED_CA_CERTS|realpath) + '/' }}"
-        dest: "{{ DEPLOY_DIR }}/{{ VDM_DIR }}/security/cacerts/"
+        dest: "{{ DEPLOY_DIR }}/site-config/vdm/security/cacerts/"
     - find:
-        paths: "{{ DEPLOY_DIR }}/{{ VDM_DIR }}/security/cacerts/"
+        paths: "{{ DEPLOY_DIR }}/site-config/vdm/security/cacerts/"
         depth: 2
       register: V4_CFG_TLS_TRUSTED_CA_CERT_FILES
     - overlay_facts:
@@ -75,7 +75,7 @@
   block:
   - copy:
       src: "{{ item.src }}"
-      dest: "{{ DEPLOY_DIR }}/{{ VDM_DIR }}/security/{{ item.dest }}"
+      dest: "{{ DEPLOY_DIR }}/site-config/vdm/security/{{ item.dest }}"
     with_items:
       - src: "{{ V4_CFG_TLS_CERT }}"
         dest: "sas-nginx-ingress.crt"

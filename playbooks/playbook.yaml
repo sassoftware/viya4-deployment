@@ -15,27 +15,27 @@
         - install
         - uninstall
         - upgrade
-    - name: jump-server role
-      include_role:
-        name: jump-server
-      when:
-      - JUMP_SVR_HOST is defined
-      - JUMP_SVR_USER is defined
-      - JUMP_SVR_PRIVATE_KEY is defined
-      - V4_CFG_MANAGE_STORAGE is defined
-      - V4_CFG_MANAGE_STORAGE
-      tags:
-        - viya
-    - name: baseline role
-      include_role:
-        name: baseline
-      tags:
-        - baseline
-    - include_vars:
-        file: "{{ DEPLOY_DIR }}/site-config/defaults.yaml"
-      when: CONFIG is not defined
-      tags:
-        - viya
+    # - name: jump-server role
+    #   include_role:
+    #     name: jump-server
+    #   when:
+    #   - JUMP_SVR_HOST is defined
+    #   - JUMP_SVR_USER is defined
+    #   - JUMP_SVR_PRIVATE_KEY is defined
+    #   - V4_CFG_MANAGE_STORAGE is defined
+    #   - V4_CFG_MANAGE_STORAGE
+    #   tags:
+    #     - viya
+    # - name: baseline role
+    #   include_role:
+    #     name: baseline
+    #   tags:
+    #     - baseline
+    # - include_vars:
+    #     file: "{{ DEPLOY_DIR }}/site-config/defaults.yaml"
+    #   when: CONFIG is not defined
+    #   tags:
+    #     - viya
     - name: vdm role
       include_role:
         name: vdm
