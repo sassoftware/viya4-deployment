@@ -28,15 +28,14 @@ def main():
   try:
     if len(module.params['add']) > 0:
       for overlay in module.params['add']:
+        
         # Version checks
         minVersion = parse_version(str(overlay.setdefault("min", "0.0.0")))
         if "max" in overlay and module.params["cadence_name"] == "fast":
-          # skip when running fast ignore and overlays that havea max version
           continue
         maxVersion = parse_version(str(overlay.setdefault("max", "9999.9999.9999")))
         existingVersion = parse_version(module.params['cadence_number'])
         if (existingVersion < minVersion) or (existingVersion > maxVersion):
-          # skip when not a supported version
           continue
 
         priority = str(overlay.setdefault("priority", 1))
