@@ -1,11 +1,13 @@
 - name: postgres - internal
   overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { resources: "{{ BUNDLE_ROOT }}/overlays/internal-postgres" }
-      - { resources: "{{ BUNDLE_ROOT }}/overlays/crunchydata" }
-      - { transformers: "{{ BUNDLE_ROOT }}/overlays/internal-postgres/internal-postgres-transformer.yaml" }
-      - { transformers: "{{ VDM_TRANSFORMERS_PATH }}/postgres-storage-transformer.yaml" }
+      - { resources: "overlays/internal-postgres" }
+      - { resources: "overlays/crunchydata" }
+      - { transformers: "overlays/internal-postgres/internal-postgres-transformer.yaml" }
+      - { transformers: "postgres-storage-transformer.yaml", vdm: true }
   when: 
     - V4_CFG_POSTGRES_TYPE == 'internal'
   tags:
@@ -15,12 +17,14 @@
 
 - name: postgres - external
   overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { transformers: "{{ BUNDLE_ROOT }}/overlays/external-postgres/external-postgres-transformer.yaml" }
-      - { generators: "{{ VDM_GENERATORS_PATH }}/postgres-sas-user.yaml" }
-      - { generators: "{{ VDM_GENERATORS_PATH }}/sas-go-config.yaml" }
-      - { generators: "{{ VDM_GENERATORS_PATH }}/sas-postgres-config.yaml" }
+      - { transformers: "overlays/external-postgres/external-postgres-transformer.yaml" }
+      - { generators: "postgres-sas-user.yaml", vdm: true }
+      - { generators: "sas-go-config.yaml", vdm: true }
+      - { generators: "sas-postgres-config.yaml", vdm: true }
   when: 
     - V4_CFG_POSTGRES_TYPE == 'external'
   tags:

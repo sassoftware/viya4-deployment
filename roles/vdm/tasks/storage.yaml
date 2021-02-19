@@ -1,9 +1,11 @@
 ---
 - name: storage - storageclass
   overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { transformers: "{{ VDM_TRANSFORMERS_PATH }}/sas-storageclass.yaml", priority: 99 }
+      - { transformers: "sas-storageclass.yaml", vdm: true, priority: 99 }
   tags:
     - install
     - uninstall
@@ -11,11 +13,13 @@
 
 - name: storage - nfs
   overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { transformers: "{{ VDM_TRANSFORMERS_PATH }}/cas-add-nfs-mount.yaml" }
-      - { transformers: "{{ VDM_TRANSFORMERS_PATH }}/compute-server-add-nfs-mount.yaml" }
-      - { transformers: "{{ VDM_TRANSFORMERS_PATH }}/launcher-service-add-nfs.yaml" }
+      - { transformers: "cas-add-nfs-mount.yaml", vdm: true }
+      - { transformers: "compute-server-add-nfs-mount.yaml", vdm: true }
+      - { transformers: "launcher-service-add-nfs.yaml", vdm: true }
   when:
     - V4_CFG_RWX_FILESTORE_ENDPOINT is not none
     - V4_CFG_RWX_FILESTORE_PATH is not none

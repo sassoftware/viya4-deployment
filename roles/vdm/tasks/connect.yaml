@@ -1,9 +1,11 @@
 ---
 - name: "connect - Loadbalancer "
   overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { resources: "{{ VDM_RESOURCES_PATH }}/sas-connect-spawner-enable-loadbalancer.yaml" }
+      - { resources: "sas-connect-spawner-enable-loadbalancer.yaml", vdm: true }
   when: 
     - V4_CFG_CONNECT_ENABLE_LOADBALANCER
   tags:
@@ -11,7 +13,7 @@
     - uninstall
     - upgrade
 
-- name: connect -  SAS/CONNECT FQDN to the SAN DNS list for cert-manager
+- name: connect - SAS/CONNECT FQDN to the SAN DNS list for cert-manager
   set_fact:
     V4_CFG_CM_CERTIFICATE_ADDITIONAL_SAN_DNS: "{{ V4_CFG_CM_CERTIFICATE_ADDITIONAL_SAN_DNS }} {{ V4_CFG_CONNECT_FQDN }}"
   when:
@@ -23,9 +25,12 @@
 
 - name: connect - Configure Customer Provided Server Certificates
   overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { transformers: "{{ VDM_TRANSFORMERS_PATH }}/sas-connect-customer-provided-ingress-certificate-tls-certframe-transformer.yaml", priority: 60 }
+      - { transformers: "sas-connect-customer-provided-ingress-certificate-tls-certframe-transformer.yaml", priority: 60, vdm: true}
+    version: "{{ V4_CFG_CADENCE_VERSION }}"
   when:
     - V4_CFG_TLS_MODE != "disabled"
     - V4_CFG_TLS_CERT is not none

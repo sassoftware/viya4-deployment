@@ -1,6 +1,6 @@
 - name: mirror - copy example
   copy:
-    src: "{{ DEPLOY_DIR }}/{{ BUNDLE_ROOT }}/examples/mirror/mirror.yaml"
+    src: "{{ DEPLOY_DIR }}/sas-bases/examples/mirror/mirror.yaml"
     dest: "{{ role_path }}/templates/transformers/mirror.yaml"
   tags:
     - install
@@ -19,10 +19,12 @@
 
 - name: mirror - overlay
   overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { transformers: "{{ VDM_TRANSFORMERS_PATH }}/mirror.yaml", priority: 65 }
-      - { generators: "{{ VDM_GENERATORS_PATH }}/mirror.yaml" }
+      - { transformers: "mirror.yaml", vdm: true, priority: 65 }
+      - { generators: "mirror.yaml", vdm: true }
   tags: 
     - install
     - uninstall

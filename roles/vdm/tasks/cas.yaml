@@ -1,9 +1,11 @@
 ---
 - name: "cas - base"
   overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { resources: "{{ BUNDLE_ROOT }}/overlays/cas-server" }
+      - { resources: "overlays/cas-server" }
   tags:
     - install
     - uninstall
@@ -18,11 +20,13 @@
         src: "{{ V4_CFG_SSSD }}"
         dest: "{{ DEPLOY_DIR }}/site-config/cas-server/sssd.conf"
     - overlay_facts:
+        cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+        cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
         existing: "{{ vdm_overlays }}"
         add:
-          - { transformers: "{{ BUNDLE_ROOT }}/overlays/cas-server/cas-sssd-sidecar.yaml", priority: 0}
-          - { transformers: "{{ VDM_TRANSFORMERS_PATH }}/cas-sssd.yaml" }
-          - { generators: "{{ VDM_GENERATORS_PATH }}/sas-sssd-config.yaml" }
+          - { transformers: "overlays/cas-server/cas-sssd-sidecar.yaml", priority: 0}
+          - { transformers: "cas-sssd.yaml", vdm: true }
+          - { generators: "sas-sssd-config.yaml", vdm: true }
   when:
   - V4_CFG_SSSD is not none
   tags:
@@ -32,9 +36,11 @@
 
 - name: "cas - backup controller"
   overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { transformers: "{{ VDM_TRANSFORMERS_PATH }}/cas-manage-backup.yaml" }
+      - { transformers: "cas-manage-backup.yaml", vdm: true }
   when:
     - V4_CFG_CAS_ENABLE_BACKUP_CONTROLLER
   tags:
@@ -44,10 +50,12 @@
 
 - name: "cas - auto resources"
   overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { resources: "{{ BUNDLE_ROOT }}/overlays/cas-server/auto-resources", priority: 40 }
-      - { transformers: "{{ BUNDLE_ROOT }}/overlays/cas-server/auto-resources/remove-resources.yaml", priority: 90 }
+      - { resources: "overlays/cas-server/auto-resources", priority: 40 }
+      - { transformers: "overlays/cas-server/auto-resources/remove-resources.yaml", priority: 90 }
   when:
     - V4_CFG_CAS_RAM is none or V4_CFG_CAS_CORES is none
   tags:
@@ -57,9 +65,11 @@
 
 - name: "cas - user-defined resources"
   overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { transformers: "{{ VDM_TRANSFORMERS_PATH }}/cas-manage-cpu-and-memory.yaml" }
+      - { transformers: "cas-manage-cpu-and-memory.yaml", vdm: true }
   when:
     - V4_CFG_CAS_RAM is not none
     - V4_CFG_CAS_CORES is not none
@@ -70,9 +80,11 @@
 
 - name: "cas - MPP workers"
   overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { transformers: "{{ VDM_TRANSFORMERS_PATH }}/cas-manage-workers.yaml" }
+      - { transformers: "cas-manage-workers.yaml", vdm: true }
   when:
     - V4_CFG_CAS_WORKER_COUNT |int > 1
   tags:
@@ -82,9 +94,11 @@
 
 - name: "cas - External services"
   overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { transformers: "{{ VDM_TRANSFORMERS_PATH }}/cas-enable-external-services.yaml" }
+      - { transformers: "cas-enable-external-services.yaml", vdm: true }
   when:
     - V4_CFG_CAS_ENABLE_LOADBALANCER
   tags:

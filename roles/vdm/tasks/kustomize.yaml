@@ -18,9 +18,11 @@
 
 - name: kustomize - buildinfo
   overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { resources: "{{ VDM_RESOURCES_PATH }}/sas-deployment-buildinfo.yaml" }
+      - { resources: "sas-deployment-buildinfo.yaml", vdm: true }
   tags:
     - install
     - uninstall

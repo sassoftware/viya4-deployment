@@ -5,10 +5,12 @@
 # See sas-bases/examples/security/README.md for full details
 - name: ingress - base
   overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { resources: "{{ BUNDLE_ROOT }}/overlays/network/{{ V4_CFG_INGRESS_TYPE }}" }
-      - { resources: "{{ BUNDLE_ROOT }}/overlays/network/{{ V4_CFG_INGRESS_TYPE }}/security" }
+      - { resources: "overlays/network/{{ V4_CFG_INGRESS_TYPE }}" }
+      - { resources: "overlays/network/{{ V4_CFG_INGRESS_TYPE }}/security" }
   tags:
     - install
     - uninstall
@@ -32,10 +34,12 @@
       V4_CFG_DEPLOYMENT_URL_PORT: ':443'
   - name: ingress - security
     overlay_facts:
+      cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+      cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
       existing: "{{ vdm_overlays }}"
       add:
-        - { resources: "{{ BUNDLE_ROOT }}/overlays/cert-manager-issuer" }
-        - { transformers: "{{ BUNDLE_ROOT }}/overlays/network/ingress/security/transformers/ingress-tls-transformers.yaml", priority: 51 }
+        - { resources: "overlays/cert-manager-issuer" }
+        - { transformers: "overlays/network/ingress/security/transformers/ingress-tls-transformers.yaml", priority: 51 }
   when:
     - V4_CFG_TLS_MODE != "disabled"
   tags:
@@ -47,15 +51,17 @@
   block:
     - copy:
         src: "{{ (V4_CFG_TLS_TRUSTED_CA_CERTS|realpath) + '/' }}"
-        dest: "{{ DEPLOY_DIR }}/{{ VDM_DIR }}/security/cacerts/"
+        dest: "{{ DEPLOY_DIR }}/site-config/vdm/security/cacerts/"
     - find:
-        paths: "{{ DEPLOY_DIR }}/{{ VDM_DIR }}/security/cacerts/"
+        paths: "{{ DEPLOY_DIR }}/site-config/vdm/security/cacerts/"
         depth: 2
       register: V4_CFG_TLS_TRUSTED_CA_CERT_FILES
     - overlay_facts:
+        cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+        cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
         existing: "{{ vdm_overlays }}"
         add:
-          - { generators: "{{ VDM_GENERATORS_PATH }}/customer-provided-ca-certificates.yaml" }
+          - { generators: "customer-provided-ca-certificates.yaml", vdm: true }
   when:
     # NOTE: These can be provided to add to the trust store even when TLS mode is "disabled" to establish outbound trust
     - V4_CFG_TLS_MODE != "disabled"
@@ -69,16 +75,18 @@
   block:
   - copy:
       src: "{{ item.src }}"
-      dest: "{{ DEPLOY_DIR }}/{{ VDM_DIR }}/security/{{ item.dest }}"
+      dest: "{{ DEPLOY_DIR }}/site-config/vdm/security/{{ item.dest }}"
     with_items:
       - src: "{{ V4_CFG_TLS_CERT }}"
         dest: "sas-nginx-ingress.crt"
       - src: "{{ V4_CFG_TLS_KEY }}"
         dest: "sas-nginx-ingress.key"
   - overlay_facts:
+      cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+      cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
       existing: "{{ vdm_overlays }}"
       add:
-        - { generators: "{{ VDM_GENERATORS_PATH }}/customer-provided-ingress-certificate.yaml" }
+        - { generators: "customer-provided-ingress-certificate.yaml", vdm: true }
   when:
     - V4_CFG_TLS_MODE != "disabled"
     - V4_CFG_TLS_CERT is not none
@@ -90,10 +98,12 @@
 
 - name: ingress - Cert-manager Certificate Generation
   overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { transformers: "{{ VDM_TRANSFORMERS_PATH }}/cert-manager-provided-ingress-certificate.yaml", priority: 70 }
-      - { generators: "{{ VDM_GENERATORS_PATH }}/customer-provided-merge-sas-certframe-configmap.yaml" }
+      - { transformers: "cert-manager-provided-ingress-certificate.yaml", vdm: true, priority: 70 }
+      - { generators: "customer-provided-merge-sas-certframe-configmap.yaml", vdm: true }
   when:
     - V4_CFG_TLS_MODE != "disabled"
     - V4_CFG_TLS_CERT is none
@@ -105,10 +115,12 @@
 
 - name: ingress - Full-stack TLS
   overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { transformers: "{{ BUNDLE_ROOT }}/overlays/network/ingress/security/transformers/product-tls-transformers.yaml", priority: 51 }
-      - { transformers: "{{ BUNDLE_ROOT }}/overlays/network/ingress/security/transformers/backend-tls-transformers.yaml", priority: 51 }
+      - { transformers: "overlays/network/ingress/security/transformers/product-tls-transformers.yaml", priority: 51 }
+      - { transformers: "overlays/network/ingress/security/transformers/backend-tls-transformers.yaml", priority: 51 }
   when:
     - V4_CFG_TLS_MODE == "full-stack"
   tags:
@@ -118,9 +130,11 @@
 
 - name: ingress - Front-door TLS
   overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { transformers: "{{ BUNDLE_ROOT }}/overlays/network/ingress/security/transformers/cas-connect-tls-transformers.yaml",priority: 51 }
+      - { transformers: "overlays/network/ingress/security/transformers/cas-connect-tls-transformers.yaml",priority: 51 }
   when:
     - V4_CFG_TLS_MODE == "front-door"
   tags:
@@ -130,9 +144,11 @@
 
 - name: ingress - Disabled TLS
   overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { transformers: "{{ BUNDLE_ROOT }}/overlays/network/ingress/security/transformers/truststore-transformers-without-backend-tls.yaml",priority: 51 }
+      - { transformers: "overlays/network/ingress/security/transformers/truststore-transformers-without-backend-tls.yaml",priority: 51 }
   when:
     - V4_CFG_TLS_MODE == "disabled"
     - V4_CFG_TLS_TRUSTED_CA_CERTS is not none
@@ -143,9 +159,11 @@
 
 - name: ingress - Consul UI
   overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { resources: "{{ VDM_RESOURCES_PATH }}/consul-ui.yaml" }
+      - { resources: "consul-ui.yaml", vdm: true }
   when: 
     - V4_CFG_CONSUL_ENABLE_LOADBALANCER
   tags:
