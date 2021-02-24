@@ -24,7 +24,7 @@ FROM baseline
 # Add extra packages
 RUN apt-get -y install gzip wget git git-lfs jq sshpass \
   && curl -s https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash \
-  && pip install openshift ansible dnspython 
+  && pip install openshift "ansible>=2.9,<3.0.0" dnspython 
 
 COPY --from=tool_builder /build/terraform /usr/local/bin/terraform
 COPY --from=tool_builder /build/kubectl /usr/local/bin/kubectl
