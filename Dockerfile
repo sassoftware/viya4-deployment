@@ -20,11 +20,21 @@ RUN curl -sLO https://releases.hashicorp.com/terraform/${terraform_version}/terr
 
 # Installation
 FROM baseline
+ARG pip_ansible_version=2.10
+ARG pip_openshift_version=0.11.2
+ARG pip_kubernetes_version=11.0.0
+ARG pip_dnspython=2.1.0
+ARG ansible_galaxy_community_kubernetes_version=1.2.0
+ARG ansible_galaxy_ansible_posix_version=1.1.1
 
 # Add extra packages
 RUN apt-get -y install gzip wget git git-lfs jq sshpass \
   && curl -s https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash \
-  && pip install "openshift>=0.11,<0.12" "kubernetes>=11,<12" "ansible>=2.10,<2.11" dnspython
+  && pip install \
+    ansible==${pip_ansible_version} \
+    openshift==${pip_openshift_version} \
+    kubernetes==${pip_kubernetes_version} \
+    dnspython==${pip_dnspython}
 
 COPY --from=tool_builder /build/terraform /usr/local/bin/terraform
 COPY --from=tool_builder /build/kubectl /usr/local/bin/kubectl
@@ -34,7 +44,9 @@ COPY --from=tool_builder /build/aws-iam-authenticator /usr/local/bin/aws-iam-aut
 WORKDIR /viya4-deployment/
 COPY . /viya4-deployment/
 
-RUN ansible-galaxy collection install -r requirements.yaml -f \
+RUN ansible-galaxy collection install -f \
+    community.kubernetes:${ansible_galaxy_community_kubernetes_version} \
+    ansible.posix:${ansible_galaxy_ansible_posix_version} \
   && chmod -R g=u /etc/passwd /etc/group /viya4-deployment/ \
   && chmod 755 /viya4-deployment/docker-entrypoint.sh
 
