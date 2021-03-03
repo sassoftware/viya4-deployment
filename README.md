@@ -32,21 +32,25 @@ This tool supports running both from ansible installed on your local machine or 
 #### Ansible
 
 - terraform 0.13.4
-- ansible 2.9
+- ansible 2.10
 - unzip
 - tar
 - kubectl 1.18
 - kustomize 3.7
 - python 3
 - pip 3
-- openshift pip module
-- dnspython python module
+- openshift 0.11.2 pip module
+- kubernetes 11.0.0 pip module
+- dnspython 2.1.0 pip module
+- community.kubernetes 1.2.0 ansible-galaxy module
+- ansible.posix 1.1.1 ansible-galaxy module
 - helm 3
 - git
 
 #### Docker
 
 - docker
+- git
 
 #### Infrastructure
 
@@ -92,13 +96,16 @@ git clone https://github.com/sassoftware/viya4-deployment.git
 # move to directory
 cd viya4-deployment
 
+# install python packages
+pip3 install --user -r requirements.txt
+
 # install ansible collections
 ansible-galaxy collection install -r requirements.yaml -f
 ```
 
 #### Docker
 
-```bash 
+```bash
 # clone repo
 git clone https://github.com/sassoftware/viya4-deployment.git
 
@@ -170,7 +177,7 @@ Viya customizations are automatically read in from folders under site-config. To
 For Example:
 
 - /deployments is the BASE_DIR
-- Cluster named demo-cluster 
+- Cluster named demo-cluster
 - Namespace will be named demo-ns
 - Add in a custom overlay that modifies cas
 
@@ -351,7 +358,7 @@ Debug mode can be enabled by adding "-vvv" to the end of the docker or ansible c
 
 ## Contributing
 
-> We welcome your contributions! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to submit contributions to this project. 
+> We welcome your contributions! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to submit contributions to this project.
 
 ## License
 
