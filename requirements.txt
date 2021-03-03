@@ -1,0 +1,4 @@
+ansible==2.10
+openshift==0.11.2
+kubernetes==11.0.0
+dnspython==2.1.0
