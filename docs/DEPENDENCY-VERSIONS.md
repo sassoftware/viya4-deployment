@@ -1,7 +1,5 @@
 # Dependency Versions
 
-Required project dependencies are generally pinned to known working or stable versions to ensure users have a smooth first-start experience. In some cases it may be required to change the default version of a dependency. In such cases users are welcome to experiment with alternate versions, however compatability may not be guarrenteed.
-
 If your environment requires validated support for a specific version or range of versions, please open a [Issue](https://github.com/sassoftware/viya4-deployment/issues)
 
 The following list details our dependencies and versions (~ indicates multiple possible sources):
@@ -25,6 +23,8 @@ pip3 | kubernetes | 11.0.0
 pip3 | dnspython | 2.1.0
 ansible-galaxy | community.kubernetes | 1.2.0
 ansible-galaxy | ansible.posix | 1.1.1
+
+Required project dependencies are generally pinned to known working or stable versions to ensure users have a smooth first-start experience. In some cases it may be required to change the default version of a dependency. In such cases users are welcome to experiment with alternate versions, however compatability may not be guarrenteed.
 
 # Docker
 
@@ -54,9 +54,9 @@ docker build \
 
 # Ansible
 
-If deploying via the [Ansible Commands](../README.md#ansible-1) you can modify the requirements files for python and ansible respectivly:
+If deploying via the [Ansible Commands](../README.md#ansible-1) you can modify the dependency requirements files for python and ansible respectivly:
 
 FILE | FOR
 --- | ---
 requirements.txt | dependencies for python
-requirements.yaml | dependencies for ansible/ansible-galaxy
+requirements.yaml | dependencies for ansible-galaxy
