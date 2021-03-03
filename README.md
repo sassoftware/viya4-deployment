@@ -31,26 +31,28 @@ This tool supports running both from ansible installed on your local machine or 
 
 #### Ansible
 
-- terraform 0.13.4
-- ansible 2.10
+- terraform
+- ansible
 - unzip
 - tar
-- kubectl 1.18
-- kustomize 3.7
-- python 3
-- pip 3
-- openshift 0.11.2 pip module
-- kubernetes 11.0.0 pip module
-- dnspython 2.1.0 pip module
-- community.kubernetes 1.2.0 ansible-galaxy module
-- ansible.posix 1.1.1 ansible-galaxy module
-- helm 3
+- kubectl
+- kustomize
+- python
+- pip
+- openshift pip module
+- kubernetes  pip module
+- dnspython pip module
+- community.kubernetes ansible-galaxy module
+- ansible.posix ansible-galaxy module
+- helm
 - git
 
 #### Docker
 
 - docker
 - git
+
+note: For dependency versions and changing versions see [Dependency Versions](docs/DEPENDENCY-VERSIONS.md)
 
 #### Infrastructure
 
