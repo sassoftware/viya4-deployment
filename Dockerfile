@@ -16,15 +16,25 @@ WORKDIR /build
 RUN curl -sLO https://releases.hashicorp.com/terraform/${terraform_version}/terraform_${terraform_version}_linux_amd64.zip && unzip ./terraform_${terraform_version}_linux_amd64.zip \
   && curl -sLO https://storage.googleapis.com/kubernetes-release/release/v{$kubectl_version}/bin/linux/amd64/kubectl && chmod 755 ./kubectl \
   && curl -sLO https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v${kustomize_version}/kustomize_v${kustomize_version}_linux_amd64.tar.gz && gunzip -c ./kustomize_v${kustomize_version}_linux_amd64.tar.gz | tar xvf - && chmod 755 ./kustomize \
-  && curl -sLO https://amazon-eks.s3.us-west-2.amazonaws.com/${aws_iam_authenticator_version}/bin/linux/amd64/aws-iam-authenticator && chmod 755 aws-iam-authenticator 
+  && curl -sLO https://amazon-eks.s3.us-west-2.amazonaws.com/${aws_iam_authenticator_version}/bin/linux/amd64/aws-iam-authenticator && chmod 755 aws-iam-authenticator
 
 # Installation
 FROM baseline
+ARG pip_ansible_version=2.10
+ARG pip_openshift_version=0.11.2
+ARG pip_kubernetes_version=11.0.0
+ARG pip_dnspython=2.1.0
+ARG ansible_galaxy_community_kubernetes_version=1.2.0
+ARG ansible_galaxy_ansible_posix_version=1.1.1
 
 # Add extra packages
 RUN apt-get -y install gzip wget git git-lfs jq sshpass \
   && curl -s https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash \
-  && pip install openshift "ansible>=2.9,<3.0.0" dnspython 
+  && pip install \
+    ansible==${pip_ansible_version} \
+    openshift==${pip_openshift_version} \
+    kubernetes==${pip_kubernetes_version} \
+    dnspython==${pip_dnspython}
 
 COPY --from=tool_builder /build/terraform /usr/local/bin/terraform
 COPY --from=tool_builder /build/kubectl /usr/local/bin/kubectl
@@ -34,11 +44,13 @@ COPY --from=tool_builder /build/aws-iam-authenticator /usr/local/bin/aws-iam-aut
 WORKDIR /viya4-deployment/
 COPY . /viya4-deployment/
 
-RUN ansible-galaxy collection install -r requirements.yaml -f \
+RUN ansible-galaxy collection install -f \
+    community.kubernetes:${ansible_galaxy_community_kubernetes_version} \
+    ansible.posix:${ansible_galaxy_ansible_posix_version} \
   && chmod -R g=u /etc/passwd /etc/group /viya4-deployment/ \
   && chmod 755 /viya4-deployment/docker-entrypoint.sh
 
-ENV PLAYBOOK=playbook.yaml 
+ENV PLAYBOOK=playbook.yaml
 ENV VIYA4_DEPLOYMENT_TOOLING=docker
 ENV HOME=/viya4-deployment
 ENV ANSIBLE_CONFIG=/viya4-deployment/ansible.cfg

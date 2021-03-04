@@ -4,4 +4,11 @@
 ## ignore galaxy_install_info
 .galaxy_install_info
 
+## ignore ansible-vars.yml
+ansible-vars.yml
+ansible-vars.yaml
+
+## ignore data directory
+data/
+
 .DS_Store
