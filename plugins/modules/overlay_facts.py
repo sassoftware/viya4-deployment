@@ -35,7 +35,7 @@ def main():
           continue
         maxVersion = parse_version(str(overlay.setdefault("max", "9999.9999.9999")))
         existingVersion = parse_version(module.params['cadence_number'])
-        if (existingVersion < minVersion) or (existingVersion > maxVersion):
+        if ((existingVersion < minVersion) and module.params["cadence_name"] != "fast") or (existingVersion > maxVersion):
           continue
 
         priority = str(overlay.setdefault("priority", 1))
