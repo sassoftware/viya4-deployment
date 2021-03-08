@@ -8,7 +8,7 @@
     - install
     - uninstall
     - upgrade
-   
+
 - name: copy - VDM {{ resource }}
   template:
     src: "{{ resource }}/{{ overlay|basename }}"
