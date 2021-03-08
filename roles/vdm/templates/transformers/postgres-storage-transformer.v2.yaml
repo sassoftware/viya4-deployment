@@ -3,6 +3,7 @@ kind: PatchTransformer
 metadata:
   name: postgres-storage-transformer
 patch: |-
+  - op: replace
     path: /spec/BackrestStorage/storageclass
     value: "{{ V4_CFG_STORAGECLASS }}"
   - op: replace
