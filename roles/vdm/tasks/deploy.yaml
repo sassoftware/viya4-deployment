@@ -16,7 +16,7 @@
   shell: |
     kubectl --kubeconfig {{ kubeconfig }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=cluster-wide" -f {{ DEPLOY_DIR }}/site.yaml
     kubectl --kubeconfig {{ kubeconfig }} wait --for condition=established --timeout=60s -l "sas.com/admin=cluster-wide" crd
-    kubectl --kubeconfig {{ kubeconfig }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=cluster-local" --prune -f {{ DEPLOY_DIR }}/site.yaml
+    kubectl --kubeconfig {{ kubeconfig }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=cluster-local" -f {{ DEPLOY_DIR }}/site.yaml --prune
   when: 
     - DEPLOY
   tags:
@@ -25,7 +25,7 @@
 
 - name: Deploy Manifest
   shell: |
-    kubectl --kubeconfig {{ kubeconfig }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=namespace" --prune -f {{ DEPLOY_DIR }}/site.yaml
+    kubectl --kubeconfig {{ kubeconfig }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=namespace" -f {{ DEPLOY_DIR }}/site.yaml --prune
   when: 
     - DEPLOY
   tags:

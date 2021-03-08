@@ -8,7 +8,7 @@ namespace: {{ NAMESPACE }}
 {% if 'pre' in ordered_overlays.result[resource] and ordered_overlays.result[resource]['pre']|length > 0 %}
 ## vdm defined {{ resource }} (pre)
 {% for overlay in ordered_overlays.result[resource]['pre'] %}
-  - {{ overlay }}
+  - {{ overlay |dirname }}/{{ overlay | basename | regex_replace('\\..*\\.yaml$', '.yaml') }}
 {% endfor %}
 {% endif %}
 {% if user_customizations[resource]|length > 0 %}
@@ -20,8 +20,9 @@ namespace: {{ NAMESPACE }}
 {% if 'post' in ordered_overlays.result[resource] and ordered_overlays.result[resource]['post']|length > 0 %}
 ## vdm defined {{ resource }} (post)
 {% for overlay in ordered_overlays.result[resource]['post'] %}
-  - {{ overlay }}
+  - {{ overlay |dirname }}/{{ overlay | basename | regex_replace('\\..*\\.yaml$', '.yaml') }}
 {% endfor %}
 {% endif %}
 
 {% endfor %}
+

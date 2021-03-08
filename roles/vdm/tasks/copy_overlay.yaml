@@ -8,11 +8,11 @@
     - install
     - uninstall
     - upgrade
-
+   
 - name: copy - VDM {{ resource }}
   template:
     src: "{{ resource }}/{{ overlay|basename }}"
-    dest: "{{ DEPLOY_DIR| regex_replace('\\/$', '')  }}/{{ overlay |dirname }}/{{ overlay | regex_replace('\\..*$', '') }}.yaml"
+    dest: "{{ DEPLOY_DIR }}/{{ overlay |dirname }}/{{ overlay | basename | regex_replace('\\..*\\.yaml$', '.yaml')"
   with_items: "{{ overlays }}"
   loop_control:
     loop_var: overlay

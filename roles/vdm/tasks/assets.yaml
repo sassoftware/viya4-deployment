@@ -46,10 +46,13 @@
     - uninstall
     - upgrade
 
-- name: assets - Remove old bases
+- name: assets - Remove old files
   file:
-    path: "{{ DEPLOY_DIR }}/sas-bases"
+    path: "{{ item }}"
     state: absent
+  with_items:
+    - "{{ DEPLOY_DIR }}/sas-bases"
+    - "{{ DEPLOY_DIR }}/site-config/vdm"
   tags:
     - install
     - uninstall
