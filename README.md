@@ -251,7 +251,7 @@ ansible-playbook \
 In the example command line below, replace each of the <> values, such as "<path_to_kubeconfig_file>", with the appropriate value.
 
 ```bash
-docker run \
+docker run --rm \
   --group-add root \
   --user $(id -u):$(id -g) \
   --volume <path_to_store_files>:/data \
@@ -299,7 +299,7 @@ an A record (ex. connect.example.com) points to the <connect_load_balancer_ip>
 - I have a new cluster, deployed using one of the Viya4 IAC projects, and want to install everything using docker
 
   ```bash
-  docker run \
+  docker run --rm \
     --group-add root \
     --user $(id -u):$(id -g) \
     --volume $HOME:/data \
@@ -332,7 +332,7 @@ an A record (ex. connect.example.com) points to the <connect_load_balancer_ip>
 - I have an existing cluster with viya installed and want to install another viya instance in a different namespace with monitoring, using docker
 
   ```bash
-  docker run \
+  docker run --rm \
     --group-add root \
     --user $(id -u):$(id -g) \
     --volume $HOME:/data \
@@ -345,7 +345,7 @@ an A record (ex. connect.example.com) points to the <connect_load_balancer_ip>
 - I have a cluster with everything installed and want to uninstall everything using docker
 
   ```bash
-  docker run \
+  docker run --rm \
     --group-add root \
     --user $(id -u):$(id -g) \
     --volume $HOME:/data \
