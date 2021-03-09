@@ -9,8 +9,7 @@
       - { transformers: "overlays/internal-elasticsearch/internal-elasticsearch-transformer.yaml" }
       - { transformers: "overlays/internal-elasticsearch/sysctl-transformer.yaml", priority: 55 }
   when:
-    - V4_CFG_ELASTICSEARCH_ENABLE is not none
-    - V4_CFG_ELASTICSEARCH_ENABLE
+    - ( V4_CFG_ELASTICSEARCH_ENABLE is not none and V4_CFG_ELASTICSEARCH_ENABLE) or ( V4_CFG_CADENCE_VERSION | version_compare('2020.1.3', '>=' )
   tags:
     - install
     - uninstall
