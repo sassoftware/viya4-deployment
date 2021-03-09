@@ -221,5 +221,5 @@ When setting V4_CFG_TLS_MODE to a value other than "disabled" and no V4_CFG_TLS_
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_EMBEDDED_LDAP_ENABLE | Deploy openldap in the namespace for authentication | bool | false | false | [Openldap Config](../roles/vdm/templates/generators/openldap-bootstrap-config.yaml) | viya |
 | V4_CFG_CONSUL_ENABLE_LOADBALANCER | Setup LB to access consul ui | bool | false | false | Consul ui port is 8500 | viya |
-| V4_CFG_ELASTICSEARCH_ENABLE | Enable opendistro elasticsearch | bool | true | false | | viya |
+| V4_CFG_ELASTICSEARCH_ENABLE | Enable opendistro elasticsearch | bool | true | false | When deploying LTS less than 2020.1 or Stable less than 2020.1.2 set to false | viya |
 
