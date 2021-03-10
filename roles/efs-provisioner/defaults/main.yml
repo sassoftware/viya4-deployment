@@ -29,7 +29,3 @@ efs_provisioner_config:
         - nodiratime
         - 'rsize=262144'
         - 'wsize=262144'
-  rbac:
-    create: true
-  podSecurityPolicy:
-    enabled: true
