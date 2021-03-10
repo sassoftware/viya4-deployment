@@ -7,7 +7,7 @@
     chart_ref: ingress-nginx
     chart_version: "{{ chart_version }}"
     values: "{{ nginx_config }}"
-    kubeconfig_path: "{{ kubeconfig }}"
+    kubeconfig: "{{ kubeconfig }}"
     create_namespace: true
     wait: true
   tags:

@@ -1,34 +1,15 @@
 ---
-- name: Add helm repo
-  community.kubernetes.helm_repository:
-    repo_name: ckotzbauer
-    repo_url: https://ckotzbauer.github.io/helm-charts
-  tags:
-    - install
-    - uninstall
-    - upgrade
-
-- name: Create namespace
-  community.kubernetes.k8s:
-    api_version: v1
-    kind: Namespace
-    name: "{{ nfs_namespace }}"
-    wait: true
-    kubeconfig: "{{ kubeconfig }}"
-  tags:
-    - install
-    - upgrade
-
 - name: Deploy nfs-client
   community.kubernetes.helm:
     name: "{{ nfs_name }}"
-    chart_ref: ckotzbauer/nfs-client-provisioner
     namespace: "{{ nfs_namespace }}"
-    values: "{{ nfs_client_config }}"
+    chart_ref_url: https://ckotzbauer.github.io/helm-charts
+    chart_ref: nfs-client-provisioner
     chart_version: "{{ chart_version }}"
+    values: "{{ nfs_client_config }}"
     kubeconfig: "{{ kubeconfig }}"
+    create_namespace: true
     wait: true
-    update_repo_cache: true
   tags:
     - install
     - upgrade
@@ -41,7 +22,6 @@
     wait: true
     values: "{{ nfs_client_config }}"
     state: absent
-    update_repo_cache: true
   tags:
     - uninstall
 
