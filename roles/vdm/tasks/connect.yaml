@@ -30,7 +30,6 @@
     existing: "{{ vdm_overlays }}"
     add:
       - { transformers: "sas-connect-customer-provided-ingress-certificate-tls-certframe-transformer.yaml", priority: 60, vdm: true}
-    version: "{{ V4_CFG_CADENCE_VERSION }}"
   when:
     - V4_CFG_TLS_MODE != "disabled"
     - V4_CFG_TLS_CERT is not none
