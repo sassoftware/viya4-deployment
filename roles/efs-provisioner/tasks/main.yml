@@ -2,14 +2,14 @@
 - name: Deploy efs-provisioner
   community.kubernetes.helm:
     name: "{{ efs_name }}"
-    chart_ref: "{{ role_path }}/files/efs-provisioner-{{ efs_chart_version }}.tgz"
     namespace: "{{ efs_namespace }}"
-    values: "{{ efs_provisioner_config }}"
+    chart_repo_url: https://isotoma.github.io/charts/
+    chart_ref: efs-provisioner
     chart_version: "{{ efs_chart_version }}"
+    values: "{{ efs_provisioner_config }}"
     kubeconfig: "{{ kubeconfig }}"
-    wait: true
-    update_repo_cache: false
     create_namespace: true
+    wait: true
   tags:
     - install
     - upgrade
@@ -22,7 +22,6 @@
     wait: true
     values: "{{ efs_provisioner_config }}"
     state: absent
-    update_repo_cache: false
   tags:
     - uninstall
 

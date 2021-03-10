@@ -12,24 +12,15 @@
     - upgrade
     - uninstall
 
-- name: Add helm repo
-  community.kubernetes.helm_repository:
-    repo_name: bitnami
-    repo_url: https://charts.bitnami.com/bitnami/
-  tags:
-    - install
-    - uninstall
-    - upgrade
-
 - name: Deploy metrics-server
   community.kubernetes.helm:
     name: "{{ metrics_server_name }}"
-    chart_ref: bitnami/metrics-server
     namespace: "kube-system"
-    values: "{{ metrics_server_config }}"
+    chart_repo_url: https://charts.bitnami.com/bitnami/
+    chart_ref: metrics-server
     chart_version: "{{ chart_version }}"
+    values: "{{ metrics_server_config }}"
     kubeconfig: "{{ kubeconfig }}"
-    update_repo_cache: true
     wait: true
   tags:
     - install
@@ -44,7 +35,6 @@
     kubeconfig: "{{ kubeconfig }}"
     values: "{{ metrics_server_config }}"
     state: absent
-    update_repo_cache: true
     wait: true
   tags:
     - uninstall

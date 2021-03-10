@@ -1,33 +1,14 @@
 ---
-- name: Add helm repo
-  community.kubernetes.helm_repository:
-    repo_name: jetstack
-    repo_url: https://charts.jetstack.io
-  tags:
-    - install
-    - uninstall
-    - upgrade
-
-- name: Create namespace
-  community.kubernetes.k8s:
-    api_version: v1
-    kind: Namespace
-    name: "{{ cert_manager_namespace }}"
-    wait: true
-    kubeconfig: "{{ kubeconfig }}"
-  tags:
-    - install
-    - upgrade
-
 - name: Deploy cert-manager
   community.kubernetes.helm:
     name: "{{ cert_manager_name }}"
-    chart_ref: jetstack/cert-manager
     namespace: "{{ cert_manager_namespace }}"
-    values: "{{ cert_manager_config }}"
+    chart_repo_url: https://charts.jetstack.io/
+    chart_ref: cert-manager
     chart_version: "{{ chart_version }}"
+    values: "{{ cert_manager_config }}"
     kubeconfig: "{{ kubeconfig }}"
-    update_repo_cache: true
+    create_namespace: true
     wait: true
   tags:
     - install
@@ -39,7 +20,6 @@
     namespace: "{{ cert_manager_namespace }}"
     kubeconfig: "{{ kubeconfig }}"
     wait: true
-    update_repo_cache: true
     values: "{{ cert_manager_config }}"
     state: absent
   tags:
