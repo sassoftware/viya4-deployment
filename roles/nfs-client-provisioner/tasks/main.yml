@@ -3,7 +3,7 @@
   community.kubernetes.helm:
     name: "{{ nfs_name }}"
     namespace: "{{ nfs_namespace }}"
-    chart_ref_url: https://ckotzbauer.github.io/helm-charts/
+    chart_repo_url: https://ckotzbauer.github.io/helm-charts/
     chart_ref: nfs-client-provisioner
     chart_version: "{{ chart_version }}"
     values: "{{ nfs_client_config }}"
