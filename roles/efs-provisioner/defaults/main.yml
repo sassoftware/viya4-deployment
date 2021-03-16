@@ -1,4 +1,4 @@
-efs_chart_version: 0.13.1
+efs_chart_version: 0.13.2
 efs_name: efs-provisioner
 efs_namespace: efs-provisioner
 
