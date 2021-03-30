@@ -3,6 +3,8 @@ kibana:
     type: ClusterIP
     nodePort: null
   ingress:
+    annotations:
+      nginx.ingress.kubernetes.io/backend-protocol: HTTPS
     enabled: true
     path: /
     hosts:
