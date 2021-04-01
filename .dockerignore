@@ -1,4 +1,5 @@
 docs/
 *.md
 *.txt
+!requirements.txt
 *.log
