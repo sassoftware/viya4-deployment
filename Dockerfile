@@ -45,7 +45,7 @@ COPY --from=tool_builder /build/aws-iam-authenticator /usr/local/bin/aws-iam-aut
 WORKDIR /viya4-deployment/
 COPY . /viya4-deployment/
 
-RUN pip install -r /viya4-deployment/requirements.txt \
+RUN pip install -r ./requirements.txt \
   && ansible-galaxy install -r ./requirements.yaml \
   && chmod -R g=u /etc/passwd /etc/group /viya4-deployment/ \
   && chmod 755 /viya4-deployment/docker-entrypoint.sh
