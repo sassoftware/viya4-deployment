@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:experimental
 FROM ubuntu:20.04 as baseline
-RUN apt-get update && apt-get -y upgrade \
-  && apt-get -y install python3 python3-dev python3-pip curl unzip \
+RUN apt update && apt upgrade -y \
+  && apt install -y python3 python3-dev python3-pip curl unzip \
   && update-alternatives --install /usr/bin/python python /usr/bin/python3 1 \
   && update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
 
@@ -20,21 +20,22 @@ RUN curl -sLO https://releases.hashicorp.com/terraform/${terraform_version}/terr
 
 # Installation
 FROM baseline
-ARG pip_ansible_version=2.10
-ARG pip_openshift_version=0.11.2
-ARG pip_kubernetes_version=11.0.0
-ARG pip_dnspython=2.1.0
-ARG ansible_galaxy_community_kubernetes_version=1.2.0
-ARG ansible_galaxy_ansible_posix_version=1.1.1
+ARG aws_cli_version=2.1.20
+ARG gcp_cli_version=334.0.0
 
 # Add extra packages
-RUN apt-get -y install gzip wget git git-lfs jq sshpass \
+RUN apt install -y gzip wget git git-lfs jq sshpass \
   && curl -s https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash \
-  && pip install \
-    ansible==${pip_ansible_version} \
-    openshift==${pip_openshift_version} \
-    kubernetes==${pip_kubernetes_version} \
-    dnspython==${pip_dnspython}
+  # AWS
+  && curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-${aws_cli_version}.zip" -o "awscliv2.zip" \
+  && unzip awscliv2.zip \
+  && ./aws/install \
+  # AZURE
+  && curl -sL https://aka.ms/InstallAzureCLIDeb | bash \
+  # GCP
+  && curl "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${gcp_cli_version}-linux-x86_64.tar.gz" -o gcpcli.tar.gz \
+  && tar -xvf gcpcli.tar.gz \
+  && ./google-cloud-sdk/install.sh
 
 COPY --from=tool_builder /build/terraform /usr/local/bin/terraform
 COPY --from=tool_builder /build/kubectl /usr/local/bin/kubectl
@@ -44,9 +45,8 @@ COPY --from=tool_builder /build/aws-iam-authenticator /usr/local/bin/aws-iam-aut
 WORKDIR /viya4-deployment/
 COPY . /viya4-deployment/
 
-RUN ansible-galaxy collection install -f \
-    community.kubernetes:${ansible_galaxy_community_kubernetes_version} \
-    ansible.posix:${ansible_galaxy_ansible_posix_version} \
+RUN pip install -r ./requirements.txt \
+  && ansible-galaxy install -r ./requirements.yaml \
   && chmod -R g=u /etc/passwd /etc/group /viya4-deployment/ \
   && chmod 755 /viya4-deployment/docker-entrypoint.sh
 
@@ -54,6 +54,7 @@ ENV PLAYBOOK=playbook.yaml
 ENV VIYA4_DEPLOYMENT_TOOLING=docker
 ENV HOME=/viya4-deployment
 ENV ANSIBLE_CONFIG=/viya4-deployment/ansible.cfg
+ENV PATH=$PATH:/google-cloud-sdk/bin/
 
 VOLUME ["/data", "/config", "/vault"]
 ENTRYPOINT ["/viya4-deployment/docker-entrypoint.sh"]
