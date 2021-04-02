@@ -9,7 +9,7 @@ FROM baseline as tool_builder
 ARG terraform_version=0.13.6
 ARG kustomize_version=3.7.0
 ARG kubectl_version=1.18.8
-ARG aws_iam_authenticator_version="1.18.9/2020-11-02"
+ARG aws_iam_authenticator_version="1.19.6/2021-01-05"
 
 WORKDIR /build
 
