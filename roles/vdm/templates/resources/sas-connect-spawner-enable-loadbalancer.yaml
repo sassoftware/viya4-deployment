@@ -14,6 +14,10 @@ spec:
     sas.com/deployment: sas-viya
   type: LoadBalancer
   loadBalancerSourceRanges: {{ LOADBALANCER_SOURCE_RANGES }}
-  {% if PROVIDER == "azure" -%}
+{% if PROVIDER == "azure" -%}
   externalTrafficPolicy: Local
-  {% endif %}
+{% endif %}
+  annotations:
+    {% if PRIVATE_CLUSTER_ENABLE and prviate_cluster[PROVIDER] is defined -%}
+    {{ prviate_cluster_annotations[PROVIDER] }}
+    {% endif %}

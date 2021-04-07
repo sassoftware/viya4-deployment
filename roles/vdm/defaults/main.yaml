@@ -72,3 +72,14 @@ vdm_overlays: {}
 V4_ORDERS_CLI_VERSION: 1.0.0
 
 V4_CFG_ELASTICSEARCH_ENABLE: true
+
+PRIVATE_CLUSTER_ENABLE: false
+
+prviate_cluster_annotations:
+  aws:
+    service.beta.kubernetes.io/aws-load-balancer-internal: "true"
+    service.beta.kubernetes.io/aws-load-balancer-type: nlb
+  azure:
+    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+  gcp:
+    networking.gke.io/load-balancer-type: "Internal"

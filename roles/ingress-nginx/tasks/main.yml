@@ -1,4 +1,15 @@
 ---
+
+- set_fact:
+    nginx_config: "{{ nginx_config |combine(prviate_cluster[PROVIDER], recursive=True)}}"
+  when:
+    - PRIVATE_CLUSTER_ENABLE is defined
+    - PRIVATE_CLUSTER_ENABLE
+    - PROVIDER in prviate_cluster
+  tags:
+    - install
+    - upgrade
+
 - name: Deploy ingress-nginx
   community.kubernetes.helm:
     name: "{{ nginx_name }}"
@@ -6,7 +17,7 @@
     chart_repo_url: https://kubernetes.github.io/ingress-nginx
     chart_ref: ingress-nginx
     chart_version: "{{ chart_version }}"
-    values: "{{ nginx_config }}"
+    values: "{{ nginx_config |combine(azure_prviate_cluster)}}"
     kubeconfig: "{{ kubeconfig }}"
     create_namespace: true
     wait: true
