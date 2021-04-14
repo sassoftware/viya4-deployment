@@ -8,8 +8,7 @@ This project contains Ansible code that creates a baseline in an existing kubern
 
 - Prepare K8s cluster
   - Deploy [ingress-nginx](https://kubernetes.github.io/ingress-nginx)
-  - Deploy [nfs-client-provisioner](https://artifacthub.io/packages/helm/ckotzbauer/nfs-client-provisioner) for PVs
-  - Deploy efs-provisioner for PVs in aws
+  - Deploy [nfs-subdir-external-provisioner](https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner) for PVs
   - Deploy [cert-manager](https://github.com/jetstack/cert-manager) if TLS to be configured
   - Deploy [metrics-server](https://github.com/bitnami/charts/tree/master/bitnami/metrics-server/)
   - Manage storageclass
