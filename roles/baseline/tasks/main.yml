@@ -1,41 +1,16 @@
 
 ---
-- name: Include efs-provisioner
+- name: Include nfs-subdir-external-provisioner
   include_role: 
-    name: efs-provisioner
+    name: nfs-subdir-external-provisioner
   vars:
-    efsFileSystemId: "{{ V4_CFG_RWX_FILESTORE_ID }}"
-    awsRegion: "{{ V4_CFG_RWX_FILESTORE_LOCATION }}"
-  when:
-    - V4_CFG_MANAGE_STORAGE is defined
-    - V4_CFG_MANAGE_STORAGE
-    - V4_CFG_RWX_FILESTORE_ID is defined
-    - PROVIDER == 'aws' 
-    - V4_CFG_RWX_FILESTORE_ID is defined
-    - V4_CFG_RWX_FILESTORE_ID is not none
-  tags:
-    - baseline
-
-- name: Include nfs-client-provisioner
-  include_role: 
-    name: nfs-client-provisioner
-  vars:
-    nfs_client_config:
-      nfs:
-        server: "{{ V4_CFG_RWX_FILESTORE_ENDPOINT }}"
-        path: "{{ V4_CFG_RWX_FILESTORE_PATH }}/pvs"
-      podSecurityPolicy:
-        enabled: true
-      storageClass:
-        name: "sas"
-        defaultClass: false
-        archiveOnDelete: false
+    nfs_server: "{{V4_CFG_RWX_FILESTORE_ENDPOINT}}"
+    nfs_path: "{{V4_CFG_RWX_FILESTORE_PATH}}"
   when:
     - V4_CFG_RWX_FILESTORE_ENDPOINT is defined
     - V4_CFG_RWX_FILESTORE_PATH is defined
     - V4_CFG_MANAGE_STORAGE is defined
     - V4_CFG_MANAGE_STORAGE
-    - ( V4_CFG_RWX_FILESTORE_ID is not defined ) or ( V4_CFG_RWX_FILESTORE_ID is none )
   tags:
     - baseline
 
