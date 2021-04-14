@@ -29,8 +29,8 @@
     namespace: "{{ nfs_namespace }}"
     chart_repo_url: https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/
     chart_ref: nfs-subdir-external-provisioner
-    chart_version: "{{ chart_version }}"
-    values: "{{ nfs_client_config }}"
+    chart_version: "{{ nfs_chart_version }}"
+    values: "{{ nfs_config }}"
     kubeconfig: "{{ kubeconfig }}"
     create_namespace: true
     wait: true
