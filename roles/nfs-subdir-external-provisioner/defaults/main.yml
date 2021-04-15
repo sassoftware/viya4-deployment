@@ -18,3 +18,4 @@ nfs_config:
   storageClass:
     defaultClass: "true"
     archiveOnDelete: "false"
+    name: sas
