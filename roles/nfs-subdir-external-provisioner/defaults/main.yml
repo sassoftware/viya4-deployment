@@ -16,6 +16,6 @@ nfs_config:
       - 'rsize=262144'
       - 'wsize=262144'
   storageClass:
-    defaultClass: "true"
+    defaultClass: "false"
     archiveOnDelete: "false"
     name: sas
