@@ -32,14 +32,6 @@ spec:
           args:
             - "-ip_address_types=PRIVATE"
             - "-instances=$(POSTGRES_CONNECTION_NAME)=tcp:0.0.0.0:5432"
-          volumeMounts:
-            - name: cloudsql-instance-credentials
-              mountPath: /secrets/cloudsql
-              readOnly: true
-      volumes:
-        - name: cloudsql-instance-credentials
-          secret:
-            secretName: sql-proxy-serviceaccountkey
       imagePullSecrets: []
       serviceAccountName: {{ PROXY_SQL_K8S_SERVICE_ACCOUNT }}
 ---

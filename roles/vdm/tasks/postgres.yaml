@@ -20,10 +20,10 @@
   block:
     - set_fact:
         V4_CFG_POSTGRES_FQDN: "sql-proxy"
-    - command:
-        shell: |
+    - shell:
+        cmd: |
           gcloud auth activate-service-account {{ V4_CFG_CLOUD_SERVICE_ACCOUNT_NAME }} --key-file={{ V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH }}
-          gcloud iam service-accounts add-iam-policy-binding --role roles/iam.workloadIdentityUser --member "serviceAccount:{{ PROVIDER_ACCOUNT }}.svc.id.goog[{{ NAMESPACE }}/{{ PROXY_SQL_K8S_SERVICE_ACCOUNT }}]" "{{ V4_CFG_POSTGRES_CONNECTION_SA }}"
+          gcloud iam service-accounts add-iam-policy-binding --role roles/iam.workloadIdentityUser --member "serviceAccount:{{ PROVIDER_ACCOUNT }}.svc.id.goog[{{ NAMESPACE }}/{{ PROXY_SQL_K8S_SERVICE_ACCOUNT }}]" "{{ V4_CFG_POSTGRES_SERVICE_ACCOUNT }}"
     - overlay_facts:
         cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
         cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
@@ -31,13 +31,11 @@
         add:
           - { resources: "cloud-sql-proxy.yaml", vdm: true }
           - { transformers: "overlays/external-postgres/googlecloud-full-stack-tls-transformer.yaml", priority: 55 }
-          - { generators: "overlays/external-postgres/service-account-key-secret.yaml" }
   when: 
     - V4_CFG_POSTGRES_TYPE == 'external'
     - PROVIDER == "gcp"
   tags:
     - install
-    - uninstall
     - upgrade
 
 - name: postgres - external

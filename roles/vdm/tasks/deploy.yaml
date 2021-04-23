@@ -12,13 +12,32 @@
     - install
     - upgrade
 
-- name: Deploy PreReqs
+- name: prereqs - cluster-wide
   shell: |
     kubectl --kubeconfig {{ kubeconfig }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=cluster-wide" -f {{ DEPLOY_DIR }}/site.yaml
     kubectl --kubeconfig {{ kubeconfig }} wait --for condition=established --timeout=60s -l "sas.com/admin=cluster-wide" crd
-    kubectl --kubeconfig {{ kubeconfig }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=cluster-local" -f {{ DEPLOY_DIR }}/site.yaml --prune
   when: 
     - DEPLOY
+  tags:
+    - install
+    - upgrade
+
+- name: prereqs - cluster-local deploy
+  shell: |
+    kubectl --kubeconfig {{ kubeconfig }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=cluster-local" -f {{ DEPLOY_DIR }}/site.yaml --prune
+  register: prereq_cluster_local
+  ignore_errors: yes
+  no_log: true
+  when: 
+    - DEPLOY
+  tags:
+    - install
+    - upgrade
+
+- name: prereqs - cluster-local failure
+  fail:
+    msg: "{{ prereq_cluster_local }}"
+  when: prereq_cluster_local["stderr"] is not regex(".* no matches for kind .* in version .*")
   tags:
     - install
     - upgrade
