@@ -53,7 +53,7 @@
   fail:
     msg: "{{ manifest_deploy }}"
   when:
-    - manifest_deploy["stderr"] > 0
+    - manifest_deploy["stderr"]|length > 0
     - manifest_deploy["stderr"] is not regex(".* no matches for kind .* in version .*")
   tags:
     - install
@@ -76,7 +76,7 @@
     msg: "{{ manifest_deploy_istio }}"
   when:
     - V4_CFG_INGRESS_TYPE == "istio"
-    - manifest_deploy_istio["stderr"] > 0
+    - manifest_deploy_istio["stderr"]|length > 0
     - manifest_deploy_istio["stderr"] is not regex(".* no matches for kind .* in version .*")
   tags:
     - install
