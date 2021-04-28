@@ -167,7 +167,7 @@ For Example:
 
 #### Openldap Customizations
 
-If you enable the embedded openldap server, it is likely you would like to change the users/groups that will be created. This can be done like any other customizations. First create the folder structure detailed in the [customizations](#customizations) section above. Afterwards copy the examples/openldap folder into the site-config folder. Inside the openldap folder is openldap-modify-users.yaml file. Modify it to match your desired setup. Once complete you can run the viya4-deployment tool and it will see and use this setup when creating the openldap server.
+If you enable the embedded openldap server, it is likely you would like to change the users/groups that will be created. This can be done like any other customizations. First create the folder structure detailed in the [section above](#customize-deployment-overlays). Afterwards copy the examples/openldap folder into the site-config folder. Inside the openldap folder is openldap-modify-users.yaml file. Modify it to match your desired setup. Once complete you can run the viya4-deployment tool and it will see and use this setup when creating the openldap server.
 
 <sub>Note that then can only be used when first deploying the openldap server. Afterwards, you can either delete and redeploy the openldap server with a new config or add users via ldapadd.</sub>
 
@@ -189,21 +189,40 @@ For Example:
 
 ## Creating and Managing deplyoment
 
-Create and manage the cloud resources by either: 
+Create and manage deplyoments by either: 
 
 - running [Ansible](docs/user/AnsibleUsage.md) directly on your workstation, or
 - running [Docker container](docs/user/DockerUsage.md). 
   
 ### DNS
 
-When running the baseline action an ingress will be created. You will need to register this ingress ip with your dns provider such that
+During the installation, an ingress load balancer can be installed for viya and the monitoring and logging stack. The hostname for these services must be registered with your dns provider to resolve to the load balancer's endpoint. This can be done by creating a record per unique ingress host. However, when managing multiple viya deployments, this could get cumbersome. In which case, we recommend creating a dns record that points to the ingress controller's endpoint. The endpoint may be an ip address or fqdn depending on the cloud provider. 
 
-- An A record (ex. example.com) points to the <ingress_ip>
-- A wildcard (ex *.example.com) points to the <ingress_ip>
+- Create an A record or CNAME (depending on cloud provider) that resolves the desired hostname to the load balancers' endpoint. 
+- Create a wildcard CNAME record that resolves to the record created in the previous step.
+  
 
-When running the viya action with V4_CFG_CONNECT_ENABLE_LOADBALANCER _true_ a load balancer will be created to allow external SAS/CONNECT clients to connect to Viya.
-You will need to register this load balancer ip with your dns provider such that
-an A record (ex. connect.example.com) points to the <connect_load_balancer_ip>
+For example:
+
+First we lookup the ingress endpoint. Here, we will use kubectl but we colud have also checked in the cloud providers portal.
+
+```bash
+$ kubectl get service -n ingress-nginx
+
+NAME                                 TYPE           CLUSTER-IP    EXTERNAL-IP      PORT(S)                      AGE
+ingress-nginx-controller             LoadBalancer   10.0.225.39   52.52.52.52      80:30603/TCP,443:32014/TCP   12d
+ingress-nginx-controller-admission   ClusterIP      10.0.99.105   <none>           443/TCP                      12d
+```
+
+In the above example, the ingress endpoint is 52.52.52.52. So, we would create the following records:
+
+- An A record (ex. example.com) that points to the 52.52.52.52 address
+- A wildcard CNAME (ex *.example.com) that points to the example.com
+
+
+#### Connect
+
+When running the `viya` action with `V4_CFG_CONNECT_ENABLE_LOADBALANCER=true` a separate service loadbalancer will be created to allow external SAS/CONNECT clients to connect to Viya. You will need to register this load balancer endpoint with your dns provider such that an desired hostname (ex. connect.example.com) points to the load balancers' endpoint
 
 
 ### Troubleshooting
