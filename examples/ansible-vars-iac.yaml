@@ -3,7 +3,7 @@ NAMESPACE: <namespace>
 
 ## MISC
 DEPLOY: true # Set to false to stop at generating the manifest
-LOADBALANCER_SOURCE_RANGES: ['<cluster_nat_ip>/32']
+LOADBALANCER_SOURCE_RANGES: ['<desired_cidr_blocks>']
 
 ## Storage 
 V4_CFG_MANAGE_STORAGE: true

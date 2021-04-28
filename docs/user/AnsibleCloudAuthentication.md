@@ -4,11 +4,44 @@ The docker container contains the carious cloud clis for interacting with the va
 
 ## GCP
 
-When deploying to GCP and using Google Cloud SQL the tool can setup the service account and binding in order to deploy [cloud-sql-proxy](https://cloud.google.com/sql/docs/postgres/connect-kubernetes-engine). For security we use a workload identity. In order to set the binding, we need a service account with IAM permissions. The following vars are required
+When deploying to GCP we default to using [Google Cloud SQL proxy](https://cloud.google.com/sql/docs/postgres/connect-kubernetes-engine). For security we set this up via workload identity configuration. This requires the following vars to be set -
 
-| Name | Description |
-| :--- | :--- |
-| V4_CFG_CLOUD_SERVICE_ACCOUNT_NAME | Name of service account that matches the name inside the V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH file |
-| V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH | Path to Service Account JSON file |
-| V4_CFG_POSTGRES_CONNECTION_NAME | Sql cluster connection name |
-| V4_CFG_POSTGRES_SERVICE_ACCOUNT | Service account in GCP with cloudsql.admin role |
+### V4_CFG_POSTGRES_CONNECTION_NAME
+
+Name of the sql cluster connection as listed in the gcp portal
+
+### V4_CFG_POSTGRES_SERVICE_ACCOUNT
+
+Name of service account in GCP that has the cloudsql.admin role. This account will be mapped to a kuberenetes service account thus granting the sql proxy access, via workload identity, to the sql server
+
+### V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH 
+
+Path to Service Account JSON file for the <V4_CFG_CLOUD_SERVICE_ACCOUNT_NAME> service account
+
+### V4_CFG_CLOUD_SERVICE_ACCOUNT_NAME 
+
+Name of service account in GCP that has the iam.serviceAccountAdmin role. This account will be used to setting up the sql proxy's google service account mapping to the kubernetes service account
+
+Example code ran by the tool:
+
+```bash
+NAMESPACE=dev
+PROVIDER_ACCOUNT=my_gcp_project
+V4_CFG_CLOUD_SERVICE_ACCOUNT_NAME=cloud_service_account
+V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH=$HOME/sa.json
+V4_CFG_POSTGRES_SERVICE_ACCOUNT=sql_service_account
+
+## Authenticate
+gcloud auth activate-service-account \
+  --key-file=${V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH} \
+  ${V4_CFG_CLOUD_SERVICE_ACCOUNT_NAME}
+
+## Setup role binding
+gcloud iam service-accounts add-iam-policy-binding \
+  --role roles/iam.workloadIdentityUser \
+  --project ${PROVIDER_ACCOUNT} \
+  --member "serviceAccount:${PROVIDER_ACCOUNT}.svc.id.goog[${NAMESPACE}/sql-proxy]" \
+  ${V4_CFG_POSTGRES_SERVICE_ACCOUNT}@${PROVIDER_ACCOUNT}.iam.gserviceaccount.com
+```
+
+
