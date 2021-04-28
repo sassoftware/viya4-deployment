@@ -35,7 +35,7 @@ This project contains Ansible code that creates a baseline in an existing kubern
 
 ### Technical
 
-- [Ansibile and docker dependencies](docs/DEPENDENCY-VERSIONS.md)
+- [Ansibile and docker dependencies](docs/user/Dependencies.md)
 
 ### Infrastructure
 
