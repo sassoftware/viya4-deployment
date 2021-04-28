@@ -131,7 +131,7 @@ This following information is parsed from the integration:
   - V4_CFG_POSTGRES_CONNECTION_NAME
   - V4_CFG_POSTGRES_SERVICE_ACCOUNT
 
-### Customizations
+### Customize Deployment Overlays
 
 viya4-deployment fully manages the kustomization.yaml file. Users can make change by adding custom overlays into sub-folders under the site-config folder. If this is the first time you are running the tool and you need customizations, you can create the folder structure below.
 
@@ -187,9 +187,14 @@ For Example:
             /openldap-modify-users.yaml <- openldap overlay
  ```
 
-### Running
+## Creating and Managing deplyoment
 
-### Post Install
+Create and manage the cloud resources by either: 
+
+- running [Ansible](docs/user/AnsibleUsage.md) directly on your workstation, or
+- running [Docker container](docs/user/DockerUsage.md). 
+  
+### DNS
 
 When running the baseline action an ingress will be created. You will need to register this ingress ip with your dns provider such that
 
@@ -203,7 +208,7 @@ an A record (ex. connect.example.com) points to the <connect_load_balancer_ip>
 
 ### Troubleshooting
 
-Debug mode can be enabled by adding "-vvv" to the end of the docker or ansible commands
+See [troubleshooting](./docs/Troubleshooting.md) page.
 
 ## Contributing
 
