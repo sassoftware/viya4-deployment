@@ -4,7 +4,7 @@ The docker container contains cloud clis needed for interacting with the various
 
 ## GCP
 
-When deploying to GCP we default to using [Google Cloud SQL proxy](https://cloud.google.com/sql/docs/postgres/connect-kubernetes-engine). For security we set this up via workload identity configuration. This requires the following vars to be set -
+When deploying to GCP we default to using [Google Cloud SQL proxy](https://cloud.google.com/sql/docs/postgres/connect-kubernetes-engine). For security we set this up via workload identity configuration. This requires the following vars to be set:
 
 ### V4_CFG_POSTGRES_CONNECTION_NAME
 
