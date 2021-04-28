@@ -2,7 +2,7 @@
 
 ## Prereqs
 
-When using the Terraform CLI, make sure you have all the necessary tools [installed on your workstation](../../README.md#ansible).
+When using the Ansbile CLI, make sure you have all the necessary tools [installed on your workstation](../../README.md#ansible).
 
 ## Preparation
 

@@ -2,9 +2,7 @@
 
 ## Overview
 
-This project contains Ansible code that creates a baseline in an existing kubernetes environment for use with Viya 4+, generates the manifest for an order, and then can also deploy that order into the kubernetes environment specified.
-
-### Things this tool can do
+This project contains Ansible code that creates a baseline in an existing kubernetes environment for use with Viya 4+, generates the manifest for an order, and then can also deploy that order into the kubernetes environment specified. Here is a list of things this tool can do - 
 
 - Prepare K8s cluster
   - Deploy [ingress-nginx](https://kubernetes.github.io/ingress-nginx)
@@ -12,6 +10,7 @@ This project contains Ansible code that creates a baseline in an existing kubern
   - Deploy [cert-manager](https://github.com/jetstack/cert-manager) if TLS to be configured
   - Deploy [metrics-server](https://github.com/bitnami/charts/tree/master/bitnami/metrics-server/)
   - Manage storageclass
+
 - Deploy Viya
   - Retrieve the deployment assets using [Viya Orders CLI](https://github.com/sassoftware/viya4-orders-cli)
   - Retrieve cloud configuration from tfstate if using a Viya 4 IaC project
@@ -21,39 +20,24 @@ This project contains Ansible code that creates a baseline in an existing kubern
   - kustomize such that data and homes directories are mounted on cas nodes and on compute server instances
   - Deploy [Viya Monitoring for Kubernetes](https://github.com/sassoftware/viya4-monitoring-kubernetes)
   - Deploy MPP or SMP CAS servers
+    
 - Manage Viya Deployments
   - Organize and persist config for any number of Viya deployments across namespaces, cluster, or cloud providers.
 
-### Prerequisites
+## Prerequisites
 
-This tool supports running both from ansible installed on your local machine or via a docker container. The Dockerfile for the container can be found [here](Dockerfile)
+### Operational knowledge of 
 
-#### Ansible
+- [Ansible](https://docs.ansible.com/ansible/latest/user_guide/index.html#getting-started)
+- [Docker](https://www.docker.com/)
+- [Kubernetes](https://kubernetes.io/docs/concepts/)
+- Cloud Provider
 
-- terraform
-- ansible
-- unzip
-- tar
-- kubectl
-- kustomize
-- python
-- pip
-- openshift pip module
-- kubernetes  pip module
-- dnspython pip module
-- community.kubernetes ansible-galaxy module
-- ansible.posix ansible-galaxy module
-- helm
-- git
+### Technical
 
-#### Docker
+- [Ansibile and docker dependencies](docs/DEPENDENCY-VERSIONS.md)
 
-- docker
-- git
-
-note: For dependency versions and changing versions see [Dependency Versions](docs/DEPENDENCY-VERSIONS.md)
-
-#### Infrastructure
+### Infrastructure
 
 Prior to running this playbook some infrastructure needs to be in place
 
@@ -86,56 +70,43 @@ Prior to running this playbook some infrastructure needs to be in place
       /astores                      <- location for astores
   ```
 
-### Installation
-
-#### Ansible
-
-```bash
-# clone repo
-git clone https://github.com/sassoftware/viya4-deployment.git
-
-# move to directory
-cd viya4-deployment
-
-# install python packages
-pip3 install --user -r requirements.txt
-
-# install ansible collections
-ansible-galaxy collection install -r requirements.yaml -f
-```
-
-#### Docker
-
-```bash
-# clone repo
-git clone https://github.com/sassoftware/viya4-deployment.git
-
-# move to directory
-cd viya4-deployment
-
-# build container
-docker build -t viya4-deployment .
-```
-
 ## Getting Started
 
-### Configs
+### Clone this project
+
+Run these commands in a Terminal session:
+
+```bash
+# clone this repo
+git clone https://github.com/sassoftware/viya4-deployment
+
+# move to directory
+cd viya4-deployment
+```
+
+### Authenticating Ansible to access Cloud
+
+See [Ansible Cloud Authentication](./docs/user/AnsibleCloudAuthentication.md) for details.
+
+**NOTE:** At this time, only required for GCP with external postgres
+
+### Customize Input Values
 
 The playbook uses ansible vars for configuration. It is recommended to encrypt both this file and the other configs (sitedefault, kubeconfig, and tfstate) using ansible vault.
 
-### Ansible Vars
+#### Ansible Vars
 
 The ansible vars file is the main configuration file. Create a file named ansible-vars.yaml to customize any input variable value. For starters, you can copy one of the provided example variable definition files in ./examples folder. For more details on the variables declared in [ansible-vars.yaml](examples/ansible-vars.yaml) refer to [CONFIG-VARS.md](docs/CONFIG-VARS.md).
 
-### Sitedefault
+#### Sitedefault
 
 This is a normal VIYA sitedefault file. If none is supplied, the example [sitedefault.yaml](examples/sitedefault.yaml) will be used.
 
-### Kubeconfig
+#### Kubeconfig
 
 Kubernetes access config file. When not integrating with SAS Viya 4 IaC projects, this must be provided
 
-### Terraform state file
+#### Terraform state file
 
 When integrating with SAS Viya 4 IaC projects, you can provide the tfstate file to have the kubeconfig and other setting auto-discovered. The [ansible-vars-iac.yaml](examples/ansible-vars-iac.yaml) example file shows the values that need to be set when using the iac integration.
 
@@ -143,6 +114,7 @@ This following information is parsed from the integration:
 
 - Cloud
   - PROVIDER
+  - PROVIDER_ACCOUNT
   - CLUSTER_NAME
   - Cloud NAT IP address
 - RWX Filestore
@@ -151,11 +123,13 @@ This following information is parsed from the integration:
 - JumpBox
   - JUMP_SVR_HOST
   - JUMP_SVR_USER
-  - JUMP_SVR_PRIVATE_KEY (if a random one is generated)
+  - JUMP_SVR_RWX_FILESTORE_PATH
 - Postgres (When V4_CFG_POSTGRES_TYPE is set to external)
   - V4_CFG_POSTGRES_ADMIN_LOGIN
   - V4_CFG_POSTGRES_PASSWORD
   - V4_CFG_POSTGRES_FQDN
+  - V4_CFG_POSTGRES_CONNECTION_NAME
+  - V4_CFG_POSTGRES_SERVICE_ACCOUNT
 
 ### Customizations
 
@@ -215,73 +189,6 @@ For Example:
 
 ### Running
 
-All configs needed by ansible are also needed to be mounted into the docker container. In general any file/folder path set via an ansible flag are equivalent to the file/folder being mounted to the docker container at /config/<lower_case_variable_name>.
-
-Examples:
-
-- The ansible flag `-e KUBECONFIG` is equivalent to `--volume <path_to_file>:/config/kubeconfig` when running the docker container
-- The ansible flag `-e JUMP_SVR_PRIVATE_KEY` is equivalent to `--volume <path_to_file>:/config/jump_svr_private_key` when running the docker container
-- The ansible flag `-e V4_CFG_SITEDEFAULT` is equivalent to `--volume <path_to_file>:/config/v4_cfg_sitedefault` when running the docker container
-
-Below are the only exceptions:
-
-| Ansible Flag | Docker Mount Path | Description | Required |
-| :--- | :--- | :--- | ---: |
-| -e BASE_DIR | /data | local folder in which all the generated files can be stored. If you do not wish to save the files, this can be omitted | false |
-| --vault-password-file | /config/vault_password_file | Full path to file containing the vault password | false |
-
-#### Ansible
-
-In the example command line below, replace each of the <> values, such as "<path_to_kubeconfig_file>", with the appropriate value.
-
-```bash
-ansible-playbook \
-  -e BASE_DIR=<path_to_store_files> \
-  -e KUBECONFIG=<path_to_kubeconfig_file> \
-  -e CONFIG=<path_to_ansible_vars_file> \
-  -e TFSTATE=<path_to_tfstate_file> \
-  -e JUMP_SVR_PRIVATE_KEY=<path_ssh_private_key> \
-  playbooks/playbook.yaml \
-  --tags "<desired_tasks>,<desired_action>"
-```
-
-#### Docker
-
-In the example command line below, replace each of the <> values, such as "<path_to_kubeconfig_file>", with the appropriate value.
-
-```bash
-docker run --rm \
-  --group-add root \
-  --user $(id -u):$(id -g) \
-  --volume <path_to_store_files>:/data \
-  --volume <path_to_kubeconfig_file>:/config/kubeconfig \
-  --volume <path_to_ansible_vars_file>:/config/config \
-  --volume <path_to_tfstate_file>:/config/tfstate \
-  --volume <path_ssh_private_key>:/config/jump_svr_private_key \
-  viya4-deployment --tags "<desired_tasks>,<desired_action>"
-```
-
-#### Actions
-
-Actions are used to determine whether in install or uninstall software. One must be set when running the playbook
-
-| Name | Description |
-| :--- | ---: |
-| Install | Installs the stack required for the specified tasks |
-| Uninstall | Uninstalls the stack required for the specified tasks |
-
-#### Tasks
-
-Any number of tasks can be ran at the same time. This means you could run an action against a single task or all the task.
-
-| Name | Description |
-| :--- | :--- |
-| baseline | Installs needed cluster level tooling needed for all viya deployments. These may include, cert-manager, ingress-nginx, nfs-client-provisioners and more |
-| viya | Deploys viya |
-| cluster-logging | Installs cluster-wide logging using the [viya4-monitoring-kubernetes](https://github.com/sassoftware/viya4-monitoring-kubernetes) project. |
-| cluster-monitoring | Installs cluster-wide monitoring using the [viya4-monitoring-kubernetes](https://github.com/sassoftware/viya4-monitoring-kubernetes) project. |
-| viya-monitoring | Installs viya namespace level monitoring using the [viya4-monitoring-kubernetes](https://github.com/sassoftware/viya4-monitoring-kubernetes) project. |
-
 ### Post Install
 
 When running the baseline action an ingress will be created. You will need to register this ingress ip with your dns provider such that
@@ -293,65 +200,6 @@ When running the viya action with V4_CFG_CONNECT_ENABLE_LOADBALANCER _true_ a lo
 You will need to register this load balancer ip with your dns provider such that
 an A record (ex. connect.example.com) points to the <connect_load_balancer_ip>
 
-### Examples
-
-- I have a new cluster, deployed using one of the Viya4 IAC projects, and want to install everything using docker
-
-  ```bash
-  docker run --rm \
-    --group-add root \
-    --user $(id -u):$(id -g) \
-    --volume $HOME:/data \
-    --volume $HOME/ansible-vars.yaml:/config/config \
-    --volume $HOME/viya4-iac-azure/terraform.tfstate:/config/tfstate \
-    viya4-deployment --tags "baseline,viya,cluster-logging,cluster-monitoring,viya-monitoring,install"
-  ```
-
-- I have a new cluster, deployed using one of the Viya4 IAC projects, and want to install everything using ansible
-
-  ```bash
-  ansible-playbook \
-    -e BASE_DIR=$HOME \
-    -e CONFIG=$HOME/ansible-vars.yaml \
-    -e TFSTATE=$HOME/viya4-iac-aws/terraform.tfstate \
-    viya4-deployment --tags "baseline,viya,cluster-logging,cluster-monitoring,viya-monitoring,install"
-  ```
-
-- I have a custom built cluster and want to baseline and deploy viya only using ansible
-
-  ```bash
-  ansible-playbook \
-    -e BASE_DIR=$HOME \
-    -e KUBECONFIG=$HOME/.kube/config \
-    -e CONFIG=$HOME/ansible-vars.yaml \
-    -e JUMP_SVR_PRIVATE_KEY=$HOME/.ssh/id_rsa \
-    playbooks/playbook.yaml --tags "baseline,viya,install"
-  ```
-
-- I have an existing cluster with viya installed and want to install another viya instance in a different namespace with monitoring, using docker
-
-  ```bash
-  docker run --rm \
-    --group-add root \
-    --user $(id -u):$(id -g) \
-    --volume $HOME:/data \
-    --volume $HOME/viya-deployments/deployments/azure/my_az_account/demo-aks/namespace2/site-config/defaults.yaml:/config/config \
-    --volume $HOME/viya-deployments/deployments/azure/my_az_account/demo-aks/namespace2/site-config/.ssh:/config/jump_svr_private_key \
-    --volume $HOME/viya-deployments/deployments/azure/my_az_account/demo-aks/namespace2/site-config/.kube:/config/kubeconfig \
-    viya4-deployment --tags "viya,viya-monitoring,install"
-  ```
-
-- I have a cluster with everything installed and want to uninstall everything using docker
-
-  ```bash
-  docker run --rm \
-    --group-add root \
-    --user $(id -u):$(id -g) \
-    --volume $HOME:/data \
-    --volume $HOME/ansible-vars.yaml:/config/config \
-    --volume $HOME/viya4-iac-aws/terraform.tfstate:/config/tfstate \
-    viya4-deployment --tags "baseline,viya,cluster-logging,cluster-monitoring,viya-monitoring,uninstall"
-  ```
 
 ### Troubleshooting
 

@@ -40,18 +40,6 @@
       when: 
         - tfstate.rwx_filestore_path is defined
         - tfstate.rwx_filestore_path.value|length > 0
-    - name: tfstate - filestore id
-      set_fact:
-        V4_CFG_RWX_FILESTORE_ID: "{{ tfstate.rwx_filestore_id.value }}"
-      when: 
-        - tfstate.rwx_filestore_id is defined
-        - tfstate.rwx_filestore_id.value|length > 0
-    - name: tfstate - filestore location
-      set_fact:
-        V4_CFG_RWX_FILESTORE_LOCATION: "{{ tfstate.location.value }}"
-      when: 
-        - tfstate.location is defined
-        - tfstate.location.value|length > 0
     - name: tfstate - export kubeconfig
       copy:
         dest: "{{ tmpdir.path }}/.kube"
