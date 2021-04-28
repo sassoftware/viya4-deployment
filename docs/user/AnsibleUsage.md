@@ -18,6 +18,16 @@ Prepare your `ansible-vars.yaml` file, as described in [Customize Input Values](
 
 When running, you need to tell the tool what tasks and actions you would like performed. 
 
+### Initialize Ansible
+
+```bash
+# install python packages
+pip3 install --user -r requirements.txt
+
+# install ansible collections
+ansible-galaxy collection install -r requirements.yaml -f
+```
+
 ### Actions
 
 Actions are used to determine whether in install or uninstall software. One must be set when running the playbook
