@@ -10,7 +10,7 @@ This project contains Ansible code that creates a baseline in an existing kubern
   - Deploy [cert-manager](https://github.com/jetstack/cert-manager) if TLS to be configured
   - Deploy [metrics-server](https://github.com/bitnami/charts/tree/master/bitnami/metrics-server/)
   - Manage storageclass
-
+  
 - Deploy Viya
   - Retrieve the deployment assets using [Viya Orders CLI](https://github.com/sassoftware/viya4-orders-cli)
   - Retrieve cloud configuration from tfstate if using a Viya 4 IaC project
@@ -20,7 +20,7 @@ This project contains Ansible code that creates a baseline in an existing kubern
   - kustomize such that data and homes directories are mounted on cas nodes and on compute server instances
   - Deploy [Viya Monitoring for Kubernetes](https://github.com/sassoftware/viya4-monitoring-kubernetes)
   - Deploy MPP or SMP CAS servers
-    
+
 - Manage Viya Deployments
   - Organize and persist config for any number of Viya deployments across namespaces, cluster, or cloud providers.
 
@@ -189,22 +189,22 @@ For Example:
 
 ## Creating and Managing deplyoment
 
-Create and manage deplyoments by either: 
+Create and manage deployments by either: 
 
 - running [Ansible](docs/user/AnsibleUsage.md) directly on your workstation, or
 - running [Docker container](docs/user/DockerUsage.md). 
   
 ### DNS
 
-During the installation, an ingress load balancer can be installed for viya and the monitoring and logging stack. The hostname for these services must be registered with your dns provider to resolve to the load balancer's endpoint. This can be done by creating a record per unique ingress host. However, when managing multiple viya deployments, this could get cumbersome. In which case, we recommend creating a dns record that points to the ingress controller's endpoint. The endpoint may be an ip address or fqdn depending on the cloud provider. 
+During the installation, an ingress loadbalancer can be installed for viya and the monitoring and logging stack. The hostname for these services must be registered with your dns provider to resolve to the loadbalancer's endpoint. This can be done by creating a record per unique ingress host. However, when managing multiple viya deployments, this could get cumbersome. In which case, we recommend creating a dns record that points to the ingress controller's endpoint. The endpoint may be an ip address or fqdn depending on the cloud provider. 
 
-- Create an A record or CNAME (depending on cloud provider) that resolves the desired hostname to the load balancers' endpoint. 
+- Create an A record or CNAME (depending on cloud provider) that resolves the desired hostname to the loadbalancers' endpoint. 
 - Create a wildcard CNAME record that resolves to the record created in the previous step.
   
 
 For example:
 
-First we lookup the ingress endpoint. Here, we will use kubectl but we colud have also checked in the cloud providers portal.
+First we lookup the ingress endpoint. Here, we will use kubectl but we could have also checked in the cloud providers portal.
 
 ```bash
 $ kubectl get service -n ingress-nginx
@@ -222,7 +222,7 @@ In the above example, the ingress endpoint is 52.52.52.52. So, we would create t
 
 #### Connect
 
-When running the `viya` action with `V4_CFG_CONNECT_ENABLE_LOADBALANCER=true` a separate service loadbalancer will be created to allow external SAS/CONNECT clients to connect to Viya. You will need to register this load balancer endpoint with your dns provider such that an desired hostname (ex. connect.example.com) points to the load balancers' endpoint
+When running the `viya` action with `V4_CFG_CONNECT_ENABLE_LOADBALANCER=true` a separate service loadbalancer will be created to allow external SAS/CONNECT clients to connect to Viya. You will need to register this loadbalancer endpoint with your dns provider such that an desired hostname (ex. connect.example.com) points to the loadbalancer's endpoint
 
 
 ### Troubleshooting
