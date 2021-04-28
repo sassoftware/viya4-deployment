@@ -35,7 +35,7 @@ This project contains Ansible code that creates a baseline in an existing kubern
 
 ### Technical
 
-- [Ansibile and docker dependencies](docs/user/Dependencies.md)
+- [Ansible and docker dependencies](docs/user/Dependencies.md)
 
 ### Infrastructure
 
@@ -187,7 +187,7 @@ For Example:
             /openldap-modify-users.yaml <- openldap overlay
  ```
 
-## Creating and Managing deplyoment
+## Creating and Managing deployment
 
 Create and manage deployments by either: 
 
