@@ -96,7 +96,7 @@ The playbook uses ansible vars for configuration. It is recommended to encrypt b
 
 #### Ansible Vars
 
-The ansible vars file is the main configuration file. Create a file named ansible-vars.yaml to customize any input variable value. For starters, you can copy one of the provided example variable definition files in ./examples folder. For more details on the variables declared in [ansible-vars.yaml](examples/ansible-vars.yaml) refer to [CONFIG-VARS.md](docs/CONFIG-VARS.md).
+The ansible vars file is the main configuration file. Create a file named ansible-vars.yaml to customize any input variable value. Example variable definition files are provided in the ./examples folder. For more details on the supported variables refer to [CONFIG-VARS.md](docs/CONFIG-VARS.md).
 
 #### Sitedefault
 
