@@ -204,7 +204,7 @@ During the installation, an ingress loadbalancer can be installed for viya and t
 
 For example:
 
-First we lookup the ingress endpoint. Here, we will use kubectl but we could have also checked in the cloud providers portal.
+First we lookup the ingress controller's loadbalancer endpoint. Here, we will use kubectl but we could have also checked in the cloud providers portal.
 
 ```bash
 $ kubectl get service -n ingress-nginx
@@ -214,7 +214,7 @@ ingress-nginx-controller             LoadBalancer   10.0.225.39   52.52.52.52   
 ingress-nginx-controller-admission   ClusterIP      10.0.99.105   <none>           443/TCP                      12d
 ```
 
-In the above example, the ingress endpoint is 52.52.52.52. So, we would create the following records:
+In the above example, the ingress controller's loadbalancer endpoint is 52.52.52.52. So, we would create the following records:
 
 - An A record (ex. example.com) that points to the 52.52.52.52 address
 - A wildcard CNAME (ex *.example.com) that points to the example.com
