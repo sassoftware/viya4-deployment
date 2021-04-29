@@ -4,7 +4,8 @@ Supported configuration variables are listed in the table below.  All variables 
 
 - [List of valid configuration variables](#list-of-valid-configuration-variables)
   - [BASE](#base)
-  - [Cloud info](#cloud-info)
+  - [Cloud](#cloud)
+    - [Authentication](#authentication)
   - [Jump Server](#jump-server)
   - [Storage](#storage)
     - [RWX Filestore](#rwx-filestore)
@@ -37,13 +38,18 @@ Supported configuration variables are listed in the table below.  All variables 
 | V4_CFG_SITEDEFAULT | Path to sitedefault file | string | | false | When not set [sitedefault](examples/sitedefault.yaml) is used | viya |
 | V4_CFG_SSSD | Path to sssd file | string | | false | | viya |
 
-## Cloud info
+## Cloud
 
 | Name | Description | Type | Default | Required | Notes | Actions |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | PROVIDER | Cloud provider | string | | true | [aws,azure,gcp,custom] | baseline, viya |
 | CLUSTER_NAME | Name of the k8s cluster | string | | true | | baseline, viya |
 | NAMESPACE | K8s namespace in which to deploy | string | | true | | baseline, viya, viya-monitoring |
+
+### Authentication
+
+| Name | Description | Type | Default | Required | Notes | Actions |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_CLOUD_SERVICE_ACCOUNT_NAME | Cloud service account | string | | false | See [ansible cloud authentication](user/AnsibleCloudAuthentication.md) | viya |
 | V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH | Full path to service account credentials file | string | | false | See [ansible cloud authentication](user/AnsibleCloudAuthentication.md) | viya |
 
