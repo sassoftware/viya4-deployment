@@ -204,7 +204,7 @@ During the installation, an ingress loadbalancer can be installed for viya and t
 
 For example:
 
-First we lookup the ingress controller's loadbalancer endpoint. Here, we will use kubectl but we could have also checked in the cloud providers portal.
+First lookup the ingress controller's loadbalancer endpoint. The example below uses kubectl. This information can also be looked up in the cloud providers portal.
 
 ```bash
 $ kubectl get service -n ingress-nginx
