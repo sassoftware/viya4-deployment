@@ -1,6 +1,6 @@
-# Cloud Authentication
+# Cloud Provider Authentication
 
-The docker container contains cloud clis needed for interacting with the various clouds.
+The docker container includes cloud provider clis needed for interacting with the various cloud providers.
 
 ## GCP
 

@@ -240,7 +240,7 @@ See [troubleshooting](./docs/Troubleshooting.md) page.
 ## Additional Resources
 
 - [Viya Resource Guide](https://github.com/sassoftware/viya4-resource-guide)
-- [Viya 4 IaC for Azure](https://github.com/sassoftware/viya4-iac-azure)
-- [Viya 4 IaC for AWS](https://github.com/sassoftware/viya4-iac-aws)
+- [SAS Viya 4 Infrastructure as Code (IaC) for Microsoft Azure](https://github.com/sassoftware/viya4-iac-azure)
+- [SAS Viya 4 Infrastructure as Code (IaC) for Amazon Web Services (AWS)](https://github.com/sassoftware/viya4-iac-aws)
 - [Viya Monitoring for Kubernetes](https://github.com/sassoftware/viya4-monitoring-kubernetes)
 - [Viya Orders CLI](https://github.com/sassoftware/viya4-orders-cli)
