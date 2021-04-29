@@ -36,7 +36,7 @@ Below are the only exceptions:
 | Ansible Flag | Docker Mount Path | Description | Required |
 | :--- | :--- | :--- | ---: |
 | -e BASE_DIR | `/data` | local folder in which all the generated files can be stored. If you do not wish to save the files, this can be omitted | false |
-| --vault-password-file | `/config/vault_password_file` | Full path to file containing the vault password | false |
+| --vault-password-file | `/config/vault_password_file` | Full path to file containing the Ansible vault password | false |
 
 ### Variable Definitions (ansible-vars.yaml) File
 
