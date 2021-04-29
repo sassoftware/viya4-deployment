@@ -57,7 +57,7 @@ Actions are used to install or uninstall software. One must be set when running 
 
 ### Tasks
 
-Any number of tasks can be ran at the same time. This means you could run an action against a single task or all the task.
+Any number of tasks can be run at the same time. An action can run against a single task or all tasks.
 
 | Name | Description |
 | :--- | :--- |
