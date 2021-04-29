@@ -145,7 +145,7 @@ viya4-deployment fully manages the kustomization.yaml file. Users can make chang
 
 #### Viya Customizations
 
-Viya customizations are automatically read in from folders under site-config. To do so, first create the folder structure detailed in the [customizations](#customizations) section above. Afterwards you can copy the desired overlays into a sub-folder under site-config. Once complete you can run the viya4-deployment tool and it will detect and add the overlays to the proper section in the kustomization.yaml
+Viya customizations are automatically read in from folders under site-config. To do so, first create the folder structure detailed in the [section above](#customize-deployment-overlays). Afterwards you can copy the desired overlays into a sub-folder under site-config. Once complete you can run the viya4-deployment tool and it will detect and add the overlays to the proper section in the kustomization.yaml
 
 <sub> Note that you do not need to modify the kustomization.yaml. The tool will automatically add the custom overlays to the kustomization.yaml file.<sub>
 
@@ -167,7 +167,7 @@ For Example:
 
 #### Openldap Customizations
 
-If you enable the embedded openldap server, it is likely you would like to change the users/groups that will be created. This can be done like any other customizations. First create the folder structure detailed in the [section above](#customize-deployment-overlays). Afterwards copy the examples/openldap folder into the site-config folder. Inside the openldap folder is openldap-modify-users.yaml file. Modify it to match your desired setup. Once complete you can run the viya4-deployment tool and it will see and use this setup when creating the openldap server.
+If the embedded openldap server is enabled, it is possible to change the users/groups that will be created. This can be done like any other customizations. First create the folder structure detailed in the [Customize Deployment Overlays](#customize-deployment-overlays). Then, copy the ./examples/openldap folder into the site-config folder. Inside the openldap folder is openldap-modify-users.yaml file. Modify it to match the desired setup. Once complete, run the viya4-deployment tool and it will see and use this setup when creating the openldap server.
 
 <sub>Note that then can only be used when first deploying the openldap server. Afterwards, you can either delete and redeploy the openldap server with a new config or add users via ldapadd.</sub>
 
