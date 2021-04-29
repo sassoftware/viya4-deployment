@@ -20,7 +20,7 @@ Name of service account in GCP that has the iam.serviceAccountAdmin role. This a
 
 ### V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH 
 
-Path to the `<V4_CFG_CLOUD_SERVICE_ACCOUNT_NAME>` service account's JSON authentication file
+Path to the `<V4_CFG_CLOUD_SERVICE_ACCOUNT_NAME>` service account's keys
 
 Example code ran by the tool:
 
