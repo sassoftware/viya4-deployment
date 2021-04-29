@@ -1,6 +1,6 @@
-# Cloud Provider Authentication
+# Ansible Cloud Provider Authentication
 
-The docker container includes cloud provider clis needed for interacting with the various cloud providers.
+The docker container contains cloud clis needed for interacting with the various clouds.
 
 ## GCP
 
