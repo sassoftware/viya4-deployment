@@ -220,7 +220,7 @@ In the above example, the ingress controller's loadbalancer endpoint is 52.52.52
 - A wildcard CNAME (ex *.example.com) that points to the example.com
 
 
-#### Connect
+#### SAS/CONNECT
 
 When running the `viya` action with `V4_CFG_CONNECT_ENABLE_LOADBALANCER=true` a separate service loadbalancer will be created to allow external SAS/CONNECT clients to connect to Viya. You will need to register this loadbalancer endpoint with your dns provider such that an desired hostname (ex. connect.example.com) points to the loadbalancer's endpoint
 
