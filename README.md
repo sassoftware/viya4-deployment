@@ -133,7 +133,7 @@ This following information is parsed from the integration:
 
 ### Customize Deployment Overlays
 
-viya4-deployment fully manages the kustomization.yaml file. Users can make change by adding custom overlays into sub-folders under the site-config folder. If this is the first time you are running the tool and you need customizations, you can create the folder structure below.
+viya4-deployment fully manages the kustomization.yaml file. Users can make changes by adding custom overlays into sub-folders under the site-config folder. If this is the first time running the tool and customizations will be provided, create the folder structure below.
 
 ```bash
 <base_dir>            <- parent directory
