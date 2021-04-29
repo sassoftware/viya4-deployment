@@ -75,9 +75,9 @@ Any number of tasks can be run at the same time. An action can run against a sin
   docker run --rm \
     --group-add root \
     --user $(id -u):$(id -g) \
-    --volume $HOME:/data \
-    --volume $HOME/ansible-vars.yaml:/config/config \
-    --volume $HOME/viya4-iac-azure/terraform.tfstate:/config/tfstate \
+    --volume $HOME/deployments:/data \
+    --volume $HOME/deployments/dev-cluster/dev-namespace/ansible-vars.yaml:/config/config \
+    --volume $HOME/deployments/dev-cluster/terraform.tfstate:/config/tfstate \
     viya4-deployment --tags "baseline,viya,cluster-logging,cluster-monitoring,viya-monitoring,install"
   ```
 
@@ -87,10 +87,10 @@ Any number of tasks can be run at the same time. An action can run against a sin
   docker run --rm \
     --group-add root \
     --user $(id -u):$(id -g) \
-    --volume $HOME:/data \
-    --volume $HOME/viya-deployments/deployments/azure/my_az_account/demo-aks/namespace2/site-config/defaults.yaml:/config/config \
-    --volume $HOME/viya-deployments/deployments/azure/my_az_account/demo-aks/namespace2/site-config/.ssh:/config/jump_svr_private_key \
-    --volume $HOME/viya-deployments/deployments/azure/my_az_account/demo-aks/namespace2/site-config/.kube:/config/kubeconfig \
+    --volume $HOME/deployments:/data \
+    --volume $HOME/deployments/dev-cluster/dev-namespace/ansible-vars.yaml:/config/config \
+    --volume $HOME/deployments/dev-cluster/.ssh:/config/jump_svr_private_key \
+    --volume $HOME/deployments/dev-cluster/.kube:/config/kubeconfig \
     viya4-deployment --tags "viya,viya-monitoring,install"
   ```
 
@@ -100,8 +100,8 @@ Any number of tasks can be run at the same time. An action can run against a sin
   docker run --rm \
     --group-add root \
     --user $(id -u):$(id -g) \
-    --volume $HOME:/data \
-    --volume $HOME/ansible-vars.yaml:/config/config \
-    --volume $HOME/viya4-iac-aws/terraform.tfstate:/config/tfstate \
+    --volume $HOME/deployments:/data \
+    --volume $HOME/deployments/dev-cluster/dev-namespace/ansible-vars.yaml:/config/config \
+    --volume $HOME/deployments/dev-cluster/terraform.tfstate:/config/tfstate \
     viya4-deployment --tags "baseline,viya,cluster-logging,cluster-monitoring,viya-monitoring,uninstall"
   ```
