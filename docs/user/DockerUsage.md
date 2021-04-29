@@ -48,7 +48,7 @@ Declare the Actions and Task to be performed
 
 ### Actions
 
-Actions are used to determine whether in install or uninstall software. One must be set when running the playbook
+Actions are used to install or uninstall software. One must be set when running the playbook.
 
 | Name | Description |
 | :--- | ---: |
