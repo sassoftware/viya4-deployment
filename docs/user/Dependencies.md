@@ -24,7 +24,7 @@ pip3 | dnspython | 2.1.0
 ansible-galaxy | community.kubernetes | 1.2.0
 ansible-galaxy | ansible.posix | 1.1.1
 
-Required project dependencies are generally pinned to known working or stable versions to ensure users have a smooth first-start experience. In some cases it may be required to change the default version of a dependency. In such cases users are welcome to experiment with alternate versions, however compatibility may not be guaranteed.
+Required project dependencies are generally pinned to known working or stable versions to ensure users have a smooth initial experience. In some cases it may be required to change the default version of a dependency. In such cases users are welcome to experiment with alternate versions, however compatibility may not be guaranteed.
 
 # Docker
 
