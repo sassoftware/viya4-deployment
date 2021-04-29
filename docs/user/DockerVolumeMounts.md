@@ -1,8 +1,8 @@
-# List of valid configuration variables
+# Docker Volume Mapping
 
 Ansible vars to docker volume mounts mappings. For full listing of config vars see [CONFIG-VARS.md](../CONFIG-VARS.md)
 
-## BASE
+## Base
 
 | Ansible Var | Docker Mount |
 | :--- | ---: |
