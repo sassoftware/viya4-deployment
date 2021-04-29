@@ -104,7 +104,7 @@ This is a normal VIYA sitedefault file. If none is supplied, the example [sitede
 
 #### Kubeconfig
 
-Kubernetes access config file. When not integrating with SAS Viya 4 IaC projects, this must be provided
+Kubernetes access config file. When integrating with SAS Viya 4 IaC projects, this value is not required.
 
 #### Terraform state file
 
