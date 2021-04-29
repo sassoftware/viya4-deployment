@@ -51,21 +51,57 @@ Any number of tasks can be run at the same time. An action can run against a sin
 
 ### Examples
 
-- I have a new cluster, deployed using one of the Viya4 IAC projects, and want to install everything using ansible
+- I have a new cluster, deployed using one of the Viya4 IAC projects, and want to install everything
 
   ```bash
   ansible-playbook \
-    -e CONFIG=$HOME/ansible-vars.yaml \
-    -e TFSTATE=$HOME/viya4-iac-aws/terraform.tfstate \
-    viya4-deployment --tags "baseline,viya,cluster-logging,cluster-monitoring,viya-monitoring,install"
+    -e BASE_DIR=$HOME/deployments \
+    -e CONFIG=$HOME/deployments/dev-cluster/dev-namespace/ansible-vars.yaml \
+    -e TFSTATE=$HOME/deployments/dev-cluster/terraform.tfstate \
+    -e JUMP_SVR_PRIVATE_KEY=$HOME/.ssh/id_rsa \
+    playbooks/playbook.yaml --tags "baseline,viya,cluster-logging,cluster-monitoring,viya-monitoring,install"
   ```
 
-- I have a custom built cluster and want to baseline and deploy viya only using ansible
+- I have a custom built cluster and want to baseline and deploy viya only
 
   ```bash
   ansible-playbook \
-    -e KUBECONFIG=$HOME/.kube/config \
-    -e CONFIG=$HOME/ansible-vars.yaml \
+    -e BASE_DIR=$HOME/deployments \
+    -e KUBECONFIG=$HOME/deployments/.kube/config \
+    -e CONFIG=$HOME/deployments/dev-cluster/dev-namespace/ansible-vars.yaml \
     -e JUMP_SVR_PRIVATE_KEY=$HOME/.ssh/id_rsa \
     playbooks/playbook.yaml --tags "baseline,viya,install"
+  ```
+
+- I want to modify a customization under site-config for an existing viya deployment and reapply the manifest. I wish to continue to use the same deployment assets rather than pull the latest copy.
+
+  ```bash
+  ansible-playbook \
+    -e BASE_DIR=$HOME/deployments \
+    -e CONFIG=$HOME/deployments/ansible-vars.yaml \
+    -e TFSTATE=$HOME/deployments/terraform.tfstate \
+    -e V4_CFG_DEPLOYMENT_ASSETS=$HOME/deployments/deployment_assets.tgz \
+    playbooks/playbook.yaml --tags "viya,install"
+  ```
+
+- I have an existing cluster with viya installed and want to install another viya instance in a different namespace with monitoring
+
+  ```bash
+  ansible-playbook \
+    -e BASE_DIR=$HOME/deployments \
+    -e CONFIG=$HOME/deployments/dev-cluster/test-namespace/ansible-vars.yaml \
+    -e TFSTATE=$HOME/deployments/dev-cluster/terraform.tfstate \
+    -e JUMP_SVR_PRIVATE_KEY=$HOME/.ssh/id_rsa \
+    playbooks/playbook.yaml --tags "viya,viya-monitoring,install"
+  ```
+
+- I have a cluster with a single viya install as well as the monitoring and logging stack. I want to uninstall everything
+
+  ```bash
+  ansible-playbook \
+    -e BASE_DIR=$HOME/deployments \
+    -e CONFIG=$HOME/deployments/dev-cluster/test-namespace/ansible-vars.yaml \
+    -e TFSTATE=$HOME/deployments/dev-cluster/terraform.tfstate \
+    -e JUMP_SVR_PRIVATE_KEY=$HOME/.ssh/id_rsa \
+    playbooks/playbook.yaml --tags "baseline,viya,cluster-logging,cluster-monitoring,viya-monitoring,uninstall"
   ```

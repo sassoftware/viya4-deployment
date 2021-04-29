@@ -78,7 +78,35 @@ Any number of tasks can be run at the same time. An action can run against a sin
     --volume $HOME/deployments:/data \
     --volume $HOME/deployments/dev-cluster/dev-namespace/ansible-vars.yaml:/config/config \
     --volume $HOME/deployments/dev-cluster/terraform.tfstate:/config/tfstate \
+    --volume $HOME/.ssh/id_rsa:/config/jump_svr_private_key \
     viya4-deployment --tags "baseline,viya,cluster-logging,cluster-monitoring,viya-monitoring,install"
+  ```
+
+- I have a custom built cluster and want to baseline and deploy viya only
+
+  ```bash
+  docker run --rm \
+    --group-add root \
+    --user $(id -u):$(id -g) \
+    --volume $HOME/deployments:/data \
+    --volume $HOME/deployments/dev-cluster/.kube:/config/kubeconfig \
+    --volume $HOME/deployments/dev-cluster/dev-namespace/ansible-vars.yaml:/config/config \
+    --volume $HOME/.ssh/id_rsa:/config/jump_svr_private_key \
+    viya4-deployment --tags "baseline,viya,install"
+  ```
+
+- I want to modify a customization under site-config for an existing viya deployment and reapply the manifest. I wish to continue to use the same deployment assets rather than pull the latest copy.
+
+  ```bash
+  docker run --rm \
+    --group-add root \
+    --user $(id -u):$(id -g) \
+    --volume $HOME/deployments:/data \
+    --volume $HOME/deployments/dev-cluster/dev-namespace/ansible-vars.yaml:/config/config \
+    --volume $HOME/deployments/dev-cluster/terraform.tfstate:/config/tfstate \
+    --volume $HOME/deployments/dev-cluster/dev-namespace/deployment_assets.tgz:/config/v4_cfg_deployment_assets \
+    --volume $HOME/.ssh/id_rsa:/config/jump_svr_private_key \
+    viya4-deployment --tags "viya,install"
   ```
 
 - I have an existing cluster with viya installed and want to install another viya instance in a different namespace with monitoring
@@ -88,13 +116,13 @@ Any number of tasks can be run at the same time. An action can run against a sin
     --group-add root \
     --user $(id -u):$(id -g) \
     --volume $HOME/deployments:/data \
-    --volume $HOME/deployments/dev-cluster/dev-namespace/ansible-vars.yaml:/config/config \
+    --volume $HOME/deployments/dev-cluster/test-namespace/ansible-vars.yaml:/config/config \
     --volume $HOME/deployments/dev-cluster/.ssh:/config/jump_svr_private_key \
     --volume $HOME/deployments/dev-cluster/.kube:/config/kubeconfig \
     viya4-deployment --tags "viya,viya-monitoring,install"
   ```
 
-- I have a cluster with everything installed and want to uninstall everything
+- I have a cluster with a single viya install as well as the monitoring and logging stack. I want to uninstall everything
 
   ```bash
   docker run --rm \
