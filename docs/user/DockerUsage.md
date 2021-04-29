@@ -2,7 +2,7 @@
 
 ## Prereqs
 
-- Docker [installed on your workstation](../../README.md#docker).
+- Docker [installed on your workstation](Dependencies.md#docker).
 
 ## Preparation
 

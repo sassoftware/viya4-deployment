@@ -2,7 +2,7 @@
 
 ## Prereqs
 
-When using the Ansible CLI, make sure you have all the necessary tools [installed on your workstation](../../README.md#ansible).
+When using the Ansible CLI, make sure you have all the necessary tools [installed on your workstation](Dependencies.md).
 
 ## Preparation
 
