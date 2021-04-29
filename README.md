@@ -145,7 +145,7 @@ viya4-deployment fully manages the kustomization.yaml file. Users can make chang
 
 #### Viya Customizations
 
-Viya customizations are automatically read in from folders under site-config. To do so, first create the folder structure detailed in the [section above](#customize-deployment-overlays). Afterwards you can copy the desired overlays into a sub-folder under site-config. Once complete you can run the viya4-deployment tool and it will detect and add the overlays to the proper section in the kustomization.yaml
+Viya customizations are automatically read in from folders under site-config. To do so, first create the folder structure detailed in the [Customize Deployment Overlays](#customize-deployment-overlays) section above. Afterwards you can copy the desired overlays into a sub-folder under site-config. Once complete you can run the viya4-deployment tool and it will detect and add the overlays to the proper section in the kustomization.yaml
 
 <sub> Note that you do not need to modify the kustomization.yaml. The tool will automatically add the custom overlays to the kustomization.yaml file.<sub>
 
