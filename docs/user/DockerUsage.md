@@ -44,7 +44,7 @@ Prepare your `ansible-vars.yaml` file, as described in [Customize Input Values](
 
 ## Running
 
-When running, you need to tell the tool with tasks and actions you would like performed
+Declare the Actions and Task to be performed
 
 ### Actions
 

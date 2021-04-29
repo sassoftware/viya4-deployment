@@ -14,10 +14,6 @@ See [ansible cloud authentication](AnsibleCloudAuthentication.md) when deploying
 
 Prepare your `ansible-vars.yaml` file, as described in [Customize Input Values](../../README.md#customize-input-values). The only variable that cannot be set in the ansible-vars files and instead must be set with the `-e` flag is `-e CONFIG=<path_to_ansible_vars_file>`. All other values can be set either in the ansible-vars.yaml file or using the `-e` extra var param in ansible.
 
-## Running
-
-When running, you need to tell the tool what tasks and actions you would like performed. 
-
 ### Initialize Ansible
 
 ```bash
@@ -27,6 +23,10 @@ pip3 install --user -r requirements.txt
 # install ansible collections
 ansible-galaxy collection install -r requirements.yaml -f
 ```
+
+## Running
+
+Declare the Actions and Task to be performed.
 
 ### Actions
 
