@@ -62,7 +62,7 @@ Ansible vars to docker volume mounts mappings. For full listing of config vars s
 | V4_CFG_TLS_KEY | `--volume <desired_path>:/config/v4_cfg_tls_key `|
 | V4_CFG_TLS_TRUSTED_CA_CERTS | `--volume <desired_path>:/config/v4_cfg_tls_trusted_ca_certs `|
 
-## GCP SQL Proxy
+## Cloud Info
 
 | Ansible Var | Docker Mount |
 | :--- | ---: |
