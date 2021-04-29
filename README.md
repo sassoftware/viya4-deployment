@@ -46,10 +46,10 @@ Prior to running this playbook some infrastructure needs to be in place
   - [Viya 4 IaC for AWS](https://github.com/sassoftware/viya4-iac-aws)
 
 
-- Storage: When using nfs based storage (like Azure NetApp or EFS), then the storage needs certain folders setup. There needs to be a PVs folder created under the export path. This is used for PVs. Additionally, a folder needs to be created for each cluster with sub-folders for bin, data, and homes. Below is the required nfs exports folder structure
+- Storage: When using NFS based storage (like Azure NetApp or EFS), then the storage needs certain folders setup. There needs to be a PVs folder created under the export path. This is used for PVs. Additionally, a folder needs to be created for each cluster with sub-folders for bin, data, and homes. Below is the required NFS exports folder structure
 
   ```bash
-  <export_dir>        <- nfs export path
+  <export_dir>        <- NFS export path
     /pvs              <- location for persistent volumes
     /<namespace>      <- folder per namespace
       /bin            <- location for open source directories
@@ -58,10 +58,10 @@ Prior to running this playbook some infrastructure needs to be in place
       /astores        <- location for astores
   ```
 
-- JumpBox: This tool can manage nfs folders if you provide ssh access to a JumpBox that has the nfs storage mounted to it at <JUMP_SVR_RWX_FILESTORE_PATH>. The Viya 4 IAC projects automate the needed NFS/JumpBox setup if desired. If you wish to manage the nfs server yourself, the JumpBox is not required. Below is the JumpBox folder structure
+- JumpBox: This tool can manage NFS folders if you provide ssh access to a JumpBox that has the NFS storage mounted to it at <JUMP_SVR_RWX_FILESTORE_PATH>. The Viya 4 IAC projects automate the needed NFS/JumpBox setup if desired. If you wish to manage the NFS server yourself, the JumpBox is not required. Below is the JumpBox folder structure
 
   ```bash
-  <JUMP_SVR_RWX_FILESTORE_PATH>     <- mounted nfs export
+  <JUMP_SVR_RWX_FILESTORE_PATH>     <- mounted NFS export
     /pvs                            <- location for persistent volumes
     /<namespace>                    <- folder per namespace
       /bin                          <- location for open source directories
