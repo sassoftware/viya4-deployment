@@ -84,7 +84,7 @@ git clone https://github.com/sassoftware/viya4-deployment
 cd viya4-deployment
 ```
 
-### Authenticating Ansible to access Cloud
+### Authenticating Ansible to access Cloud Provider
 
 See [Ansible Cloud Authentication](./docs/user/AnsibleCloudAuthentication.md) for details.
 
