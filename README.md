@@ -191,8 +191,8 @@ For Example:
 
 Create and manage deployments by either: 
 
-- running [Ansible](docs/user/AnsibleUsage.md) directly on your workstation, or
-- running [Docker container](docs/user/DockerUsage.md). 
+- running [Docker container](docs/user/DockerUsage.md) - **Recommended**,  or
+- running [Ansible](docs/user/AnsibleUsage.md) directly on your workstation
   
 ### DNS
 
