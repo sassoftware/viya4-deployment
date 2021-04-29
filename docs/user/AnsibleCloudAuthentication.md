@@ -16,7 +16,7 @@ Name of service account in GCP that has the cloudsql.admin role. This account wi
 
 ### V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH 
 
-Path to Service Account JSON file for the <V4_CFG_CLOUD_SERVICE_ACCOUNT_NAME> service account
+Path to the <V4_CFG_CLOUD_SERVICE_ACCOUNT_NAME> service account's JSON authentication file
 
 ### V4_CFG_CLOUD_SERVICE_ACCOUNT_NAME 
 
