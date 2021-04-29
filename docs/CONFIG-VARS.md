@@ -3,8 +3,8 @@
 Supported configuration variables are listed in the table below.  All variables can also be specified on the command line.  Values specified on the command line will override all values in configuration defaults files.
 
 - [List of valid configuration variables](#list-of-valid-configuration-variables)
-  - [Cloud info](#cloud-info)
   - [BASE](#base)
+  - [Cloud info](#cloud-info)
   - [Jump Server](#jump-server)
   - [Storage](#storage)
     - [RWX Filestore](#rwx-filestore)
@@ -22,18 +22,9 @@ Supported configuration variables are listed in the table below.  All variables 
     - [Cert-manager](#cert-manager)
   - [Postgres](#postgres)
     - [External Postgres](#external-postgres)
-  - [Cloud](#cloud)
   - [CAS](#cas)
   - [CONNECT](#connect)
   - [Miscellaneous](#miscellaneous)
-
-## Cloud info
-
-| Name | Description | Type | Default | Required | Notes | Actions |
-| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| PROVIDER | Cloud provider | string | | true | [aws,azure,gcp,custom] | baseline, viya |
-| CLUSTER_NAME | Name of the k8s cluster | string | | true | | baseline, viya |
-| NAMESPACE | K8s namespace in which to deploy | string | | true | | baseline, viya, viya-monitoring |
 
 ## BASE
 
@@ -45,6 +36,16 @@ Supported configuration variables are listed in the table below.  All variables 
 | KUBECONFIG | Path to kubeconfig file | string | | true | | viya |
 | V4_CFG_SITEDEFAULT | Path to sitedefault file | string | | false | When not set [sitedefault](examples/sitedefault.yaml) is used | viya |
 | V4_CFG_SSSD | Path to sssd file | string | | false | | viya |
+
+## Cloud info
+
+| Name | Description | Type | Default | Required | Notes | Actions |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
+| PROVIDER | Cloud provider | string | | true | [aws,azure,gcp,custom] | baseline, viya |
+| CLUSTER_NAME | Name of the k8s cluster | string | | true | | baseline, viya |
+| NAMESPACE | K8s namespace in which to deploy | string | | true | | baseline, viya, viya-monitoring |
+| V4_CFG_CLOUD_SERVICE_ACCOUNT_NAME | Cloud service account | string | | false | See [ansible cloud authentication](user/AnsibleCloudAuthentication.md) | viya |
+| V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH | Full path to service account credentials file | string | | false | See [ansible cloud authentication](user/AnsibleCloudAuthentication.md) | viya |
 
 ## Jump Server
 Tool uses the jump server to interact with rwx filestore, that needs to be pre-mounted to JUMP_SVR_RWX_FILESTORE_PATH, when V4_CFG_MANAGE_STORAGE is set true.
@@ -195,13 +196,6 @@ When setting V4_CFG_TLS_MODE to a value other than "disabled" and no V4_CFG_TLS_
 | V4_CFG_POSTGRES_DATABASE | Existing postgres database name | string | "SharedServices" | false | | viya |
 | V4_CFG_POSTGRES_CONNECTION_NAME | Existing postgres database connection name | string | | false | See [ansible cloud authentication](user/AnsibleCloudAuthentication.md) | viya |
 | V4_CFG_POSTGRES_SERVICE_ACCOUNT | Existing service account for postgres connectivity | string | | false | See [ansible cloud authentication](user/AnsibleCloudAuthentication.md) | viya |
-
-## Cloud
-
-| Name | Description | Type | Default | Required | Notes | Actions |
-| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_CLOUD_SERVICE_ACCOUNT_NAME | Cloud service account | string | | false | See [ansible cloud authentication](user/AnsibleCloudAuthentication.md) | viya |
-| V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH | Full path to service account credentials file | string | | false | See [ansible cloud authentication](user/AnsibleCloudAuthentication.md) | viya |
 
 ## CAS
 
