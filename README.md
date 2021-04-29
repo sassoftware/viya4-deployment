@@ -92,7 +92,7 @@ See [Ansible Cloud Authentication](./docs/user/AnsibleCloudAuthentication.md) fo
 
 ### Customize Input Values
 
-The playbook uses ansible vars for configuration. It is recommended to encrypt both this file and the other configs (sitedefault, kubeconfig, and tfstate) using ansible vault.
+The playbook uses ansible vars for configuration. It is recommended to encrypt both this file and the other configs (sitedefault, kubeconfig, and tfstate) using [ansible vault](https://docs.ansible.com/ansible/latest/user_guide/vault.html).
 
 #### Ansible Vars
 
