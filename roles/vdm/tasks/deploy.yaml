@@ -1,4 +1,5 @@
 ---
+
 - name: Create namespace
   community.kubernetes.k8s:
     api_version: v1
@@ -6,38 +7,77 @@
     name: "{{ NAMESPACE }}"
     wait: true
     kubeconfig: "{{ kubeconfig }}"
-  when: 
-    - DEPLOY
   tags:
     - install
     - upgrade
 
-- name: Deploy PreReqs
+- name: prereqs - cluster-wide
   shell: |
     kubectl --kubeconfig {{ kubeconfig }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=cluster-wide" -f {{ DEPLOY_DIR }}/site.yaml
     kubectl --kubeconfig {{ kubeconfig }} wait --for condition=established --timeout=60s -l "sas.com/admin=cluster-wide" crd
-    kubectl --kubeconfig {{ kubeconfig }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=cluster-local" -f {{ DEPLOY_DIR }}/site.yaml --prune
-  when: 
-    - DEPLOY
   tags:
     - install
     - upgrade
 
-- name: Deploy Manifest
+- name: prereqs - cluster-local deploy
+  shell: |
+    kubectl --kubeconfig {{ kubeconfig }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=cluster-local" -f {{ DEPLOY_DIR }}/site.yaml --prune
+  register: prereq_cluster_local
+  ignore_errors: yes
+  no_log: true
+  tags:
+    - install
+    - upgrade
+
+- name: prereqs - cluster-local failure check
+  fail:
+    msg: "{{ prereq_cluster_local }}"
+  when:
+    - prereq_cluster_local["stderr"]|length > 0
+    - prereq_cluster_local["stderr"] is not regex(".* no matches for kind .* in version .*")
+  tags:
+    - install
+    - upgrade
+
+- name: manifest - deploy
   shell: |
     kubectl --kubeconfig {{ kubeconfig }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=namespace" -f {{ DEPLOY_DIR }}/site.yaml --prune
-  when: 
-    - DEPLOY
+  register: manifest_deploy
+  ignore_errors: yes
+  no_log: true
   tags:
     - install
     - upgrade
 
-- name: Deploy Manifest for Istio
+- name: manifest - failure check
+  fail:
+    msg: "{{ manifest_deploy }}"
+  when:
+    - manifest_deploy["stderr"]|length > 0
+    - manifest_deploy["stderr"] is not regex(".* no matches for kind .* in version .*")
+  tags:
+    - install
+    - upgrade
+
+- name: manifest - deploy istio
   shell: |
     kubectl --kubeconfig {{ kubeconfig }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=namespace" --prune --prune-whitelist=networking.istio.io/v1alpha3/DestinationRule --prune-whitelist=networking.istio.io/v1alpha3/VirtualService -f {{ DEPLOY_DIR }}/site.yaml
+  register: manifest_deploy_istio
+  ignore_errors: yes
+  no_log: true
   when: 
-    - DEPLOY
     - V4_CFG_INGRESS_TYPE == "istio"
+  tags:
+    - install
+    - upgrade
+
+- name: manifest - istio failure check
+  fail:
+    msg: "{{ manifest_deploy_istio }}"
+  when:
+    - V4_CFG_INGRESS_TYPE == "istio"
+    - manifest_deploy_istio["stderr"]|length > 0
+    - manifest_deploy_istio["stderr"] is not regex(".* no matches for kind .* in version .*")
   tags:
     - install
     - upgrade
@@ -46,8 +86,6 @@
   shell: |
     kubectl --kubeconfig {{ kubeconfig }} delete -n {{ NAMESPACE }} -f {{ DEPLOY_DIR }}/site.yaml
   ignore_errors: yes
-  when: 
-  - DEPLOY
   tags:
     - uninstall
 
@@ -59,7 +97,5 @@
     wait: true
     kubeconfig: "{{ kubeconfig }}"
     state: absent
-  when: 
-    - DEPLOY
   tags:
     - uninstall

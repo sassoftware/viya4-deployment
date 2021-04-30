@@ -156,6 +156,8 @@
 
 - name: Include Deploy
   include_tasks: deploy.yaml
+  when: 
+    - DEPLOY
   tags:
     - install
     - uninstall

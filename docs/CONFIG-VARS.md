@@ -3,8 +3,9 @@
 Supported configuration variables are listed in the table below.  All variables can also be specified on the command line.  Values specified on the command line will override all values in configuration defaults files.
 
 - [List of valid configuration variables](#list-of-valid-configuration-variables)
-  - [Cloud info](#cloud-info)
   - [BASE](#base)
+  - [Cloud](#cloud)
+    - [Authentication](#authentication)
   - [Jump Server](#jump-server)
   - [Storage](#storage)
     - [RWX Filestore](#rwx-filestore)
@@ -26,14 +27,6 @@ Supported configuration variables are listed in the table below.  All variables 
   - [CONNECT](#connect)
   - [Miscellaneous](#miscellaneous)
 
-## Cloud info
-
-| Name | Description | Type | Default | Required | Notes | Actions |
-| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| PROVIDER | Cloud provider | string | | true | [aws,azure,gcp,custom] | baseline, viya |
-| CLUSTER_NAME | Name of the k8s cluster | string | | true | | baseline, viya |
-| NAMESPACE | K8s namespace in which to deploy | string | | true | | baseline, viya, viya-monitoring |
-
 ## BASE
 
 | Name | Description | Type | Default | Required | Notes | Actions |
@@ -44,6 +37,21 @@ Supported configuration variables are listed in the table below.  All variables 
 | KUBECONFIG | Path to kubeconfig file | string | | true | | viya |
 | V4_CFG_SITEDEFAULT | Path to sitedefault file | string | | false | When not set [sitedefault](examples/sitedefault.yaml) is used | viya |
 | V4_CFG_SSSD | Path to sssd file | string | | false | | viya |
+
+## Cloud
+
+| Name | Description | Type | Default | Required | Notes | Actions |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
+| PROVIDER | Cloud provider | string | | true | [aws,azure,gcp,custom] | baseline, viya |
+| CLUSTER_NAME | Name of the k8s cluster | string | | true | | baseline, viya |
+| NAMESPACE | K8s namespace in which to deploy | string | | true | | baseline, viya, viya-monitoring |
+
+### Authentication
+
+| Name | Description | Type | Default | Required | Notes | Actions |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
+| V4_CFG_CLOUD_SERVICE_ACCOUNT_NAME | Cloud service account | string | | false | See [ansible cloud authentication](user/AnsibleCloudAuthentication.md) | viya |
+| V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH | Full path to service account credentials file | string | | false | See [ansible cloud authentication](user/AnsibleCloudAuthentication.md) | viya |
 
 ## Jump Server
 Tool uses the jump server to interact with rwx filestore, that needs to be pre-mounted to JUMP_SVR_RWX_FILESTORE_PATH, when V4_CFG_MANAGE_STORAGE is set true.
@@ -80,11 +88,6 @@ When setting V4_CFG_MANAGE_STORAGE to true, A new storage classes will be create
 ### AWS
 
 When setting V4_CFG_MANAGE_STORAGE to true, the efs-provisioner will be deployed. A new storage classes will be created: sas (EFS or NFS)
-
-| Name | Description | Type | Default | Required | Notes | Actions |
-| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_RWX_FILESTORE_ID | AWS EFS FSID | string | | false | Required for using EFS on AWS | baseline, viya |
-| V4_CFG_RWX_FILESTORE_LOCATION | AWS EFS Region | string | | false | Required for using EFS on AWS | baseline, viya |
 
 ### GCP
 
@@ -197,6 +200,8 @@ When setting V4_CFG_TLS_MODE to a value other than "disabled" and no V4_CFG_TLS_
 | V4_CFG_POSTGRES_FQDN | Existing postgres ip/fqdn | string | | true | | viya |
 | V4_CFG_POSTGRES_PORT | Existing postgres port | string | 5432 | false | | viya |
 | V4_CFG_POSTGRES_DATABASE | Existing postgres database name | string | "SharedServices" | false | | viya |
+| V4_CFG_POSTGRES_CONNECTION_NAME | Existing postgres database connection name | string | | false | See [ansible cloud authentication](user/AnsibleCloudAuthentication.md) | viya |
+| V4_CFG_POSTGRES_SERVICE_ACCOUNT | Existing service account for postgres connectivity | string | | false | See [ansible cloud authentication](user/AnsibleCloudAuthentication.md) | viya |
 
 ## CAS
 
@@ -222,4 +227,3 @@ When setting V4_CFG_TLS_MODE to a value other than "disabled" and no V4_CFG_TLS_
 | V4_CFG_EMBEDDED_LDAP_ENABLE | Deploy openldap in the namespace for authentication | bool | false | false | [Openldap Config](../roles/vdm/templates/generators/openldap-bootstrap-config.yaml) | viya |
 | V4_CFG_CONSUL_ENABLE_LOADBALANCER | Setup LB to access consul ui | bool | false | false | Consul ui port is 8500 | viya |
 | V4_CFG_ELASTICSEARCH_ENABLE | Enable opendistro elasticsearch | bool | true | false | When deploying LTS less than 2020.1 or Stable less than 2020.1.2 set to false | viya |
-

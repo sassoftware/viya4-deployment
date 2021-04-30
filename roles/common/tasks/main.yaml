@@ -40,18 +40,6 @@
       when: 
         - tfstate.rwx_filestore_path is defined
         - tfstate.rwx_filestore_path.value|length > 0
-    - name: tfstate - filestore id
-      set_fact:
-        V4_CFG_RWX_FILESTORE_ID: "{{ tfstate.rwx_filestore_id.value }}"
-      when: 
-        - tfstate.rwx_filestore_id is defined
-        - tfstate.rwx_filestore_id.value|length > 0
-    - name: tfstate - filestore location
-      set_fact:
-        V4_CFG_RWX_FILESTORE_LOCATION: "{{ tfstate.location.value }}"
-      when: 
-        - tfstate.location is defined
-        - tfstate.location.value|length > 0
     - name: tfstate - export kubeconfig
       copy:
         dest: "{{ tmpdir.path }}/.kube"
@@ -73,6 +61,12 @@
       when:
         - tfstate.provider is defined
         - tfstate.provider.value|length > 0
+    - name: tfstate - provider account
+      set_fact: 
+        PROVIDER_ACCOUNT: "{{ tfstate.provider_account.value }}"
+      when:
+        - tfstate.provider_account is defined
+        - tfstate.provider_account.value|length > 0
     - name: tfstate - cluster name
       set_fact: 
         CLUSTER_NAME: "{{ tfstate.cluster_name.value }}"
@@ -108,6 +102,20 @@
         - V4_CFG_POSTGRES_TYPE is defined
         - V4_CFG_POSTGRES_TYPE == "external"
         - tfstate.postgres_fqdn is defined
+    - name: tfstate - postgres connection name
+      set_fact:
+        V4_CFG_POSTGRES_CONNECTION_NAME: "{{ tfstate.postgres_connection_name.value }}"
+      when:
+        - V4_CFG_POSTGRES_TYPE is defined
+        - V4_CFG_POSTGRES_TYPE == "external"
+        - tfstate.postgres_connection_name is defined
+    - name: tfstate - postgres service account
+      set_fact:
+        V4_CFG_POSTGRES_SERVICE_ACCOUNT: "{{ tfstate.sql_proxy_sa_email.value }}"
+      when:
+        - V4_CFG_POSTGRES_TYPE is defined
+        - V4_CFG_POSTGRES_TYPE == "external"
+        - tfstate.sql_proxy_sa_email is defined
     - name: tfstate - jump server
       set_fact:
         JUMP_SVR_HOST: "{{ tfstate.jump_public_ip.value }}"
