@@ -50,7 +50,7 @@ You can either bring your own K8s cluster or use one of the Viya 4 IAC projects 
 
 #### Storage
 
-A file server that uses the network file system (NFS) protocol is the minimum requirement. You can either use one of the Viya 4 IAC projects to create the required storage or bring your own K8s storage. If the Viya 4 IAC projects were used to create an NFS server VM and JumpBox/Bastion server VM, the information can be passed in to viya4-deployment and the required directory structure below will be created. If bringing your own a server that uses NFS, the following NFS exports folder structure must be created prior to running viya4-deployment. 
+A file server that uses the network file system (NFS) protocol is the minimum requirement. You can either use one of the Viya 4 IAC projects to create the required storage or bring your own K8s storage. If the Viya 4 IAC projects were used to create an NFS server VM and JumpBox/Bastion server VM, the information can be passed in to viya4-deployment and the required directory structure below will be created. If bringing your own server that uses NFS, the following NFS exports folder structure must be created prior to running viya4-deployment. 
 
   ```bash
   <export_dir>        <- NFS export path
