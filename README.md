@@ -46,7 +46,7 @@ Prior to running this playbook some infrastructure needs to be in place
   - [Viya 4 IaC for AWS](https://github.com/sassoftware/viya4-iac-aws)
 
 
-- Storage: When using NFS based storage (like Azure NetApp or EFS), then the storage needs certain folders setup. There needs to be a PVs folder created under the export path. This is used for PVs. Additionally, a folder needs to be created for each cluster with sub-folders for bin, data, and homes. Below is the required NFS exports folder structure
+- Storage: A file server that uses the network file system (NFS) protocol is the minimum requirement. You can either use one of the Viya 4 IAC projects to create the required storage or bring your own K8s storage. If the Viya 4 IAC projects were used to create an NFS server VM and JumpBox/Bastion server VM, the information can be passed in to viya4-deployment and the required directory structure below will be created. If bringing your own a server that uses NFS, the following NFS exports folder structure must be created prior to running viya4-deployment. 
 
   ```bash
   <export_dir>        <- NFS export path
@@ -58,7 +58,7 @@ Prior to running this playbook some infrastructure needs to be in place
       /astores        <- location for astores
   ```
 
-- JumpBox: This tool can manage NFS folders if you provide ssh access to a JumpBox that has the NFS storage mounted to it at <JUMP_SVR_RWX_FILESTORE_PATH>. The Viya 4 IAC projects automate the needed NFS/JumpBox setup if desired. If you wish to manage the NFS server yourself, the JumpBox is not required. Below is the JumpBox folder structure
+- JumpBox: The JumpBox/Bastian can manage NFS folders if you provide ssh access to a JumpBox that has the nfs storage mounted to it at <JUMP_SVR_RWX_FILESTORE_PATH>. If you wish to manage the nfs server yourself, the JumpBox is not required. Below is the JumpBox folder structure.
 
   ```bash
   <JUMP_SVR_RWX_FILESTORE_PATH>     <- mounted NFS export
