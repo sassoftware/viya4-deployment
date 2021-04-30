@@ -62,9 +62,9 @@ A file server that uses the network file system (NFS) protocol is the minimum re
       /astores        <- location for astores
   ```
 
-#### JumpBox
+#### JumpBox/Bastion
 
-The JumpBox/Bastian can manage NFS folders if you provide ssh access to a JumpBox that has the nfs storage mounted to it at <JUMP_SVR_RWX_FILESTORE_PATH>. If you wish to manage the nfs server yourself, the JumpBox is not required. Below is the JumpBox folder structure.
+The JumpBox/Bastion can manage NFS folders if you provide ssh access to a JumpBox that has the nfs storage mounted to it at <JUMP_SVR_RWX_FILESTORE_PATH>. If you wish to manage the nfs server yourself, the JumpBox is not required. Below is the JumpBox folder structure.
 
   ```bash
   <JUMP_SVR_RWX_FILESTORE_PATH>     <- mounted NFS export
