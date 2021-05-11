@@ -148,8 +148,6 @@
       when:
         - tfstate.outputs.ssh_private_key is defined
         - tfstate.outputs.ssh_private_key.value|length > 0
-    - set_fact:
-        tfstate: ""
   when:
     - TFSTATE is defined
   tags:
