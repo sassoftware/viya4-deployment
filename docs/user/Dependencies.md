@@ -12,7 +12,6 @@ SOURCE | NAME | VERSION
 ~ | tar | any
 ~ | docker | any
 ~ | git | any
-~ | terraform | 0.13.6
 ~ | kustomize | 3.7.0
 ~ | kubectl | 1.18.8
 ~ | AWS IAM Authenticator | 1.18.9/2020-11-02
@@ -32,7 +31,6 @@ If deploying via the [Dockerfile](../Dockerfile) overriding a dependency version
 
 ARG | NOTE
 --- | ---
-terraform_version | the version of terraform to use
 kustomize_version | the version of kustomize to use
 kubectl_version | the version of kubectl to use
 aws_iam_authenticator_version | the version of aws iam authenticator to use
@@ -47,7 +45,6 @@ As described in the [Docker Installation](../README.md#docker-1) section add add
 
 ```bash
 docker build \
-	--build-arg terraform_version=0.13.0 \
 	--build-arg pip_openshift_version=0.12.0 \
 	-t viya4-deployment .
 ```
