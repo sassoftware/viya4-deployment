@@ -17,137 +17,136 @@
     - upgrade
 - block:
     - name: Parse tfstate
-      include_vars:
-        file: "{{ TFSTATE }}"
-        name: tfstate
+      set_fact: 
+        tfstate: "{{ lookup('tfstate', TFSTATE) }}"
     - name: Add nat ip to LOADBALANCER_SOURCE_RANGES
       set_fact:
-        LOADBALANCER_SOURCE_RANGES: "{{ LOADBALANCER_SOURCE_RANGES + [tfstate.outputs.nat_ip.value+'/32'] }}"
+        LOADBALANCER_SOURCE_RANGES: "{{ LOADBALANCER_SOURCE_RANGES + [tfstate.nat_ip.value+'/32'] }}"
       when: 
-        - tfstate.outputs.nat_ip is defined
-        - tfstate.outputs.nat_ip.value|length > 0
+        - tfstate.nat_ip is defined
+        - tfstate.nat_ip.value|length > 0
         - LOADBALANCER_SOURCE_RANGES is defined
-        - (tfstate.outputs.nat_ip.value+'/32') not in LOADBALANCER_SOURCE_RANGES
+        - (tfstate.nat_ip.value+'/32') not in LOADBALANCER_SOURCE_RANGES
     - name: tfstate - nfs endpoint
       set_fact:
-        V4_CFG_RWX_FILESTORE_ENDPOINT: "{{ tfstate.outputs.rwx_filestore_endpoint.value }}"
+        V4_CFG_RWX_FILESTORE_ENDPOINT: "{{ tfstate.rwx_filestore_endpoint.value }}"
       when: 
-        - tfstate.outputs.rwx_filestore_endpoint is defined
-        - tfstate.outputs.rwx_filestore_endpoint.value|length > 0
+        - tfstate.rwx_filestore_endpoint is defined
+        - tfstate.rwx_filestore_endpoint.value|length > 0
     - name: tfstate - nfs path
       set_fact:
-        V4_CFG_RWX_FILESTORE_PATH: "{{ tfstate.outputs.rwx_filestore_path.value }}"
+        V4_CFG_RWX_FILESTORE_PATH: "{{ tfstate.rwx_filestore_path.value }}"
       when: 
-        - tfstate.outputs.rwx_filestore_path is defined
-        - tfstate.outputs.rwx_filestore_path.value|length > 0
+        - tfstate.rwx_filestore_path is defined
+        - tfstate.rwx_filestore_path.value|length > 0
     - name: tfstate - export kubeconfig
       copy:
         dest: "{{ tmpdir.path }}/.kube"
         content: |
-          {{ tfstate.outputs.kube_config.value }}
+          {{ tfstate.kube_config.value }}
         mode: "0600"
       when:
-        - tfstate.outputs.kube_config is defined
-        - tfstate.outputs.kube_config.value|length > 0
+        - tfstate.kube_config is defined
+        - tfstate.kube_config.value|length > 0
     - name: tfstate - kubeconfig var
       set_fact:
         KUBECONFIG: "{{ tmpdir.path }}/.kube"
       when:
-        - tfstate.outputs.kube_config is defined
-        - tfstate.outputs.kube_config.value|length > 0
+        - tfstate.kube_config is defined
+        - tfstate.kube_config.value|length > 0
     - name: tfstate - provider
       set_fact: 
-        PROVIDER: "{{ tfstate.outputs.provider.value }}"
+        PROVIDER: "{{ tfstate.provider.value }}"
       when:
-        - tfstate.outputs.provider is defined
-        - tfstate.outputs.provider.value|length > 0
+        - tfstate.provider is defined
+        - tfstate.provider.value|length > 0
     - name: tfstate - provider account
       set_fact: 
-        PROVIDER_ACCOUNT: "{{ tfstate.outputs.provider_account.value }}"
+        PROVIDER_ACCOUNT: "{{ tfstate.provider_account.value }}"
       when:
-        - tfstate.outputs.provider_account is defined
-        - tfstate.outputs.provider_account.value|length > 0
+        - tfstate.provider_account is defined
+        - tfstate.provider_account.value|length > 0
     - name: tfstate - cluster name
       set_fact: 
-        CLUSTER_NAME: "{{ tfstate.outputs.cluster_name.value }}"
+        CLUSTER_NAME: "{{ tfstate.cluster_name.value }}"
       when:
-        - tfstate.outputs.cluster_name is defined
-        - tfstate.outputs.cluster_name.value|length > 0
+        - tfstate.cluster_name is defined
+        - tfstate.cluster_name.value|length > 0
     - name: tfstate - postgres admin
       set_fact:
-        V4_CFG_POSTGRES_ADMIN_LOGIN: "{{ tfstate.outputs.postgres_admin.value }}"
+        V4_CFG_POSTGRES_ADMIN_LOGIN: "{{ tfstate.postgres_admin.value }}"
       when:
         - V4_CFG_POSTGRES_TYPE is defined
         - V4_CFG_POSTGRES_TYPE == "external"
-        - tfstate.outputs.postgres_admin is defined
-        - tfstate.outputs.postgres_server_name is defined
+        - tfstate.postgres_admin is defined
+        - tfstate.postgres_server_name is defined
     - name: tfstate - postgres port
       set_fact:
-        V4_CFG_POSTGRES_PORT: "{{ tfstate.outputs.postgres_server_port.value }}"
+        V4_CFG_POSTGRES_PORT: "{{ tfstate.postgres_server_port.value }}"
       when:
         - V4_CFG_POSTGRES_TYPE is defined
         - V4_CFG_POSTGRES_TYPE == "external"
-        - tfstate.outputs.postgres_server_port is defined
+        - tfstate.postgres_server_port is defined
     - name: tfstate - postgres password
       set_fact:
-        V4_CFG_POSTGRES_PASSWORD: "{{ tfstate.outputs.postgres_password.value }}"
+        V4_CFG_POSTGRES_PASSWORD: "{{ tfstate.postgres_password.value }}"
       when:
         - V4_CFG_POSTGRES_TYPE is defined
         - V4_CFG_POSTGRES_TYPE == "external"
-        - tfstate.outputs.postgres_password is defined
+        - tfstate.postgres_password is defined
     - name: tfstate - postgres fqdn
       set_fact:
-        V4_CFG_POSTGRES_FQDN: "{{ tfstate.outputs.postgres_fqdn.value }}"
+        V4_CFG_POSTGRES_FQDN: "{{ tfstate.postgres_fqdn.value }}"
       when:
         - V4_CFG_POSTGRES_TYPE is defined
         - V4_CFG_POSTGRES_TYPE == "external"
-        - tfstate.outputs.postgres_fqdn is defined
+        - tfstate.postgres_fqdn is defined
     - name: tfstate - postgres connection name
       set_fact:
-        V4_CFG_POSTGRES_CONNECTION_NAME: "{{ tfstate.outputs.postgres_connection_name.value }}"
+        V4_CFG_POSTGRES_CONNECTION_NAME: "{{ tfstate.postgres_connection_name.value }}"
       when:
         - V4_CFG_POSTGRES_TYPE is defined
         - V4_CFG_POSTGRES_TYPE == "external"
-        - tfstate.outputs.postgres_connection_name is defined
+        - tfstate.postgres_connection_name is defined
     - name: tfstate - postgres service account
       set_fact:
-        V4_CFG_POSTGRES_SERVICE_ACCOUNT: "{{ tfstate.outputs.sql_proxy_sa_email.value }}"
+        V4_CFG_POSTGRES_SERVICE_ACCOUNT: "{{ tfstate.sql_proxy_sa_email.value }}"
       when:
         - V4_CFG_POSTGRES_TYPE is defined
         - V4_CFG_POSTGRES_TYPE == "external"
-        - tfstate.outputs.sql_proxy_sa_email is defined
+        - tfstate.sql_proxy_sa_email is defined
     - name: tfstate - jump server
       set_fact:
-        JUMP_SVR_HOST: "{{ tfstate.outputs.jump_public_ip.value }}"
+        JUMP_SVR_HOST: "{{ tfstate.jump_public_ip.value }}"
       when:
-        - tfstate.outputs.jump_public_ip is defined
-        - tfstate.outputs.jump_public_ip.value|length > 0
+        - tfstate.jump_public_ip is defined
+        - tfstate.jump_public_ip.value|length > 0
     - name: tfstate - jump user
       set_fact:
-        JUMP_SVR_USER: "{{ tfstate.outputs.jump_admin_username.value }}"
+        JUMP_SVR_USER: "{{ tfstate.jump_admin_username.value }}"
       when:
-        - tfstate.outputs.jump_admin_username is defined
-        - tfstate.outputs.jump_admin_username.value|length > 0
+        - tfstate.jump_admin_username is defined
+        - tfstate.jump_admin_username.value|length > 0
     - name: tfstate - jump rwx filestore path
       set_fact:
-        JUMP_SVR_RWX_FILESTORE_PATH: "{{ tfstate.outputs.jump_rwx_filestore_path.value }}"
+        JUMP_SVR_RWX_FILESTORE_PATH: "{{ tfstate.jump_rwx_filestore_path.value }}"
       when:
-        - tfstate.outputs.jump_rwx_filestore_path is defined
-        - tfstate.outputs.jump_rwx_filestore_path.value|length > 0
+        - tfstate.jump_rwx_filestore_path is defined
+        - tfstate.jump_rwx_filestore_path.value|length > 0
     - name: tfstate - ssh private key
       copy:
-        content: "{{ tfstate.outputs.ssh_private_key.value }}"
+        content: "{{ tfstate.ssh_private_key.value }}"
         dest: "{{ tmpdir.path }}/.ssh"
         mode: "0600"
       when:
-        - tfstate.outputs.ssh_private_key is defined
-        - tfstate.outputs.ssh_private_key.value|length > 0
+        - tfstate.ssh_private_key is defined
+        - tfstate.ssh_private_key.value|length > 0
     - name: tfstate - jump private key var
       set_fact:
         JUMP_SVR_PRIVATE_KEY: "{{ tmpdir.path }}/.ssh"
       when:
-        - tfstate.outputs.ssh_private_key is defined
-        - tfstate.outputs.ssh_private_key.value|length > 0
+        - tfstate.ssh_private_key is defined
+        - tfstate.ssh_private_key.value|length > 0
   when:
     - TFSTATE is defined
   tags:
