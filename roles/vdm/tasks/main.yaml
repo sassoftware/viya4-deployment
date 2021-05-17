@@ -8,7 +8,9 @@
     - upgrade
 
 - fail:
-    msg: "HERE {{ V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH }}"
+    msg: 
+     - "HERE {{ V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH }}"
+     - "HERE2 {{ lookup('env', 'CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE') }}"
   tags:
     - viya
 
