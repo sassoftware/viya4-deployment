@@ -7,9 +7,6 @@
     name: "{{ NAMESPACE }}"
     wait: true
     kubeconfig: "{{ kubeconfig }}"
-  environment:
-    CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE: "{{ V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH|default(null, -1) }}"
-    AWS_SHARED_CREDENTIALS_FILE: "{{ V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH|default(null, -1) }}"
   tags:
     - install
     - upgrade
@@ -18,9 +15,6 @@
   shell: |
     kubectl --kubeconfig {{ kubeconfig }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=cluster-wide" -f {{ DEPLOY_DIR }}/site.yaml
     kubectl --kubeconfig {{ kubeconfig }} wait --for condition=established --timeout=60s -l "sas.com/admin=cluster-wide" crd
-  environment:
-    CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE: "{{ V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH|default(null, -1) }}"
-    AWS_SHARED_CREDENTIALS_FILE: "{{ V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH|default(null, -1) }}"
   tags:
     - install
     - upgrade
@@ -28,9 +22,6 @@
 - name: prereqs - cluster-local deploy
   shell: |
     kubectl --kubeconfig {{ kubeconfig }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=cluster-local" -f {{ DEPLOY_DIR }}/site.yaml --prune
-  environment:
-    CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE: "{{ V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH|default(null, -1) }}"
-    AWS_SHARED_CREDENTIALS_FILE: "{{ V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH|default(null, -1) }}"
   register: prereq_cluster_local
   ignore_errors: yes
   no_log: true
@@ -51,9 +42,6 @@
 - name: manifest - deploy
   shell: |
     kubectl --kubeconfig {{ kubeconfig }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=namespace" -f {{ DEPLOY_DIR }}/site.yaml --prune
-  environment:
-    CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE: "{{ V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH|default(null, -1) }}"
-    AWS_SHARED_CREDENTIALS_FILE: "{{ V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH|default(null, -1) }}"
   register: manifest_deploy
   ignore_errors: yes
   no_log: true
@@ -64,9 +52,6 @@
 - name: manifest - failure check
   fail:
     msg: "{{ manifest_deploy }}"
-  when:
-    - manifest_deploy["stderr"]|length > 0
-    - manifest_deploy["stderr"] is not regex(".* no matches for kind .* in version .*")
   tags:
     - install
     - upgrade
@@ -74,9 +59,6 @@
 - name: manifest - deploy istio
   shell: |
     kubectl --kubeconfig {{ kubeconfig }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=namespace" --prune --prune-whitelist=networking.istio.io/v1alpha3/DestinationRule --prune-whitelist=networking.istio.io/v1alpha3/VirtualService -f {{ DEPLOY_DIR }}/site.yaml
-  environment:
-    CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE: "{{ V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH|default(null, -1) }}"
-    AWS_SHARED_CREDENTIALS_FILE: "{{ V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH|default(null, -1) }}"
   register: manifest_deploy_istio
   ignore_errors: yes
   no_log: true
@@ -100,9 +82,6 @@
 - name: Remove Viya
   shell: |
     kubectl --kubeconfig {{ kubeconfig }} delete -n {{ NAMESPACE }} -f {{ DEPLOY_DIR }}/site.yaml
-  environment:
-    CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE: "{{ V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH|default(null, -1) }}"
-    AWS_SHARED_CREDENTIALS_FILE: "{{ V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH|default(null, -1) }}"
   ignore_errors: yes
   tags:
     - uninstall
@@ -115,8 +94,5 @@
     wait: true
     kubeconfig: "{{ kubeconfig }}"
     state: absent
-  environment:
-    CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE: "{{ V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH|default(null, -1) }}"
-    AWS_SHARED_CREDENTIALS_FILE: "{{ V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH|default(null, -1) }}"
   tags:
     - uninstall

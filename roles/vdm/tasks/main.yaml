@@ -7,6 +7,11 @@
     - uninstall
     - upgrade
 
+- fail:
+    msg: "HERE {{ V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH }}"
+  tags:
+    - viya
+
 - stat:
     path: "{{ DEPLOY_DIR }}/site-config/sitedefault.yaml"
   register: stat_result
