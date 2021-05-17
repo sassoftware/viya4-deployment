@@ -14,10 +14,6 @@ Name of the sql cluster connection as listed in the gcp portal
 
 Name of service account in GCP that has the cloudsql.admin role. This account will be mapped to a kuberenetes service account thus granting the sql proxy access, via workload identity, to the sql server
 
-### V4_CFG_CLOUD_SERVICE_ACCOUNT_NAME 
-
-Name of service account in GCP that has the iam.serviceAccountAdmin role. This account will be used to setting up the sql proxy's google service account mapping to the kubernetes service account
-
 ### V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH 
 
-Path to the `<V4_CFG_CLOUD_SERVICE_ACCOUNT_NAME>` service account's keys
+Path to the file containing service account's keys

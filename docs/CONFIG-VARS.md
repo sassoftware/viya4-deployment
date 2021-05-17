@@ -50,7 +50,6 @@ Supported configuration variables are listed in the table below.  All variables 
 
 | Name | Description | Type | Default | Required | Notes | Actions |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_CLOUD_SERVICE_ACCOUNT_NAME | Cloud service account | string | | false | See [ansible cloud authentication](user/AnsibleCloudAuthentication.md) | viya |
 | V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH | Full path to service account credentials file | string | | false | See [ansible cloud authentication](user/AnsibleCloudAuthentication.md) | viya |
 
 ## Jump Server
