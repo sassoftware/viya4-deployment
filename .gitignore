@@ -12,3 +12,5 @@ ansible-vars.yaml
 data/
 
 .DS_Store
+
+.pyc
