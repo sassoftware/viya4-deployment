@@ -52,6 +52,9 @@
 - name: manifest - failure check
   fail:
     msg: "{{ manifest_deploy }}"
+  when:
+    - manifest_deploy["stderr"]|length > 0
+    - manifest_deploy["stderr"] is not regex(".* no matches for kind .* in version .*")
   tags:
     - install
     - upgrade
