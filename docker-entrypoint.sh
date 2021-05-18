@@ -14,6 +14,8 @@ do
 
   if [[ "$VAR" == "VAULT_PASSWORD_FILE" ]]; then
     OPTS+=" --vault-password-file $MOUNT"
+  elif [[ "$VAR" == "V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH" ]]; then
+    export CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE=$MOUNT
   else
     OPTS+=" -e $VAR=$MOUNT"
   fi
