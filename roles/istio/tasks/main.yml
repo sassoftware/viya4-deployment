@@ -19,7 +19,7 @@
 
 - name: Create namespace
   community.kubernetes.k8s:
-    kubeconfig: "{{ kubeconfig }}"
+    kubeconfig: "{{ KUBECONFIG }}"
     api_version: v1
     kind: Namespace
     name: "istio-system"
@@ -30,7 +30,7 @@
 
 - name: Set kiali secret
   community.kubernetes.k8s:
-    kubeconfig: "{{ kubeconfig }}"
+    kubeconfig: "{{ KUBECONFIG }}"
     state: present
     definition: "{{ lookup('template', 'kiali-secret.yaml') }}"
   tags:
@@ -39,7 +39,7 @@
 
 - name: Set grafana secret
   community.kubernetes.k8s:
-    kubeconfig: "{{ kubeconfig }}"
+    kubeconfig: "{{ KUBECONFIG }}"
     state: present
     definition: "{{ lookup('template', 'grafana-secret.yaml') }}"
   tags:
@@ -47,14 +47,14 @@
     - upgrade
    
 - name: Install base Istio 
-  command: "{{ tmpdir.path }}/istio-{{ istio_ver }}/bin/istioctl --kubeconfig {{ kubeconfig }} manifest apply {{ istio_config }}"
+  command: "{{ tmpdir.path }}/istio-{{ istio_ver }}/bin/istioctl --kubeconfig {{ KUBECONFIG }} manifest apply {{ istio_config }}"
   tags:
     - install
     - upgrade
 
 - name: Lockdown ingress
   community.kubernetes.k8s:
-    kubeconfig: "{{ kubeconfig }}"
+    kubeconfig: "{{ KUBECONFIG }}"
     state: present
     definition:
       apiVersion: security.istio.io/v1beta1
@@ -77,7 +77,7 @@
 
 - name: Grafana ingress
   community.kubernetes.k8s:
-    kubeconfig: "{{ kubeconfig }}"
+    kubeconfig: "{{ KUBECONFIG }}"
     state: present
     definition:
       apiVersion: extensions/v1beta1
@@ -103,7 +103,7 @@
 
 - name: Prometheus ingress
   community.kubernetes.k8s:
-    kubeconfig: "{{ kubeconfig }}"
+    kubeconfig: "{{ KUBECONFIG }}"
     state: present
     definition:
       apiVersion: extensions/v1beta1
@@ -129,7 +129,7 @@
 
 - name: Kiali ingress
   community.kubernetes.k8s:
-    kubeconfig: "{{ kubeconfig }}"
+    kubeconfig: "{{ KUBECONFIG }}"
     state: present
     definition:
       apiVersion: extensions/v1beta1
@@ -155,7 +155,7 @@
 
 - name: Tracing ingress
   community.kubernetes.k8s:
-    kubeconfig: "{{ kubeconfig }}"
+    kubeconfig: "{{ KUBECONFIG }}"
     state: present
     definition:
       apiVersion: extensions/v1beta1
@@ -185,7 +185,7 @@
     kind: Service
     name: istio-ingressgateway
     namespace: "istio-system"
-    kubeconfig: "{{ kubeconfig }}"
+    kubeconfig: "{{ KUBECONFIG }}"
   until: "ingress_config.resources[0].status.loadBalancer.ingress is defined and (ingress_config.resources[0].status.loadBalancer.ingress[0].ip is defined or ingress_config.resources[0].status.loadBalancer.ingress[0].hostname is defined)"
   register: ingress_config
   tags:
@@ -204,16 +204,16 @@
 
 - name: Uninstall base Istio 
   shell: |
-    {{ tmpdir.path }}/istio-{{ istio_ver }}/bin/istioctl --kubeconfig {{ kubeconfig }} manifest generate {{ istio_config }} | kubectl delete -f -
+    {{ tmpdir.path }}/istio-{{ istio_ver }}/bin/istioctl --kubeconfig {{ KUBECONFIG }} manifest generate {{ istio_config }} | kubectl delete -f -
   environment:
-    KUBECONFIG: "{{ kubeconfig }}"
+    KUBECONFIG: "{{ KUBECONFIG }}"
   ignore_errors: yes
   tags:
     - uninstall
 
 - name: Delete namespace
   community.kubernetes.k8s:
-    kubeconfig: "{{ kubeconfig }}"
+    kubeconfig: "{{ KUBECONFIG }}"
     api_version: v1
     kind: Namespace
     name: "istio-system"

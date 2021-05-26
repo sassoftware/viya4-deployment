@@ -6,22 +6,22 @@
     kind: Namespace
     name: "{{ NAMESPACE }}"
     wait: true
-    kubeconfig: "{{ kubeconfig }}"
+    kubeconfig: "{{ KUBECONFIG }}"
   tags:
     - install
     - upgrade
 
 - name: prereqs - cluster-wide
   shell: |
-    kubectl --kubeconfig {{ kubeconfig }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=cluster-wide" -f {{ DEPLOY_DIR }}/site.yaml
-    kubectl --kubeconfig {{ kubeconfig }} wait --for condition=established --timeout=60s -l "sas.com/admin=cluster-wide" crd
+    kubectl --kubeconfig {{ KUBECONFIG }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=cluster-wide" -f {{ DEPLOY_DIR }}/site.yaml
+    kubectl --kubeconfig {{ KUBECONFIG }} wait --for condition=established --timeout=60s -l "sas.com/admin=cluster-wide" crd
   tags:
     - install
     - upgrade
 
 - name: prereqs - cluster-local deploy
   shell: |
-    kubectl --kubeconfig {{ kubeconfig }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=cluster-local" -f {{ DEPLOY_DIR }}/site.yaml --prune
+    kubectl --kubeconfig {{ KUBECONFIG }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=cluster-local" -f {{ DEPLOY_DIR }}/site.yaml --prune
   register: prereq_cluster_local
   ignore_errors: yes
   no_log: true
@@ -41,7 +41,7 @@
 
 - name: manifest - deploy
   shell: |
-    kubectl --kubeconfig {{ kubeconfig }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=namespace" -f {{ DEPLOY_DIR }}/site.yaml --prune
+    kubectl --kubeconfig {{ KUBECONFIG }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=namespace" -f {{ DEPLOY_DIR }}/site.yaml --prune
   register: manifest_deploy
   ignore_errors: yes
   no_log: true
@@ -61,7 +61,7 @@
 
 - name: manifest - deploy istio
   shell: |
-    kubectl --kubeconfig {{ kubeconfig }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=namespace" --prune --prune-whitelist=networking.istio.io/v1alpha3/DestinationRule --prune-whitelist=networking.istio.io/v1alpha3/VirtualService -f {{ DEPLOY_DIR }}/site.yaml
+    kubectl --kubeconfig {{ KUBECONFIG }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=namespace" --prune --prune-whitelist=networking.istio.io/v1alpha3/DestinationRule --prune-whitelist=networking.istio.io/v1alpha3/VirtualService -f {{ DEPLOY_DIR }}/site.yaml
   register: manifest_deploy_istio
   ignore_errors: yes
   no_log: true
@@ -84,7 +84,7 @@
 
 - name: Remove Viya
   shell: |
-    kubectl --kubeconfig {{ kubeconfig }} delete -n {{ NAMESPACE }} -f {{ DEPLOY_DIR }}/site.yaml
+    kubectl --kubeconfig {{ KUBECONFIG }} delete -n {{ NAMESPACE }} -f {{ DEPLOY_DIR }}/site.yaml
   ignore_errors: yes
   tags:
     - uninstall
@@ -95,7 +95,7 @@
     kind: Namespace
     name: "{{ NAMESPACE }}"
     wait: true
-    kubeconfig: "{{ kubeconfig }}"
+    kubeconfig: "{{ KUBECONFIG }}"
     state: absent
   tags:
     - uninstall

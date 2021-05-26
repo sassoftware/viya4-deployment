@@ -14,7 +14,7 @@
     kind: Secret
     name: internal-user-admin
     namespace: logging
-    kubeconfig: "{{ kubeconfig }}"
+    kubeconfig: "{{ KUBECONFIG }}"
   register: logging_creds
   tags:
     - install

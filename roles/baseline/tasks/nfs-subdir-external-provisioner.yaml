@@ -3,7 +3,7 @@
   community.kubernetes.helm:
     name: "nfs-client"
     namespace: "nfs-client"
-    kubeconfig: "{{ kubeconfig }}"
+    kubeconfig: "{{ KUBECONFIG }}"
     state: absent
   tags:
     - install
@@ -14,7 +14,7 @@
   community.kubernetes.helm:
     name: "efs-provisioner"
     namespace: "efs-provisioner"
-    kubeconfig: "{{ kubeconfig }}"
+    kubeconfig: "{{ KUBECONFIG }}"
     state: absent
   tags:
     - install
@@ -27,7 +27,7 @@
     kind: Namespace
     name: "efs-provisioner"
     state: absent
-    kubeconfig: "{{ kubeconfig }}"
+    kubeconfig: "{{ KUBECONFIG }}"
   tags:
     - install
     - uninstall
@@ -35,13 +35,13 @@
 
 - name: Deploy nfs-subdir-external-provisioner
   community.kubernetes.helm:
-    name: "{{ nfs_name }}"
-    namespace: "{{ nfs_namespace }}"
+    name: "{{ NFS_NAME }}"
+    namespace: "{{ NFS_NAMESPACE }}"
     chart_repo_url: https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/
     chart_ref: nfs-subdir-external-provisioner
-    chart_version: "{{ nfs_chart_version }}"
-    values: "{{ nfs_config }}"
-    kubeconfig: "{{ kubeconfig }}"
+    chart_version: "{{ NFS_CHART_VERSION }}"
+    values: "{{ NFS_CONFIG }}"
+    kubeconfig: "{{ KUBECONFIG }}"
     create_namespace: true
     wait: true
   tags:
@@ -50,9 +50,9 @@
 
 - name: Remove nfs-subdir-external-provisioner
   community.kubernetes.helm:
-    name: "{{ nfs_name }}"
-    namespace: "{{ nfs_namespace }}"
-    kubeconfig: "{{ kubeconfig }}"
+    name: "{{ NFS_NAME }}"
+    namespace: "{{ NFS_NAMESPACE }}"
+    kubeconfig: "{{ KUBECONFIG }}"
     wait: true
     state: absent
   tags:
@@ -62,9 +62,9 @@
   community.kubernetes.k8s:
     api_version: v1
     kind: Namespace
-    name: "{{ nfs_namespace }}"
+    name: "{{ NFS_NAMESPACE }}"
     wait: true
     state: absent
-    kubeconfig: "{{ kubeconfig }}"
+    kubeconfig: "{{ KUBECONFIG }}"
   tags:
     - uninstall
