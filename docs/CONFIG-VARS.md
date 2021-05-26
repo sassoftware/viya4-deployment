@@ -30,7 +30,7 @@ Supported configuration variables are listed in the table below.  All variables 
 
 ## BASE
 
-| Name | Description | Type | Default | Required | Notes | Actions |
+| Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | DEPLOY | Whether to deploy or stop at generating kustomize and manifest | bool | true | false | | viya |
 | LOADBALANCER_SOURCE_RANGES | IPs to allow to ingress | [string] | | true | When deploying in the cloud, be sure to add the cloud nat ip | baseline, viya |
@@ -41,7 +41,7 @@ Supported configuration variables are listed in the table below.  All variables 
 
 ## Cloud
 
-| Name | Description | Type | Default | Required | Notes | Actions |
+| Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | PROVIDER | Cloud provider | string | | true | [aws,azure,gcp,custom] | baseline, viya |
 | CLUSTER_NAME | Name of the k8s cluster | string | | true | | baseline, viya |
@@ -49,7 +49,7 @@ Supported configuration variables are listed in the table below.  All variables 
 
 ### Authentication
 
-| Name | Description | Type | Default | Required | Notes | Actions |
+| Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_CLOUD_SERVICE_ACCOUNT_NAME | Cloud service account | string | | false | See [ansible cloud authentication](user/AnsibleCloudAuthentication.md) | viya |
 | V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH | Full path to service account credentials file | string | | false | See [ansible cloud authentication](user/AnsibleCloudAuthentication.md) | viya |
@@ -57,7 +57,7 @@ Supported configuration variables are listed in the table below.  All variables 
 ## Jump Server
 Tool uses the jump server to interact with rwx filestore, that needs to be pre-mounted to JUMP_SVR_RWX_FILESTORE_PATH, when V4_CFG_MANAGE_STORAGE is set true.
 
-| Name | Description | Type | Default | Required | Notes | Actions |
+| Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | JUMP_SVR_HOST | ip/fqn to the jump host | string | | true | | baseline, viya |
 | JUMP_SVR_USER | ssh user to access the jump host | string | | true | | baseline, viya |
@@ -66,14 +66,14 @@ Tool uses the jump server to interact with rwx filestore, that needs to be pre-m
 
 ## Storage
 
-| Name | Description | Type | Default | Required | Notes | Actions |
+| Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_MANAGE_STORAGE | Should the tool manage the storageclass | bool | true | false | Set to false if you wish to manage the storage class | all |
 | V4_CFG_STORAGECLASS | Storageclass name | string | "sas" | false | When V4_CFG_MANAGE_STORAGE is false, set to the name of your preexisting storage class that supports ReadWriteMany | baseline, viya |
 
 ### RWX Filestore
 
-| Name | Description | Type | Default | Required | Notes | Actions |
+| Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_RWX_FILESTORE_ENDPOINT | NFS ip/host | string | | false | | baseline, viya |
 | V4_CFG_RWX_FILESTORE_PATH | NFS export path | string | /export | false | | baseline, viya |
@@ -96,7 +96,7 @@ When setting V4_CFG_MANAGE_STORAGE to true, A new storage classes will be create
 
 ## Order
 
-| Name | Description | Type | Default | Required | Notes | Actions |
+| Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_ORDER_NUMBER | SAS order number | string | | true | | viya |
 | V4_CFG_CADENCE_NAME | Cadence name | string | lts | false | [stable,lts] | viya |
@@ -106,14 +106,14 @@ When setting V4_CFG_MANAGE_STORAGE to true, A new storage classes will be create
 
 ## SAS API Access
 
-| Name | Description | Type | Default | Required | Notes | Actions |
+| Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_SAS_API_KEY | SAS API Key| string | | true | [API credentials](https://developer.sas.com/guides/sas-viya-orders.html) can be obtained from the [SAS API Portal](https://apiportal.sas.com/get-started) | viya |
 | V4_CFG_SAS_API_SECRET | SAS API Secret | string | | true | [API credentials](https://developer.sas.com/guides/sas-viya-orders.html) can be obtained from the [SAS API Portal](https://apiportal.sas.com/get-started) | viya |
 
 ## Container Registry Access
 
-| Name | Description | Type | Default | Required | Notes | Actions |
+| Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_CR_USER | Container registry username | string | | false | By default, credentials are already included in the downloaded deploymentAssets | viya |
 | V4_CFG_CR_PASSWORD | Container registry password | string | | false | By default, credentials are already included in the downloaded deploymentAssets | viya |
@@ -121,14 +121,14 @@ When setting V4_CFG_MANAGE_STORAGE to true, A new storage classes will be create
 
 ## Ingress
 
-| Name | Description | Type | Default | Required | Notes | Actions |
+| Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_INGRESS_TYPE | Which ingress to deploy | string | | true | [ingress] | baseline, viya |
 | V4_CFG_INGRESS_FQDN | FQDN to for viya installation | string | | true | | viya |
 
 ## Monitoring and Logging
 
-| Name | Description | Type | Default | Required | Notes | Actions |
+| Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4M_VERSION | Branch or tag of [viya4-monitoring-kubernetes](https://github.com/sassoftware/viya4-monitoring-kubernetes) | string | stable | false | | cluster-logging, cluster-monitoring, viya-monitoring |
 | V4M_BASE_DOMAIN | Base domain in which subdomains for elasticsearch, kibana, grafana, prometheus and alertmanager will be created | string | | false | This or the per service fqdn's must be set | cluster-logging, cluster-monitoring, viya-monitoring |
@@ -139,7 +139,7 @@ When setting V4_CFG_MANAGE_STORAGE to true, A new storage classes will be create
 
 ### Monitoring
 
-| Name | Description | Type | Default | Required | Notes | Actions |
+| Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4M_PROMETHEUS_FQDN | FQDN to use for prometheus ingress | string | prometheus.<V4M_BASE_DOMAIN> | false | | cluster-monitoring |
 | V4M_PROMETHEUS_CERT | Path to tls certificate to use for prometheus ingress | string |<V4M_CERT> | false | If both this and V4M_CERT are not set a self-signed cert will be used | cluster-monitoring |
@@ -156,7 +156,7 @@ When setting V4_CFG_MANAGE_STORAGE to true, A new storage classes will be create
 
 ### Logging
 
-| Name | Description | Type | Default | Required | Notes | Actions |
+| Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4M_KIBANA_FQDN | FQDN to use for kibana ingress | string | kibana.<V4M_BASE_DOMAIN> | false | | cluster-logging |
 | V4M_KIBANA_CERT | Path to tls certificate to use for kibana ingress | string |<V4M_CERT> | false | If both this and V4M_CERT are not set a self-signed cert will be used | cluster-logging |
@@ -169,7 +169,7 @@ When setting V4_CFG_MANAGE_STORAGE to true, A new storage classes will be create
 
 ## TLS
 
-| Name | Description | Type | Default | Required | Notes | Actions |
+| Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_TLS_MODE | Which TLS mode to configure | string | front-door | false | Valid values are full-stack, front-door and disabled. When deploying full-stack you must set V4_CFG_TLS_TRUSTED_CA_CERTS to trust external postgres server ca | all |
 | V4_CFG_TLS_CERT | Path to ingress certificate file | string | | false | If specified, used instead of cert-manager issued certificates | viya |
@@ -180,7 +180,7 @@ When setting V4_CFG_MANAGE_STORAGE to true, A new storage classes will be create
 
 When setting V4_CFG_TLS_MODE to a value other than "disabled" and no V4_CFG_TLS_CERT is specified, cert-manager will be used to issue TLS certificates and the following variables can be set to modify cert-manager behavior:
 
-| Name | Description | Type | Default | Required | Notes | Actions |
+| Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_CM_CERTIFICATE_DURATION | Certificate time to expiry in hours | string | 17531h | false | | viya |
 | V4_CFG_CM_CERTIFICATE_ADDITIONAL_SAN_DNS | A list of space separated, additional SAN DNS entries, specific to your ingress architecture, that you want added to certificates issued by the sas-viya-issuer.  For example, the aliases of an external load balancer | string | | false | | viya |
@@ -188,13 +188,13 @@ When setting V4_CFG_TLS_MODE to a value other than "disabled" and no V4_CFG_TLS_
 
 ## Postgres
 
-| Name | Description | Type | Default | Required | Notes | Actions |
+| Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_POSTGRES_TYPE | Postgres installation type | string | | true | [internal,external] | viya |
 
 ### External Postgres
 
-| Name | Description | Type | Default | Required | Notes | Actions |
+| Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_POSTGRES_ADMIN_LOGIN | Existing postgres username | string | | true | | viya |
 | V4_CFG_POSTGRES_PASSWORD | Existing postgres password | string | | true | | viya |
@@ -206,7 +206,7 @@ When setting V4_CFG_TLS_MODE to a value other than "disabled" and no V4_CFG_TLS_
 
 ## CAS
 
-| Name | Description | Type | Default | Required | Notes | Actions |
+| Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_CAS_RAM | Amount of ram to allocate to per CAS node | string | | false | Numeric value followed by the units, such as 32Gi for 32 gigabytes. In Kubernetes, the units for gigabytes is Gi. Leave empty to enable auto-resource assignment | viya |
 | V4_CFG_CAS_CORES | Amount of cpu cores to allocate per CAS node | string | | false | Either a whole number, representing that number of cores, or a number followed by m, indicating that number of milli-cores. Leave empty to enable auto-resource assignment | viya |
@@ -216,14 +216,14 @@ When setting V4_CFG_TLS_MODE to a value other than "disabled" and no V4_CFG_TLS_
 
 ## CONNECT
 
-| Name | Description | Type | Default | Required | Notes | Actions |
+| Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_CONNECT_ENABLE_LOADBALANCER | Setup LB to access SAS/CONNECT | bool | false | false | | viya |
 | V4_CFG_CONNECT_FQDN | FQDN that will be assigned to access SAS/CONNECT | string | | false | Required when V4_CFG_TLS_MODE is not disabled and cert-manager is used to issue TLS certificates. This FQDN will be added to the SAN DNS list of the issued certificates. | viya |
 
 ## 3rd Party tools
 
-| Name | Description | Type | Default | Required | Notes | Actions |
+| Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | CERT_MANAGER_NAME | cert-manager helm release name | string | cert-manager | false | | baseline |
 | CERT_MANAGER_NAMESPACE | cert-manager helm install namespace | string | cert-manager | false | | baseline |
@@ -254,7 +254,7 @@ When setting V4_CFG_TLS_MODE to a value other than "disabled" and no V4_CFG_TLS_
 
 ## Miscellaneous
 
-| Name | Description | Type | Default | Required | Notes | Actions |
+| Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_EMBEDDED_LDAP_ENABLE | Deploy openldap in the namespace for authentication | bool | false | false | [Openldap Config](../roles/vdm/templates/generators/openldap-bootstrap-config.yaml) | viya |
 | V4_CFG_CONSUL_ENABLE_LOADBALANCER | Setup LB to access consul ui | bool | false | false | Consul ui port is 8500 | viya |
