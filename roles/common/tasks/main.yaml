@@ -1,12 +1,3 @@
-- name: global tmp dir
-  tempfile:
-    state: directory
-  register: tmpdir
-  tags:
-    - install
-    - uninstall
-    - upgrade
-
 - name: Load config file
   include_vars:
     file: "{{ CONFIG }}"
