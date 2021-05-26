@@ -40,11 +40,11 @@ INGRESS_NGINX_CONFIG:
     terminationGracePeriodSeconds: 600
 
 ## Nfs-subdir-external-provisioner
-NFS_NAME: nfs-subdir-external-provisioner
-NFS_NAMESPACE: nfs-client
-NFS_CHART_VERSION: 4.0.8
-NFS_CHART_VERSION_URL: https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/
-NFS_CONFIG:
+NFS_CLIENT_NAME: nfs-subdir-external-provisioner
+NFS_CLIENT_NAMESPACE: nfs-client
+NFS_CLIENT_CHART_VERSION: 4.0.8
+NFS_CLIENT_CHART_VERSION_URL: https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/
+NFS_CLIENT_CONFIG:
   nfs:
     server: "{{ V4_CFG_RWX_FILESTORE_ENDPOINT }}"
     path: "{{ V4_CFG_RWX_FILESTORE_PATH | replace('/$', '') }}/pvs"

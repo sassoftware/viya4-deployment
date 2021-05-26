@@ -35,12 +35,12 @@
 
 - name: Deploy nfs-subdir-external-provisioner
   community.kubernetes.helm:
-    name: "{{ NFS_NAME }}"
-    namespace: "{{ NFS_NAMESPACE }}"
-    chart_repo_url: "{{ NFS_CHART_VERSION_URL }}"
+    name: "{{ NFS_CLIENT_NAME }}"
+    namespace: "{{ NFS_CLIENT_NAMESPACE }}"
+    chart_repo_url: "{{ NFS_CLIENT_CHART_VERSION_URL }}"
     chart_ref: nfs-subdir-external-provisioner
-    chart_version: "{{ NFS_CHART_VERSION }}"
-    values: "{{ NFS_CONFIG }}"
+    chart_version: "{{ NFS_CLIENT_CHART_VERSION }}"
+    values: "{{ NFS_CLIENT_CONFIG }}"
     kubeconfig: "{{ KUBECONFIG }}"
     create_namespace: true
     wait: true
@@ -50,8 +50,8 @@
 
 - name: Remove nfs-subdir-external-provisioner
   community.kubernetes.helm:
-    name: "{{ NFS_NAME }}"
-    namespace: "{{ NFS_NAMESPACE }}"
+    name: "{{ NFS_CLIENT_NAME }}"
+    namespace: "{{ NFS_CLIENT_NAMESPACE }}"
     kubeconfig: "{{ KUBECONFIG }}"
     wait: true
     state: absent
@@ -62,7 +62,7 @@
   community.kubernetes.k8s:
     api_version: v1
     kind: Namespace
-    name: "{{ NFS_NAMESPACE }}"
+    name: "{{ NFS_CLIENT_NAMESPACE }}"
     wait: true
     state: absent
     kubeconfig: "{{ KUBECONFIG }}"
