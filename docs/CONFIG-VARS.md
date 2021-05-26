@@ -250,7 +250,7 @@ When setting V4_CFG_TLS_MODE to a value other than "disabled" and no V4_CFG_TLS_
 | METRICS_SERVER_CHART_URL | metrics-server helm chart url | string | https://charts.bitnami.com/bitnami/ | false | | baseline |
 | METRICS_SERVER_CHART_NAME | metrics-server helm chart name | string | metrics-server | false | | baseline |
 | METRICS_SERVER_CHART_VERSION | metrics-server helm chart version | string | 5.3.5 | false | | baseline |
-| METRICS_SERVER_CONFIG | metrics-server helm values | string | see [here](../roles/baseline/defaults/main.yml) | | baseline |
+| METRICS_SERVER_CONFIG | metrics-server helm values | string | see [here](../roles/baseline/defaults/main.yml) false | | baseline |
 
 ## Miscellaneous
 
