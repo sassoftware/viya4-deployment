@@ -37,8 +37,8 @@
   community.kubernetes.helm:
     name: "{{ NFS_CLIENT_NAME }}"
     namespace: "{{ NFS_CLIENT_NAMESPACE }}"
-    chart_repo_url: "{{ NFS_CLIENT_CHART_VERSION_URL }}"
-    chart_ref: nfs-subdir-external-provisioner
+    chart_repo_url: "{{ NFS_CLIENT_CHART_URL }}"
+    chart_ref: "{{ NFS_CLIENT_CHART_NAME }}"
     chart_version: "{{ NFS_CLIENT_CHART_VERSION }}"
     values: "{{ NFS_CLIENT_CONFIG }}"
     kubeconfig: "{{ KUBECONFIG }}"

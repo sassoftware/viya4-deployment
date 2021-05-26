@@ -17,7 +17,7 @@
     name: "{{ METRICS_SERVER_NAME }}"
     namespace: "kube-system"
     chart_repo_url: "{{ METRICS_SERVER_CHART_URL }}"
-    chart_ref: metrics-server
+    chart_ref: "{{ METRICS_SERVER_CHART_NAME }}"
     chart_version: "{{ METRICS_SERVER_CHART_VERSION }}"
     values: "{{ METRICS_SERVER_CONFIG }}"
     kubeconfig: "{{ KUBECONFIG }}"

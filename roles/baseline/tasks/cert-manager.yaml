@@ -4,7 +4,7 @@
     name: "{{ CERT_MANAGER_NAME }}"
     namespace: "{{ CERT_MANAGER_NAMESPACE }}"
     chart_repo_url: "{{ CERT_MANAGER_CHART_URL }}"
-    chart_ref: cert-manager
+    chart_ref: "{{ CERT_MANAGER_CHART_NAME }}"
     chart_version: "{{ CERT_MANAGER_CHART_VERSION }}"
     values: "{{ CERT_MANAGER_CONFIG }}"
     kubeconfig: "{{ KUBECONFIG }}"

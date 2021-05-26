@@ -4,7 +4,7 @@
     name: "{{ INGRESS_NGINX_NAME }}"
     namespace: "{{ INGRESS_NGINX_NAMESPACE }}"
     chart_repo_url: "{{ INGRESS_NGINX_CHART_URL }}"
-    chart_ref: ingress-nginx
+    chart_ref: "{{ INGRESS_NGINX_CHART_NAME }}"
     chart_version: "{{ INGRESS_NGINX_CHART_VERSION }}"
     values: "{{ INGRESS_NGINX_CONFIG }}"
     kubeconfig: "{{ KUBECONFIG }}"
