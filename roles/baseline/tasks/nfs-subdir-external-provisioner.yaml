@@ -37,7 +37,7 @@
   community.kubernetes.helm:
     name: "{{ NFS_NAME }}"
     namespace: "{{ NFS_NAMESPACE }}"
-    chart_repo_url: https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/
+    chart_repo_url: "{{ NFS_CHART_VERSION_URL }}"
     chart_ref: nfs-subdir-external-provisioner
     chart_version: "{{ NFS_CHART_VERSION }}"
     values: "{{ NFS_CONFIG }}"

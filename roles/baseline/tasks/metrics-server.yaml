@@ -16,7 +16,7 @@
   community.kubernetes.helm:
     name: "{{ METRICS_SERVER_NAME }}"
     namespace: "kube-system"
-    chart_repo_url: https://charts.bitnami.com/bitnami/
+    chart_repo_url: "{{ METRICS_SERVER_CHART_URL }}"
     chart_ref: metrics-server
     chart_version: "{{ METRICS_SERVER_CHART_VERSION }}"
     values: "{{ METRICS_SERVER_CONFIG }}"

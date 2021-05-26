@@ -4,6 +4,7 @@ Supported configuration variables are listed in the table below.  All variables 
 
 - [List of valid configuration variables](#list-of-valid-configuration-variables)
   - [BASE](#base)
+  - [3rd Party tools](#3rd-party-tools)
   - [Cloud](#cloud)
     - [Authentication](#authentication)
   - [Jump Server](#jump-server)
@@ -37,6 +38,33 @@ Supported configuration variables are listed in the table below.  All variables 
 | KUBECONFIG | Path to kubeconfig file | string | | true | | viya |
 | V4_CFG_SITEDEFAULT | Path to sitedefault file | string | | false | When not set [sitedefault](examples/sitedefault.yaml) is used | viya |
 | V4_CFG_SSSD | Path to sssd file | string | | false | | viya |
+
+## 3rd Party tools
+
+| Name | Description | Type | Default | Required | Notes | Actions |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
+| CERT_MANAGER_NAME | cert-manager helm release name | string | cert-manager | false | | baseline |
+| CERT_MANAGER_NAMESPACE | cert-manager helm install namespace | string | cert-manager | false | | baseline |
+| CERT_MANAGER_CHART_VERSION | cert-manager helm chart version | string | 1.3.0 | false | | baseline |
+| CERT_MANAGER_CHART_URL | cert-manager helm chart url | string | https://charts.jetstack.io/ | false | | baseline |
+| CERT_MANAGER_CONFIG | cert-manager helm values | string | see [here](../roles/baseline/defaults/main.yml) | false | | baseline |
+| | | | | | | |
+| INGRESS_NGINX_NAME | ingress-nginx helm release name | string | ingress-nginx | false | | baseline |
+| INGRESS_NGINX_NAMESPACE | ingress-nginx helm install namespace | string | ingress-nginx | false | | baseline |
+| INGRESS_NGINX_CHART_VERSION | ingress-nginx helm chart version | string | 3.20.1| false | | baseline |
+| INGRESS_NGINX_CHART_URL | ingress-nginx helm chart url | string | https://kubernetes.github.io/ingress-nginx | false | | baseline |
+| INGRESS_NGINX_CONFIG | ingress-nginx helm values | string | see [here](../roles/baseline/defaults/main.yml) | false | | baseline |
+| | | | | | | |
+| NFS_NAME | nfs-subdir-external-provisioner helm release name | string | nfs-subdir-external-provisioner | false | | baseline |
+| NFS_NAMESPACE | nfs-subdir-external-provisioner helm install namespace | string | nfs-client | false | | baseline |
+| NFS_CHART_VERSION | nfs-subdir-external-provisioner helm chart version | string | 4.0.8| false | | baseline |
+| NFS_CHART_URL | nfs-subdir-external-provisioner helm chart url | string | https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/ | false | | baseline |
+| NFS_CONFIG | nfs-subdir-external-provisioner helm values | string | see [here](../roles/baseline/defaults/main.yml) | false | | baseline |
+| | | | | | | |
+| METRICS_SERVER_NAME | metrics-server helm release name | string | metrics-server | false | | baseline |
+| METRICS_SERVER_CHART_VERSION | metrics-server helm chart version | string | 5.3.5 | false | | baseline |
+| METRICS_SERVER_CHART_URL | metrics-server helm chart url | string | https://charts.bitnami.com/bitnami/ | false | | baseline |
+| METRICS_SERVER_CONFIG | metrics-server helm values | string | see [here](../roles/baseline/defaults/main.yml) | | baseline |
 
 ## Cloud
 

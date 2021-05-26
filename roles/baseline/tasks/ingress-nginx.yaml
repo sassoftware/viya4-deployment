@@ -3,7 +3,7 @@
   community.kubernetes.helm:
     name: "{{ INGRESS_NGINX_NAME }}"
     namespace: "{{ INGRESS_NGINX_NAMESPACE }}"
-    chart_repo_url: https://kubernetes.github.io/ingress-nginx
+    chart_repo_url: "{{ INGRESS_NGINX_CHART_URL }}"
     chart_ref: ingress-nginx
     chart_version: "{{ INGRESS_NGINX_CHART_VERSION }}"
     values: "{{ INGRESS_NGINX_CONFIG }}"
