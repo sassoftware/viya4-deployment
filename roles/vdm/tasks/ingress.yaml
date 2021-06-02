@@ -52,6 +52,7 @@
     - copy:
         src: "{{ (V4_CFG_TLS_TRUSTED_CA_CERTS|realpath) + '/' }}"
         dest: "{{ DEPLOY_DIR }}/site-config/vdm/security/cacerts/"
+        mode: "0660"
     - find:
         paths: "{{ DEPLOY_DIR }}/site-config/vdm/security/cacerts/"
         depth: 2
@@ -76,6 +77,7 @@
   - copy:
       src: "{{ item.src }}"
       dest: "{{ DEPLOY_DIR }}/site-config/vdm/security/{{ item.dest }}"
+      mode: "0660"
     with_items:
       - src: "{{ V4_CFG_TLS_CERT }}"
         dest: "sas-nginx-ingress.crt"

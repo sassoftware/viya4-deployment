@@ -23,16 +23,7 @@
   shell: |
     kubectl --kubeconfig {{ kubeconfig }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=cluster-local" -f {{ DEPLOY_DIR }}/site.yaml --prune
   register: prereq_cluster_local
-  ignore_errors: yes
-  no_log: true
-  tags:
-    - install
-    - upgrade
-
-- name: prereqs - cluster-local failure check
-  fail:
-    msg: "{{ prereq_cluster_local }}"
-  when:
+  failed_when:
     - prereq_cluster_local["stderr"]|length > 0
     - prereq_cluster_local["stderr"] is not regex(".* no matches for kind .* in version .*")
   tags:
@@ -43,18 +34,9 @@
   shell: |
     kubectl --kubeconfig {{ kubeconfig }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=namespace" -f {{ DEPLOY_DIR }}/site.yaml --prune
   register: manifest_deploy
-  ignore_errors: yes
-  no_log: true
-  tags:
-    - install
-    - upgrade
-
-- name: manifest - failure check
-  fail:
-    msg: "{{ manifest_deploy }}"
-  when:
+  failed_when:
     - manifest_deploy["stderr"]|length > 0
-    - manifest_deploy["stderr"] is not regex(".* no matches for kind .* in version .*")
+    - manifest_deploy["stderr"] is not regex(".* no matches for kind .* in version .*")  
   tags:
     - install
     - upgrade
@@ -63,29 +45,21 @@
   shell: |
     kubectl --kubeconfig {{ kubeconfig }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=namespace" --prune --prune-whitelist=networking.istio.io/v1alpha3/DestinationRule --prune-whitelist=networking.istio.io/v1alpha3/VirtualService -f {{ DEPLOY_DIR }}/site.yaml
   register: manifest_deploy_istio
-  ignore_errors: yes
-  no_log: true
   when: 
     - V4_CFG_INGRESS_TYPE == "istio"
-  tags:
-    - install
-    - upgrade
-
-- name: manifest - istio failure check
-  fail:
-    msg: "{{ manifest_deploy_istio }}"
-  when:
-    - V4_CFG_INGRESS_TYPE == "istio"
+  failed_when:
     - manifest_deploy_istio["stderr"]|length > 0
-    - manifest_deploy_istio["stderr"] is not regex(".* no matches for kind .* in version .*")
+    - manifest_deploy_istio["stderr"] is not regex(".* no matches for kind .* in version .*") 
   tags:
     - install
     - upgrade
 
 - name: Remove Viya
-  shell: |
-    kubectl --kubeconfig {{ kubeconfig }} delete -n {{ NAMESPACE }} -f {{ DEPLOY_DIR }}/site.yaml
-  ignore_errors: yes
+  community.kubernetes.k8s:
+    state: absent
+    src:  "{{ DEPLOY_DIR }}/site.yaml"
+    wait: true
+    kubeconfig: "{{ kubeconfig }}"
   tags:
     - uninstall
 

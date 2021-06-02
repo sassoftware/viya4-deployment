@@ -4,8 +4,8 @@
   include_role: 
     name: nfs-subdir-external-provisioner
   vars:
-    nfs_server: "{{V4_CFG_RWX_FILESTORE_ENDPOINT}}"
-    nfs_path: "{{V4_CFG_RWX_FILESTORE_PATH}}"
+    nfs_server: "{{ V4_CFG_RWX_FILESTORE_ENDPOINT }}"
+    nfs_path: "{{ V4_CFG_RWX_FILESTORE_PATH }}"
   when:
     - V4_CFG_RWX_FILESTORE_ENDPOINT is defined
     - V4_CFG_RWX_FILESTORE_PATH is defined

@@ -2,6 +2,7 @@
   copy:
     src: "{{ DEPLOY_DIR }}/sas-bases/examples/mirror/mirror.yaml"
     dest: "{{ role_path }}/templates/transformers/mirror.yaml"
+    mode: "0660"
   tags:
     - install
     - uninstall

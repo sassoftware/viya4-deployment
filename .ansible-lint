@@ -1,0 +1,18 @@
+var_naming_pattern: "^[a-zA-Z0-9_]*$"
+
+parseable: true
+
+exclude_paths:
+- .git/
+- .gitignore
+- .cache/
+- roles/istio
+
+skip_list:
+- unnamed-task
+- no-changed-when
+- role-name
+
+warn_list:
+- experimental
+

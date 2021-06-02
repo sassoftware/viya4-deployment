@@ -31,11 +31,6 @@
         name: baseline
       tags:
         - baseline
-    - include_vars:
-        file: "{{ DEPLOY_DIR }}/site-config/defaults.yaml"
-      when: CONFIG is not defined
-      tags:
-        - viya
     - name: vdm role
       include_role:
         name: vdm

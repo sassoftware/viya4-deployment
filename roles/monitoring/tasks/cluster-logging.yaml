@@ -3,6 +3,7 @@
   file:
     path: "{{ tmpdir.path }}/logging/"
     state: directory
+    mode: "0660"
   tags:
     - install
     - uninstall
@@ -22,7 +23,7 @@
     - uninstall
 
 - set_fact:
-    V4M_KIBANA_PASSWORD: "{{logging_creds.resources[0].data.password|b64decode}}"
+    V4M_KIBANA_PASSWORD: "{{ logging_creds.resources[0].data.password|b64decode }}"
   tags:
     - install
     - upgrade
@@ -50,13 +51,14 @@
   template:
     src: "user-values-elasticsearch-open.yaml"
     dest: "{{ tmpdir.path }}/logging/user-values-elasticsearch-open.yaml"
+    mode: "0660"
   tags:
     - install
     - update
     - uninstall
 
 - name: cluster-logging - deploy
-  shell:
+  command:
     cmd: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/logging/bin/deploy_logging_open.sh"
   environment:
     USER_DIR: "{{ tmpdir.path }}"
@@ -118,7 +120,7 @@
     - update
 
 - name: cluster-logging - uninstall
-  shell:
+  command:
     cmd: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/logging/bin/remove_logging_open.sh"
   environment:
     USER_DIR: "{{ tmpdir.path }}"

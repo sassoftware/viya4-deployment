@@ -1,6 +1,6 @@
 ---
 - name: viya-monitoring - deploy
-  shell:
+  command:
     cmd: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/monitoring/bin/deploy_monitoring_viya.sh"
   environment:
     VIYA_NS: "{{ NAMESPACE }}"
@@ -12,7 +12,7 @@
     - update
 
 - name: viya-monitoring - uninstall
-  shell:
+  command:
     cmd: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/monitoring/bin/remove_monitoring_viya.sh"
   environment:
     VIYA_NS: "{{ NAMESPACE }}"

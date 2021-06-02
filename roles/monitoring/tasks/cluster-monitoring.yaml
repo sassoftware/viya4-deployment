@@ -3,6 +3,7 @@
   file:
     path: "{{ tmpdir.path }}/monitoring/"
     state: directory
+    mode: "0660"
   tags:
     - install
     - uninstall
@@ -22,7 +23,7 @@
     - uninstall
 
 - set_fact:
-    V4M_GRAFANA_PASSWORD: "{{monitoring_creds.resources[0].data['admin-password']|b64decode}}"
+    V4M_GRAFANA_PASSWORD: "{{ monitoring_creds.resources[0].data['admin-password']|b64decode }}"
   tags:
     - install
     - upgrade
@@ -50,13 +51,14 @@
   template:
     src: "user-values-prom-operator.yaml"
     dest: "{{ tmpdir.path }}/monitoring/user-values-prom-operator.yaml"
+    mode: "0660"
   tags:
     - install
     - update
     - uninstall
 
 - name: cluster-monitoring - deploy
-  shell:
+  command:
     cmd: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/monitoring/bin/deploy_monitoring_cluster.sh"
   environment:
     USER_DIR: "{{ tmpdir.path }}"
@@ -139,7 +141,7 @@
     - update
 
 - name: cluster-monitoring - uninstall
-  shell:
+  command:
     cmd: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/monitoring/bin/remove_monitoring_cluster.sh"
   environment:
     USER_DIR: "{{ tmpdir.path }}"

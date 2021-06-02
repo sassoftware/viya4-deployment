@@ -3,6 +3,7 @@
   file:
     state: directory
     dest: '{{ DEPLOY_DIR }}/site-config/vdm/{{ resource }}'
+    mode: "0660"
   when: overlays|length > 0
   tags:
     - install
@@ -13,6 +14,7 @@
   template:
     src: "{{ resource }}/{{ overlay|basename }}"
     dest: "{{ DEPLOY_DIR }}/{{ overlay |dirname }}/{{ overlay | basename | regex_replace('\\..*\\.yaml$', '.yaml') }}"
+    mode: "0660"
   with_items: "{{ overlays }}"
   loop_control:
     loop_var: overlay
