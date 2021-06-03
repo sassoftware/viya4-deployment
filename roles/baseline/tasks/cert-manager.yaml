@@ -9,7 +9,6 @@
     values: "{{ CERT_MANAGER_CONFIG }}"
     kubeconfig: "{{ KUBECONFIG }}"
     create_namespace: true
-    update_repo_cache: true
     wait: true
   tags:
     - install
