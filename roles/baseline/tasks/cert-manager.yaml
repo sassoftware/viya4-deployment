@@ -1,0 +1,37 @@
+---
+- name: Deploy cert-manager
+  community.kubernetes.helm:
+    name: "{{ CERT_MANAGER_NAME }}"
+    namespace: "{{ CERT_MANAGER_NAMESPACE }}"
+    chart_repo_url: "{{ CERT_MANAGER_CHART_URL }}"
+    chart_ref: "{{ CERT_MANAGER_CHART_NAME }}"
+    chart_version: "{{ CERT_MANAGER_CHART_VERSION }}"
+    values: "{{ CERT_MANAGER_CONFIG }}"
+    kubeconfig: "{{ KUBECONFIG }}"
+    create_namespace: true
+    wait: true
+  tags:
+    - install
+    - upgrade
+
+- name: Remove cert-manager
+  community.kubernetes.helm:
+    name: "{{ CERT_MANAGER_NAME }}"
+    namespace: "{{ CERT_MANAGER_NAMESPACE }}"
+    kubeconfig: "{{ KUBECONFIG }}"
+    wait: true
+    values: "{{ CERT_MANAGER_CONFIG }}"
+    state: absent
+  tags:
+    - uninstall
+
+- name: Remove namespace
+  community.kubernetes.k8s:
+    api_version: v1
+    kind: Namespace
+    name: "{{ CERT_MANAGER_NAMESPACE }}"
+    wait: true
+    state: absent
+    kubeconfig: "{{ KUBECONFIG }}"
+  tags:
+    - uninstall

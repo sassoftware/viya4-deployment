@@ -1,2 +1,62 @@
 V4_CFG_TLS_MODE: "full-stack" # other valid values are front-door and disabled
 V4_CFG_RWX_FILESTORE_ENDPOINT: /export
+
+## Cert-manager
+CERT_MANAGER_NAME: cert-manager
+CERT_MANAGER_NAMESPACE: cert-manager
+CERT_MANAGER_CHART_NAME: cert-manager
+CERT_MANAGER_CHART_URL: https://charts.jetstack.io/
+CERT_MANAGER_CHART_VERSION: 1.3.0
+CERT_MANAGER_CONFIG: 
+  installCRDs: "true"
+  extraArgs:
+    - --enable-certificate-owner-ref=true
+
+## Metrics-server
+METRICS_SERVER_NAME: metrics-server
+METRICS_SERVER_CHART_NAME: metrics-server
+METRICS_SERVER_CHART_URL: https://charts.bitnami.com/bitnami/
+METRICS_SERVER_CHART_VERSION: 5.3.5
+METRICS_SERVER_CONFIG:
+  apiService:
+    create: true
+
+## Ingress-nginx
+INGRESS_NGINX_NAME: ingress-nginx
+INGRESS_NGINX_NAMESPACE: ingress-nginx
+INGRESS_NGINX_CHART_NAME: ingress-nginx
+INGRESS_NGINX_CHART_URL: https://kubernetes.github.io/ingress-nginx
+INGRESS_NGINX_CHART_VERSION: 3.20.1
+INGRESS_NGINX_CONFIG:
+  controller:
+    service: 
+      externalTrafficPolicy: Local
+      sessionAffinity: None 
+    config:
+      use-forwarded-headers: "true"
+    tcp: {}
+    udp: {}
+    lifecycle:
+      preStop:
+        exec:
+          command: ["/bin/sh", "-c", "sleep 5; /usr/local/nginx/sbin/nginx -c /etc/nginx/nginx.conf -s quit; while pgrep -x nginx; do sleep 1; done"]
+    terminationGracePeriodSeconds: 600
+
+## Nfs-subdir-external-provisioner
+NFS_CLIENT_NAME: nfs-subdir-external-provisioner
+NFS_CLIENT_NAMESPACE: nfs-client
+NFS_CLIENT_CHART_NAME: nfs-subdir-external-provisioner
+NFS_CLIENT_CHART_URL: https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/
+NFS_CLIENT_CHART_VERSION: 4.0.8
+NFS_CLIENT_CONFIG:
+  nfs:
+    server: "{{ V4_CFG_RWX_FILESTORE_ENDPOINT }}"
+    path: "{{ V4_CFG_RWX_FILESTORE_PATH | replace('/$', '') }}/pvs"
+    mountOptions: 
+      - noatime
+      - nodiratime
+      - 'rsize=262144'
+      - 'wsize=262144'
+  storageClass:
+    archiveOnDelete: "false"
+    name: sas

@@ -5,7 +5,7 @@
     kind: Service
     name: metrics-server
     namespace: kube-system
-    kubeconfig: "{{ kubeconfig }}"
+    kubeconfig: "{{ KUBECONFIG }}"
   register: metrics_service
   tags:
     - install
@@ -14,13 +14,13 @@
 
 - name: Deploy metrics-server
   community.kubernetes.helm:
-    name: "{{ metrics_server_name }}"
+    name: "{{ METRICS_SERVER_NAME }}"
     namespace: "kube-system"
-    chart_repo_url: https://charts.bitnami.com/bitnami/
-    chart_ref: metrics-server
-    chart_version: "{{ chart_version }}"
-    values: "{{ metrics_server_config }}"
-    kubeconfig: "{{ kubeconfig }}"
+    chart_repo_url: "{{ METRICS_SERVER_CHART_URL }}"
+    chart_ref: "{{ METRICS_SERVER_CHART_NAME }}"
+    chart_version: "{{ METRICS_SERVER_CHART_VERSION }}"
+    values: "{{ METRICS_SERVER_CONFIG }}"
+    kubeconfig: "{{ KUBECONFIG }}"
     wait: true
   tags:
     - install
@@ -30,10 +30,10 @@
 
 - name: Remove metrics-server
   community.kubernetes.helm:
-    name: "{{ metrics_server_name }}"
+    name: "{{ METRICS_SERVER_NAME }}"
     namespace: "kube-system"
-    kubeconfig: "{{ kubeconfig }}"
-    values: "{{ metrics_server_config }}"
+    kubeconfig: "{{ KUBECONFIG }}"
+    values: "{{ METRICS_SERVER_CONFIG }}"
     state: absent
     wait: true
   tags:

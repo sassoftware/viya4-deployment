@@ -1,7 +1,0 @@
-metrics_server_name: metrics-server
-kubeconfig: "~/.kube/config"
-chart_version: 5.3.5
-
-metrics_server_config:
-  apiService:
-    create: true
