@@ -13,7 +13,7 @@ SOURCE | NAME | VERSION
 ~ | docker | any
 ~ | git | any
 ~ | kustomize | 3.7.0
-~ | kubectl | 1.18.8
+~ | kubectl | 1.19.9
 ~ | AWS IAM Authenticator | 1.18.9/2020-11-02
 ~ | Helm | 3
 pip3 | ansible | 2.10.7+
