@@ -51,6 +51,3 @@
         - install
         - uninstall
         - upgrade
-  vars:
-    kubeconfig: "{{ KUBECONFIG|default(null, -1) }}"
-    loadBalancerSourceRanges: "{{ LOADBALANCER_SOURCE_RANGES }}"

@@ -15,7 +15,7 @@
     kind: Secret
     name: v4m-grafana
     namespace: monitoring
-    kubeconfig: "{{ kubeconfig }}"
+    kubeconfig: "{{ KUBECONFIG }}"
   register: monitoring_creds
   tags:
     - install
