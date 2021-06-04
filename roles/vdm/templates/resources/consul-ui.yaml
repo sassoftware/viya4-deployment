@@ -13,4 +13,4 @@ spec:
   selector:
     app.kubernetes.io/name: sas-consul-server
     sas.com/deployment: sas-viya
-  loadBalancerSourceRanges: {{ loadBalancerSourceRanges }}
+  loadBalancerSourceRanges: {{ LOADBALANCER_SOURCE_RANGES }}

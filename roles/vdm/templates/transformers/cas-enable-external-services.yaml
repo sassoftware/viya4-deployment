@@ -12,7 +12,7 @@ patch: |-
     value:
       spec:
         type: LoadBalancer
-        loadBalancerSourceRanges: {{ loadBalancerSourceRanges }}
+        loadBalancerSourceRanges: {{ LOADBALANCER_SOURCE_RANGES }}
 target:
   group: viya.sas.com
   kind: CASDeployment

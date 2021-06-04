@@ -61,7 +61,7 @@
         rules:
         - from:
           - source:
-              ipBlocks: "{{ loadBalancerSourceRanges }}"
+              ipBlocks: "{{ LOADBALANCER_SOURCE_RANGES }}"
   tags:
     - install
     - upgrade
