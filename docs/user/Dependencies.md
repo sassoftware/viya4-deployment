@@ -16,12 +16,11 @@ SOURCE | NAME | VERSION
 ~ | kubectl | 1.19.9
 ~ | AWS IAM Authenticator | 1.18.9/2020-11-02
 ~ | Helm | 3
-pip3 | ansible | 2.10.7+
+pip3 | ansible | 2.10.7
 pip3 | openshift | 0.12.0
-pip3 | kubernetes | 17.17.0
+pip3 | kubernetes | 12.0.1
 pip3 | dnspython | 2.1.0
 ansible-galaxy | community.kubernetes | 1.2.1
-ansible-galaxy | ansible.posix | 1.1.1
 
 Required project dependencies are generally pinned to known working or stable versions to ensure users have a smooth initial experience. In some cases it may be required to change the default version of a dependency. In such cases users are welcome to experiment with alternate versions, however compatibility may not be guaranteed.
 
