@@ -31,17 +31,21 @@
         name: baseline
       tags:
         - baseline
-    - name: vdm role
-      include_role:
-        name: vdm
-      tags:
-        - viya
-    - name: monitoring role
+    - name: monitoring role - cluster
       include_role:
         name: monitoring
       tags:
         - cluster-monitoring
         - cluster-logging
+    - name: vdm role
+      include_role:
+        name: vdm
+      tags:
+        - viya
+    - name: monitoring role - namespace
+      include_role:
+        name: monitoring
+      tags:
         - viya-monitoring
     - name: Delete tmpdir
       file:
