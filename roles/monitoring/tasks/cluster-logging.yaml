@@ -3,47 +3,42 @@
   file:
     path: "{{ tmpdir.path }}/logging/"
     state: directory
-    mode: "0660"
+    mode: "0770"
   tags:
     - install
     - uninstall
     - upgrade
 
-- name: cluster-logging - lookup creds
+- name: cluster-logging - lookup existing credentials
   community.kubernetes.k8s_info:
     api_version: v1
     kind: Secret
-    name: internal-user-admin
-    namespace: logging
+    namespace: "logging"
     kubeconfig: "{{ KUBECONFIG }}"
-  register: logging_creds
+    label_selectors:
+      - managed-by = v4m-es-script
+  register: "logging_secrets"
   tags:
     - install
-    - upgrade
-    - uninstall
 
-- set_fact:
-    V4M_KIBANA_PASSWORD: "{{ logging_creds.resources[0].data.password|b64decode }}"
+- name: cluster-logging - save credentials
+  set_fact: 
+    "{{ logging_map['secret'][item.metadata.name] }}": "{{ item.data.password|b64decode }}"
+  with_items: "{{ logging_secrets.resources }}"
+  when:
+    - item.metadata is defined
+    - item.metadata.name is defined
+    - item.metadata.name in ("internal-user-admin", "internal-user-kibanaserver", "internal-user-logcollector", "internal-user-metricgetter")
   tags:
     - install
-    - upgrade
-    - uninstall
-  when:
-    - (logging_creds.resources | length) == 1
-    
-- name: cluster-logging - generate kibana password
-  set_fact:
-    V4M_KIBANA_PASSWORD: "{{ lookup('password', '/dev/null chars=ascii_letters,digits') }}"
-  tags:
-    - install
-  when:
-    - V4M_KIBANA_PASSWORD is none
 
-- name: cluster-logging - credentials
+- name: cluster-logging - output credentials
   debug:
     msg:
-      - "Kibana username: admin" 
-      - "Kibana password: {{ V4M_KIBANA_PASSWORD }}"
+      - "Kibana admin  - username: admin,        password: {{ V4M_KIBANA_PASSWORD }}"
+      - "Kibana Server - username: kibanaserver, password: {{ V4M_KIBANASERVER_PASSWORD }}"
+      - "Log Collector - username: logcollector, password: {{ V4M_LOGCOLLECTOR_PASSWORD }}"
+      - "Metric Getter - username: metricgetter, password: {{ V4M_METRICGETTER_PASSWORD }}"
   tags:
     - install
 
@@ -60,20 +55,15 @@
 - name: cluster-logging - deploy
   command:
     cmd: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/logging/bin/deploy_logging_open.sh"
-  environment:
-    USER_DIR: "{{ tmpdir.path }}"
-    TLS_ENABLE: "true"
-    LOG_KB_TLS_ENABLE: "true"
-    KUBECONFIG: "{{ KUBECONFIG }}"
-    LOG_COLOR_ENABLE: false
-    NODE_PLACEMENT_ENABLE: "{{ V4M_NODE_PLACEMENT_ENABLE }}"
-    ES_ADMIN_PASSWD: "{{ V4M_KIBANA_PASSWORD }}"
-  ignore_errors: yes
+  environment: "{{ logging_map['env'] }}"
+  register: result
+  failed_when:
+    - "'can be ignored' not in result.stdout"
   tags:
     - install
     - update
 
-- name: cluster-monitoring - elasticsearch cert
+- name: cluster-logging - elasticsearch cert
   community.kubernetes.k8s:
     kubeconfig: "{{ KUBECONFIG }}"
     state: present
@@ -96,7 +86,7 @@
     - install
     - update
 
-- name: cluster-monitoring - kibana cert
+- name: cluster-logging - kibana cert
   community.kubernetes.k8s:
     kubeconfig: "{{ KUBECONFIG }}"
     state: present
@@ -122,10 +112,17 @@
 - name: cluster-logging - uninstall
   command:
     cmd: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/logging/bin/remove_logging_open.sh"
-  environment:
-    USER_DIR: "{{ tmpdir.path }}"
-    TLS_ENABLE: "true"
-    KUBECONFIG: "{{ KUBECONFIG }}"
-    LOG_COLOR_ENABLE: false
+  environment: "{{ logging_map['env'] }}"
+  tags:
+    - uninstall
+
+- name: cluster-logging - delete namespace
+  community.kubernetes.k8s:
+    api_version: v1
+    kind: Namespace
+    name: "logging"
+    wait: true
+    kubeconfig: "{{ KUBECONFIG }}"
+    state: absent
   tags:
     - uninstall

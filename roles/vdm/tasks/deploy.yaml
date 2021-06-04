@@ -22,10 +22,10 @@
 - name: prereqs - cluster-local deploy
   shell: |
     kubectl --kubeconfig {{ KUBECONFIG }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=cluster-local" -f {{ DEPLOY_DIR }}/site.yaml --prune
-  register: prereq_cluster_local
+  register: result
   failed_when:
-    - prereq_cluster_local["stderr"]|length > 0
-    - prereq_cluster_local["stderr"] is not regex(".* no matches for kind .* in version .*")
+    - result["stderr"]|length > 0
+    - result["stderr"] is not regex(".* no matches for kind .* in version .*")
   tags:
     - install
     - upgrade
@@ -33,10 +33,11 @@
 - name: manifest - deploy
   shell: |
     kubectl --kubeconfig {{ KUBECONFIG }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=namespace" -f {{ DEPLOY_DIR }}/site.yaml --prune
-  register: manifest_deploy
+  register: result
   failed_when:
-    - manifest_deploy["stderr"]|length > 0
-    - manifest_deploy["stderr"] is not regex(".* no matches for kind .* in version .*")  
+    - result["stderr"]|length > 0
+    - result["stderr"] is not regex(".* no matches for kind .* in version .*")  
+    - result["stderr"] in not regex(".* Warning .*")
   tags:
     - install
     - upgrade
@@ -44,12 +45,12 @@
 - name: manifest - deploy istio
   shell: |
     kubectl --kubeconfig {{ KUBECONFIG }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=namespace" --prune --prune-whitelist=networking.istio.io/v1alpha3/DestinationRule --prune-whitelist=networking.istio.io/v1alpha3/VirtualService -f {{ DEPLOY_DIR }}/site.yaml
-  register: manifest_deploy_istio
+  register: result
   when: 
     - V4_CFG_INGRESS_TYPE == "istio"
   failed_when:
-    - manifest_deploy_istio["stderr"]|length > 0
-    - manifest_deploy_istio["stderr"] is not regex(".* no matches for kind .* in version .*") 
+    - result["stderr"]|length > 0
+    - result["stderr"] is not regex(".* no matches for kind .* in version .*") 
   tags:
     - install
     - upgrade
@@ -58,8 +59,11 @@
   community.kubernetes.k8s:
     state: absent
     src:  "{{ DEPLOY_DIR }}/site.yaml"
-    wait: true
+    wait: false
     kubeconfig: "{{ KUBECONFIG }}"
+  register: result
+  failed_when:
+    - "'Failed to find' not in result['msg']"
   tags:
     - uninstall
 

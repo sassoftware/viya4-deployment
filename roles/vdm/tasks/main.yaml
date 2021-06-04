@@ -2,7 +2,7 @@
 - file:
     state: directory
     dest: '{{ DEPLOY_DIR }}/site-config/'
-    mode: "0660"
+    mode: "0770"
   tags:
     - install
     - uninstall

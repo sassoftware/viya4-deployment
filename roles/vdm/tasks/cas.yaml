@@ -16,7 +16,7 @@
     - file:
         path: "{{ DEPLOY_DIR }}/site-config/cas-server/"
         state: directory
-        mode: "0660"
+        mode: "0770"
     - copy:
         src: "{{ V4_CFG_SSSD }}"
         dest: "{{ DEPLOY_DIR }}/site-config/cas-server/sssd.conf"

@@ -3,7 +3,7 @@
   file:
     state: directory
     dest: '{{ DEPLOY_DIR }}/site-config/vdm/{{ resource }}'
-    mode: "0660"
+    mode: "0770"
   when: overlays|length > 0
   tags:
     - install
