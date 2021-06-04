@@ -1,7 +1,6 @@
 - command: |
     git log -1 --format=format:"%H"
   register: githash
-  # ignore_errors: yes
   tags:
     - install
     - uninstall
