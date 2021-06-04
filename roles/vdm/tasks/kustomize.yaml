@@ -2,6 +2,7 @@
     git log -1 --format=format:"%H"
   failed_when:
     - "'fatal: not a git repository' not in githash.stderr"
+    - githash.rc != 0
   register: githash
   tags:
     - install

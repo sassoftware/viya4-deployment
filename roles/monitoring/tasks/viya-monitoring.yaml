@@ -1,4 +1,17 @@
 ---
+- name: viya-monitoring - download viya4-monitoring-kubernetes
+  git:
+    repo: https://github.com/sassoftware/viya4-monitoring-kubernetes.git
+    dest: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/"
+    version: "{{ V4M_VERSION }}"
+  tags:
+    - install
+    - uninstall
+    - upgrade
+  when:
+    - "'cluster-logging' not in ansible_run_tags"
+    - "'cluster-monitoring' not in ansible_run_tags"
+
 - name: viya-monitoring - deploy
   command:
     cmd: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/monitoring/bin/deploy_monitoring_viya.sh"
