@@ -15,23 +15,29 @@
   shell: |
     kubectl --kubeconfig {{ KUBECONFIG }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=cluster-wide" -f {{ DEPLOY_DIR }}/site.yaml
     kubectl --kubeconfig {{ KUBECONFIG }} wait --for condition=established --timeout=60s -l "sas.com/admin=cluster-wide" crd
+  register: result
+  failed_when:
+    - result["stderr"]|length > 0
+    - result["stderr"] is not regex(".* no matches for kind .* in version .*")  
+    - result["stderr"] in not regex(".* Warning .*")
   tags:
     - install
     - upgrade
 
 - name: prereqs - cluster-local deploy
-  shell: |
+  command: |
     kubectl --kubeconfig {{ KUBECONFIG }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=cluster-local" -f {{ DEPLOY_DIR }}/site.yaml --prune
   register: result
   failed_when:
     - result["stderr"]|length > 0
-    - result["stderr"] is not regex(".* no matches for kind .* in version .*")
+    - result["stderr"] is not regex(".* no matches for kind .* in version .*")  
+    - result["stderr"] in not regex(".* Warning .*")
   tags:
     - install
     - upgrade
 
 - name: manifest - deploy
-  shell: |
+  command: |
     kubectl --kubeconfig {{ KUBECONFIG }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=namespace" -f {{ DEPLOY_DIR }}/site.yaml --prune
   register: result
   failed_when:
@@ -43,14 +49,15 @@
     - upgrade
 
 - name: manifest - deploy istio
-  shell: |
+  command: |
     kubectl --kubeconfig {{ KUBECONFIG }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=namespace" --prune --prune-whitelist=networking.istio.io/v1alpha3/DestinationRule --prune-whitelist=networking.istio.io/v1alpha3/VirtualService -f {{ DEPLOY_DIR }}/site.yaml
   register: result
   when: 
     - V4_CFG_INGRESS_TYPE == "istio"
   failed_when:
     - result["stderr"]|length > 0
-    - result["stderr"] is not regex(".* no matches for kind .* in version .*") 
+    - result["stderr"] is not regex(".* no matches for kind .* in version .*")  
+    - result["stderr"] in not regex(".* Warning .*")
   tags:
     - install
     - upgrade
