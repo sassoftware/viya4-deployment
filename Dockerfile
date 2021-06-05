@@ -40,14 +40,15 @@ COPY --from=tool_builder /build/kustomize /usr/local/bin/kustomize
 WORKDIR /viya4-deployment/
 COPY . /viya4-deployment/
 
+ENV HOME=/viya4-deployment
+
 RUN pip install -r ./requirements.txt \
-  && ansible-galaxy collection install -r ./requirements.yaml -p /viya4-deployment/.ansible/collections/ \
+  && ansible-galaxy install -r ./requirements.yaml \
   && chmod -R g=u /etc/passwd /etc/group /viya4-deployment/ \
   && chmod 755 /viya4-deployment/docker-entrypoint.sh
 
 ENV PLAYBOOK=playbook.yaml
 ENV VIYA4_DEPLOYMENT_TOOLING=docker
-ENV HOME=/viya4-deployment
 ENV ANSIBLE_CONFIG=/viya4-deployment/ansible.cfg
 ENV PATH=$PATH:/google-cloud-sdk/bin/
 
