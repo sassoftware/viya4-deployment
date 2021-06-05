@@ -15,7 +15,11 @@
   shell: |
     kubectl --kubeconfig {{ KUBECONFIG }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=cluster-wide" -f {{ DEPLOY_DIR }}/site.yaml
     kubectl --kubeconfig {{ KUBECONFIG }} wait --for condition=established --timeout=60s -l "sas.com/admin=cluster-wide" crd
-  ignore_errors: yes
+  register: result
+  failed_when:
+    - result["stderr"]|length > 0
+    - result["stderr"] is not regex(".* no matches for kind .* in version .*")  
+    - result["stderr"] is not regex(".* Warning .*")
   tags:
     - install
     - upgrade
@@ -27,7 +31,7 @@
   failed_when:
     - result["stderr"]|length > 0
     - result["stderr"] is not regex(".* no matches for kind .* in version .*")  
-    - result["stderr"] in not regex(".* Warning .*")
+    - result["stderr"] is not regex(".* Warning .*")
   tags:
     - install
     - upgrade
@@ -39,7 +43,7 @@
   failed_when:
     - result["stderr"]|length > 0
     - result["stderr"] is not regex(".* no matches for kind .* in version .*")  
-    - result["stderr"] in not regex(".* Warning .*")
+    - result["stderr"] is not regex(".* Warning .*")
   tags:
     - install
     - upgrade
@@ -53,7 +57,7 @@
   failed_when:
     - result["stderr"]|length > 0
     - result["stderr"] is not regex(".* no matches for kind .* in version .*")  
-    - result["stderr"] in not regex(".* Warning .*")
+    - result["stderr"] is not regex(".* Warning .*")
   tags:
     - install
     - upgrade
