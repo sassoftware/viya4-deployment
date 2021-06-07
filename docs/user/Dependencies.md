@@ -27,7 +27,7 @@ Required project dependencies are generally pinned to known working or stable ve
 
 # Docker
 
-If deploying via the [Dockerfile](../Dockerfile) overriding a dependency version can be accomplished by supplying one or more docker build arguments:
+If deploying via the [Dockerfile](../../Dockerfile) overriding a dependency version can be accomplished by supplying one or more docker build arguments:
 
 ARG | NOTE
 --- | ---
@@ -41,7 +41,7 @@ pip_dnspython | the version of dnspython to install from pip
 ansible_galaxy_community_kubernetes_version | the version of community.kubernetes to install from ansible-galaxy
 ansible_galaxy_ansible_posix_version | the version of ansible.posix to install from ansible-galaxy
 
-As described in the [Docker Installation](../README.md#docker-1) section add additional build arguments to your docker build command:
+As described in the [Docker Installation](./DockerUsage.md) section add additional build arguments to your docker build command:
 
 ```bash
 docker build \
@@ -51,7 +51,7 @@ docker build \
 
 # Ansible
 
-If deploying via the [Ansible Commands](../README.md#ansible-1) you can modify the dependency requirements files for python and ansible respectively:
+If deploying via the [Ansible Commands](./AnsibleUsage.md) you can modify the dependency requirements files for python and ansible respectively:
 
 FILE | FOR
 --- | ---
