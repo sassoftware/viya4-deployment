@@ -31,7 +31,8 @@ INGRESS_NGINX_CONFIG:
   controller:
     service: 
       externalTrafficPolicy: Local
-      sessionAffinity: None 
+      sessionAffinity: None
+      loadBalancerSourceRanges: "{{ LOADBALANCER_SOURCE_RANGES |default(['0.0.0.0/0'], -1) }}"
     config:
       use-forwarded-headers: "true"
     tcp: {}
