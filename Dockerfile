@@ -7,7 +7,7 @@ RUN apt update && apt upgrade -y \
 
 FROM baseline as tool_builder
 ARG kustomize_version=3.7.0
-ARG kubectl_version=1.18.8
+ARG kubectl_version=1.19.9
 
 WORKDIR /build
 
@@ -22,6 +22,7 @@ ARG gcp_cli_version=334.0.0
 # Add extra packages
 RUN apt install -y gzip wget git git-lfs jq sshpass \
   && curl -s https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash \
+  && helm plugin install https://github.com/databus23/helm-diff \
   # AWS
   && curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-${aws_cli_version}.zip" -o "awscliv2.zip" \
   && unzip awscliv2.zip \
@@ -39,6 +40,8 @@ COPY --from=tool_builder /build/kustomize /usr/local/bin/kustomize
 WORKDIR /viya4-deployment/
 COPY . /viya4-deployment/
 
+ENV HOME=/viya4-deployment
+
 RUN pip install -r ./requirements.txt \
   && ansible-galaxy install -r ./requirements.yaml \
   && chmod -R g=u /etc/passwd /etc/group /viya4-deployment/ \
@@ -46,7 +49,6 @@ RUN pip install -r ./requirements.txt \
 
 ENV PLAYBOOK=playbook.yaml
 ENV VIYA4_DEPLOYMENT_TOOLING=docker
-ENV HOME=/viya4-deployment
 ENV ANSIBLE_CONFIG=/viya4-deployment/ansible.cfg
 ENV PATH=$PATH:/google-cloud-sdk/bin/
 

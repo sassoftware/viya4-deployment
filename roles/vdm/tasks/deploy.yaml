@@ -15,76 +15,60 @@
   shell: |
     kubectl --kubeconfig {{ KUBECONFIG }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=cluster-wide" -f {{ DEPLOY_DIR }}/site.yaml
     kubectl --kubeconfig {{ KUBECONFIG }} wait --for condition=established --timeout=60s -l "sas.com/admin=cluster-wide" crd
+  register: result
+  failed_when:
+    - result["stderr"]|length > 0
+    - result["stderr"] is not regex(".* no matches for kind .* in version .*")  
+    - result["stderr"] is not regex(".*Warning.*")
   tags:
     - install
     - upgrade
 
 - name: prereqs - cluster-local deploy
-  shell: |
+  command: |
     kubectl --kubeconfig {{ KUBECONFIG }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=cluster-local" -f {{ DEPLOY_DIR }}/site.yaml --prune
-  register: prereq_cluster_local
-  ignore_errors: yes
-  no_log: true
-  tags:
-    - install
-    - upgrade
-
-- name: prereqs - cluster-local failure check
-  fail:
-    msg: "{{ prereq_cluster_local }}"
-  when:
-    - prereq_cluster_local["stderr"]|length > 0
-    - prereq_cluster_local["stderr"] is not regex(".* no matches for kind .* in version .*")
+  register: result
+  failed_when:
+    - result["stderr"]|length > 0
+    - result["stderr"] is not regex(".* no matches for kind .* in version .*")  
+    - result["stderr"] is not regex(".*Warning.*")
   tags:
     - install
     - upgrade
 
 - name: manifest - deploy
-  shell: |
+  command: |
     kubectl --kubeconfig {{ KUBECONFIG }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=namespace" -f {{ DEPLOY_DIR }}/site.yaml --prune
-  register: manifest_deploy
-  ignore_errors: yes
-  no_log: true
-  tags:
-    - install
-    - upgrade
-
-- name: manifest - failure check
-  fail:
-    msg: "{{ manifest_deploy }}"
-  when:
-    - manifest_deploy["stderr"]|length > 0
-    - manifest_deploy["stderr"] is not regex(".* no matches for kind .* in version .*")
+  register: result
+  failed_when:
+    - result["stderr"]|length > 0
+    - result["stderr"] is not regex(".* no matches for kind .* in version .*")  
+    - result["stderr"] is not regex(".*Warning.*")
   tags:
     - install
     - upgrade
 
 - name: manifest - deploy istio
-  shell: |
+  command: |
     kubectl --kubeconfig {{ KUBECONFIG }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=namespace" --prune --prune-whitelist=networking.istio.io/v1alpha3/DestinationRule --prune-whitelist=networking.istio.io/v1alpha3/VirtualService -f {{ DEPLOY_DIR }}/site.yaml
-  register: manifest_deploy_istio
-  ignore_errors: yes
-  no_log: true
+  register: result
   when: 
     - V4_CFG_INGRESS_TYPE == "istio"
-  tags:
-    - install
-    - upgrade
-
-- name: manifest - istio failure check
-  fail:
-    msg: "{{ manifest_deploy_istio }}"
-  when:
-    - V4_CFG_INGRESS_TYPE == "istio"
-    - manifest_deploy_istio["stderr"]|length > 0
-    - manifest_deploy_istio["stderr"] is not regex(".* no matches for kind .* in version .*")
+  failed_when:
+    - result["stderr"]|length > 0
+    - result["stderr"] is not regex(".* no matches for kind .* in version .*")  
+    - result["stderr"] is not regex(".*Warning.*")
   tags:
     - install
     - upgrade
 
 - name: Remove Viya
-  shell: |
-    kubectl --kubeconfig {{ KUBECONFIG }} delete -n {{ NAMESPACE }} -f {{ DEPLOY_DIR }}/site.yaml
+  community.kubernetes.k8s:
+    state: absent
+    src:  "{{ DEPLOY_DIR }}/site.yaml"
+    wait: false
+    kubeconfig: "{{ KUBECONFIG }}"
+  register: result
   ignore_errors: yes
   tags:
     - uninstall

@@ -1,5 +1,5 @@
 ---
-- name: v4m - download
+- name: v4m - download 
   git:
     repo: https://github.com/sassoftware/viya4-monitoring-kubernetes.git
     dest: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/"
@@ -27,11 +27,6 @@
   include_tasks: cluster-monitoring.yaml
   tags:
     - cluster-monitoring
-
-- name: v4m - viya monitoring
-  include_tasks: viya-monitoring.yaml
-  tags:
-    - viya-monitoring
 
 - name: v4m - cluster logging
   include_tasks: cluster-logging.yaml

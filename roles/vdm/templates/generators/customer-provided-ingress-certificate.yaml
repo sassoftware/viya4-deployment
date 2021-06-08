@@ -4,6 +4,6 @@ kind: SecretGenerator
 metadata:
   name: sas-ingress-certificate
 files:
-  - tls.crt={{ DEPLOY_DIR }}/site-config/vdm/security/sas-nginx-ingress.crt
-  - tls.key={{ DEPLOY_DIR }}/site-config/vdm/security/sas-nginx-ingress.key
+  - tls.crt=site-config/vdm/security/sas-nginx-ingress.crt
+  - tls.key=site-config/vdm/security/sas-nginx-ingress.key
 type: "kubernetes.io/tls"

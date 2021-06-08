@@ -1,7 +1,9 @@
 - command: |
     git log -1 --format=format:"%H"
+  failed_when:
+    - "'fatal: not a git repository' not in githash.stderr"
+    - githash.rc != 0
   register: githash
-  ignore_errors: yes
   tags:
     - install
     - uninstall
@@ -9,8 +11,8 @@
 
 - set_fact:
     timestamp: "{{ ansible_date_time.iso8601 }}"
-    git_hash: "{{ githash.stdout |default('unknown', -1)}}"
-    deployment_tooling: "{{ lookup('env', 'VIYA4_DEPLOYMENT_TOOLING') |default('ansible', -1)}}"
+    git_hash: "{{ githash.stdout |default('unknown', -1) }}"
+    deployment_tooling: "{{ lookup('env', 'VIYA4_DEPLOYMENT_TOOLING') |default('ansible', -1) }}"
   tags:
     - install
     - uninstall
@@ -63,13 +65,14 @@
   template:
     src: "kustomization.yaml"
     dest: "{{ DEPLOY_DIR }}/kustomization.yaml"
+    mode: "0660"
   tags:
     - install
     - uninstall
     - upgrade
 
 - name: kustomize - Generate deployment manifest
-  shell: |
+  command: |
     kustomize build {{ DEPLOY_DIR }} --load_restrictor='none' -o {{ DEPLOY_DIR }}/site.yaml
   tags:
     - install

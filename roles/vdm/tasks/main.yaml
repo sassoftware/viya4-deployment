@@ -2,6 +2,7 @@
 - file:
     state: directory
     dest: '{{ DEPLOY_DIR }}/site-config/'
+    mode: "0770"
   tags:
     - install
     - uninstall
@@ -20,6 +21,7 @@
     - copy:
         src: "{{ V4_CFG_SITEDEFAULT }}"
         dest: "{{ DEPLOY_DIR }}/site-config/sitedefault.yaml"
+        mode: "0660"
   when:
     - not stat_result.stat.exists
   tags:
@@ -58,6 +60,7 @@
     - template:
         src: "cr_access.json"
         dest: "{{ DEPLOY_DIR }}/site-config/cr_access.json"
+        mode: "0660"
     - overlay_facts:
         cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
         cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"

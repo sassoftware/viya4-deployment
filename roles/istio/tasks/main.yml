@@ -1,13 +1,4 @@
 ---
-- name: Create tmp dir
-  tempfile:
-    state: directory
-  register: tmpdir
-  tags:
-    - install
-    - uninstall
-    - upgrade
-
 - name: Download istio
   shell: 
     cmd: "curl -L https://istio.io/downloadIstio | ISTIO_VERSION={{ istio_ver }} TARGET_ARCH={{ target_arch }} sh -"
@@ -70,7 +61,7 @@
         rules:
         - from:
           - source:
-              ipBlocks: "{{ loadBalancerSourceRanges }}"
+              ipBlocks: "{{ LOADBALANCER_SOURCE_RANGES }}"
   tags:
     - install
     - upgrade

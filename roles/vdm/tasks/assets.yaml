@@ -11,7 +11,7 @@
     - upgrade
 
 - name: assets - Get License
-  shell:
+  command:
     cmd: "{{ tmpdir.path }}/viya4-orders-cli license --file-path {{ DEPLOY_DIR }}/site-config --file-name license {{ V4_CFG_ORDER_NUMBER }} {{ V4_CFG_CADENCE_NAME }} {{ V4_CFG_CADENCE_VERSION }}"
   environment:
     CLIENTCREDENTIALSID: "{{ V4_CFG_SAS_API_KEY | string | b64encode }}"
@@ -24,7 +24,7 @@
     - upgrade
 
 - name: assets - Download
-  shell:
+  command:
     cmd: "{{ tmpdir.path }}/viya4-orders-cli dep --file-path {{ DEPLOY_DIR }} -o json {{ V4_CFG_ORDER_NUMBER }} {{ V4_CFG_CADENCE_NAME }} {{ V4_CFG_CADENCE_VERSION }}"
   environment:
     CLIENTCREDENTIALSID: "{{ V4_CFG_SAS_API_KEY | string | b64encode }}"
