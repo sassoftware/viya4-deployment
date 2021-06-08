@@ -44,8 +44,9 @@ Prior to running this playbook some infrastructure needs to be in place
 #### Kubernetes cluster
 
 You can either bring your own K8s cluster or use one of the Viya 4 IAC projects to create a cluster using terraform.
-  - [Viya 4 IaC for Azure](https://github.com/sassoftware/viya4-iac-azure)
   - [Viya 4 IaC for AWS](https://github.com/sassoftware/viya4-iac-aws)
+  - [Viya 4 IaC for Azure](https://github.com/sassoftware/viya4-iac-azure)
+  - [Viya 4 IaC for GCP](https://github.com/sassoftware/viya4-iac-gcp)
 
 
 #### Storage
@@ -246,7 +247,8 @@ See [troubleshooting](./docs/Troubleshooting.md) page.
 ## Additional Resources
 
 - [Viya Resource Guide](https://github.com/sassoftware/viya4-resource-guide)
-- [SAS Viya 4 Infrastructure as Code (IaC) for Microsoft Azure](https://github.com/sassoftware/viya4-iac-azure)
 - [SAS Viya 4 Infrastructure as Code (IaC) for Amazon Web Services (AWS)](https://github.com/sassoftware/viya4-iac-aws)
+- [SAS Viya 4 Infrastructure as Code (IaC) for Microsoft Azure](https://github.com/sassoftware/viya4-iac-azure)
+- [SAS Viya 4 Infrastructure as Code (IaC) for Google Cloud Platform (GCP)](https://github.com/sassoftware/viya4-iac-gcp)
 - [Viya Monitoring for Kubernetes](https://github.com/sassoftware/viya4-monitoring-kubernetes)
 - [Viya Orders CLI](https://github.com/sassoftware/viya4-orders-cli)
