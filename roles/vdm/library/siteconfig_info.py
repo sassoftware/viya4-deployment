@@ -83,7 +83,7 @@ class siteConfig(object):
       yamlfiles.extend(glob.glob(os.path.join(folder, "*.yml")))
 
       for yamlfile in yamlfiles:
-        if os.path.basename(yamlfile) not in search:
+        if os.path.relpath(yamlfile, folder) not in search:
           self.addResource(yamlfile)
       return
 
