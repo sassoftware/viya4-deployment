@@ -72,11 +72,15 @@ class siteConfig(object):
       yamlfiles = glob.glob(os.path.join(folder, "*.yaml"))
       yamlfiles.extend(glob.glob(os.path.join(folder, "*.yml")))
 
-      with open(os.path.join(folder,kustomizefile)) as file:
-        for yamlfile in yamlfiles:
-          if ' '+os.path.basename(yamlfile) not in file.read():
-            self.addResource(yamlfile)
-          file.seek(0)
+      with open(os.path.join(folder,kustomizefile), 'r') as f:
+        try:
+          for k, v in yaml.safe_load(f).items():
+            if isinstance(v, list):
+              for yamlfile in yamlfiles:
+                if os.path.relpath(yamlfile, folder) not in v:
+                  self.addResource(yamlfile)
+        except yaml.YAMLError as exc:
+          raise RuntimeError("Error parsing kustomization {} as yaml".format(os.path.join(folder,kustomizefile))) from exc
       return
 
     # check for subfolders
