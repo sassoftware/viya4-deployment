@@ -13,6 +13,9 @@ patch: |-
       spec:
         type: LoadBalancer
         loadBalancerSourceRanges: {{ LOADBALANCER_SOURCE_RANGES }}
+  - op: add
+    path: /spec/ingressTemplate/metadata/annotations/kubernetes.io~1ingress.class
+    value: nginx
 target:
   group: viya.sas.com
   kind: CASDeployment

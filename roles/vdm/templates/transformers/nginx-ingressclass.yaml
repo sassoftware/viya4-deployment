@@ -1,0 +1,11 @@
+---
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: add ingress class
+patch: |-
+  - op: add
+    path: /metadata/annotations/kubernetes.io~1ingress.class
+    value: nginx
+target:
+  kind: Ingress

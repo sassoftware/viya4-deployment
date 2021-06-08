@@ -172,3 +172,14 @@
     - install
     - uninstall
     - upgrade
+
+- name: add ingress class
+  overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { transformers: "nginx-ingressclass.yaml", vdm: true }
+  tags:
+    - install
+    - update
