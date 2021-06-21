@@ -1,0 +1,38 @@
+---
+- name: Deploy contour
+  community.kubernetes.helm:
+    name: "{{ CONTOUR_NAME }}"
+    namespace: "{{ CONTOUR_NAMESPACE }}"
+    chart_repo_url: "{{ CONTOUR_CHART_URL }}"
+    chart_ref: "{{ CONTOUR_CHART_NAME }}"
+    chart_version: "{{ CONTOUR_CHART_VERSION }}"
+    values: "{{ CONTOUR_CONFIG }}"
+    kubeconfig: "{{ KUBECONFIG }}"
+    create_namespace: true
+    wait: true
+  tags:
+    - install
+    - upgrade
+
+- name: Remove contour
+  community.kubernetes.helm:
+    name: "{{ CONTOUR_NAME }}"
+    namespace: "{{ CONTOUR_NAMESPACE }}"
+    kubeconfig: "{{ KUBECONFIG }}"
+    wait: true
+    values: "{{ CONTOUR_CONFIG }}"
+    state: absent
+  tags:
+    - uninstall
+
+- name: Remove {{ CONTOUR_NAMESPACE }} namespace
+  community.kubernetes.k8s:
+    api_version: v1
+    kind: Namespace
+    name: "{{ CONTOUR_NAMESPACE }}"
+    wait: true
+    wait_timeout: 600
+    state: absent
+    kubeconfig: "{{ KUBECONFIG }}"
+  tags:
+    - uninstall

@@ -15,8 +15,15 @@
   include_tasks: 
     file: ingress-nginx.yaml
   when:
-    - V4_CFG_INGRESS_TYPE is defined
-    - V4_CFG_INGRESS_TYPE == 'ingress'
+    - (V4_CFG_INGRESS_TYPE == 'ingress') or ('nginx' in ansible_run_tags)
+  tags:
+    - baseline
+
+- name: Include contour
+  include_tasks: 
+    file: contour.yaml
+  when:
+    - (V4_CFG_INGRESS_TYPE == 'contour') or ('contour' in ansible_run_tags)
   tags:
     - baseline
 
@@ -24,8 +31,7 @@
   include_role: 
     name: istio
   when:
-    - V4_CFG_INGRESS_TYPE is defined
-    - V4_CFG_INGRESS_TYPE == 'istio'
+    - (V4_CFG_INGRESS_TYPE == 'istio') or ('istio' in ansible_run_tags)
   tags:
     - baseline
 
