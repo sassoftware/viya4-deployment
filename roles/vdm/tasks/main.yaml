@@ -127,17 +127,8 @@
     - uninstall
     - upgrade
 
-- name: Elasticsearch
-  overlay_facts:
-    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
-    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
-    existing: "{{ vdm_overlays }}"
-    add:
-      - { resources: "overlays/internal-elasticsearch" }
-      - { transformers: "overlays/internal-elasticsearch/internal-elasticsearch-transformer.yaml" }
-      - { transformers: "overlays/internal-elasticsearch/sysctl-transformer.yaml", priority: 55 }
-  when:
-    - V4_CFG_ELASTICSEARCH_ENABLE
+- name: Include Elasticsearch
+  include_tasks: elasticsearch.yaml
   tags:
     - install
     - uninstall
