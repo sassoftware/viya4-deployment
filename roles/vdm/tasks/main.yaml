@@ -150,6 +150,13 @@
     - uninstall
     - upgrade
 
+- name: Include Sizing
+  include_tasks: sizing.yaml
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
 - name: Include Kustomize
   include_tasks: kustomize.yaml
   tags:
