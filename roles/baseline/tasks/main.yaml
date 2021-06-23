@@ -1,39 +1,39 @@
 
 ---
-# - name: Include nfs-subdir-external-provisioner
-#   include_tasks: 
-#     file: nfs-subdir-external-provisioner.yaml
-#   when:
-#     - V4_CFG_RWX_FILESTORE_ENDPOINT is defined
-#     - V4_CFG_RWX_FILESTORE_PATH is defined
-#     - V4_CFG_MANAGE_STORAGE is defined
-#     - V4_CFG_MANAGE_STORAGE
-#   tags:
-#     - baseline
+- name: Include nfs-subdir-external-provisioner
+  include_tasks: 
+    file: nfs-subdir-external-provisioner.yaml
+  when:
+    - V4_CFG_RWX_FILESTORE_ENDPOINT is defined
+    - V4_CFG_RWX_FILESTORE_PATH is defined
+    - V4_CFG_MANAGE_STORAGE is defined
+    - V4_CFG_MANAGE_STORAGE
+  tags:
+    - baseline
 
-# - name: Include ingress nginx
-#   include_tasks: 
-#     file: ingress-nginx.yaml
-#   when:
-#     - (V4_CFG_INGRESS_TYPE == 'ingress') or ('nginx' in ansible_run_tags)
-#   tags:
-#     - baseline
+- name: Include ingress nginx
+  include_tasks: 
+    file: ingress-nginx.yaml
+  when:
+    - (V4_CFG_INGRESS_TYPE == 'ingress') or ('nginx' in ansible_run_tags)
+  tags:
+    - baseline
 
-# - name: Include contour
-#   include_tasks: 
-#     file: contour.yaml
-#   when:
-#     - (V4_CFG_INGRESS_TYPE == 'contour') or ('contour' in ansible_run_tags)
-#   tags:
-#     - baseline
+- name: Include contour
+  include_tasks: 
+    file: contour.yaml
+  when:
+    - (V4_CFG_INGRESS_TYPE == 'contour') or ('contour' in ansible_run_tags)
+  tags:
+    - baseline
 
-# - name: Include istio
-#   include_role: 
-#     name: istio
-#   when:
-#     - (V4_CFG_INGRESS_TYPE == 'istio') or ('istio' in ansible_run_tags)
-#   tags:
-#     - baseline
+- name: Include istio
+  include_role: 
+    name: istio
+  when:
+    - (V4_CFG_INGRESS_TYPE == 'istio') or ('istio' in ansible_run_tags)
+  tags:
+    - baseline
 
 - name: Include cluster-autoscaler
   include_tasks: 
@@ -43,14 +43,14 @@
   tags:
     - baseline
 
-# - name: Include cert manager
-#   include_tasks: 
-#     file: cert-manager.yaml
-#   tags:
-#     - baseline
+- name: Include cert manager
+  include_tasks: 
+    file: cert-manager.yaml
+  tags:
+    - baseline
 
-# - name: Include metrics-server
-#   include_tasks: 
-#     file: metrics-server.yaml
-#   tags:
-#     - baseline
+- name: Include metrics-server
+  include_tasks: 
+    file: metrics-server.yaml
+  tags:
+    - baseline

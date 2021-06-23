@@ -84,6 +84,8 @@ CLUSTER_AUTOSCALER_ACCOUNT: null
 CLUSTER_AUTOSCALER_CONFIG:
   autoDiscovery:
     clusterName: "{{ CLUSTER_NAME }}"
-  service:
-    annotations:
-      "eks.amazonaws.com/role-arn": "{{ CLUSTER_AUTOSCALER_ACCOUNT }}"
+  rbac:
+    serviceAccount:
+      name: cluster-autoscaler
+      annotations:
+        "eks.amazonaws.com/role-arn": "{{ CLUSTER_AUTOSCALER_ACCOUNT }}"
