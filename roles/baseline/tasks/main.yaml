@@ -35,6 +35,14 @@
   tags:
     - baseline
 
+- name: Include cluster-autoscaler
+  include_tasks: 
+    file: cluster-autoscaler.yaml
+  when:
+    - PROVIDER == "aws"
+  tags:
+    - baseline
+
 - name: Include cert manager
   include_tasks: 
     file: cert-manager.yaml

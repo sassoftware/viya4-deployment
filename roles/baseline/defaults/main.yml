@@ -73,3 +73,21 @@ CONTOUR_CONFIG:
   envoy:
     service:
       loadBalancerSourceRanges: "{{ LOADBALANCER_SOURCE_RANGES |default(['0.0.0.0/0'], -1) }}"
+
+## Cluster Autoscaler
+K8S_CLUSTER_VERSION: 1.19.0
+CLUSTER_AUTOSCALER_NAME: cluster-autoscaler
+CLUSTER_AUTOSCALER_NAMESPACE: kube-system
+CLUSTER_AUTOSCALER_CHART_NAME: cluster-autoscaler
+CLUSTER_AUTOSCALER_CHART_URL: https://kubernetes.github.io/autoscaler
+CLUSTER_AUTOSCALER_CHART_VERSION: 9.9.2
+CLUSTER_AUTOSCALER_CONFIG:
+  autoDiscovery:
+    clusterName: {{ CLUSTER_NAME }}
+{% if PROVIDER == aws %}
+  service:
+    annotations:
+      "eks.amazonaws.com/role-arn": {{ TODO: ARN }}
+{% endif %}
+  image:
+    tag: {{ KUBE_VERSION }}

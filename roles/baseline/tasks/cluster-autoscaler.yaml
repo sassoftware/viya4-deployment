@@ -1,0 +1,39 @@
+---
+- name: Get Cluster information
+  community.kubernetes.k8s_cluster_info:
+    kubeconfig: "{{ KUBECONFIG }}"
+  register: cluster_info
+  tags:
+    - install
+    - upgrade
+
+- set_fact:
+    K8S_CLUSTER_VERSION: {{ cluster_info.version.server }}
+  tags:
+    - install
+    - upgrade
+
+- name: Deploy cluster-autoscaler
+  community.kubernetes.helm:
+    name: "{{ CLUSTER_AUTOSCALER_NAME }}"
+    namespace: "{{ CLUSTER_AUTOSCALER_NAMESPACE }}"
+    chart_repo_url: "{{ CLUSTER_AUTOSCALER_CHART_URL }}"
+    chart_ref: "{{ CLUSTER_AUTOSCALER_CHART_NAME }}"
+    chart_version: "{{ CLUSTER_AUTOSCALER_CHART_VERSION }}"
+    values: "{{ CLUSTER_AUTOSCALER_CONFIG }}"
+    kubeconfig: "{{ KUBECONFIG }}"
+    wait: true
+  tags:
+    - install
+    - upgrade
+
+- name: Remove cluster-autoscaler
+  community.kubernetes.helm:
+    name: "{{ CLUSTER_AUTOSCALER_NAME }}"
+    namespace: "{{ CLUSTER_AUTOSCALER_NAMESPACE }}"
+    kubeconfig: "{{ KUBECONFIG }}"
+    wait: true
+    values: "{{ CLUSTER_AUTOSCALER_CONFIG }}"
+    state: absent
+  tags:
+    - uninstall
