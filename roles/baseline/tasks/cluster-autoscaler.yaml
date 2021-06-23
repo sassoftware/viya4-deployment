@@ -8,7 +8,7 @@
     - upgrade
 
 - set_fact:
-    K8S_CLUSTER_VERSION: {{ cluster_info.version.server }}
+    K8S_CLUSTER_VERSION: "{{ cluster_info.version.server.kubernetes.gitVersion | regex_search('[0-9]+\\.[0-9]+\\.[0-9]+') }}"
   tags:
     - install
     - upgrade

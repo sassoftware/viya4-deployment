@@ -119,6 +119,12 @@
         - V4_CFG_POSTGRES_TYPE is defined
         - V4_CFG_POSTGRES_TYPE == "external"
         - tfstate.sql_proxy_sa_email is defined
+    - name: tfstate - cluster autoscaler account
+      set_fact: 
+        CLUSTER_AUTOSCALER_ACCOUNT: "{{ tfstate.autoscaler_account.value }}"
+      when:
+        - tfstate.autoscaler_account is defined
+        - tfstate.autoscaler_account.value|length > 0
     - name: tfstate - jump server
       set_fact:
         JUMP_SVR_HOST: "{{ tfstate.jump_public_ip.value }}"
