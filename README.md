@@ -137,6 +137,8 @@ This following information is parsed from the integration:
   - V4_CFG_POSTGRES_FQDN
   - V4_CFG_POSTGRES_CONNECTION_NAME
   - V4_CFG_POSTGRES_SERVICE_ACCOUNT
+- Cluster
+  - V4_CFG_CLUSTER_NODE_POOL_MODE
 
 ### Customize Deployment Overlays
 
