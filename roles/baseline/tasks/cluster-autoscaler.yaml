@@ -1,18 +1,4 @@
 ---
-- name: Get Cluster information
-  community.kubernetes.k8s_cluster_info:
-    kubeconfig: "{{ KUBECONFIG }}"
-  register: cluster_info
-  tags:
-    - install
-    - upgrade
-
-- set_fact:
-    K8S_CLUSTER_VERSION: "{{ cluster_info.version.server.kubernetes.gitVersion | regex_search('[0-9]+\\.[0-9]+\\.[0-9]+') }}"
-  tags:
-    - install
-    - upgrade
-
 - name: Deploy cluster-autoscaler
   community.kubernetes.helm:
     name: "{{ CLUSTER_AUTOSCALER_NAME }}"
