@@ -125,6 +125,12 @@
       when:
         - tfstate.autoscaler_account is defined
         - tfstate.autoscaler_account.value|length > 0
+    - name: tfstate - cluster autoscaler location
+      set_fact: 
+        CLUSTER_AUTOSCALER_LOCATION: "{{ tfstate.location.value }}"
+      when:
+        - tfstate.location is defined
+        - tfstate.location.value|length > 0
     - name: tfstate - jump server
       set_fact:
         JUMP_SVR_HOST: "{{ tfstate.jump_public_ip.value }}"

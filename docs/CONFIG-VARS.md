@@ -246,7 +246,8 @@ When setting V4_CFG_TLS_MODE to a value other than "disabled" and no V4_CFG_TLS_
 | CLUSTER_AUTOSCALER_CHART_NAME| cluster-autoscaler helm chart name | string | cluster-autoscaler | false | | baseline |
 | CLUSTER_AUTOSCALER_CHART_VERSION | cluster-autoscaler helm chart version | string | 9.9.2 | false | | baseline |
 | CLUSTER_AUTOSCALER_CONFIG | cluster-autoscaler helm values | string | see [here](../roles/baseline/defaults/main.yml) | false | | baseline |
-| CLUSTER_AUTOSCALER_ACCOUNT | cluster autoscaler aws role arn | string | null | true | Required to enable cluster-autoscaler on AWS | baseline |
+| CLUSTER_AUTOSCALER_ACCOUNT | cluster autoscaler aws role arn | string | null | false | Required to enable cluster-autoscaler on AWS | baseline |
+| CLUSTER_AUTOSCALER_LOCATION | aws region where kubernetes cluster resides | string | us-east-1 | false | | baseline |
 | | | | | | | |
 | INGRESS_NGINX_NAMESPACE | ingress-nginx helm install namespace | string | ingress-nginx | false | | baseline |
 | INGRESS_NGINX_CHART_URL | ingress-nginx helm chart url | string | https://kubernetes.github.io/ingress-nginx | false | | baseline |
