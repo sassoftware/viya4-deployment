@@ -131,6 +131,12 @@
       when:
         - tfstate.location is defined
         - tfstate.location.value|length > 0
+    - name: tfstate - cluster node pool mode
+      set_fact:
+        V4_CFG_CLUSTER_NODE_POOL_MODE: "{{ tfstate.cluster_node_pool_mode.value }}"
+      when:
+        - tfstate.cluster_node_pool_mode is defined
+        - tfstate.cluster_node_pool_mode.value|length > 0
     - name: tfstate - jump server
       set_fact:
         JUMP_SVR_HOST: "{{ tfstate.jump_public_ip.value }}"
