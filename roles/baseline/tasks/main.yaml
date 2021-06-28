@@ -35,6 +35,16 @@
   tags:
     - baseline
 
+- name: Include cluster-autoscaler
+  include_tasks: 
+    file: cluster-autoscaler.yaml
+  when:
+    - PROVIDER == "aws"
+    - CLUSTER_AUTOSCALER_ACCOUNT is defined
+    - CLUSTER_AUTOSCALER_ACCOUNT is not none
+  tags:
+    - baseline
+
 - name: Include cert manager
   include_tasks: 
     file: cert-manager.yaml

@@ -139,6 +139,8 @@ This following information is parsed from the integration:
   - V4_CFG_POSTGRES_SERVICE_ACCOUNT
 - Cluster
   - V4_CFG_CLUSTER_NODE_POOL_MODE
+  - CLUSTER_AUTOSCALER_ACCOUNT
+  - CLUSTER_AUTOSCALER_LOCATION
 
 ### Customize Deployment Overlays
 
