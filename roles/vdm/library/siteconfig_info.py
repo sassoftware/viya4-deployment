@@ -9,7 +9,14 @@ class siteConfig(object):
     self._generators = []
     self._transformers = []
     self._configurations = []
+    self._components = []
     self._basedir = os.path.join(basedir, '')
+
+  def set_components(self, component):
+    self._components.append(self.remove_basedir(component))
+
+  def get_components(self):
+    return self._components
 
   def set_transformers(self, transformer):
     self._transformers.append(self.remove_basedir(transformer))
@@ -115,7 +122,7 @@ def main():
           skip = True
       if not skip:
         sc.traverse(os.path.join(scFolder, folder))
-    module.exit_json(changed=True, resources=sc.get_resources(), generators=sc.get_generators(), transformers=sc.get_transformers(), configurations=sc.get_configurations())
+    module.exit_json(changed=True, resources=sc.get_resources(), generators=sc.get_generators(), transformers=sc.get_transformers(), configurations=sc.get_configurations(), components=sc.get_components() )
   except StopIteration:
     pass
   except Exception as e:

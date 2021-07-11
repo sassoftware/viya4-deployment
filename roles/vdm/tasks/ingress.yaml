@@ -10,7 +10,7 @@
     existing: "{{ vdm_overlays }}"
     add:
       - { resources: "overlays/network/{{ V4_CFG_INGRESS_TYPE }}" }
-      - { resources: "overlays/network/{{ V4_CFG_INGRESS_TYPE }}/security" }
+      - { resources: "overlays/network/{{ V4_CFG_INGRESS_TYPE }}/security", max: "2021.1.2" }
   tags:
     - install
     - uninstall
@@ -39,9 +39,58 @@
       existing: "{{ vdm_overlays }}"
       add:
         - { resources: "overlays/cert-manager-issuer" }
-        - { transformers: "overlays/network/ingress/security/transformers/ingress-tls-transformers.yaml", priority: 51 }
   when:
     - V4_CFG_TLS_MODE != "disabled"
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: ingress - Full-stack TLS
+  overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { transformers: "overlays/network/ingress/security/transformers/ingress-tls-transformers.yaml", max: "2021.1.2", priority: 51 }
+      - { transformers: "overlays/network/ingress/security/transformers/product-tls-transformers.yaml", max: "2021.1.2", priority: 51 }
+      - { transformers: "overlays/network/ingress/security/transformers/backend-tls-transformers.yaml", max: "2021.1.2", priority: 51 }
+      - { components: "components/security/core/base/full-stack-tls", min: "2021.1.3" }
+      - { components: "components/security/network/networking.k8s.io/ingress/nginx.ingress.kubernetes.io/full-stack-tls", min: "2021.1.3" }
+  when:
+    - V4_CFG_TLS_MODE == "full-stack"
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: ingress - Front-door TLS
+  overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { transformers: "overlays/network/ingress/security/transformers/cas-connect-tls-transformers.yaml", max: "2021.1.2", priority: 51 }
+      - { components: "components/security/core/base/front-door-tls", min: "2021.1.3" }
+      - { components: "components/security/network/networking.k8s.io/ingress/nginx.ingress.kubernetes.io/front-door-tls", min: "2021.1.3" }
+  when:
+    - V4_CFG_TLS_MODE == "front-door"
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: ingress - Truststores only
+  overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { transformers: "overlays/network/ingress/security/transformers/truststore-transformers-without-backend-tls.yaml", max: "2021.1.2", priority: 51 }
+      - { components: "components/security/core/base/truststores-only", min: "2021.1.3" }
+  when:
+    - V4_CFG_TLS_MODE == "disabled"
+    - V4_CFG_TLS_TRUSTED_CA_CERTS is not none
   tags:
     - install
     - uninstall
@@ -115,49 +164,6 @@
     - uninstall
     - upgrade
 
-- name: ingress - Full-stack TLS
-  overlay_facts:
-    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
-    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
-    existing: "{{ vdm_overlays }}"
-    add:
-      - { transformers: "overlays/network/ingress/security/transformers/product-tls-transformers.yaml", priority: 51 }
-      - { transformers: "overlays/network/ingress/security/transformers/backend-tls-transformers.yaml", priority: 51 }
-  when:
-    - V4_CFG_TLS_MODE == "full-stack"
-  tags:
-    - install
-    - uninstall
-    - upgrade
-
-- name: ingress - Front-door TLS
-  overlay_facts:
-    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
-    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
-    existing: "{{ vdm_overlays }}"
-    add:
-      - { transformers: "overlays/network/ingress/security/transformers/cas-connect-tls-transformers.yaml",priority: 51 }
-  when:
-    - V4_CFG_TLS_MODE == "front-door"
-  tags:
-    - install
-    - uninstall
-    - upgrade
-
-- name: ingress - Disabled TLS
-  overlay_facts:
-    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
-    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
-    existing: "{{ vdm_overlays }}"
-    add:
-      - { transformers: "overlays/network/ingress/security/transformers/truststore-transformers-without-backend-tls.yaml",priority: 51 }
-  when:
-    - V4_CFG_TLS_MODE == "disabled"
-    - V4_CFG_TLS_TRUSTED_CA_CERTS is not none
-  tags:
-    - install
-    - uninstall
-    - upgrade
 
 - name: ingress - Consul UI
   overlay_facts:
@@ -180,6 +186,8 @@
     existing: "{{ vdm_overlays }}"
     add:
       - { transformers: "nginx-ingressclass.yaml", vdm: true }
+  when:
+    - V4_CFG_INGRESS_TYPE == "ingress"
   tags:
     - install
     - update
