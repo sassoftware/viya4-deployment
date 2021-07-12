@@ -46,10 +46,10 @@ class siteConfig(object):
               self.add_overlays(Overlay.GENERATOR, yamlfile)
         else:
           # treat all non builtins as resources
-          self.add_overlays(Overlay.RESOURCE, yamlfile)(yamlfile)
+          self.add_overlays(Overlay.RESOURCE, yamlfile)
       # handle configurations
       elif "nameReference" in yamlblocks[0]:
-        self.add_overlays(Overlay.CONFIGURATION, yamlfile)(yamlfile)
+        self.add_overlays(Overlay.CONFIGURATION, yamlfile)
 
 
   def traverse(self, folder):
