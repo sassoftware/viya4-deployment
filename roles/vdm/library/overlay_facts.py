@@ -66,7 +66,7 @@ def main():
             results['result'][resource_type][phase] += module.params['existing'][resource_type][phase][priority]
       module.exit_json(**results)
   except Exception as e:
-    module.fail_json(error=e, msg="Error occured")
+    module.fail_json(error=e, msg="Error occurred")
     raise
 
 

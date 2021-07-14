@@ -2,38 +2,28 @@ from ansible.module_utils.basic import *
 import glob
 import yaml
 import os
+from enum import Enum, auto
+
+class Overlay(Enum):
+  COMPONENT = "components"
+  CONFIGURATION = "configurations"
+  GENERATOR = "generators"
+  RESOURCE = "resources"
+  TRANSFORMER = "transformers"
 
 class siteConfig(object):
   def __init__(self, basedir):
-    self._resources = []
-    self._generators = []
-    self._transformers = []
-    self._configurations = []
+    self._overlays = dict()
     self._basedir = os.path.join(basedir, '')
 
-  def set_transformers(self, transformer):
-    self._transformers.append(self.remove_basedir(transformer))
+  def add_overlays(self, overlay_type: Overlay, config: str):
+    if overlay_type.value in self._overlays:
+      self._overlays[overlay_type.value].append(self.remove_basedir(config))
+    else:
+      self._overlays[overlay_type.value] = [self.remove_basedir(config)]
 
-  def get_transformers(self):
-    return self._transformers
-
-  def set_generators(self, generator):
-    self._generators.append(self.remove_basedir(generator))
-
-  def get_generators(self):
-    return self._generators
-
-  def set_resources(self, resource):
-    self._resources.append(self.remove_basedir(resource))
-
-  def get_resources(self):
-    return self._resources
-
-  def set_configurations(self, configuration):
-    self._configurations.append(self.remove_basedir(configuration))
-
-  def get_configurations(self):
-    return self._configurations
+  def get_overlays(self) -> dict:
+    return self._overlays
 
   def remove_basedir(self, configpath):
       if configpath.startswith(self._basedir):
@@ -49,42 +39,50 @@ class siteConfig(object):
           if "kind" in yamlblocks[0]:
             # handle transformers
             if yamlblocks[0]['kind'].endswith("Transformer"):
-              self.set_transformers(yamlfile)
+              self.add_overlays(Overlay.TRANSFORMER, yamlfile)
 
             # handle generators
             elif yamlblocks[0]['kind'].endswith("Generator"):
-              self.set_generators(yamlfile)
+              self.add_overlays(Overlay.GENERATOR, yamlfile)
         else:
           # treat all non builtins as resources
-          self.set_resources(yamlfile)
+          self.add_overlays(Overlay.RESOURCE, yamlfile)
       # handle configurations
       elif "nameReference" in yamlblocks[0]:
-        self.set_configurations(yamlfile)
+        self.add_overlays(Overlay.CONFIGURATION, yamlfile)
 
 
   def traverse(self, folder):
-    # handle kustomization
     if os.path.exists(os.path.join(folder, "kustomization.yaml")) or os.path.exists(os.path.join(folder, "kustomization.yml")):
       kustomizefile = "kustomization.yaml" if os.path.exists(os.path.join(folder, "kustomization.yaml")) else "kustomization.yml"
-      self.set_resources(folder)
+      kustomizefilefullpath = os.path.join(folder, kustomizefile)
 
-      ## lookup all files listed in kustomization
-      search = []
-      with open(os.path.join(folder,kustomizefile), 'r') as f:
+      with open(kustomizefilefullpath) as file:
         try:
-          for k, v in yaml.safe_load(f).items():
-            if isinstance(v, list):
-              search.extend(v)
+          yamlblock = yaml.safe_load(file)
+          # handle components
+          if "kind" in yamlblock and yamlblock['kind'] == "Component":
+            self.add_overlays(Overlay.COMPONENT, kustomizefilefullpath)
+          else:
+            # handle kustomization
+            self.add_overlays(Overlay.RESOURCE, folder)
+
+            ## lookup all files listed in kustomization
+            search = []
+            for k, v in yamlblock.items():
+              if isinstance(v, list):
+                search.extend(v)
+
+            # handle files not listed in kustomization
+            yamlfiles = glob.glob(os.path.join(folder, "*.yaml"))
+            yamlfiles.extend(glob.glob(os.path.join(folder, "*.yml")))
+
+            for yamlfile in yamlfiles:
+              if os.path.relpath(yamlfile, folder) not in search:
+                self.addResource(yamlfile)
+        
         except yaml.YAMLError as exc:
-          raise RuntimeError("Error parsing {} as yaml".format(os.path.join(folder,kustomizefile))) from exc
-
-      # handle files not listed in kustomization
-      yamlfiles = glob.glob(os.path.join(folder, "*.yaml"))
-      yamlfiles.extend(glob.glob(os.path.join(folder, "*.yml")))
-
-      for yamlfile in yamlfiles:
-        if os.path.relpath(yamlfile, folder) not in search:
-          self.addResource(yamlfile)
+          raise RuntimeError(f"Error parsing {kustomizefilefullpath} as yaml") from exc
       return
 
     # check for subfolders
@@ -115,7 +113,7 @@ def main():
           skip = True
       if not skip:
         sc.traverse(os.path.join(scFolder, folder))
-    module.exit_json(changed=True, resources=sc.get_resources(), generators=sc.get_generators(), transformers=sc.get_transformers(), configurations=sc.get_configurations())
+    module.exit_json(changed=True, overlays=sc.get_overlays())
   except StopIteration:
     pass
   except Exception as e:
