@@ -47,7 +47,7 @@
       - { generators: "postgres-sas-user.yaml", vdm: true }
       - { generators: "sas-go-config.yaml", vdm: true }
       - { generators: "sas-postgres-config.yaml", max: "2020.0.4", vdm: true }
-      - { generators: "sas-postgres-config.v2.yaml", min: "2021.0.5", vdm: true }
+      - { generators: "sas-postgres-config.v2.yaml", min: "2020.0.5", vdm: true }
   when: 
     - V4_CFG_POSTGRES_TYPE == 'external'
   tags:
