@@ -204,6 +204,7 @@ When setting V4_CFG_TLS_MODE to a value other than "disabled" and no V4_CFG_TLS_
 | V4_CFG_POSTGRES_FQDN | Existing postgres ip/fqdn | string | | true | | viya |
 | V4_CFG_POSTGRES_PORT | Existing postgres port | string | 5432 | false | | viya |
 | V4_CFG_POSTGRES_DATABASE | Existing postgres database name | string | "SharedServices" | false | | viya |
+| V4_CFG_POSTGRES_SSL_ENFORCEMENT | Require ssl connection to existing postgres | bool | false | false | Ignored on GCP when using cloud sql | viya |
 | V4_CFG_POSTGRES_CONNECTION_NAME | Existing postgres database connection name | string | | false | See [ansible cloud authentication](user/AnsibleCloudAuthentication.md) | viya |
 | V4_CFG_POSTGRES_SERVICE_ACCOUNT | Existing service account for postgres connectivity | string | | false | See [ansible cloud authentication](user/AnsibleCloudAuthentication.md) | viya |
 
