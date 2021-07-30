@@ -1,0 +1,27 @@
+- name: postgres instance - ensure all are internal/external
+  fail:
+    msg: All database must either be internal or external. Mix-n-match is not supported
+  when:
+    - settings.internal != internal
+  tags:
+    - install
+    - upgrade
+
+- name: postgres instance - crd
+  template:
+    src: "{{ role_path }}/templates/resources/postgres-instance.yaml"
+    dest: "{{ role_path }}/templates/resources/postgres-{{ role }}-instance.yaml"
+    mode: "0660"
+  tags:
+    - install
+    - upgrade
+
+- overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { resource: "postgres-{{ role }}-instance.yaml", vdm: true }
+  tags:
+    - install
+    - upgrade

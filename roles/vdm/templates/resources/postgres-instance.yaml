@@ -1,0 +1,31 @@
+apiVersion: webinfdsvr.sas.com/v1
+kind: Pgcluster
+metadata:
+  name: {{ role }}
+{% if role == "default" %}
+  annotations:
+    sas.com/default-database: true
+{% endif %}
+spec:
+  internal: {{ settings.internal|bool|lower }}
+  database: {{ settings.database|default(db_default_name_map[role], true) }}
+{% if settings.internal|bool %}
+  storage:
+    storageclass: {{ V4_CFG_STORAGECLASS }}
+{% else %}
+  connection:
+    host: {{ settings.host }}
+    port: {{ settings.port }}
+    ssl: {{ settings.ssl_enforcement|bool|lower }}
+  rolesecret: postgres-{{ role }}-user
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgres-{{ role }}-user
+  labels:
+    pg-cluster: {{ role }}
+stringData:
+  username: {{ settings.username }} 
+  password: {{ settings.password }}
+{% endif %}

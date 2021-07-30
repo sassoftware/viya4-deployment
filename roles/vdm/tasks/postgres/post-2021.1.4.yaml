@@ -1,0 +1,45 @@
+- set_fact:
+    internal_postgres: "{{ V4_CFG_POSTGRES_SERVERS.default.internal }}"
+    multi_servers: "{{ (V4_CFG_POSTGRES_SERVERS|length) > 1 }}"
+  tags:
+    - install
+    - upgrade
+
+- name: postgres - internal
+  overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { resources: "overlays/internal-postgres" }
+  when: 
+    - internal_postgres
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: postgres - external
+  overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { transformers: "overlays/external-postgres/external-postgres-transformer.yaml" }
+  when: 
+    - not internal_postgres
+  tags:
+    - install
+    - uninstall
+    - upgrade
+
+- name: postgres - instance
+  include_tasks: postgres-instance.yaml
+  vars:
+    role: "{{ item.key }}"
+    settings: "{{ item.value }}"
+    internal: "{{ internal_postgres }}"
+  with_dict: "{{ V4_CFG_POSTGRES_SERVERS }}"
+  tags:
+    - install
+    - upgrade
