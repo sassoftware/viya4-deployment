@@ -14,6 +14,8 @@
           - { transformers: "overlays/external-postgres/googlecloud-full-stack-tls-transformer.yaml", priority: 55 }
   when: 
     - V4_CFG_POSTGRES_TYPE == 'external'
+    - V4_CFG_POSTGRES_SERVICE_ACCOUNT is not None
+    - V4_CFG_CLOUD_SERVICE_ACCOUNT_NAME is not None
     - PROVIDER == "gcp"
   tags:
     - install

@@ -16,43 +16,43 @@
         - install
         - uninstall
         - upgrade
-    # - name: jump-server role
-    #   include_role:
-    #     name: jump-server
-    #   when:
-    #     - JUMP_SVR_HOST is defined
-    #     - JUMP_SVR_USER is defined
-    #     - JUMP_SVR_PRIVATE_KEY is defined
-    #     - V4_CFG_MANAGE_STORAGE is defined
-    #     - V4_CFG_MANAGE_STORAGE
-    #   tags:
-    #     - viya
-    # - name: baseline role
-    #   include_role:
-    #     name: baseline
-    #   tags:
-    #     - baseline
-    # - name: monitoring role - cluster
-    #   include_role:
-    #     name: monitoring
-    #   tags:
-    #     - cluster-monitoring
-    #     - cluster-logging
+    - name: jump-server role
+      include_role:
+        name: jump-server
+      when:
+        - JUMP_SVR_HOST is defined
+        - JUMP_SVR_USER is defined
+        - JUMP_SVR_PRIVATE_KEY is defined
+        - V4_CFG_MANAGE_STORAGE is defined
+        - V4_CFG_MANAGE_STORAGE
+      tags:
+        - viya
+    - name: baseline role
+      include_role:
+        name: baseline
+      tags:
+        - baseline
+    - name: monitoring role - cluster
+      include_role:
+        name: monitoring
+      tags:
+        - cluster-monitoring
+        - cluster-logging
     - name: vdm role
       include_role:
         name: vdm
       tags:
         - viya
-    # - name: monitoring role - namespace
-    #   include_role:
-    #     name: monitoring
-    #   tags:
-    #     - viya-monitoring
-    # - name: Delete tmpdir
-    #   file:
-    #     path: "{{ tmpdir.path }}"
-    #     state: absent
-    #   tags:
-    #     - install
-    #     - uninstall
-    #     - upgrade
+    - name: monitoring role - namespace
+      include_role:
+        name: monitoring
+      tags:
+        - viya-monitoring
+    - name: Delete tmpdir
+      file:
+        path: "{{ tmpdir.path }}"
+        state: absent
+      tags:
+        - install
+        - uninstall
+        - upgrade
