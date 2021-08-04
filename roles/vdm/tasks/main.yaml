@@ -8,13 +8,6 @@
     - uninstall
     - upgrade
 
-- name: Testing
-  include_tasks: postgres/post-2021.1.4.yaml
-  tags:
-    - install
-    - uninstall
-    - upgrade
-
 - stat:
     path: "{{ DEPLOY_DIR }}/site-config/sitedefault.yaml"
   register: stat_result
@@ -120,19 +113,8 @@
     - uninstall
     - upgrade
 
-- name: Include Postgres v1
-  include_tasks: postgres.yaml
-  when:
-    - V4_CFG_CADENCE_VERSION is version('2021.1.4', "<")
-  tags:
-    - install
-    - uninstall
-    - upgrade
-
-- name: Include Postgres v2
-  include_tasks: postgres.yaml
-  when:
-    - V4_CFG_CADENCE_VERSION is version('2021.1.4', ">=") or V4_CFG_CADENCE_NAME == "fast"
+- name: Include Postgres
+  include_tasks: postgres/postgres.yaml
   tags:
     - install
     - uninstall

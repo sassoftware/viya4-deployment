@@ -1,3 +1,4 @@
+{% set db = db_default_name_map[role] if role in db_default_name_map else settings.database|default(role, true) %}
 apiVersion: webinfdsvr.sas.com/v1
 kind: Pgcluster
 metadata:
@@ -8,15 +9,15 @@ metadata:
 {% endif %}
 spec:
   internal: {{ settings.internal|bool|lower }}
-  database: {{ settings.database|default(db_default_name_map[role], true) }}
+  database: {{ db }}
 {% if settings.internal|bool %}
   storage:
     storageclass: {{ V4_CFG_STORAGECLASS }}
 {% else %}
   connection:
-    host: {{ settings.host }}
-    port: {{ settings.port }}
-    ssl: {{ settings.ssl_enforcement|bool|lower }}
+    host: {{ settings.fqdn }}
+    port: {{ settings.server_port }}
+    ssl: {{ settings.ssl_enforcement_enabled|bool|lower }}
   rolesecret: postgres-{{ role }}-user
 ---
 apiVersion: v1
@@ -24,8 +25,8 @@ kind: Secret
 metadata:
   name: postgres-{{ role }}-user
   labels:
-    pg-cluster: {{ role }}
+    pg-cluster: "{{ role }}"
 stringData:
-  username: {{ settings.username }} 
+  username: {{ settings.admin }}
   password: {{ settings.password }}
 {% endif %}
