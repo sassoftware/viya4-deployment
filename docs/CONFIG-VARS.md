@@ -198,9 +198,9 @@ Postgres servers can be defined with the postgres_servers variable which is a ma
 | admin | Existing postgres username | string | | true | | viya |
 | password | Existing postgres password | string | | true | | viya |
 | fqdn | Existing postgres ip/fqdn | string | | true | | viya |
-| server_port | Existing postgres port | string | 5432 | false | | viya |
+| server_port | Existing postgres port | string | 5432 | true | | viya |
 | database | Desired database name | string | "SharedServices" | false | | viya |
-| ssl_enforcement_enabled | Require ssl connection to existing postgres | bool | false | false | Ignored on GCP when using cloud sql | viya |
+| ssl_enforcement_enabled | Require ssl connection to existing postgres | bool | false | true | Ignored on GCP when using cloud sql | viya |
 | connection_name | Existing postgres database connection name | string | | false | See [ansible cloud authentication](user/AnsibleCloudAuthentication.md) | viya |
 | service_account | Existing service account for postgres connectivity | string | | false | See [ansible cloud authentication](user/AnsibleCloudAuthentication.md) | viya |
 
@@ -214,7 +214,7 @@ V4_CFG_POSTGRES_SERVERS:
     password: password
     fqdn: 127.0.0.1
     server_port: 5432
-    ssl_enforcement: true
+    ssl_enforcement_enabled: true
     database: SharedServices
   other_db:
     internal: false
@@ -222,7 +222,7 @@ V4_CFG_POSTGRES_SERVERS:
     password: password
     fqdn: 127.0.0.2
     server_port: 5432
-    ssl_enforcement: true
+    ssl_enforcement_enabled: true
     database: OtherDB
 ```
 
