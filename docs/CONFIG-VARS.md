@@ -194,13 +194,13 @@ Postgres servers can be defined with the postgres_servers variable which is a ma
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| internal | Whether the database is internal or external | bool | | true | | viya |
-| admin | Existing postgres username | string | | true | | viya |
-| password | Existing postgres password | string | | true | | viya |
-| fqdn | Existing postgres ip/fqdn | string | | true | | viya |
-| server_port | Existing postgres port | string | 5432 | true | | viya |
+| internal | Whether the database is internal or external | bool | | true | All servers must but internal or all must be external | viya |
+| admin | Existing postgres username | string | | false | Required for external postgres servers | viya |
+| password | Existing postgres password | string | | false | Required for external postgres servers | viya |
+| fqdn | Existing postgres ip/fqdn | string | | false | Required for external postgres servers | viya |
+| server_port | Existing postgres port | string | 5432 | false | Required for external postgres servers | viya |
 | database | Desired database name | string | "SharedServices" | false | | viya |
-| ssl_enforcement_enabled | Require ssl connection to existing postgres | bool | false | true | Ignored on GCP when using cloud sql | viya |
+| ssl_enforcement_enabled | Require ssl connection to existing postgres | bool | false | true | Required for external postgres servers. Ignored on GCP when using cloud sql | viya |
 | connection_name | Existing postgres database connection name | string | | false | See [ansible cloud authentication](user/AnsibleCloudAuthentication.md) | viya |
 | service_account | Existing service account for postgres connectivity | string | | false | See [ansible cloud authentication](user/AnsibleCloudAuthentication.md) | viya |
 
