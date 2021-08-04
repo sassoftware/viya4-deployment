@@ -22,7 +22,6 @@ Supported configuration variables are listed in the table below.  All variables 
   - [TLS](#tls)
     - [Cert-manager](#cert-manager)
   - [Postgres](#postgres)
-    - [External Postgres](#external-postgres)
   - [CAS](#cas)
   - [CONNECT](#connect)
   - [Miscellaneous](#miscellaneous)
@@ -191,22 +190,41 @@ When setting V4_CFG_TLS_MODE to a value other than "disabled" and no V4_CFG_TLS_
 
 ## Postgres
 
-| Name | Description | Type | Default | Required | Notes | Tasks |
-| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_POSTGRES_TYPE | Postgres installation type | string | | true | [internal,external] | viya |
-
-### External Postgres
+Postgres servers can be defined with the postgres_servers variable which is a map of objects. Each requires the following variables
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_POSTGRES_ADMIN_LOGIN | Existing postgres username | string | | true | | viya |
-| V4_CFG_POSTGRES_PASSWORD | Existing postgres password | string | | true | | viya |
-| V4_CFG_POSTGRES_FQDN | Existing postgres ip/fqdn | string | | true | | viya |
-| V4_CFG_POSTGRES_PORT | Existing postgres port | string | 5432 | false | | viya |
-| V4_CFG_POSTGRES_DATABASE | Existing postgres database name | string | "SharedServices" | false | | viya |
-| V4_CFG_POSTGRES_SSL_ENFORCEMENT | Require ssl connection to existing postgres | bool | false | false | Ignored on GCP when using cloud sql | viya |
-| V4_CFG_POSTGRES_CONNECTION_NAME | Existing postgres database connection name | string | | false | See [ansible cloud authentication](user/AnsibleCloudAuthentication.md) | viya |
-| V4_CFG_POSTGRES_SERVICE_ACCOUNT | Existing service account for postgres connectivity | string | | false | See [ansible cloud authentication](user/AnsibleCloudAuthentication.md) | viya |
+| internal | Whether the database is internal or external | bool | | true | | viya |
+| admin | Existing postgres username | string | | true | | viya |
+| password | Existing postgres password | string | | true | | viya |
+| fqdn | Existing postgres ip/fqdn | string | | true | | viya |
+| server_port | Existing postgres port | string | 5432 | false | | viya |
+| database | Desired database name | string | "SharedServices" | false | | viya |
+| ssl_enforcement_enabled | Require ssl connection to existing postgres | bool | false | false | Ignored on GCP when using cloud sql | viya |
+| connection_name | Existing postgres database connection name | string | | false | See [ansible cloud authentication](user/AnsibleCloudAuthentication.md) | viya |
+| service_account | Existing service account for postgres connectivity | string | | false | See [ansible cloud authentication](user/AnsibleCloudAuthentication.md) | viya |
+
+Example:
+
+```bash
+V4_CFG_POSTGRES_SERVERS:
+  default:
+    internal: false
+    admin: pgadmin
+    password: password
+    fqdn: 127.0.0.1
+    server_port: 5432
+    ssl_enforcement: true
+    database: SharedServices
+  other_db:
+    internal: false
+    admin: pgadmin
+    password: password
+    fqdn: 127.0.0.2
+    server_port: 5432
+    ssl_enforcement: true
+    database: OtherDB
+```
 
 ## CAS
 
