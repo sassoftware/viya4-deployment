@@ -190,7 +190,15 @@ When setting V4_CFG_TLS_MODE to a value other than "disabled" and no V4_CFG_TLS_
 
 ## Postgres
 
-Postgres servers can be defined with the postgres_servers variable which is a map of objects. Each requires the following variables
+Postgres servers can be defined with the postgres_servers variable which is a map of objects. The variable has the following format:
+
+```bash
+V4_CFG_POSTGRES_SERVERS:
+  default: {}
+  ...
+```
+
+**NOTE**: the `default` elements is always required . This will be the default server. Below is the list of parameters each element can contain.
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -199,7 +207,7 @@ Postgres servers can be defined with the postgres_servers variable which is a ma
 | password | Existing postgres password | string | | false | Required for external postgres servers | viya |
 | fqdn | Existing postgres ip/fqdn | string | | false | Required for external postgres servers | viya |
 | server_port | Existing postgres port | string | 5432 | false | Required for external postgres servers | viya |
-| database | Desired database name | string | "SharedServices" | false | | viya |
+| database | Database name | string | "SharedServices" | false | | viya |
 | ssl_enforcement_enabled | Require ssl connection to existing postgres | bool | false | true | Required for external postgres servers. Ignored on GCP when using cloud sql | viya |
 | connection_name | Existing postgres database connection name | string | | false | See [ansible cloud authentication](user/AnsibleCloudAuthentication.md) | viya |
 | service_account | Existing service account for postgres connectivity | string | | false | See [ansible cloud authentication](user/AnsibleCloudAuthentication.md) | viya |
@@ -212,7 +220,7 @@ V4_CFG_POSTGRES_SERVERS:
     internal: false
     admin: pgadmin
     password: password
-    fqdn: 127.0.0.1
+    fqdn: mydbserver.local
     server_port: 5432
     ssl_enforcement_enabled: true
     database: SharedServices
@@ -220,7 +228,7 @@ V4_CFG_POSTGRES_SERVERS:
     internal: false
     admin: pgadmin
     password: password
-    fqdn: 127.0.0.2
+    fqdn: 10.10.10.10
     server_port: 5432
     ssl_enforcement_enabled: true
     database: OtherDB
