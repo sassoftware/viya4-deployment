@@ -1,21 +1,14 @@
 - name: postgres - gcp sql-proxy
-  block:
-    - set_fact:
-        V4_CFG_POSTGRES_FQDN: "sql-proxy"
-    - shell: |
-          gcloud auth activate-service-account '{{ V4_CFG_CLOUD_SERVICE_ACCOUNT_NAME }}' --key-file={{ V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH }}
-          gcloud iam service-accounts add-iam-policy-binding '{{ V4_CFG_POSTGRES_SERVICE_ACCOUNT }}' --role='roles/iam.workloadIdentityUser' --member='serviceAccount:{{ PROVIDER_ACCOUNT }}.svc.id.goog[{{ NAMESPACE }}/{{ PROXY_SQL_K8S_SERVICE_ACCOUNT }}]' --project='{{ PROVIDER_ACCOUNT }}'
-    - overlay_facts:
-        cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
-        cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
-        existing: "{{ vdm_overlays }}"
-        add:
-          - { resources: "cloud-sql-proxy.yaml", vdm: true }
-          - { transformers: "overlays/external-postgres/googlecloud-full-stack-tls-transformer.yaml", priority: 55 }
+  include_tasks: gcp-cloud-sql-proxy.yaml
+  vars:
+    role: "{{ item.key }}"
+    settings: "{{ item.value }}"
+  with_dict: "{{ V4_CFG_POSTGRES_SERVERS }}"
   when: 
-    - V4_CFG_POSTGRES_TYPE == 'external'
-    - V4_CFG_POSTGRES_SERVICE_ACCOUNT is not None
-    - V4_CFG_CLOUD_SERVICE_ACCOUNT_NAME is not None
+    - not item.value.internal
+    - "'service_account' in item.value"
+    - item.value.service_account is defined
+    - V4_CFG_CLOUD_SERVICE_ACCOUNT_NAME is defined
     - PROVIDER == "gcp"
   tags:
     - install

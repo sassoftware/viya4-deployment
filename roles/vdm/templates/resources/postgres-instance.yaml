@@ -16,7 +16,7 @@ spec:
 {% else %}
   connection:
     host: {{ settings.fqdn }}
-    port: {{ settings.server_port }}
+    port: {{ settings.server_port|default(5432, true) }}
     ssl: {{ settings.ssl_enforcement_enabled|bool|lower }}
   rolesecret: postgres-{{ role }}-user
 ---
