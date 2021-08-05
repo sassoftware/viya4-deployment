@@ -1,4 +1,4 @@
-- name: postgres - gcp sql-proxy
+- name: postgres - gcp cloud-sql-proxy
   include_tasks: gcp-cloud-sql-proxy.yaml
   vars:
     role: "{{ item.key }}"
