@@ -5,7 +5,7 @@ metadata:
   name: {{ role }}
 {% if role == "default" %}
   annotations:
-    sas.com/default-database: true
+    sas.com/default-database: "true"
 {% endif %}
 spec:
   internal: {{ settings.internal|bool|lower }}
