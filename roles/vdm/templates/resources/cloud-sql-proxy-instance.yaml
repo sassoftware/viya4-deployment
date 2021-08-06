@@ -1,0 +1,46 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sql-proxy-{{ role }}
+  labels:
+    app: sql-proxy-{{ role }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sql-proxy-{{ role }}
+  template:
+    metadata:
+      labels:
+        app: sql-proxy-{{ role }}
+    spec:
+      containers:
+        - name: sql-proxy
+          image: '{{ PROXY_SQL_IMAGE }}'
+          env:
+            - name: POSTGRES_CONNECTION_NAME
+              value: {{ settings.connection_name }}
+          command:
+            - "/cloud_sql_proxy"
+          args:
+            - "-ip_address_types=PRIVATE"
+            - "-instances=$(POSTGRES_CONNECTION_NAME)=tcp:0.0.0.0:5432"
+      imagePullSecrets: []
+      serviceAccountName: {{ PROXY_SQL_K8S_SERVICE_ACCOUNT }}
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: sql-proxy-{{ role }}
+  labels:
+    app: sql-proxy-{{ role }}
+spec:
+  ports:
+    - name: sql
+      protocol: TCP
+      port: 5432
+      targetPort: 5432
+  selector:
+    app: sql-proxy-{{ role }}
+  type: ClusterIP
