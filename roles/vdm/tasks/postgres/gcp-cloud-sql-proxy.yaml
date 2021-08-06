@@ -15,7 +15,7 @@
 - name: postgres - setup cloud-sql-proxy account
   shell: |
     gcloud auth activate-service-account '{{ V4_CFG_CLOUD_SERVICE_ACCOUNT_NAME }}' --key-file={{ V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH }}
-    gcloud iam service-accounts add-iam-policy-binding '{{ settings.service_account }}' --role='roles/iam.workloadIdentityUser' --member='serviceAccount:{{ PROVIDER_ACCOUNT }}.svc.id.goog[{{ NAMESPACE }}/{{ PROXY_SQL_K8S_SERVICE_ACCOUNT }}]' --project='{{ PROVIDER_ACCOUNT }}'
+    gcloud iam service-accounts add-iam-policy-binding '{{ settings.service_account }}' --role='roles/iam.workloadIdentityUser' --member='serviceAccount:{{ PROVIDER_ACCOUNT }}.svc.id.goog[{{ NAMESPACE }}/sql-proxy-{{ role }}]' --project='{{ PROVIDER_ACCOUNT }}'
   tags:
     - install
     - uninstall
@@ -33,7 +33,6 @@
         existing: "{{ vdm_overlays }}"
         add:
           - { resources: "cloud-sql-proxy-{{ role }}-instance.yaml", vdm: true }
-          - { resources: "cloud-sql-proxy-sa.yaml", vdm: true }
           - { transformers: "overlays/external-postgres/googlecloud-full-stack-tls-transformer.yaml", priority: 55 }
   tags:
     - install
