@@ -113,8 +113,6 @@
         add:
           - { generators: "customer-provided-ca-certificates.yaml", vdm: true }
   when:
-    # NOTE: These can be provided to add to the trust store even when TLS mode is "disabled" to establish outbound trust
-    - V4_CFG_TLS_MODE != "disabled"
     - V4_CFG_TLS_TRUSTED_CA_CERTS is not none
   tags:
     - install
