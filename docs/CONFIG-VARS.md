@@ -203,14 +203,14 @@ V4_CFG_POSTGRES_SERVERS:
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | internal | Whether the database is internal or external | bool | | true | All servers must but internal or all must be external | viya |
-| admin | Existing postgres username | string | | false | Required for external postgres servers | viya |
-| password | Existing postgres password | string | | false | Required for external postgres servers | viya |
-| fqdn | Existing postgres ip/fqdn | string | | false | Required for external postgres servers | viya |
-| server_port | Existing postgres port | string | 5432 | false | Required for external postgres servers | viya |
-| database | Database name | string | "SharedServices" | false | | viya |
-| ssl_enforcement_enabled | Require ssl connection to existing postgres | bool | false | true | Required for external postgres servers. Ignored on GCP when using cloud sql | viya |
-| connection_name | Existing postgres database connection name | string | | false | See [ansible cloud authentication](user/AnsibleCloudAuthentication.md) | viya |
-| service_account | Existing service account for postgres connectivity | string | | false | See [ansible cloud authentication](user/AnsibleCloudAuthentication.md) | viya |
+| database | Database name | string | Database server role | false | Default database name for default server is SharedServices | viya |
+| admin | External postgres username | string | | false | Required for external postgres servers | viya |
+| password | External postgres password | string | | false | Required for external postgres servers | viya |
+| fqdn | External postgres ip/fqdn | string | | false | Required for external postgres servers | viya |
+| server_port | External postgres port | string | 5432 | false | | viya |
+| ssl_enforcement_enabled | Require ssl connection to external postgres | bool | | false | Required for external postgres servers. Ignored on GCP when using cloud sql | viya |
+| connection_name | External postgres database connection name | string | | false | Required for using cloud-sql-proxy on gcp. See [ansible cloud authentication](user/AnsibleCloudAuthentication.md) | viya |
+| service_account | External service account for postgres connectivity | string | | false | Required for using cloud-sql-proxy on gcp. See [ansible cloud authentication](user/AnsibleCloudAuthentication.md) | viya |
 
 Example:
 
