@@ -6,7 +6,7 @@ metadata:
 behavior: merge
 literals:
   - IMAGE_REGISTRY={{ V4_CFG_CR_HOST }}
-{% if V4_CFG_POSTGRES_TYPE is defined and V4_CFG_POSTGRES_TYPE == "internal" %}
+{% if internal_postgres|bool %}
 ---
 apiVersion: builtin
 kind: ConfigMapGenerator
