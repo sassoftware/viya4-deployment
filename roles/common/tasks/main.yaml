@@ -78,11 +78,10 @@
         - tfstate.cluster_name.value|length > 0
     - name: tfstate - postgres servers
       set_fact:
-        V4_CFG_POSTGRES_SERVERS: "{{ tfstate.postgres_servers.value }}"
+        V4_CFG_POSTGRES_SERVERS: "{{ V4_CFG_POSTGRES_SERVERS |combine(tfstate.postgres_servers.value) }}"
       when:
         - tfstate.postgres_servers is defined
         - tfstate.postgres_servers.value|length > 0
-        - V4_CFG_POSTGRES_SERVERS is undefined
     - name: tfstate - cluster autoscaler account
       set_fact: 
         CLUSTER_AUTOSCALER_ACCOUNT: "{{ tfstate.autoscaler_account.value }}"
