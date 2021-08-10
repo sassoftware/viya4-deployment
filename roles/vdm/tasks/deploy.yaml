@@ -50,7 +50,7 @@
 
 - name: manifest - deploy update
   command: |
-    kubectl --kubeconfig {{ KUBECONFIG }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=namespace" -f site.yaml --prune --prune-whitelist=autoscaling/v2beta2/HorizontalPodAutoscaler
+    kubectl --kubeconfig {{ KUBECONFIG }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=namespace" -f {{ DEPLOY_DIR }}/site.yaml --prune --prune-whitelist=autoscaling/v2beta2/HorizontalPodAutoscaler
   register: result
   failed_when:
     - result["stderr"]|length > 0
