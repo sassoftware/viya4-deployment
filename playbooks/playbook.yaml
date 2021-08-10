@@ -7,7 +7,7 @@
       tags:
         - install
         - uninstall
-        - upgrade
+        - update
     - name: common role
       include_role: 
         name: common
@@ -15,7 +15,7 @@
       tags:
         - install
         - uninstall
-        - upgrade
+        - update
     - name: jump-server role
       include_role:
         name: jump-server
@@ -55,4 +55,4 @@
       tags:
         - install
         - uninstall
-        - upgrade
+        - update
