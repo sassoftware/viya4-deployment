@@ -5,7 +5,7 @@
     - settings.internal != internal
   tags:
     - install
-    - upgrade
+    - update
 
 - name: postgres instance - crd
   template:
@@ -14,7 +14,7 @@
     mode: "0660"
   tags:
     - install
-    - upgrade
+    - update
 
 - overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
@@ -24,4 +24,4 @@
       - { resources: "postgres-{{ role }}-instance.yaml", vdm: true }
   tags:
     - install
-    - upgrade
+    - update

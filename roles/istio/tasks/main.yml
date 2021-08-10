@@ -6,7 +6,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: Create namespace
   community.kubernetes.k8s:
@@ -17,7 +17,7 @@
     wait: true
   tags:
     - install
-    - upgrade
+    - update
 
 - name: Set kiali secret
   community.kubernetes.k8s:
@@ -26,7 +26,7 @@
     definition: "{{ lookup('template', 'kiali-secret.yaml') }}"
   tags:
     - install
-    - upgrade
+    - update
 
 - name: Set grafana secret
   community.kubernetes.k8s:
@@ -35,13 +35,13 @@
     definition: "{{ lookup('template', 'grafana-secret.yaml') }}"
   tags:
     - install
-    - upgrade
+    - update
    
 - name: Install base Istio 
   command: "{{ tmpdir.path }}/istio-{{ istio_ver }}/bin/istioctl --kubeconfig {{ KUBECONFIG }} manifest apply {{ istio_config }}"
   tags:
     - install
-    - upgrade
+    - update
 
 - name: Lockdown ingress
   community.kubernetes.k8s:
@@ -64,7 +64,7 @@
               ipBlocks: "{{ LOADBALANCER_SOURCE_RANGES }}"
   tags:
     - install
-    - upgrade
+    - update
 
 - name: Grafana ingress
   community.kubernetes.k8s:
@@ -90,7 +90,7 @@
   when: grafana_ingress_enabled
   tags:
     - install
-    - upgrade
+    - update
 
 - name: Prometheus ingress
   community.kubernetes.k8s:
@@ -116,7 +116,7 @@
   when: prometheus_ingress_enabled
   tags:
     - install
-    - upgrade
+    - update
 
 - name: Kiali ingress
   community.kubernetes.k8s:
@@ -142,7 +142,7 @@
   when: kiali_ingress_enabled
   tags:
     - install
-    - upgrade
+    - update
 
 - name: Tracing ingress
   community.kubernetes.k8s:
@@ -168,7 +168,7 @@
   when: tracing_ingress_enabled
   tags:
     - install
-    - upgrade
+    - update
 
 - name: Lookup ingress
   community.kubernetes.k8s_info:
@@ -181,7 +181,7 @@
   register: ingress_config
   tags:
     - install
-    - upgrade
+    - update
     - uninstall
 
 - set_fact: 
@@ -190,7 +190,7 @@
     cacheable: yes
   tags:
     - install
-    - upgrade
+    - update
     - uninstall
 
 - name: Uninstall base Istio 
@@ -221,5 +221,5 @@
     state: absent
   tags:
     - install
-    - upgrade
+    - update
     - uninstall

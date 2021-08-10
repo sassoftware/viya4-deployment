@@ -7,7 +7,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - set_fact:
     timestamp: "{{ ansible_date_time.iso8601 }}"
@@ -16,7 +16,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: kustomize - buildinfo
   overlay_facts:
@@ -28,7 +28,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: kustomize - Get user's customizations
   siteconfig_info:
@@ -39,7 +39,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: kustomize - Ordered overlays
   overlay_facts:
@@ -48,7 +48,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: kustomize - Copy VDM overlays
   include_tasks: copy_overlay.yaml
@@ -59,7 +59,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: kustomize - Generate kustomization.yaml
   template:
@@ -69,7 +69,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: kustomize - Generate deployment manifest
   command: |
@@ -77,4 +77,4 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update

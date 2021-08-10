@@ -10,7 +10,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: postgres - setup cloud-sql-proxy account
   shell: |
@@ -19,7 +19,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: postgres - cloud-sql-proxy overlays
   block:
@@ -37,4 +37,4 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update

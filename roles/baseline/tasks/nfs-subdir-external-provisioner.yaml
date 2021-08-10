@@ -8,7 +8,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: Remove deprecated efs-provisioner
   community.kubernetes.helm:
@@ -19,7 +19,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: Remove deprecated efs-provisioner namespace
   community.kubernetes.k8s:
@@ -31,7 +31,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: Deploy nfs-subdir-external-provisioner
   community.kubernetes.helm:
@@ -46,7 +46,7 @@
     wait: true
   tags:
     - install
-    - upgrade
+    - update
 
 - name: Remove nfs-subdir-external-provisioner
   community.kubernetes.helm:

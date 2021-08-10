@@ -11,7 +11,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: connect - SAS/CONNECT FQDN to the SAN DNS list for cert-manager
   set_fact:
@@ -21,7 +21,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: connect - Configure Customer Provided Server Certificates
   overlay_facts:
@@ -36,4 +36,4 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update

@@ -6,7 +6,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: elasticsearch - add overlays
   overlay_facts:
@@ -23,4 +23,4 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update

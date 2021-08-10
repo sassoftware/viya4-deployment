@@ -13,7 +13,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: postgres - pre 2021.1.4
   block:
@@ -49,7 +49,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: postgres - post 2021.1.4
   block:
@@ -86,4 +86,4 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update

@@ -5,7 +5,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: Set BASE_DIR default path
   set_fact:
@@ -14,7 +14,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 - block:
     - name: Parse tfstate
       set_fact: 
@@ -139,7 +139,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: Set DEPLOY_DIR
   set_fact:
@@ -148,4 +148,4 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update

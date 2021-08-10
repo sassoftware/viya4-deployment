@@ -8,7 +8,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: copy - VDM {{ resource }}
   template:
@@ -22,4 +22,4 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update

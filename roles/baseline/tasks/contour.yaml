@@ -12,7 +12,7 @@
     wait: true
   tags:
     - install
-    - upgrade
+    - update
 
 - name: Remove contour
   community.kubernetes.helm:

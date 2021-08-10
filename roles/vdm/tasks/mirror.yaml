@@ -6,7 +6,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: mirror - update example
   replace:
@@ -16,7 +16,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: mirror - overlay
   overlay_facts:
@@ -29,4 +29,4 @@
   tags: 
     - install
     - uninstall
-    - upgrade
+    - update

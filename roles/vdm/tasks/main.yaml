@@ -6,7 +6,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - stat:
     path: "{{ DEPLOY_DIR }}/site-config/sitedefault.yaml"
@@ -14,7 +14,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: Sitedefault
   block:
@@ -27,14 +27,14 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: Include Deployment assets
   include_tasks: assets.yaml
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: Base overlays
   overlay_facts:
@@ -53,7 +53,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: CR access
   block:
@@ -72,7 +72,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: Include Mirror
   include_tasks: mirror.yaml
@@ -81,21 +81,21 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: Include CAS
   include_tasks: cas.yaml
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: Include Connect
   include_tasks: connect.yaml
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: Include Openldap
   overlay_facts:
@@ -111,49 +111,49 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: Include Postgres
   include_tasks: postgres/postgres.yaml
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: Include Ingress
   include_tasks: ingress.yaml
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: Include Elasticsearch
   include_tasks: elasticsearch.yaml
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: Include Storage
   include_tasks: storage.yaml
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: Include Sizing
   include_tasks: sizing.yaml
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: Include Kustomize
   include_tasks: kustomize.yaml
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: Include Deploy
   include_tasks: deploy.yaml
@@ -162,4 +162,4 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
