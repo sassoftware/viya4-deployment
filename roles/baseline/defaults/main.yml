@@ -2,6 +2,8 @@ V4_CFG_TLS_MODE: "full-stack" # other valid values are front-door and disabled
 V4_CFG_RWX_FILESTORE_ENDPOINT: /export
 V4_CFG_INGRESS_TYPE: ingress
 
+PRIVATE_CLUSTER_ENABLE: false
+
 ## Cert-manager
 CERT_MANAGER_NAME: cert-manager
 CERT_MANAGER_NAMESPACE: cert-manager
