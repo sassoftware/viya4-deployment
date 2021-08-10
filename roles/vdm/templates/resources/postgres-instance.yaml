@@ -1,4 +1,4 @@
-{% set db = db_default_name_map[role] if role in db_default_name_map else settings.database|default(role, true) %}
+{% set db = db_default_name_map[role] if ('database' not in settings and role in db_default_name_map) else settings.database|default(role, true) %}
 apiVersion: webinfdsvr.sas.com/v1
 kind: Pgcluster
 metadata:
