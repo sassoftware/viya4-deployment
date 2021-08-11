@@ -132,7 +132,7 @@ This following information is parsed from the integration:
   - JUMP_SVR_USER
   - JUMP_SVR_RWX_FILESTORE_PATH
 - Postgres
-  - V4_CFG_POSTGRES_SERVERS
+  - V4_CFG_POSTGRES_SERVERS (if postgres deployed)
 - Cluster
   - KUBECONFIG
   - V4_CFG_CLUSTER_NODE_POOL_MODE
