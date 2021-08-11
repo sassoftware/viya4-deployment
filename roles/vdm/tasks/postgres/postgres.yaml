@@ -36,7 +36,7 @@
           - { transformers: "postgres-storage-transformer.yaml", vdm: true, max: "2020.1.3" }
           - { transformers: "postgres-storage-transformer.v2.yaml", vdm: true, min: "2020.1.3"}
       when: 
-        - internal_postgres == 'internal'
+        - internal_postgres
     - name: postgres - external
       overlay_facts:
         cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
@@ -49,7 +49,7 @@
           - { generators: "sas-postgres-config.yaml", max: "2020.0.4", vdm: true }
           - { generators: "sas-postgres-config.v2.yaml", min: "2020.0.5", vdm: true }
       when: 
-        - internal_postgres == 'external'
+        - not internal_postgres
   when:
     - V4_CFG_CADENCE_VERSION is version('2021.1.4', "<")
     - V4_CFG_CADENCE_NAME != "fast"
