@@ -4,7 +4,7 @@ kind: ConfigMapGenerator
 metadata:
   name: postgres-config
 literals:
-  - DATABASE_HOST={{ V4_CFG_POSTGRES_FQDN }}
-  - DATABASE_PORT=5432
+  - DATABASE_HOST={{ V4_CFG_POSTGRES_SERVERS.default.fqdn }}
+  - DATABASE_PORT={{ V4_CFG_POSTGRES_SERVERS.default.server_port }}
   - DATABASE_NAME={{ V4_CFG_POSTGRES_DATABASE | default('SharedServices', true) }}
   - EXTERNAL_DATABASE="true"
