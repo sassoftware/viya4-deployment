@@ -7,21 +7,57 @@
     - install
     - update
 
-- name: postgres instance - crd
-  template:
-    src: "{{ role_path }}/templates/resources/postgres-instance.yaml"
-    dest: "{{ role_path }}/templates/resources/postgres-{{ role }}-instance.yaml"
-    mode: "0660"
-  tags:
-    - install
-    - update
-
-- overlay_facts:
+- name: postgres - internal default
+  overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { resources: "postgres-{{ role }}-instance.yaml", vdm: true }
+      - { resources: "overlays/internal-postgres" }
+  when: 
+    - settings.internal
+    - role == "default"
+  tags:
+    - install
+    - update
+
+- name: postgres - internal folder check
+  stat:
+    path: "{{ DEPLOY_DIR }}/sas-bases/overlays/internal-postgres/{{ role }}"
+  register: result
+  when: settings.internal
+  tags:
+    - install
+    - update
+
+- name: postgres - internal cds
+  overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { resources: "overlays/internal-postgres/{{ role }}" }
+  when: 
+    - settings.internal
+    - result.stat.exists
+  tags:
+    - install
+    - update
+
+- block:
+  - name: postgres instance - crd
+    template:
+      src: "{{ role_path }}/templates/resources/postgres-instance.yaml"
+      dest: "{{ role_path }}/templates/resources/postgres-{{ role }}-instance.yaml"
+      mode: "0660"
+  - overlay_facts:
+      cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+      cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+      existing: "{{ vdm_overlays }}"
+      add:
+        - { resources: "postgres-{{ role }}-instance.yaml", vdm: true }
+  when:
+    - not settings.internal or ( settings.internal and role != "default" and not result.stat.exists )
   tags:
     - install
     - update

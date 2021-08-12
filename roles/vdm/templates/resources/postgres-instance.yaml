@@ -4,9 +4,10 @@ apiVersion: webinfdsvr.sas.com/v1
 kind: Pgcluster
 metadata:
   name: {{ server_name }}
-{% if role == "default" %}
   annotations:
-    sas.com/default-database: "true"
+    sas.com/default-database: "{{ (role == "default") | bool|lower}}"
+{% if settings.internal %}
+    sas.com/component-name: sas-crunchy-data-postgres-12
 {% endif %}
 spec:
   internal: {{ settings.internal|bool|lower }}

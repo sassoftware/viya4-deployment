@@ -66,7 +66,7 @@
         cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
         existing: "{{ vdm_overlays }}"
         add:
-          - { resources: "overlays/internal-postgres" }
+          - { transformers: "postgres-storage-transformer.v3.yaml", vdm: true }
       when: 
         - internal_postgres
     - name: postgres - external
