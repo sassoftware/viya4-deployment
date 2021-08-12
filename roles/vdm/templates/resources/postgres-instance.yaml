@@ -13,12 +13,13 @@ spec:
   database: {{ db }}
 {% if settings.internal|bool %}
   storage:
-    storageclass: {{ V4_CFG_STORAGECLASS }}
-{% else %}
+    storageclass: "{{ V4_CFG_STORAGECLASS }}"
+{% endif %}
   connection:
+    ssl: {{ settings.ssl_enforcement_enabled|default(true, true)|bool|lower }}
+{% if not settings.internal %}
     host: {{ settings.fqdn }}
     port: {{ settings.server_port|default(5432, true) }}
-    ssl: {{ settings.ssl_enforcement_enabled|bool|lower }}
   rolesecret: postgres-{{ role }}-user
 ---
 apiVersion: v1
