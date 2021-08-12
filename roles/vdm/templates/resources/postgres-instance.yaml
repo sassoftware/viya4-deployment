@@ -6,7 +6,7 @@ metadata:
   name: {{ server_name }}
   annotations:
     sas.com/default-database: "{{ (role == "default") | bool|lower}}"
-{% if settings.internal %}
+{% if settings.internal|bool %}
     sas.com/component-name: sas-crunchy-data-postgres-12
 {% endif %}
 spec:
