@@ -5,6 +5,7 @@
     - settings.internal != internal
   tags:
     - install
+    - uninstall
     - update
 
 - name: postgres - internal default
@@ -19,6 +20,7 @@
     - role == "default"
   tags:
     - install
+    - uninstall
     - update
 
 - name: postgres - internal folder check
@@ -28,6 +30,7 @@
   when: settings.internal
   tags:
     - install
+    - uninstall
     - update
 
 - name: postgres - internal cds
@@ -42,6 +45,7 @@
     - result.stat.exists
   tags:
     - install
+    - uninstall
     - update
 
 - block:
@@ -60,4 +64,5 @@
     - not settings.internal or ( settings.internal and role != "default" and not result.stat.exists )
   tags:
     - install
+    - uninstall
     - update
