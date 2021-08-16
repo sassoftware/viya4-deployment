@@ -33,6 +33,11 @@
   tags:
     - cluster-logging
 
+- name: v4m - viya monitoring
+  include_tasks: viya-monitoring.yaml
+  tags:
+    - viya-monitoring
+
 - name: v4m - remove storageclass
   community.kubernetes.k8s:
     kubeconfig: "{{ KUBECONFIG }}"
