@@ -1,0 +1,24 @@
+apiVersion: webinfdsvr.sas.com/v1
+kind: Pgcluster
+metadata:
+  name: postgres
+  annotations:
+    sas.com/default-database: "true"
+spec:
+  internal: false
+  database: DB_NAME_OVERRIDE
+  connection:
+    ssl: true
+    host: thpang-dev-dso-default-pgsql.postgres.database.azure.com
+    port: 5432
+  rolesecret: postgres-default-user
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgres-default-user
+  labels:
+    pg-cluster: "postgres"
+stringData:
+  username: pgadmin@thpang-dev-dso-default-pgsql
+  password: my$up3rS3cretPassw0rd

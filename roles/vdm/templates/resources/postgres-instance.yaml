@@ -17,7 +17,7 @@ spec:
     storageclass: "{{ V4_CFG_STORAGECLASS }}"
 {% endif %}
   connection:
-    ssl: {{ settings.ssl_enforcement_enabled|default(true, true)|bool|lower }}
+    ssl: {{ (settings.ssl_enforcement_enabled if 'ssl_enforcement_enabled' in settings else True)|bool|lower }}
 {% if not settings.internal %}
     host: {{ settings.fqdn }}
     port: {{ settings.server_port|default(5432, true) }}
