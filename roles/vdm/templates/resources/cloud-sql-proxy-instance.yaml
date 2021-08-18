@@ -31,7 +31,7 @@ spec:
             - "/cloud_sql_proxy"
           args:
             - "-ip_address_types=PRIVATE"
-            - "-instances=$(POSTGRES_CONNECTION_NAME)=tcp:0.0.0.0:{{ settings.server_port }}"
+            - "-instances=$(POSTGRES_CONNECTION_NAME)=tcp:0.0.0.0:{{ settings.server_port|default(5432, true) }}"
       imagePullSecrets: []
       serviceAccountName: sql-proxy-{{ role }}
 ---
