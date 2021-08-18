@@ -1,0 +1,129 @@
+
+
+- block:
+  - ansible.utils.update_fact:
+      updates:
+        - path: "V4_CFG_POSTGRES_SERVERS['default']['fqdn']"
+          value: "{{ V4_CFG_POSTGRES_FQDN }}"
+    register: updated
+  - set_fact:
+      V4_CFG_POSTGRES_SERVERS: "{{ updated.V4_CFG_POSTGRES_SERVERS }}"
+  when:
+    - V4_CFG_POSTGRES_FQDN is defined
+    - "'fqdn' not in V4_CFG_POSTGRES_SERVERS['default']"
+  tags:
+    - install
+    - uninstall
+    - update
+
+- block:
+  - ansible.utils.update_fact:
+      updates:
+        - path: "V4_CFG_POSTGRES_SERVERS['default']['admin']"
+          value: "{{ V4_CFG_POSTGRES_ADMIN_LOGIN }}"
+    register: updated
+  - set_fact:
+      V4_CFG_POSTGRES_SERVERS: "{{ updated.V4_CFG_POSTGRES_SERVERS }}"
+  when:
+    - V4_CFG_POSTGRES_ADMIN_LOGIN is defined
+    - "'admin' not in V4_CFG_POSTGRES_SERVERS['default']"
+  tags:
+    - install
+    - uninstall
+    - update
+
+- block:
+  - ansible.utils.update_fact:
+      updates:
+        - path: "V4_CFG_POSTGRES_SERVERS['default']['server_port']"
+          value: "{{ V4_CFG_POSTGRES_PORT }}"
+    register: updated
+  - set_fact:
+      V4_CFG_POSTGRES_SERVERS: "{{ updated.V4_CFG_POSTGRES_SERVERS }}"
+  when:
+    - V4_CFG_POSTGRES_PORT is defined
+    - "'server_port' not in V4_CFG_POSTGRES_SERVERS['default']"
+  tags:
+    - install
+    - uninstall
+    - update
+
+- block:
+  - ansible.utils.update_fact:
+      updates:
+        - path: "V4_CFG_POSTGRES_SERVERS['default']['password']"
+          value: "{{ V4_CFG_POSTGRES_PASSWORD }}"
+    register: updated
+  - set_fact:
+      V4_CFG_POSTGRES_SERVERS: "{{ updated.V4_CFG_POSTGRES_SERVERS }}"
+  when:
+    - V4_CFG_POSTGRES_PASSWORD is defined
+    - "'password' not in V4_CFG_POSTGRES_SERVERS['default']"
+  tags:
+    - install
+    - uninstall
+    - update
+
+- block:
+  - ansible.utils.update_fact:
+      updates:
+        - path: "V4_CFG_POSTGRES_SERVERS['default']['connection_name']"
+          value: "{{ V4_CFG_POSTGRES_CONNECTION_NAME }}"
+    register: updated
+  - set_fact:
+      V4_CFG_POSTGRES_SERVERS: "{{ updated.V4_CFG_POSTGRES_SERVERS }}"
+  when:
+    - V4_CFG_POSTGRES_CONNECTION_NAME is defined
+    - "'connection_name' not in V4_CFG_POSTGRES_SERVERS['default']"
+  tags:
+    - install
+    - uninstall
+    - update
+
+- block:
+  - ansible.utils.update_fact:
+      updates:
+        - path: "V4_CFG_POSTGRES_SERVERS['default']['service_account']"
+          value: "{{ V4_CFG_POSTGRES_SERVICE_ACCOUNT }}"
+    register: updated
+  - set_fact:
+      V4_CFG_POSTGRES_SERVERS: "{{ updated.V4_CFG_POSTGRES_SERVERS }}"
+  when:
+    - V4_CFG_POSTGRES_SERVICE_ACCOUNT is defined
+    - "'service_account' not in V4_CFG_POSTGRES_SERVERS['default']"
+  tags:
+    - install
+    - uninstall
+    - update
+
+- block:
+  - ansible.utils.update_fact:
+      updates:
+        - path: "V4_CFG_POSTGRES_SERVERS['default']['ssl_enforcement_enabled']"
+          value: "{{ V4_CFG_POSTGRES_SSL_ENFORCEMENT }}"
+    register: updated
+  - set_fact:
+      V4_CFG_POSTGRES_SERVERS: "{{ updated.V4_CFG_POSTGRES_SERVERS }}"
+  when:
+    - V4_CFG_POSTGRES_SSL_ENFORCEMENT is defined
+    - "'ssl_enforcement_enabled' not in V4_CFG_POSTGRES_SERVERS['default']"
+  tags:
+    - install
+    - uninstall
+    - update
+
+- block:
+  - ansible.utils.update_fact:
+      updates:
+        - path: "V4_CFG_POSTGRES_SERVERS['default']['internal']"
+          value: "{{ V4_CFG_POSTGRES_TYPE == 'internal' }}"
+    register: updated
+  - set_fact:
+      V4_CFG_POSTGRES_SERVERS: "{{ updated.V4_CFG_POSTGRES_SERVERS }}"
+  when:
+    - V4_CFG_POSTGRES_TYPE is defined
+    - "'internal' not in V4_CFG_POSTGRES_SERVERS['default']"
+  tags:
+    - install
+    - uninstall
+    - update
