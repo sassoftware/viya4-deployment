@@ -132,8 +132,6 @@
       when:
         - tfstate.ssh_private_key is defined
         - tfstate.ssh_private_key.value|length > 0
-    - set_fact:
-        tfstate: ""
     ### Deprecations
     - name: tfstate - postgres admin
       set_fact:
@@ -184,7 +182,9 @@
       when:
         - V4_CFG_POSTGRES_TYPE is defined
         - V4_CFG_POSTGRES_TYPE == "external"
-        - tfstate.postgres_ssl_enforcement_enabled is defined    
+        - tfstate.postgres_ssl_enforcement_enabled is defined
+    - set_fact:
+        tfstate: ""
   when:
     - TFSTATE is defined
   tags:
