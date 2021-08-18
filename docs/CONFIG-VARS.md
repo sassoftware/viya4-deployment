@@ -219,7 +219,7 @@ V4_CFG_POSTGRES_SERVERS:
   default:
     internal: false
     admin: pgadmin
-    password: password
+    password: "password"
     fqdn: mydbserver.local
     server_port: 5432
     ssl_enforcement_enabled: true
@@ -227,7 +227,7 @@ V4_CFG_POSTGRES_SERVERS:
   other_db:
     internal: false
     admin: pgadmin
-    password: password
+    password: "password"
     fqdn: 10.10.10.10
     server_port: 5432
     ssl_enforcement_enabled: true
