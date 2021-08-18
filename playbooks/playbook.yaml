@@ -46,6 +46,7 @@
     - name: monitoring role - namespace
       include_role:
         name: monitoring
+        tasks_from: viya-monitoring
       tags:
         - viya-monitoring
     - name: Delete tmpdir
