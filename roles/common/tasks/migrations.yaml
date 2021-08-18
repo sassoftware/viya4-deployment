@@ -127,3 +127,20 @@
     - install
     - uninstall
     - update
+
+- block:
+  - ansible.utils.update_fact:
+      updates:
+        - path: "V4_CFG_POSTGRES_SERVERS['default']['database']"
+          value: "{{ V4_CFG_POSTGRES_DATABASE }}"
+    register: updated
+  - set_fact:
+      V4_CFG_POSTGRES_SERVERS: "{{ updated.V4_CFG_POSTGRES_SERVERS }}"
+  when:
+    - V4_CFG_POSTGRES_DATABASE is defined
+    - "'database' not in V4_CFG_POSTGRES_SERVERS['default']"
+  tags:
+    - install
+    - uninstall
+    - update
+
