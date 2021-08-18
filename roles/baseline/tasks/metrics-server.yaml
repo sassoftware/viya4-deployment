@@ -9,7 +9,7 @@
   register: metrics_service
   tags:
     - install
-    - upgrade
+    - update
     - uninstall
 
 - name: Deploy metrics-server
@@ -24,7 +24,7 @@
     wait: true
   tags:
     - install
-    - upgrade
+    - update
   when:
     - (metrics_service.resources | length) == 0
 

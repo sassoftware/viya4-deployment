@@ -5,7 +5,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: Set BASE_DIR default path
   set_fact:
@@ -14,7 +14,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 - block:
     - name: Parse tfstate
       set_fact: 
@@ -76,56 +76,12 @@
       when:
         - tfstate.cluster_name is defined
         - tfstate.cluster_name.value|length > 0
-    - name: tfstate - postgres admin
+    - name: tfstate - postgres servers
       set_fact:
-        V4_CFG_POSTGRES_ADMIN_LOGIN: "{{ tfstate.postgres_admin.value }}"
+        V4_CFG_POSTGRES_SERVERS: "{{ tfstate.postgres_servers.value |combine(V4_CFG_POSTGRES_SERVERS, recursive=True) }}"
       when:
-        - V4_CFG_POSTGRES_TYPE is defined
-        - V4_CFG_POSTGRES_TYPE == "external"
-        - tfstate.postgres_admin is defined
-        - tfstate.postgres_server_name is defined
-    - name: tfstate - postgres port
-      set_fact:
-        V4_CFG_POSTGRES_PORT: "{{ tfstate.postgres_server_port.value }}"
-      when:
-        - V4_CFG_POSTGRES_TYPE is defined
-        - V4_CFG_POSTGRES_TYPE == "external"
-        - tfstate.postgres_server_port is defined
-    - name: tfstate - postgres password
-      set_fact:
-        V4_CFG_POSTGRES_PASSWORD: "{{ tfstate.postgres_password.value }}"
-      when:
-        - V4_CFG_POSTGRES_TYPE is defined
-        - V4_CFG_POSTGRES_TYPE == "external"
-        - tfstate.postgres_password is defined
-    - name: tfstate - postgres fqdn
-      set_fact:
-        V4_CFG_POSTGRES_FQDN: "{{ tfstate.postgres_fqdn.value }}"
-      when:
-        - V4_CFG_POSTGRES_TYPE is defined
-        - V4_CFG_POSTGRES_TYPE == "external"
-        - tfstate.postgres_fqdn is defined
-    - name: tfstate - postgres connection name
-      set_fact:
-        V4_CFG_POSTGRES_CONNECTION_NAME: "{{ tfstate.postgres_connection_name.value }}"
-      when:
-        - V4_CFG_POSTGRES_TYPE is defined
-        - V4_CFG_POSTGRES_TYPE == "external"
-        - tfstate.postgres_connection_name is defined
-    - name: tfstate - postgres service account
-      set_fact:
-        V4_CFG_POSTGRES_SERVICE_ACCOUNT: "{{ tfstate.sql_proxy_sa_email.value }}"
-      when:
-        - V4_CFG_POSTGRES_TYPE is defined
-        - V4_CFG_POSTGRES_TYPE == "external"
-        - tfstate.sql_proxy_sa_email is defined
-    - name: tfstate - postgres ssl enforcement
-      set_fact:
-        V4_CFG_POSTGRES_SSL_ENFORCEMENT: "{{ tfstate.postgres_ssl_enforcement_enabled.value }}"
-      when:
-        - V4_CFG_POSTGRES_TYPE is defined
-        - V4_CFG_POSTGRES_TYPE == "external"
-        - tfstate.postgres_ssl_enforcement_enabled is defined
+        - tfstate.postgres_servers is defined
+        - tfstate.postgres_servers.value|length > 0
     - name: tfstate - cluster autoscaler account
       set_fact: 
         CLUSTER_AUTOSCALER_ACCOUNT: "{{ tfstate.autoscaler_account.value }}"
@@ -176,6 +132,57 @@
       when:
         - tfstate.ssh_private_key is defined
         - tfstate.ssh_private_key.value|length > 0
+    ### Deprecations
+    - name: tfstate - postgres admin
+      set_fact:
+        V4_CFG_POSTGRES_ADMIN_LOGIN: "{{ tfstate.postgres_admin.value }}"
+      when:
+        - V4_CFG_POSTGRES_TYPE is defined
+        - V4_CFG_POSTGRES_TYPE == "external"
+        - tfstate.postgres_admin is defined
+        - tfstate.postgres_server_name is defined
+    - name: tfstate - postgres port
+      set_fact:
+        V4_CFG_POSTGRES_PORT: "{{ tfstate.postgres_server_port.value }}"
+      when:
+        - V4_CFG_POSTGRES_TYPE is defined
+        - V4_CFG_POSTGRES_TYPE == "external"
+        - tfstate.postgres_server_port is defined
+    - name: tfstate - postgres password
+      set_fact:
+        V4_CFG_POSTGRES_PASSWORD: "{{ tfstate.postgres_password.value }}"
+      when:
+        - V4_CFG_POSTGRES_TYPE is defined
+        - V4_CFG_POSTGRES_TYPE == "external"
+        - tfstate.postgres_password is defined
+    - name: tfstate - postgres fqdn
+      set_fact:
+        V4_CFG_POSTGRES_FQDN: "{{ tfstate.postgres_fqdn.value }}"
+      when:
+        - V4_CFG_POSTGRES_TYPE is defined
+        - V4_CFG_POSTGRES_TYPE == "external"
+        - tfstate.postgres_fqdn is defined
+    - name: tfstate - postgres connection name
+      set_fact:
+        V4_CFG_POSTGRES_CONNECTION_NAME: "{{ tfstate.postgres_connection_name.value }}"
+      when:
+        - V4_CFG_POSTGRES_TYPE is defined
+        - V4_CFG_POSTGRES_TYPE == "external"
+        - tfstate.postgres_connection_name is defined
+    - name: tfstate - postgres service account
+      set_fact:
+        V4_CFG_POSTGRES_SERVICE_ACCOUNT: "{{ tfstate.sql_proxy_sa_email.value }}"
+      when:
+        - V4_CFG_POSTGRES_TYPE is defined
+        - V4_CFG_POSTGRES_TYPE == "external"
+        - tfstate.sql_proxy_sa_email is defined
+    - name: tfstate - postgres ssl enforcement
+      set_fact:
+        V4_CFG_POSTGRES_SSL_ENFORCEMENT: "{{ tfstate.postgres_ssl_enforcement_enabled.value }}"
+      when:
+        - V4_CFG_POSTGRES_TYPE is defined
+        - V4_CFG_POSTGRES_TYPE == "external"
+        - tfstate.postgres_ssl_enforcement_enabled is defined
     - set_fact:
         tfstate: ""
   when:
@@ -183,7 +190,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: Set DEPLOY_DIR
   set_fact:
@@ -192,4 +199,12 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
+
+- name: migrations
+  include_tasks: 
+    file: migrations.yaml
+  tags:
+    - install
+    - uninstall
+    - update

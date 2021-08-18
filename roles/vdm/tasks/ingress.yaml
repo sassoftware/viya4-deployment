@@ -14,7 +14,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: ingress - http facts
   set_fact:
@@ -25,7 +25,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - block:
   - name: ingress - https facts
@@ -44,7 +44,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: ingress - Full-stack TLS
   overlay_facts:
@@ -62,7 +62,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: ingress - Front-door TLS
   overlay_facts:
@@ -78,7 +78,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: ingress - Truststores only
   overlay_facts:
@@ -94,7 +94,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: ingress - customer provided ca certificates
   block:
@@ -113,13 +113,11 @@
         add:
           - { generators: "customer-provided-ca-certificates.yaml", vdm: true }
   when:
-    # NOTE: These can be provided to add to the trust store even when TLS mode is "disabled" to establish outbound trust
-    - V4_CFG_TLS_MODE != "disabled"
     - V4_CFG_TLS_TRUSTED_CA_CERTS is not none
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: ingress - customer provided server certificates
   block:
@@ -145,7 +143,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: ingress - Cert-manager Certificate Generation
   overlay_facts:
@@ -162,7 +160,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 
 - name: ingress - Consul UI
@@ -177,7 +175,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: add ingress class
   overlay_facts:

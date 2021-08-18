@@ -9,7 +9,7 @@
     kubeconfig: "{{ KUBECONFIG }}"
   tags:
     - install
-    - upgrade
+    - update
 
 - name: prereqs - cluster-wide
   shell: |
@@ -22,7 +22,7 @@
     - result["stderr"] is not regex(".*Warning.*")
   tags:
     - install
-    - upgrade
+    - update
 
 - name: prereqs - cluster-local deploy
   command: |
@@ -34,7 +34,7 @@
     - result["stderr"] is not regex(".*Warning.*")
   tags:
     - install
-    - upgrade
+    - update
 
 - name: manifest - deploy
   command: |
@@ -46,21 +46,19 @@
     - result["stderr"] is not regex(".*Warning.*")
   tags:
     - install
-    - upgrade
+    - update
 
-- name: manifest - deploy istio
+- name: manifest - deploy update
   command: |
-    kubectl --kubeconfig {{ KUBECONFIG }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=namespace" --prune --prune-whitelist=networking.istio.io/v1alpha3/DestinationRule --prune-whitelist=networking.istio.io/v1alpha3/VirtualService -f {{ DEPLOY_DIR }}/site.yaml
+    kubectl --kubeconfig {{ KUBECONFIG }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=namespace" -f {{ DEPLOY_DIR }}/site.yaml --prune --prune-whitelist=autoscaling/v2beta2/HorizontalPodAutoscaler
   register: result
-  when: 
-    - V4_CFG_INGRESS_TYPE == "istio"
   failed_when:
     - result["stderr"]|length > 0
     - result["stderr"] is not regex(".* no matches for kind .* in version .*")  
     - result["stderr"] is not regex(".*Warning.*")
   tags:
     - install
-    - upgrade
+    - update
 
 - name: Remove Viya
   community.kubernetes.k8s:

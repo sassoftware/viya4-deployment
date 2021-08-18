@@ -51,7 +51,8 @@ def main():
         module.params['existing'][overlay_type].setdefault(phase, {})
 
         if priority in module.params['existing'][overlay_type][phase]:
-          module.params['existing'][overlay_type][phase][priority].append(overlay_path)
+          if overlay_path not in module.params['existing'][overlay_type][phase][priority]:
+            module.params['existing'][overlay_type][phase][priority].append(overlay_path)
         else:
           module.params['existing'][overlay_type][phase].update({priority: [overlay_path]})
 

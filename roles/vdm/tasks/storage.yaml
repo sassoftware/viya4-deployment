@@ -9,7 +9,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: storage - nfs
   overlay_facts:
@@ -26,4 +26,4 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update

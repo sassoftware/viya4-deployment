@@ -5,10 +5,10 @@ metadata:
   name: sas-postgres-config
 behavior: merge
 literals:
-  - DATABASE_HOST={{ V4_CFG_POSTGRES_FQDN }}
-  - DATABASE_PORT={{ V4_CFG_POSTGRES_PORT }}
+  - DATABASE_HOST={{ V4_CFG_POSTGRES_SERVERS.default.fqdn }}
+  - DATABASE_PORT={{ V4_CFG_POSTGRES_SERVERS.default.server_port }}
   - DATABASE_SSL_ENABLED="false"
-  - DATABASE_NAME={{ V4_CFG_POSTGRES_DATABASE }}
+  - DATABASE_NAME={{ V4_CFG_POSTGRES_SERVERS.default.database|default('SharedServices', true) }}
   - EXTERNAL_DATABASE="true"
   - SAS_DATABASE_DATABASESERVERNAME="postgres"
-  - SPRING_DATASOURCE_URL=jdbc:postgresql://{{ V4_CFG_POSTGRES_FQDN }}:{{ 5432 }}/{{ V4_CFG_POSTGRES_DATABASE }}?currentSchema=${application.schema}
+  - SPRING_DATASOURCE_URL=jdbc:postgresql://{{ V4_CFG_POSTGRES_SERVERS.default.fqdn }}:{{ V4_CFG_POSTGRES_SERVERS.default.port }}/{{ V4_CFG_POSTGRES_SERVERS.default.database if 'database' in V4_CFG_POSTGRES_SERVERS.default else 'SharedServices' }}?currentSchema=${application.schema}

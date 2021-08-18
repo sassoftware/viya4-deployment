@@ -1,4 +1,13 @@
 ---
+- set_fact:
+    INGRESS_NGINX_CONFIG: "{{ INGRESS_NGINX_CONFIG |combine(private_cluster[PROVIDER], recursive=True)}}"
+  when:
+    - PRIVATE_CLUSTER_ENABLE
+    - PROVIDER in private_cluster
+  tags:
+    - install
+    - update
+
 - name: Deploy ingress-nginx
   community.kubernetes.helm:
     name: "{{ INGRESS_NGINX_NAME }}"
@@ -12,7 +21,7 @@
     wait: true
   tags:
     - install
-    - upgrade
+    - update
 
 - name: Remove ingress-nginx
   community.kubernetes.helm:

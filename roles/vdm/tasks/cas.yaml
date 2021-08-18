@@ -9,7 +9,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: cas - user defined sssd
   block:
@@ -34,7 +34,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: "cas - backup controller"
   overlay_facts:
@@ -48,7 +48,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: "cas - auto resources"
   overlay_facts:
@@ -63,7 +63,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: "cas - user-defined resources"
   overlay_facts:
@@ -78,7 +78,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: "cas - MPP workers"
   overlay_facts:
@@ -92,7 +92,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: "cas - External services"
   overlay_facts:
@@ -106,4 +106,4 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update

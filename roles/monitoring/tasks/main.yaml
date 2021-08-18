@@ -7,7 +7,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: v4m - add storageclass
   community.kubernetes.k8s:

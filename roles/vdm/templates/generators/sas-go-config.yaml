@@ -5,4 +5,4 @@ metadata:
   name: sas-go-config
 behavior: merge
 literals:
-  - SAS_DATABASE_DATABASE={{ V4_CFG_POSTGRES_DATABASE }}
+  - SAS_DATABASE_DATABASE={{ V4_CFG_POSTGRES_SERVERS.default.database if 'database' in V4_CFG_POSTGRES_SERVERS.default else 'SharedServices' }}

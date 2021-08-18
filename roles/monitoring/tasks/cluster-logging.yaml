@@ -7,7 +7,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: cluster-logging - lookup existing credentials
   community.kubernetes.k8s_info:

@@ -33,11 +33,14 @@ V4_CFG_INGRESS_FQDN: <desired_fqdn>
 V4_CFG_TLS_MODE: "full-stack" # [full-stack|front-door|disabled]
 
 ## Postgres
-V4_CFG_POSTGRES_TYPE: external
-V4_CFG_POSTGRES_ADMIN_LOGIN: <existing_pg_user> 
-V4_CFG_POSTGRES_PASSWORD: <existing_pg_password> 
-V4_CFG_POSTGRES_FQDN: <existing_pg_fqdn> 
-V4_CFG_POSTGRES_PORT: 5432
+V4_CFG_POSTGRES_SERVERS:
+  default:
+    internal: false
+    admin: <existing_pg_user>
+    password: <existing_pg_password>
+    fqdn: <existing_pg_fqdn>
+    ssl_enforcement_enabled: true
+    database: <desired_database>
 
 ## LDAP
 V4_CFG_EMBEDDED_LDAP_ENABLE: true

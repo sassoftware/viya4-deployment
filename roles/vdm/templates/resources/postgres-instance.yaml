@@ -1,0 +1,35 @@
+{%- set db = db_default_name_map[role] if ('database' not in settings and role in db_default_name_map) else settings.database|default(role, true) -%}
+{%- set server_name = role if role != "default" else "postgres" -%}
+apiVersion: webinfdsvr.sas.com/v1
+kind: Pgcluster
+metadata:
+  name: {{ server_name }}
+  annotations:
+    sas.com/default-database: "{{ (role == "default") | bool|lower}}"
+{% if settings.internal|bool %}
+    sas.com/component-name: sas-crunchy-data-postgres-12
+{% endif %}
+spec:
+  internal: {{ settings.internal|bool|lower }}
+  database: {{ db }}
+{% if settings.internal|bool %}
+  storage:
+    storageclass: "{{ V4_CFG_STORAGECLASS }}"
+{% endif %}
+  connection:
+    ssl: {{ (settings.ssl_enforcement_enabled if 'ssl_enforcement_enabled' in settings else True)|bool|lower }}
+{% if not settings.internal %}
+    host: {{ settings.fqdn }}
+    port: {{ settings.server_port|default(5432, true) }}
+  rolesecret: postgres-{{ role }}-user
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgres-{{ role }}-user
+  labels:
+    pg-cluster: "{{ server_name }}"
+stringData:
+  username: {{ settings.admin }}
+  password: {{ settings.password }}
+{% endif %}

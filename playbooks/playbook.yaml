@@ -7,7 +7,7 @@
       tags:
         - install
         - uninstall
-        - upgrade
+        - update
     - name: common role
       include_role: 
         name: common
@@ -15,7 +15,7 @@
       tags:
         - install
         - uninstall
-        - upgrade
+        - update
     - name: jump-server role
       include_role:
         name: jump-server
@@ -46,6 +46,7 @@
     - name: monitoring role - namespace
       include_role:
         name: monitoring
+        tasks_from: viya-monitoring
       tags:
         - viya-monitoring
     - name: Delete tmpdir
@@ -55,4 +56,4 @@
       tags:
         - install
         - uninstall
-        - upgrade
+        - update

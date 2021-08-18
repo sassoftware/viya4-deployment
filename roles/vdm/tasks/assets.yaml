@@ -8,7 +8,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: assets - Get License
   command:
@@ -21,7 +21,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: assets - Download
   command:
@@ -34,7 +34,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
   register: res
 
 - set_fact:
@@ -44,7 +44,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: assets - Remove old files
   file:
@@ -56,7 +56,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: assets - Extract downloaded assets
   unarchive:
@@ -67,7 +67,7 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
 
 - name: assets - Extract user-provided assets
   unarchive:
@@ -78,4 +78,4 @@
   tags:
     - install
     - uninstall
-    - upgrade
+    - update
