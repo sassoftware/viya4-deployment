@@ -158,7 +158,7 @@
     - uninstall
     - update
 
-- name: ingress - Cert-manager Certificate Generation
+- name: ingress - Certificate Generation
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
@@ -168,8 +168,7 @@
       - { generators: "customer-provided-merge-sas-certframe-configmap.yaml", vdm: true }
   when:
     - V4_CFG_TLS_MODE != "disabled"
-    - V4_CFG_TLS_CERT is none
-    - V4_CFG_TLS_KEY is none
+    - (V4_CFG_TLS_CERT is none and V4_CFG_TLS_KEY is none and V4_CFG_TLS_GENERATOR == "cert-manager") or V4_CFG_TLS_GENERATOR == "openssl"
   tags:
     - install
     - uninstall
