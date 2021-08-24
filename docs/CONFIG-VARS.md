@@ -264,7 +264,7 @@ V4_CFG_POSTGRES_SERVERS:
 ## 3rd Party tools
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
-| :--- | ---: | ---: | ---: | ---: | ---: | ---: | 
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | CERT_MANAGER_ENABLED | Whether to deploy tool | bool | true | false | | baseline |
 | CERT_MANAGER_NAMESPACE | cert-manager helm install namespace | string | cert-manager | false | | baseline |
 | CERT_MANAGER_CHART_URL | cert-manager helm chart url | string | https://charts.jetstack.io/ | false | | baseline |
