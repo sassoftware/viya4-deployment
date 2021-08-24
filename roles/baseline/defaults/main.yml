@@ -5,17 +5,19 @@ V4_CFG_INGRESS_TYPE: ingress
 PRIVATE_CLUSTER_ENABLE: false
 
 ## Cert-manager
+CERT_MANAGER_ENABLED: true
 CERT_MANAGER_NAME: cert-manager
 CERT_MANAGER_NAMESPACE: cert-manager
 CERT_MANAGER_CHART_NAME: cert-manager
 CERT_MANAGER_CHART_URL: https://charts.jetstack.io/
-CERT_MANAGER_CHART_VERSION: 1.3.0
+CERT_MANAGER_CHART_VERSION: 1.5.1
 CERT_MANAGER_CONFIG: 
   installCRDs: "true"
   extraArgs:
     - --enable-certificate-owner-ref=true
 
 ## Metrics-server
+METRICS_SERVER_ENABLED: true
 METRICS_SERVER_NAME: metrics-server
 METRICS_SERVER_CHART_NAME: metrics-server
 METRICS_SERVER_CHART_URL: https://charts.bitnami.com/bitnami/
@@ -24,7 +26,7 @@ METRICS_SERVER_CONFIG:
   apiService:
     create: true
 
-## Ingress-nginx
+## Ingress-nginx - Ingress
 INGRESS_NGINX_NAME: ingress-nginx
 INGRESS_NGINX_NAMESPACE: ingress-nginx
 INGRESS_NGINX_CHART_NAME: ingress-nginx
@@ -49,6 +51,7 @@ INGRESS_NGINX_CONFIG:
     terminationGracePeriodSeconds: 600
 
 ## Nfs-subdir-external-provisioner
+NFS_CLIENT_ENABLED: true
 NFS_CLIENT_NAME: nfs-subdir-external-provisioner
 NFS_CLIENT_NAMESPACE: nfs-client
 NFS_CLIENT_CHART_NAME: nfs-subdir-external-provisioner
@@ -67,7 +70,7 @@ NFS_CLIENT_CONFIG:
     archiveOnDelete: "false"
     name: sas
 
-## Contour
+## Contour - Ingress
 CONTOUR_NAME: contour
 CONTOUR_NAMESPACE: contour
 CONTOUR_CHART_NAME: contour
@@ -79,6 +82,7 @@ CONTOUR_CONFIG:
       loadBalancerSourceRanges: "{{ LOADBALANCER_SOURCE_RANGES |default(['0.0.0.0/0'], -1) }}"
 
 ## Cluster Autoscaler
+CLUSTER_AUTOSCALER_ENABLED: true
 CLUSTER_AUTOSCALER_NAME: cluster-autoscaler
 CLUSTER_AUTOSCALER_NAMESPACE: kube-system
 CLUSTER_AUTOSCALER_CHART_NAME: cluster-autoscaler

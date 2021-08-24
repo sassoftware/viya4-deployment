@@ -36,6 +36,7 @@ V4_CFG_TLS_MODE: "front-door" # other valid values are full-stack and disabled
 V4_CFG_TLS_CERT: null
 V4_CFG_TLS_KEY: null
 V4_CFG_TLS_TRUSTED_CA_CERTS: null
+V4_CFG_TLS_GENERATOR: cert-manager # [cert-manager,openssl]
 
 V4_CFG_CONSUL_ENABLE_LOADBALANCER: false
 V4_CFG_EMBEDDED_LDAP_ENABLE: false

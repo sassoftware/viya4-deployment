@@ -173,6 +173,7 @@ When setting V4_CFG_MANAGE_STORAGE to true, A new storage classes will be create
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
+| V4_CFG_TLS_GENERATOR | Which tool to use for certificate generation | string | cert-manager | false | Supported values: [cert-manager,openssl]. When set to `openssl` you must provide: V4_CFG_TLS_CERT, V4_CFG_TLS_KEY, V4_CFG_TLS_TRUSTED_CA_CERTS. | viya, cluster-logging, cluster-monitoring |
 | V4_CFG_TLS_MODE | Which TLS mode to configure | string | front-door | false | Valid values are full-stack, front-door and disabled. When deploying full-stack you must set V4_CFG_TLS_TRUSTED_CA_CERTS to trust external postgres server ca | all |
 | V4_CFG_TLS_CERT | Path to ingress certificate file | string | | false | If specified, used instead of cert-manager issued certificates | viya |
 | V4_CFG_TLS_KEY | Path to ingress key file | string | | false | Required when V4_CFG_TLS_CERT is specified | viya |
@@ -263,13 +264,15 @@ V4_CFG_POSTGRES_SERVERS:
 ## 3rd Party tools
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
-| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: | 
+| CERT_MANAGER_ENABLED | Whether to deploy tool | bool | true | false | | baseline |
 | CERT_MANAGER_NAMESPACE | cert-manager helm install namespace | string | cert-manager | false | | baseline |
 | CERT_MANAGER_CHART_URL | cert-manager helm chart url | string | https://charts.jetstack.io/ | false | | baseline |
 | CERT_MANAGER_CHART_NAME| cert-manager helm chart name | string | cert-manager| false | | baseline |
 | CERT_MANAGER_CHART_VERSION | cert-manager helm chart version | string | 1.3.0 | false | | baseline |
 | CERT_MANAGER_CONFIG | cert-manager helm values | string | see [here](../roles/baseline/defaults/main.yml) | false | | baseline |
 | | | | | | | |
+| CLUSTER_AUTOSCALER_ENABLED | Whether to deploy tool | bool | true | false | | baseline |
 | CLUSTER_AUTOSCALER_CHART_URL | cluster-autoscaler helm chart url | string | https://kubernetes.github.io/autoscaler | false | | baseline |
 | CLUSTER_AUTOSCALER_CHART_NAME| cluster-autoscaler helm chart name | string | cluster-autoscaler | false | | baseline |
 | CLUSTER_AUTOSCALER_CHART_VERSION | cluster-autoscaler helm chart version | string | 9.9.2 | false | | baseline |
@@ -283,15 +286,15 @@ V4_CFG_POSTGRES_SERVERS:
 | INGRESS_NGINX_CHART_VERSION | ingress-nginx helm chart version | string | 3.20.1| false | | baseline |
 | INGRESS_NGINX_CONFIG | ingress-nginx helm values | string | see [here](../roles/baseline/defaults/main.yml) | false | | baseline |
 | | | | | | | |
+| METRICS_SERVER_ENABLED | Whether to deploy tool | bool | true | false | | baseline |
 | METRICS_SERVER_CHART_URL | metrics-server helm chart url | string | https://charts.bitnami.com/bitnami/ | false | If an existing metric-server is installed, these options will be ignored | baseline |
 | METRICS_SERVER_CHART_NAME | metrics-server helm chart name | string | metrics-server | false | If an existing metric-server is installed, these options will be ignored | baseline |
 | METRICS_SERVER_CHART_VERSION | metrics-server helm chart version | string | 5.3.5 | false | If an existing metric-server is installed, these options will be ignored | baseline |
 | METRICS_SERVER_CONFIG | metrics-server helm values | string | see [here](../roles/baseline/defaults/main.yml) | false | If an existing metric-server is installed, these options will be ignored | baseline |
 | | | | | | | |
+| NFS_CLIENT_ENABLED | Whether to deploy tool | bool | true | false | | baseline |
 | NFS_CLIENT_NAMESPACE | nfs-subdir-external-provisioner helm install namespace | string | nfs-client | false | | baseline |
 | NFS_CLIENT_CHART_URL | nfs-subdir-external-provisioner helm chart url | string | https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/ | false | | baseline |
 | NFS_CLIENT_CHART_NAME | nfs-subdir-external-provisioner helm chart name | string | nfs-subdir-external-provisioner | false | | baseline |
 | NFS_CLIENT_CHART_VERSION | nfs-subdir-external-provisioner helm chart version | string | 4.0.8| false | | baseline |
 | NFS_CLIENT_CONFIG | nfs-subdir-external-provisioner helm values | string | see [here](../roles/baseline/defaults/main.yml) | false | | baseline |
-
-

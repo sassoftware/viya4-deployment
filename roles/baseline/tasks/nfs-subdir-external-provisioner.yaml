@@ -44,6 +44,8 @@
     kubeconfig: "{{ KUBECONFIG }}"
     create_namespace: true
     wait: true
+  when:
+  - NFS_CLIENT_ENABLED
   tags:
     - install
     - update
