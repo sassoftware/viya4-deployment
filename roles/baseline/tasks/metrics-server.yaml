@@ -28,7 +28,7 @@
     - install
     - update
   when:
-    - (metrics_service.resources | length) == 0
+    - "'resources' not in metrics_service" or (metrics_service.resources | length) == 0
     - METRICS_SERVER_ENABLED
 
 - name: Remove metrics-server
