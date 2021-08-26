@@ -25,6 +25,11 @@ Supported configuration variables are listed in the table below.  All variables 
   - [CONNECT](#connect)
   - [Miscellaneous](#miscellaneous)
   - [3rd Party tools](#3rd-party-tools)
+    - [Cert-manager](#cert-manager)
+    - [Cluster Autoscaler](#cluster-autoscaler)
+    - [Ingress-nginx](#ingress-nginx)
+    - [Metrics Server](#metrics-server)
+    - [NFS Client](#nfs-client)
 
 ## BASE
 
