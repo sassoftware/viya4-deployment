@@ -20,7 +20,6 @@ Supported configuration variables are listed in the table below.  All variables 
     - [Monitoring](#monitoring)
     - [Logging](#logging)
   - [TLS](#tls)
-    - [Cert-manager](#cert-manager)
   - [Postgres](#postgres)
   - [CAS](#cas)
   - [CONNECT](#connect)
@@ -171,23 +170,22 @@ When setting V4_CFG_MANAGE_STORAGE to true, A new storage classes will be create
 
 ## TLS
 
+Users can either bring their own certificates our use one of the supported certificate generators. Cert-manager and SAS openssl generator are currently supported. When set using `openssl` you must provide: V4_CFG_TLS_CERT, V4_CFG_TLS_KEY, V4_CFG_TLS_TRUSTED_CA_CERTS. Also, the openssl generator cannot be used in conjunction with the viya4-monitoring-kubernetes stack.
+
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_TLS_GENERATOR | Which tool to use for certificate generation | string | cert-manager | false | Supported values: [`cert-manager`,`openssl`]. When set to `openssl` you must provide: V4_CFG_TLS_CERT, V4_CFG_TLS_KEY, V4_CFG_TLS_TRUSTED_CA_CERTS. | viya, cluster-logging, cluster-monitoring |
-| V4_CFG_TLS_MODE | Which TLS mode to configure | string | front-door | false | Valid values are full-stack, front-door and disabled. When deploying full-stack you must set V4_CFG_TLS_TRUSTED_CA_CERTS to trust external postgres server ca | all |
+| V4_CFG_TLS_GENERATOR | Which tool to use for certificate generation | string | cert-manager | false | Supported values: [`cert-manager`,`openssl`]. | viya, cluster-logging, cluster-monitoring |
+| V4_CFG_TLS_MODE | Which TLS mode to configure | string | front-door | false | Supported values: [`full-stack`,`front-door`,`disabled.`] When deploying full-stack you must set V4_CFG_TLS_TRUSTED_CA_CERTS to trust external postgres server ca | all |
 | V4_CFG_TLS_CERT | Path to ingress certificate file | string | | false | If specified, used instead of cert-manager issued certificates | viya |
 | V4_CFG_TLS_KEY | Path to ingress key file | string | | false | Required when V4_CFG_TLS_CERT is specified | viya |
 | V4_CFG_TLS_TRUSTED_CA_CERTS | Path to directory containing only PEM encoded trusted CA certificates files | string | | false | Required when V4_CFG_TLS_CERT is specified. Must include all the CAs in the trust chain for V4_CFG_TLS_CERT. Can be used with or without V4_CFG_TLS_CERT to specify any additionally trusted CAs  | viya |
+| V4_CFG_TLS_DURATION | Certificate time to expiry in hours | int | 17531 | false | See note below | viya |
+| V4_CFG_TLS_ADDITIONAL_SAN_DNS | A space separated list of additional SAN DNS entries that you want added to certificates. For example, the aliases of an external load balancer | string | | false | See note below  | viya |
+| V4_CFG_TLS_ADDITIONAL_SAN_IP | A space separated list of additional SAN IP addresses that you want added to certificates.  For example, the IP address of an external load balancer | string | | false | See note below  | viya |
 
-### Cert-manager
-
-When setting V4_CFG_TLS_MODE to a value other than "disabled" and no V4_CFG_TLS_CERT is specified, cert-manager will be used to issue TLS certificates and the following variables can be set to modify cert-manager behavior:
-
-| Name | Description | Type | Default | Required | Notes | Tasks |
-| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_CM_CERTIFICATE_DURATION | Certificate time to expire. Value depends on `V4_CFG_TLS_GENERATOR` type. | string | 17531h | false | This value must be set in either hours for `cert-manager` or days for `openssl`. The equivalent value for the default provided here for `openssl` would be `730`| viya |
-| V4_CFG_CM_CERTIFICATE_ADDITIONAL_SAN_DNS | A list of space separated, additional SAN DNS entries, specific to your ingress architecture, that you want added to certificates issued by the sas-viya-issuer.  For example, the aliases of an external load balancer | string | | false | | viya |
-| V4_CFG_CM_CERTIFICATE_ADDITIONAL_SAN_IP | A list of space separated, additional SAN IP addresses, specific to your ingress architecture, that you want added to certificates issued by the sas-viya-issuer.  For example, the IP address of an external load balancer | string | | false | | viya |
+*Values can be use to configure the tls generator when V4_CFG_TLS_MODE is not set to "disabled" and one of the following conditions is met.*
+  - V4_CFG_TLS_GENERATOR is set to `cert-manager` and no V4_CFG_TLS_CERT is defined
+  - V4_CFG_TLS_GENERATOR is set to openssl
 
 ## Postgres
 
