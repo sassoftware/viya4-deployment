@@ -13,26 +13,22 @@
     - uninstall
     - update
 
-- name: connect - SAS/CONNECT FQDN to the SAN DNS list for cert-manager
-  set_fact:
-    V4_CFG_CM_CERTIFICATE_ADDITIONAL_SAN_DNS: "{{ V4_CFG_CM_CERTIFICATE_ADDITIONAL_SAN_DNS }} {{ V4_CFG_CONNECT_FQDN }}"
+- block:
+  - name: connect - SAS/CONNECT FQDN to the SAN DNS list for cert-manager
+    set_fact:
+      V4_CFG_CM_CERTIFICATE_ADDITIONAL_SAN_DNS: "{{ V4_CFG_CM_CERTIFICATE_ADDITIONAL_SAN_DNS }} {{ V4_CFG_CONNECT_FQDN }}"
+  - name: connect - Configure Customer Provided Server Certificates
+    overlay_facts:
+      cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+      cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+      existing: "{{ vdm_overlays }}"
+      add:
+        - { transformers: "sas-connect-customer-provided-ingress-certificate-tls-certframe-transformer.yaml", priority: 60, vdm: true}
+    when:
+      - V4_CFG_TLS_MODE != "disabled"
+      - V4_CFG_TLS_CERT is not none
   when:
     - V4_CFG_CONNECT_FQDN is not none
-  tags:
-    - install
-    - uninstall
-    - update
-
-- name: connect - Configure Customer Provided Server Certificates
-  overlay_facts:
-    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
-    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
-    existing: "{{ vdm_overlays }}"
-    add:
-      - { transformers: "sas-connect-customer-provided-ingress-certificate-tls-certframe-transformer.yaml", priority: 60, vdm: true}
-  when:
-    - V4_CFG_TLS_MODE != "disabled"
-    - V4_CFG_TLS_CERT is not none
   tags:
     - install
     - uninstall
