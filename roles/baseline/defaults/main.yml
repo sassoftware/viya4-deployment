@@ -51,7 +51,6 @@ INGRESS_NGINX_CONFIG:
     terminationGracePeriodSeconds: 600
 
 ## Nfs-subdir-external-provisioner
-NFS_CLIENT_ENABLED: true
 NFS_CLIENT_NAME: nfs-subdir-external-provisioner
 NFS_CLIENT_NAMESPACE: nfs-client
 NFS_CLIENT_CHART_NAME: nfs-subdir-external-provisioner

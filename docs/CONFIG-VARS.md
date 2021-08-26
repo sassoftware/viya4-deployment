@@ -290,7 +290,6 @@ V4_CFG_POSTGRES_SERVERS:
 | METRICS_SERVER_CHART_VERSION | metrics-server helm chart version | string | 5.3.5 | false | If an existing metric-server is installed, these options will be ignored | baseline |
 | METRICS_SERVER_CONFIG | metrics-server helm values | string | see [here](../roles/baseline/defaults/main.yml) | false | If an existing metric-server is installed, these options will be ignored | baseline |
 | | | | | | | |
-| NFS_CLIENT_ENABLED | Whether to deploy tool | bool | true | false | | baseline |
 | NFS_CLIENT_NAMESPACE | nfs-subdir-external-provisioner helm install namespace | string | nfs-client | false | | baseline |
 | NFS_CLIENT_CHART_URL | nfs-subdir-external-provisioner helm chart url | string | https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/ | false | | baseline |
 | NFS_CLIENT_CHART_NAME | nfs-subdir-external-provisioner helm chart name | string | nfs-subdir-external-provisioner | false | | baseline |
