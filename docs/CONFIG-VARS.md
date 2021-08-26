@@ -283,6 +283,8 @@ V4_CFG_POSTGRES_SERVERS:
 
 Cluster-autoscaler is currently only used for AWS EKS clusters. GCP GKE and Azure AKS already have autoscaling features enabled by default.
 
+| Name | Description | Type | Default | Required | Notes | Tasks |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | CLUSTER_AUTOSCALER_ENABLED | Whether to deploy tool | bool | true | false | | baseline |
 | CLUSTER_AUTOSCALER_CHART_URL | cluster-autoscaler helm chart url | string | https://kubernetes.github.io/autoscaler | false | | baseline |
 | CLUSTER_AUTOSCALER_CHART_NAME| cluster-autoscaler helm chart name | string | cluster-autoscaler | false | | baseline |
@@ -293,6 +295,8 @@ Cluster-autoscaler is currently only used for AWS EKS clusters. GCP GKE and Azur
 
 ### Ingress-nginx
 
+| Name | Description | Type | Default | Required | Notes | Tasks |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | INGRESS_NGINX_NAMESPACE | ingress-nginx helm install namespace | string | ingress-nginx | false | | baseline |
 | INGRESS_NGINX_CHART_URL | ingress-nginx helm chart url | string | https://kubernetes.github.io/ingress-nginx | false | | baseline |
 | INGRESS_NGINX_CHART_NAME | ingress-nginx helm chart name | string | ingress-nginx | false | | baseline |
@@ -301,6 +305,8 @@ Cluster-autoscaler is currently only used for AWS EKS clusters. GCP GKE and Azur
 
 ### Metrics Server
 
+| Name | Description | Type | Default | Required | Notes | Tasks |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | METRICS_SERVER_ENABLED | Whether to deploy tool | bool | true | false | | baseline |
 | METRICS_SERVER_CHART_URL | metrics-server helm chart url | string | https://charts.bitnami.com/bitnami/ | false | If an existing metric-server is installed, these options will be ignored | baseline |
 | METRICS_SERVER_CHART_NAME | metrics-server helm chart name | string | metrics-server | false | If an existing metric-server is installed, these options will be ignored | baseline |
@@ -309,8 +315,10 @@ Cluster-autoscaler is currently only used for AWS EKS clusters. GCP GKE and Azur
 
 ### NFS Client
 
-The nfs-client is currenlty supported by the newer nfs-subdir-external-provisioner.
+The nfs-client is currently supported by the newer nfs-subdir-external-provisioner.
 
+| Name | Description | Type | Default | Required | Notes | Tasks |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | NFS_CLIENT_NAMESPACE | nfs-subdir-external-provisioner helm install namespace | string | nfs-client | false | | baseline |
 | NFS_CLIENT_CHART_URL | nfs-subdir-external-provisioner helm chart url | string | https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/ | false | | baseline |
 | NFS_CLIENT_CHART_NAME | nfs-subdir-external-provisioner helm chart name | string | nfs-subdir-external-provisioner | false | | baseline |
