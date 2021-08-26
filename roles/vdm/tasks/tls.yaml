@@ -7,6 +7,7 @@
   fail:
     msg: "When using openssl-generator you must provide: V4_CFG_TLS_CERT, V4_CFG_TLS_KEY, V4_CFG_TLS_TRUSTED_CA_CERTS"
   when:
+    - V4_CFG_TLS_MODE != "disabled"
     - V4_CFG_TLS_GENERATOR == "openssl"
     - V4_CFG_TLS_CERT is none or V4_CFG_TLS_KEY is none or V4_CFG_TLS_TRUSTED_CA_CERTS is none
   tags:
