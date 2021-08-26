@@ -183,6 +183,8 @@ Users can either bring their own certificates our use one of the supported certi
 | V4_CFG_TLS_ADDITIONAL_SAN_DNS | A space separated list of additional SAN DNS entries that you want added to generated certificates. | string | | false | See note below  | viya |
 | V4_CFG_TLS_ADDITIONAL_SAN_IP | A space separated list of additional SAN IP addresses that you want added to generated certificates. | string | | false | See note below  | viya |
 
+Notes:
+
 *Values can be use to configure the tls generator when V4_CFG_TLS_MODE is not set to `disabled` and one of the following conditions is met.*
   - V4_CFG_TLS_GENERATOR is set to `cert-manager` and no V4_CFG_TLS_CERT/V4_CFG_TLS_KEY are defined
   - V4_CFG_TLS_GENERATOR is set to `openssl`
@@ -261,6 +263,8 @@ V4_CFG_POSTGRES_SERVERS:
 
 ## 3rd Party tools
 
+### Cert-manager
+
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | CERT_MANAGER_ENABLED | Whether to deploy tool | bool | true | false | | baseline |
@@ -269,27 +273,39 @@ V4_CFG_POSTGRES_SERVERS:
 | CERT_MANAGER_CHART_NAME| cert-manager helm chart name | string | cert-manager| false | | baseline |
 | CERT_MANAGER_CHART_VERSION | cert-manager helm chart version | string | 1.3.0 | false | | baseline |
 | CERT_MANAGER_CONFIG | cert-manager helm values | string | see [here](../roles/baseline/defaults/main.yml) | false | | baseline |
-| | | | | | | |
-| CLUSTER_AUTOSCALER_ENABLED | Whether to deploy tool | bool | true | false | Currently only used for AWS EKS clusters | baseline |
+
+### Cluster Autoscaler
+
+Cluster-autoscaler is currently only used for AWS EKS clusters. GCP GKE and Azure AKS already have autoscaling features enabled by default.
+
+| CLUSTER_AUTOSCALER_ENABLED | Whether to deploy tool | bool | true | false | | baseline |
 | CLUSTER_AUTOSCALER_CHART_URL | cluster-autoscaler helm chart url | string | https://kubernetes.github.io/autoscaler | false | | baseline |
 | CLUSTER_AUTOSCALER_CHART_NAME| cluster-autoscaler helm chart name | string | cluster-autoscaler | false | | baseline |
 | CLUSTER_AUTOSCALER_CHART_VERSION | cluster-autoscaler helm chart version | string | 9.9.2 | false | | baseline |
 | CLUSTER_AUTOSCALER_CONFIG | cluster-autoscaler helm values | string | see [here](../roles/baseline/defaults/main.yml) | false | | baseline |
 | CLUSTER_AUTOSCALER_ACCOUNT | cluster autoscaler aws role arn | string | null | false | Required to enable cluster-autoscaler on AWS | baseline |
 | CLUSTER_AUTOSCALER_LOCATION | aws region where kubernetes cluster resides | string | us-east-1 | false | | baseline |
-| | | | | | | |
+
+### Ingress-nginx
+
 | INGRESS_NGINX_NAMESPACE | ingress-nginx helm install namespace | string | ingress-nginx | false | | baseline |
 | INGRESS_NGINX_CHART_URL | ingress-nginx helm chart url | string | https://kubernetes.github.io/ingress-nginx | false | | baseline |
 | INGRESS_NGINX_CHART_NAME | ingress-nginx helm chart name | string | ingress-nginx | false | | baseline |
 | INGRESS_NGINX_CHART_VERSION | ingress-nginx helm chart version | string | 3.20.1| false | | baseline |
 | INGRESS_NGINX_CONFIG | ingress-nginx helm values | string | see [here](../roles/baseline/defaults/main.yml) | false | | baseline |
-| | | | | | | |
+
+### Metrics Server
+
 | METRICS_SERVER_ENABLED | Whether to deploy tool | bool | true | false | | baseline |
 | METRICS_SERVER_CHART_URL | metrics-server helm chart url | string | https://charts.bitnami.com/bitnami/ | false | If an existing metric-server is installed, these options will be ignored | baseline |
 | METRICS_SERVER_CHART_NAME | metrics-server helm chart name | string | metrics-server | false | If an existing metric-server is installed, these options will be ignored | baseline |
 | METRICS_SERVER_CHART_VERSION | metrics-server helm chart version | string | 5.3.5 | false | If an existing metric-server is installed, these options will be ignored | baseline |
 | METRICS_SERVER_CONFIG | metrics-server helm values | string | see [here](../roles/baseline/defaults/main.yml) | false | If an existing metric-server is installed, these options will be ignored | baseline |
-| | | | | | | |
+
+### NFS Client
+
+The nfs-client is currenlty supported by the newer nfs-subdir-external-provisioner.
+
 | NFS_CLIENT_NAMESPACE | nfs-subdir-external-provisioner helm install namespace | string | nfs-client | false | | baseline |
 | NFS_CLIENT_CHART_URL | nfs-subdir-external-provisioner helm chart url | string | https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/ | false | | baseline |
 | NFS_CLIENT_CHART_NAME | nfs-subdir-external-provisioner helm chart name | string | nfs-subdir-external-provisioner | false | | baseline |
