@@ -170,7 +170,7 @@ When setting V4_CFG_MANAGE_STORAGE to true, A new storage classes will be create
 
 ## TLS
 
-Users can either bring their own certificates our use one of the supported certificate generators. Cert-manager and SAS openssl generator are currently supported. When set using `openssl` you must provide: V4_CFG_TLS_CERT, V4_CFG_TLS_KEY, V4_CFG_TLS_TRUSTED_CA_CERTS. Also, the openssl generator cannot be used in conjunction with the viya4-monitoring-kubernetes stack.
+Users can either bring their own certificates our use one of the supported certificate generators. Cert-manager and SAS openssl generator are currently supported. When using SAS openssl generator, you must provide: V4_CFG_TLS_CERT, V4_CFG_TLS_KEY, V4_CFG_TLS_TRUSTED_CA_CERTS. Also, the openssl generator cannot be used in conjunction with the viya4-monitoring-kubernetes stack.
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -180,12 +180,12 @@ Users can either bring their own certificates our use one of the supported certi
 | V4_CFG_TLS_KEY | Path to ingress key file | string | | false | Required when V4_CFG_TLS_CERT is specified | viya |
 | V4_CFG_TLS_TRUSTED_CA_CERTS | Path to directory containing only PEM encoded trusted CA certificates files | string | | false | Required when V4_CFG_TLS_CERT is specified. Must include all the CAs in the trust chain for V4_CFG_TLS_CERT. Can be used with or without V4_CFG_TLS_CERT to specify any additionally trusted CAs  | viya |
 | V4_CFG_TLS_DURATION | Certificate time to expiry in hours | int | 17531 | false | See note below | viya |
-| V4_CFG_TLS_ADDITIONAL_SAN_DNS | A space separated list of additional SAN DNS entries that you want added to certificates. For example, the aliases of an external load balancer | string | | false | See note below  | viya |
-| V4_CFG_TLS_ADDITIONAL_SAN_IP | A space separated list of additional SAN IP addresses that you want added to certificates.  For example, the IP address of an external load balancer | string | | false | See note below  | viya |
+| V4_CFG_TLS_ADDITIONAL_SAN_DNS | A space separated list of additional SAN DNS entries that you want added to generated certificates. | string | | false | See note below  | viya |
+| V4_CFG_TLS_ADDITIONAL_SAN_IP | A space separated list of additional SAN IP addresses that you want added to generated certificates. | string | | false | See note below  | viya |
 
-*Values can be use to configure the tls generator when V4_CFG_TLS_MODE is not set to "disabled" and one of the following conditions is met.*
-  - V4_CFG_TLS_GENERATOR is set to `cert-manager` and no V4_CFG_TLS_CERT is defined
-  - V4_CFG_TLS_GENERATOR is set to openssl
+*Values can be use to configure the tls generator when V4_CFG_TLS_MODE is not set to `disabled` and one of the following conditions is met.*
+  - V4_CFG_TLS_GENERATOR is set to `cert-manager` and no V4_CFG_TLS_CERT/V4_CFG_TLS_KEY are defined
+  - V4_CFG_TLS_GENERATOR is set to `openssl`
 
 ## Postgres
 
