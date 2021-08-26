@@ -290,7 +290,7 @@ Cluster-autoscaler is currently only used for AWS EKS clusters. GCP GKE and Azur
 | CLUSTER_AUTOSCALER_CHART_NAME| cluster-autoscaler helm chart name | string | cluster-autoscaler | false | | baseline |
 | CLUSTER_AUTOSCALER_CHART_VERSION | cluster-autoscaler helm chart version | string | 9.9.2 | false | | baseline |
 | CLUSTER_AUTOSCALER_CONFIG | cluster-autoscaler helm values | string | see [here](../roles/baseline/defaults/main.yml) | false | | baseline |
-| CLUSTER_AUTOSCALER_ACCOUNT | cluster autoscaler aws role arn | string | null | false | Required to enable cluster-autoscaler on AWS | baseline |
+| CLUSTER_AUTOSCALER_ACCOUNT | cluster autoscaler aws role arn | string | | false | Required to enable cluster-autoscaler on AWS | baseline |
 | CLUSTER_AUTOSCALER_LOCATION | aws region where kubernetes cluster resides | string | us-east-1 | false | | baseline |
 
 ### Ingress-nginx
