@@ -200,7 +200,10 @@ Postgres servers can be defined with the postgres_servers variable which is a ma
 
 ```bash
 V4_CFG_POSTGRES_SERVERS:
-  default: {}
+  default:
+    ...
+  other_server:
+    ...
   ...
 ```
 
