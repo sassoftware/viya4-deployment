@@ -305,6 +305,8 @@ Cluster-autoscaler is currently only used for AWS EKS clusters. GCP GKE and Azur
 
 ### Metrics Server
 
+Metric server is currently only used for AWS EKS clusters. GCP GKE and Azure AKS already have a metric server provided by default.
+
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | METRICS_SERVER_ENABLED | Whether to deploy tool | bool | true | false | | baseline |
