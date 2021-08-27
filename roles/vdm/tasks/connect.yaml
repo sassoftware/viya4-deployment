@@ -16,7 +16,7 @@
 - block:
   - name: connect - SAS/CONNECT FQDN to the SAN DNS list for cert-manager
     set_fact:
-      V4_CFG_CM_CERTIFICATE_ADDITIONAL_SAN_DNS: "{{ V4_CFG_CM_CERTIFICATE_ADDITIONAL_SAN_DNS }} {{ V4_CFG_CONNECT_FQDN }}"
+      V4_CFG_TLS_ADDITIONAL_SAN_DNS: "{{ V4_CFG_TLS_ADDITIONAL_SAN_DNS }} {{ V4_CFG_CONNECT_FQDN }}"
   - name: connect - Configure Customer Provided Server Certificates
     overlay_facts:
       cadence_name: "{{ V4_CFG_CADENCE_NAME }}"

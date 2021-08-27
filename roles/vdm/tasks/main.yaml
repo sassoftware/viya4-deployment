@@ -120,8 +120,8 @@
     - uninstall
     - update
 
-- name: Include Ingress
-  include_tasks: ingress.yaml
+- name: Include TLS
+  include_tasks: tls.yaml
   tags:
     - install
     - uninstall

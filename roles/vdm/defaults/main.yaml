@@ -36,6 +36,7 @@ V4_CFG_TLS_MODE: "front-door" # other valid values are full-stack and disabled
 V4_CFG_TLS_CERT: null
 V4_CFG_TLS_KEY: null
 V4_CFG_TLS_TRUSTED_CA_CERTS: null
+V4_CFG_TLS_GENERATOR: cert-manager # [cert-manager,openssl]
 
 V4_CFG_CONSUL_ENABLE_LOADBALANCER: false
 V4_CFG_EMBEDDED_LDAP_ENABLE: false
@@ -57,9 +58,14 @@ V4_CFG_CLUSTER_NODE_POOL_MODE: "standard"
 # - $deploy/sas-bases/overlays/network/istio/security/generators/truststore-only-tls-generators.yaml
 # therefore, we will not document this variable.
 V4_CFG_CM_ISSUER_NAME: sas-viya-issuer
-V4_CFG_CM_CERTIFICATE_DURATION: 17531h
+
+V4_CFG_CM_CERTIFICATE_DURATION: 17531
 V4_CFG_CM_CERTIFICATE_ADDITIONAL_SAN_DNS: ""
 V4_CFG_CM_CERTIFICATE_ADDITIONAL_SAN_IP: ""
+
+V4_CFG_TLS_DURATION: "{{ V4_CFG_CM_CERTIFICATE_DURATION }}"
+V4_CFG_TLS_ADDITIONAL_SAN_DNS: "{{ V4_CFG_CM_CERTIFICATE_ADDITIONAL_SAN_DNS }}"
+V4_CFG_TLS_ADDITIONAL_SAN_IP: "{{ V4_CFG_CM_CERTIFICATE_ADDITIONAL_SAN_IP }}"
 
 V4_ORDERS_CLI_VERSION: 1.1.0
 

@@ -10,6 +10,8 @@
     kubeconfig: "{{ KUBECONFIG }}"
     create_namespace: true
     wait: true
+  when:
+    - CERT_MANAGER_ENABLED
   tags:
     - install
     - update

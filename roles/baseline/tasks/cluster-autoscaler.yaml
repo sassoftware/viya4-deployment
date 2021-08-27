@@ -9,6 +9,8 @@
     values: "{{ CLUSTER_AUTOSCALER_CONFIG }}"
     kubeconfig: "{{ KUBECONFIG }}"
     wait: true
+  when:
+  - CLUSTER_AUTOSCALER_ENABLED
   tags:
     - install
     - update

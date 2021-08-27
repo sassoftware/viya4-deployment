@@ -20,12 +20,16 @@ Supported configuration variables are listed in the table below.  All variables 
     - [Monitoring](#monitoring)
     - [Logging](#logging)
   - [TLS](#tls)
-    - [Cert-manager](#cert-manager)
   - [Postgres](#postgres)
   - [CAS](#cas)
   - [CONNECT](#connect)
   - [Miscellaneous](#miscellaneous)
   - [3rd Party tools](#3rd-party-tools)
+    - [Cert-manager](#cert-manager)
+    - [Cluster Autoscaler](#cluster-autoscaler)
+    - [Ingress-nginx](#ingress-nginx)
+    - [Metrics Server](#metrics-server)
+    - [NFS Client](#nfs-client)
 
 ## BASE
 
@@ -171,22 +175,24 @@ When setting V4_CFG_MANAGE_STORAGE to true, A new storage classes will be create
 
 ## TLS
 
+Viya 4 supports 2 different types of certificate generators, Cert-manager and openssl. When using the openssl certificate generator, you must provide: V4_CFG_TLS_CERT, V4_CFG_TLS_KEY, V4_CFG_TLS_TRUSTED_CA_CERTS. Also, the openssl certificate generator cannot be used in conjunction with the viya4-monitoring-kubernetes stack.
+
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_TLS_MODE | Which TLS mode to configure | string | front-door | false | Valid values are full-stack, front-door and disabled. When deploying full-stack you must set V4_CFG_TLS_TRUSTED_CA_CERTS to trust external postgres server ca | all |
+| V4_CFG_TLS_GENERATOR | Which tool to use for certificate generation | string | cert-manager | false | Supported values: [`cert-manager`,`openssl`]. | viya, cluster-logging, cluster-monitoring |
+| V4_CFG_TLS_MODE | Which TLS mode to configure | string | front-door | false | Supported values: [`full-stack`,`front-door`,`disabled.`] When deploying full-stack you must set V4_CFG_TLS_TRUSTED_CA_CERTS to trust external postgres server ca | all |
 | V4_CFG_TLS_CERT | Path to ingress certificate file | string | | false | If specified, used instead of cert-manager issued certificates | viya |
 | V4_CFG_TLS_KEY | Path to ingress key file | string | | false | Required when V4_CFG_TLS_CERT is specified | viya |
 | V4_CFG_TLS_TRUSTED_CA_CERTS | Path to directory containing only PEM encoded trusted CA certificates files | string | | false | Required when V4_CFG_TLS_CERT is specified. Must include all the CAs in the trust chain for V4_CFG_TLS_CERT. Can be used with or without V4_CFG_TLS_CERT to specify any additionally trusted CAs  | viya |
+| V4_CFG_TLS_DURATION | Certificate time to expiry in hours | int | 17531 | false | See note below | viya |
+| V4_CFG_TLS_ADDITIONAL_SAN_DNS | A space separated list of additional SAN DNS entries that you want added to generated certificates. | string | | false | See note below  | viya |
+| V4_CFG_TLS_ADDITIONAL_SAN_IP | A space separated list of additional SAN IP addresses that you want added to generated certificates. | string | | false | See note below  | viya |
 
-### Cert-manager
+Notes:
 
-When setting V4_CFG_TLS_MODE to a value other than "disabled" and no V4_CFG_TLS_CERT is specified, cert-manager will be used to issue TLS certificates and the following variables can be set to modify cert-manager behavior:
-
-| Name | Description | Type | Default | Required | Notes | Tasks |
-| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_CM_CERTIFICATE_DURATION | Certificate time to expiry in hours | string | 17531h | false | | viya |
-| V4_CFG_CM_CERTIFICATE_ADDITIONAL_SAN_DNS | A list of space separated, additional SAN DNS entries, specific to your ingress architecture, that you want added to certificates issued by the sas-viya-issuer.  For example, the aliases of an external load balancer | string | | false | | viya |
-| V4_CFG_CM_CERTIFICATE_ADDITIONAL_SAN_IP | A list of space separated, additional SAN IP addresses, specific to your ingress architecture, that you want added to certificates issued by the sas-viya-issuer.  For example, the IP address of an external load balancer | string | | false | | viya |
+*Values can be use to configure the tls generator when V4_CFG_TLS_MODE is not set to `disabled` and one of the following conditions is met.*
+  - V4_CFG_TLS_GENERATOR is set to `cert-manager` and no V4_CFG_TLS_CERT/V4_CFG_TLS_KEY are defined
+  - V4_CFG_TLS_GENERATOR is set to `openssl`
 
 ## Postgres
 
@@ -194,7 +200,10 @@ Postgres servers can be defined with the postgres_servers variable which is a ma
 
 ```bash
 V4_CFG_POSTGRES_SERVERS:
-  default: {}
+  default:
+    ...
+  other_server:
+    ...
   ...
 ```
 
@@ -262,36 +271,61 @@ V4_CFG_POSTGRES_SERVERS:
 
 ## 3rd Party tools
 
+### Cert-manager
+
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
+| CERT_MANAGER_ENABLED | Whether to deploy tool | bool | true | false | | baseline |
 | CERT_MANAGER_NAMESPACE | cert-manager helm install namespace | string | cert-manager | false | | baseline |
 | CERT_MANAGER_CHART_URL | cert-manager helm chart url | string | https://charts.jetstack.io/ | false | | baseline |
 | CERT_MANAGER_CHART_NAME| cert-manager helm chart name | string | cert-manager| false | | baseline |
 | CERT_MANAGER_CHART_VERSION | cert-manager helm chart version | string | 1.3.0 | false | | baseline |
 | CERT_MANAGER_CONFIG | cert-manager helm values | string | see [here](../roles/baseline/defaults/main.yml) | false | | baseline |
-| | | | | | | |
+
+### Cluster Autoscaler
+
+Cluster-autoscaler is currently only used for AWS EKS clusters. GCP GKE and Azure AKS already have autoscaling features enabled by default.
+
+| Name | Description | Type | Default | Required | Notes | Tasks |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
+| CLUSTER_AUTOSCALER_ENABLED | Whether to deploy tool | bool | true | false | | baseline |
 | CLUSTER_AUTOSCALER_CHART_URL | cluster-autoscaler helm chart url | string | https://kubernetes.github.io/autoscaler | false | | baseline |
 | CLUSTER_AUTOSCALER_CHART_NAME| cluster-autoscaler helm chart name | string | cluster-autoscaler | false | | baseline |
 | CLUSTER_AUTOSCALER_CHART_VERSION | cluster-autoscaler helm chart version | string | 9.9.2 | false | | baseline |
 | CLUSTER_AUTOSCALER_CONFIG | cluster-autoscaler helm values | string | see [here](../roles/baseline/defaults/main.yml) | false | | baseline |
-| CLUSTER_AUTOSCALER_ACCOUNT | cluster autoscaler aws role arn | string | null | false | Required to enable cluster-autoscaler on AWS | baseline |
+| CLUSTER_AUTOSCALER_ACCOUNT | cluster autoscaler aws role arn | string | | false | Required to enable cluster-autoscaler on AWS | baseline |
 | CLUSTER_AUTOSCALER_LOCATION | aws region where kubernetes cluster resides | string | us-east-1 | false | | baseline |
-| | | | | | | |
+
+### Ingress-nginx
+
+| Name | Description | Type | Default | Required | Notes | Tasks |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | INGRESS_NGINX_NAMESPACE | ingress-nginx helm install namespace | string | ingress-nginx | false | | baseline |
 | INGRESS_NGINX_CHART_URL | ingress-nginx helm chart url | string | https://kubernetes.github.io/ingress-nginx | false | | baseline |
 | INGRESS_NGINX_CHART_NAME | ingress-nginx helm chart name | string | ingress-nginx | false | | baseline |
 | INGRESS_NGINX_CHART_VERSION | ingress-nginx helm chart version | string | 3.20.1| false | | baseline |
 | INGRESS_NGINX_CONFIG | ingress-nginx helm values | string | see [here](../roles/baseline/defaults/main.yml) | false | | baseline |
-| | | | | | | |
+
+### Metrics Server
+
+Metric server is currently only used for AWS EKS clusters. GCP GKE and Azure AKS already have a metric server provided by default.
+
+| Name | Description | Type | Default | Required | Notes | Tasks |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
+| METRICS_SERVER_ENABLED | Whether to deploy tool | bool | true | false | | baseline |
 | METRICS_SERVER_CHART_URL | metrics-server helm chart url | string | https://charts.bitnami.com/bitnami/ | false | If an existing metric-server is installed, these options will be ignored | baseline |
 | METRICS_SERVER_CHART_NAME | metrics-server helm chart name | string | metrics-server | false | If an existing metric-server is installed, these options will be ignored | baseline |
 | METRICS_SERVER_CHART_VERSION | metrics-server helm chart version | string | 5.3.5 | false | If an existing metric-server is installed, these options will be ignored | baseline |
 | METRICS_SERVER_CONFIG | metrics-server helm values | string | see [here](../roles/baseline/defaults/main.yml) | false | If an existing metric-server is installed, these options will be ignored | baseline |
-| | | | | | | |
+
+### NFS Client
+
+The nfs-client is currently supported by the newer nfs-subdir-external-provisioner.
+
+| Name | Description | Type | Default | Required | Notes | Tasks |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | NFS_CLIENT_NAMESPACE | nfs-subdir-external-provisioner helm install namespace | string | nfs-client | false | | baseline |
 | NFS_CLIENT_CHART_URL | nfs-subdir-external-provisioner helm chart url | string | https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/ | false | | baseline |
 | NFS_CLIENT_CHART_NAME | nfs-subdir-external-provisioner helm chart name | string | nfs-subdir-external-provisioner | false | | baseline |
 | NFS_CLIENT_CHART_VERSION | nfs-subdir-external-provisioner helm chart version | string | 4.0.8| false | | baseline |
 | NFS_CLIENT_CONFIG | nfs-subdir-external-provisioner helm values | string | see [here](../roles/baseline/defaults/main.yml) | false | | baseline |
-
-

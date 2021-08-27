@@ -3,7 +3,19 @@
 # Each can have either customer provided certs or cert-manager generated certs
 # Regardless of type or source of certificates, additional root CA certs can be provided
 # See sas-bases/examples/security/README.md for full details
-- name: ingress - base
+- name: tls - openssl-generator check
+  fail:
+    msg: "When using openssl-generator and V4_CFG_TLS_MODE is not 'disabled' you must provide: V4_CFG_TLS_CERT, V4_CFG_TLS_KEY, V4_CFG_TLS_TRUSTED_CA_CERTS"
+  when:
+    - V4_CFG_TLS_MODE != "disabled"
+    - V4_CFG_TLS_GENERATOR == "openssl"
+    - V4_CFG_TLS_CERT is none or V4_CFG_TLS_KEY is none or V4_CFG_TLS_TRUSTED_CA_CERTS is none
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: tls - base
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
@@ -16,7 +28,7 @@
     - uninstall
     - update
 
-- name: ingress - http facts
+- name: tls - http facts
   set_fact:
     V4_CFG_DEPLOYMENT_URL_PREFIX: 'http://'
     V4_CFG_DEPLOYMENT_URL_PORT: ':80'
@@ -28,17 +40,19 @@
     - update
 
 - block:
-  - name: ingress - https facts
+  - name: tls - https facts
     set_fact:
       V4_CFG_DEPLOYMENT_URL_PREFIX: 'https://'
       V4_CFG_DEPLOYMENT_URL_PORT: ':443'
-  - name: ingress - security
+  - name: tls - security
     overlay_facts:
       cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
       cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
       existing: "{{ vdm_overlays }}"
       add:
         - { resources: "overlays/cert-manager-issuer" }
+    when:
+      - V4_CFG_TLS_GENERATOR == "cert-manager"
   when:
     - V4_CFG_TLS_MODE != "disabled"
   tags:
@@ -46,7 +60,7 @@
     - uninstall
     - update
 
-- name: ingress - Full-stack TLS
+- name: tls - Full-stack TLS
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
@@ -64,7 +78,7 @@
     - uninstall
     - update
 
-- name: ingress - Front-door TLS
+- name: tls - Front-door TLS
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
@@ -80,7 +94,7 @@
     - uninstall
     - update
 
-- name: ingress - Truststores only
+- name: tls - Truststores only
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
@@ -96,7 +110,7 @@
     - uninstall
     - update
 
-- name: ingress - customer provided ca certificates
+- name: tls - customer provided ca certificates
   block:
     - copy:
         src: "{{ (V4_CFG_TLS_TRUSTED_CA_CERTS|realpath) + '/' }}"
@@ -119,7 +133,7 @@
     - uninstall
     - update
 
-- name: ingress - customer provided server certificates
+- name: tls - customer provided server certificates
   block:
   - copy:
       src: "{{ item.src }}"
@@ -145,7 +159,7 @@
     - uninstall
     - update
 
-- name: ingress - Cert-manager Certificate Generation
+- name: tls - Certificate Generation
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
@@ -155,15 +169,14 @@
       - { generators: "customer-provided-merge-sas-certframe-configmap.yaml", vdm: true }
   when:
     - V4_CFG_TLS_MODE != "disabled"
-    - V4_CFG_TLS_CERT is none
-    - V4_CFG_TLS_KEY is none
+    - (V4_CFG_TLS_CERT is none and V4_CFG_TLS_KEY is none and V4_CFG_TLS_GENERATOR == "cert-manager") or V4_CFG_TLS_GENERATOR == "openssl"
   tags:
     - install
     - uninstall
     - update
 
 
-- name: ingress - Consul UI
+- name: tls - Consul UI
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
