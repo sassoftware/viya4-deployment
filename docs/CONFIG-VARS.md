@@ -175,7 +175,7 @@ When setting V4_CFG_MANAGE_STORAGE to true, A new storage classes will be create
 
 ## TLS
 
-Users can either bring their own certificates our use one of the supported certificate generators. Cert-manager and SAS openssl generator are currently supported. When using SAS openssl generator, you must provide: V4_CFG_TLS_CERT, V4_CFG_TLS_KEY, V4_CFG_TLS_TRUSTED_CA_CERTS. Also, the openssl generator cannot be used in conjunction with the viya4-monitoring-kubernetes stack.
+Viya 4 supports 2 different types of certificate generators, Cert-manager and openssl. When using the openssl certificate generator, you must provide: V4_CFG_TLS_CERT, V4_CFG_TLS_KEY, V4_CFG_TLS_TRUSTED_CA_CERTS. Also, the openssl certificate generator cannot be used in conjunction with the viya4-monitoring-kubernetes stack.
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
