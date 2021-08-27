@@ -5,7 +5,7 @@
 # See sas-bases/examples/security/README.md for full details
 - name: tls - openssl-generator check
   fail:
-    msg: "When using openssl-generator you must provide: V4_CFG_TLS_CERT, V4_CFG_TLS_KEY, V4_CFG_TLS_TRUSTED_CA_CERTS"
+    msg: "When using openssl-generator and V4_CFG_TLS_MODE is not 'disabled' you must provide: V4_CFG_TLS_CERT, V4_CFG_TLS_KEY, V4_CFG_TLS_TRUSTED_CA_CERTS"
   when:
     - V4_CFG_TLS_MODE != "disabled"
     - V4_CFG_TLS_GENERATOR == "openssl"

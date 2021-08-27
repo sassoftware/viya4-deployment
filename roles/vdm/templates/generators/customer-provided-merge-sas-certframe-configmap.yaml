@@ -4,7 +4,12 @@ metadata:
   name: sas-certframe-user-config
 behavior: merge
 literals:
-- SAS_CERTIFICATE_DURATION={{ V4_CFG_TLS_DURATION }}{{ "h" if V4_CFG_TLS_GENERATOR == "cert-manager" else "" }}
+- SAS_CERTIFICATE_DURATION=
+{%- if V4_CFG_TLS_GENERATOR == "cert-manager" %}
+{{ V4_CFG_TLS_DURATION }}h
+{% else %}
+"{{ ((V4_CFG_TLS_DURATION|int)/24)|int }}"
+{% endif %}
 - SAS_CERTIFICATE_ADDITIONAL_SAN_DNS={{ V4_CFG_TLS_ADDITIONAL_SAN_DNS }}
 - SAS_CERTIFICATE_ADDITIONAL_SAN_IP={{ V4_CFG_TLS_ADDITIONAL_SAN_IP }}
 {% if V4_CFG_TLS_GENERATOR == "openssl" %}
