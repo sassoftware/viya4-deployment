@@ -48,7 +48,8 @@
       - { transformers: "overlays/required/transformers.yaml", priority: 60 }
       - { generators: "sas-license.yaml", vdm: true }
       - { generators: "sas-shared-config.yaml", vdm: true }
-      - { generators: "sas-consul-config.yaml", vdm: true }
+      - { generators: "sas-consul-config.yaml", vdm: true , max: "2021.1" }
+      - { generators: "sas-consul-config-secret.yaml", vdm: true, min: "2021.1.1" }
       - { generators: "ingress-input.yaml", vdm: true }
   tags:
     - install
