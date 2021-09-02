@@ -79,3 +79,14 @@
     - install
     - uninstall
     - update
+
+- name: assets - Copy user-provided license file
+  copy:
+    src: "{{ V4_CFG_LICENSE}}"
+    dest: "{{ DEPLOY_DIR }}/site-config/license.jwt"
+  when:
+    - V4_CFG_LICENSE is not none
+  tags:
+    - install
+    - uninstall
+    - update
