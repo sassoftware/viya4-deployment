@@ -14,7 +14,7 @@
     api_version: v1
     kind: Secret
     name: v4m-grafana
-    namespace: monitoring
+    namespace: "{{ V4M_MONITORING_NAMESPACE }}"
     kubeconfig: "{{ KUBECONFIG }}"
   register: monitoring_creds
   tags:
@@ -64,7 +64,7 @@
       apiVersion: v1
       metadata:
         name: "grafana-ingress-tls-secret"
-        namespace: "monitoring"
+        namespace: "{{ V4M_MONITORING_NAMESPACE }}"
       data:
         tls.crt: >-
           {{ lookup('file', V4M_GRAFANA_CERT ) |b64encode }}
@@ -87,7 +87,7 @@
       apiVersion: v1
       metadata:
         name: "prometheus-ingress-tls-secret"
-        namespace: "monitoring"
+        namespace: "{{ V4M_MONITORING_NAMESPACE }}"
       data:
         tls.crt: >-
           {{ lookup('file', V4M_PROMETHEUS_CERT ) |b64encode }}
@@ -110,7 +110,7 @@
       apiVersion: v1
       metadata:
         name: "alertmanager-ingress-tls-secret"
-        namespace: "monitoring"
+        namespace: "{{ V4M_MONITORING_NAMESPACE }}"
       data:
         tls.crt: >-
           {{ lookup('file', V4M_ALERTMANAGER_CERT ) |b64encode }}
@@ -135,7 +135,7 @@
   community.kubernetes.k8s:
     api_version: v1
     kind: Namespace
-    name: "monitoring"
+    name: "{{ V4M_MONITORING_NAMESPACE }}"
     wait: true
     kubeconfig: "{{ KUBECONFIG }}"
     state: absent

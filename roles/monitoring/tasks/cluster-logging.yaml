@@ -13,7 +13,7 @@
   community.kubernetes.k8s_info:
     api_version: v1
     kind: Secret
-    namespace: "logging"
+    namespace: "{{ V4M_LOGGING_NAMESPACE }}"
     kubeconfig: "{{ KUBECONFIG }}"
     label_selectors:
       - managed-by = v4m-es-script
@@ -72,7 +72,7 @@
       apiVersion: v1
       metadata:
         name: "elasticsearch-ingress-tls-secret"
-        namespace: "logging"
+        namespace: "{{ V4M_LOGGING_NAMESPACE }}"
       data:
         tls.crt: >-
           {{ lookup('file', V4M_ELASTICSEARCH_CERT ) |b64encode }}
@@ -95,7 +95,7 @@
       apiVersion: v1
       metadata:
         name: "kibana-ingress-tls-secret"
-        namespace: "logging"
+        namespace: "{{ V4M_LOGGING_NAMESPACE }}"
       data:
         tls.crt: >-
           {{ lookup('file', V4M_KIBANA_CERT ) |b64encode }}
@@ -120,7 +120,7 @@
   community.kubernetes.k8s:
     api_version: v1
     kind: Namespace
-    name: "logging"
+    name: "{{ V4M_LOGGING_NAMESPACE }}"
     wait: true
     kubeconfig: "{{ KUBECONFIG }}"
     state: absent
