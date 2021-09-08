@@ -39,7 +39,7 @@ Supported configuration variables are listed in the table below.  All variables 
 | LOADBALANCER_SOURCE_RANGES | IPs to allow to ingress | [string] | | true | When deploying in the cloud, be sure to add the cloud nat ip | baseline, viya |
 | BASE_DIR | Path to store persistent files | string | $HOME | false | | all |
 | KUBECONFIG | Path to kubeconfig file | string | | true | | viya |
-| V4_CFG_SITEDEFAULT | Path to sitedefault file | string | | false | When not set [sitedefault](examples/sitedefault.yaml) is used | viya |
+| V4_CFG_SITEDEFAULT | Path to sitedefault file | string | | false | When not set [sitedefault](../examples/sitedefault.yaml) is used | viya |
 | V4_CFG_SSSD | Path to sssd file | string | | false | | viya |
 
 ## Cloud
