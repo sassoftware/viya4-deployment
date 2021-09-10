@@ -39,7 +39,7 @@ Supported configuration variables are listed in the table below.  All variables 
 | LOADBALANCER_SOURCE_RANGES | IPs to allow to ingress | [string] | | true | When deploying in the cloud, be sure to add the cloud nat ip | baseline, viya |
 | BASE_DIR | Path to store persistent files | string | $HOME | false | | all |
 | KUBECONFIG | Path to kubeconfig file | string | | true | | viya |
-| V4_CFG_SITEDEFAULT | Path to sitedefault file | string | | false | When not set [sitedefault](examples/sitedefault.yaml) is used | viya |
+| V4_CFG_SITEDEFAULT | Path to sitedefault file | string | | false | When not set [sitedefault](../examples/sitedefault.yaml) is used | viya |
 | V4_CFG_SSSD | Path to sssd file | string | | false | | viya |
 
 ## Cloud
@@ -144,6 +144,7 @@ When setting V4_CFG_MANAGE_STORAGE to true, A new storage classes will be create
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
+| V4M_MONITORING_NAMESPACE | Namespace for the monitoring resources | string | monitoring | false | | cluster-monitoring |
 | V4M_PROMETHEUS_FQDN | FQDN to use for prometheus ingress | string | prometheus.<V4M_BASE_DOMAIN> | false | | cluster-monitoring |
 | V4M_PROMETHEUS_CERT | Path to tls certificate to use for prometheus ingress | string |<V4M_CERT> | false | If both this and V4M_CERT are not set a self-signed cert will be used | cluster-monitoring |
 | V4M_PROMETHEUS_KEY | Path to tls key to use for prometheus ingress | string | <V4M_KEY> | false | If both this and V4M_KEY are not set a self-signed cert will be used | cluster-monitoring |
@@ -161,6 +162,7 @@ When setting V4_CFG_MANAGE_STORAGE to true, A new storage classes will be create
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
+| V4M_LOGGING_NAMESPACE | Namespace for the logging resources | string | logging | false | | cluster-logging |
 | V4M_KIBANA_FQDN | FQDN to use for kibana ingress | string | kibana.<V4M_BASE_DOMAIN> | false | | cluster-logging |
 | V4M_KIBANA_CERT | Path to tls certificate to use for kibana ingress | string |<V4M_CERT> | false | If both this and V4M_CERT are not set a self-signed cert will be used | cluster-logging |
 | V4M_KIBANA_KEY | Path to tls key to use for kibana ingress | string | <V4M_KEY> | false | If both this and V4M_KEY are not set a self-signed cert will be used | cluster-logging |

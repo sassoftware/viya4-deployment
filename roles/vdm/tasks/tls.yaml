@@ -85,6 +85,7 @@
     existing: "{{ vdm_overlays }}"
     add:
       - { transformers: "overlays/network/ingress/security/transformers/cas-connect-tls-transformers.yaml", max: "2021.1.2", priority: 51 }
+      - { transformers: "overlays/network/ingress/security/transformers/ingress-tls-transformers.yaml", max: "2021.1.2", priority: 51 }
       - { components: "components/security/core/base/front-door-tls", min: "2021.1.3" }
       - { components: "components/security/network/networking.k8s.io/ingress/nginx.ingress.kubernetes.io/front-door-tls", min: "2021.1.3" }
   when:
