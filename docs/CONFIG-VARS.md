@@ -214,7 +214,7 @@ V4_CFG_POSTGRES_SERVERS:
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | internal | Whether the database is internal or external | bool | | true | All servers must but internal or all must be external | viya |
-| database | Database name | string | Database server role | false | Default database name for default server is SharedServices | viya |
+| database | Database name | string | SharedServices | false | Default database name for default server is SharedServices | viya |
 | admin | External postgres username | string | | false | Required for external postgres servers | viya |
 | password | External postgres password | string | | false | Required for external postgres servers | viya |
 | fqdn | External postgres ip/fqdn | string | | false | Required for external postgres servers | viya |
