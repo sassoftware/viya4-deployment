@@ -23,6 +23,9 @@ V4_CFG_INGRESS_FQDN: <desired_fqdn>
 V4_CFG_TLS_MODE: "full-stack" # [full-stack|front-door|disabled]
 
 ## Postgres
+V4_CFG_POSTGRES_SERVERS:
+  default:
+    internal: true
 
 ## LDAP
 V4_CFG_EMBEDDED_LDAP_ENABLE: true
