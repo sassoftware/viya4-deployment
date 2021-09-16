@@ -41,6 +41,7 @@ Supported configuration variables are listed in the table below.  All variables 
 | KUBECONFIG | Path to kubeconfig file | string | | true | | viya |
 | V4_CFG_SITEDEFAULT | Path to sitedefault file | string | | false | When not set [sitedefault](../examples/sitedefault.yaml) is used | viya |
 | V4_CFG_SSSD | Path to sssd file | string | | false | | viya |
+| INFRA_MODE | Assume Public vs. Private Cluster | string | "standard" (public cluster) | false | Possible values: "standard" (public cluster), "private" (p rivate cluster). Setting this option to "private" adds options to the Ingress Controller that create a LoadBalancer with private IP(s) only | baseline |
 
 ## Cloud
 

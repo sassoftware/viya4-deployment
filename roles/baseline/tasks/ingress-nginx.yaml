@@ -2,7 +2,7 @@
 - set_fact:
     INGRESS_NGINX_CONFIG: "{{ INGRESS_NGINX_CONFIG |combine(private_cluster[PROVIDER], recursive=True)}}"
   when:
-    - PRIVATE_CLUSTER_ENABLE
+    - INFRA_MODE == "private"
     - PROVIDER in private_cluster
   tags:
     - install
