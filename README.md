@@ -2,56 +2,56 @@
 
 ## Overview
 
-This project contains Ansible code that creates a baseline in an existing kubernetes environment for use with Viya 4+, generates the manifest for an order, and then can also deploy that order into the kubernetes environment specified. Here is a list of things this tool can do - 
+This project contains Ansible code that creates a baseline cluster in an existing Kubernetes environment for use with SAS Viya 4, generates the manifest for a SAS Viya software order, and then deploys that order into the specified Kubernetes environment. Here is a list of tasks that this tool can perform: 
 
-- Prepare K8s cluster
+- Prepare Kubernetes cluster
   - Deploy [ingress-nginx](https://kubernetes.github.io/ingress-nginx)
   - Deploy [nfs-subdir-external-provisioner](https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner) for PVs
-  - Deploy [cert-manager](https://github.com/jetstack/cert-manager) if TLS to be configured
+  - Deploy [cert-manager](https://github.com/jetstack/cert-manager) for TLS
   - Deploy [metrics-server](https://github.com/bitnami/charts/tree/master/bitnami/metrics-server/)
-  - Manage storageclass
+  - Manage storageClass settings
   
-- Deploy Viya
-  - Retrieve the deployment assets using [Viya Orders CLI](https://github.com/sassoftware/viya4-orders-cli)
-  - Retrieve cloud configuration from tfstate if using a Viya 4 IaC project
-  - Run the [kustomize](https://github.com/kubernetes-sigs/kustomize) process and deploy Viya
-  - Create affinity rules such that processes are targeted to appropriately labeled nodes.
-  - Create pod disruption budgets for each service such that cluster maintenance will not let the last instance of a service go down during a node maintenance operation for example.
-  - kustomize such that data and homes directories are mounted on cas nodes and on compute server instances
-  - Deploy [Viya Monitoring for Kubernetes](https://github.com/sassoftware/viya4-monitoring-kubernetes)
+- Deploy SAS Viya
+  - Retrieve the deployment assets using [SAS Viya Orders CLI](https://github.com/sassoftware/viya4-orders-cli)
+  - Retrieve cloud configuration from tfstate (if using a SAS Viya 4 IaC project)
+  - Run the [kustomize](https://github.com/kubernetes-sigs/kustomize) process and deploy SAS Viya
+  - Create affinity rules such that processes are targeted to appropriately labeled nodes
+  - Create pod disruption budgets for each service such that cluster maintenance will not let the last instance of a service go down (during a node maintenance operation, for example)
+  - Use kustomize to mount user private (home) directories and data directories on CAS nodes and on compute server instances
+  - Deploy [SAS Viya Monitoring for Kubernetes](https://github.com/sassoftware/viya4-monitoring-kubernetes)
   - Deploy MPP or SMP CAS servers
 
-- Manage Viya Deployments
-  - Organize and persist config for any number of Viya deployments across namespaces, cluster, or cloud providers.
+- Manage SAS Viya Deployments
+  - Organize and persist configuration for any number of SAS Viya deployments across namespaces, clusters, or cloud providers.
 
 ## Prerequisites
 
-### Operational knowledge of 
+Use of these tools requires operational knowledge of the following technologies: 
 
 - [Ansible](https://docs.ansible.com/ansible/latest/user_guide/index.html#getting-started)
 - [Docker](https://www.docker.com/)
 - [Kubernetes](https://kubernetes.io/docs/concepts/)
-- Cloud Provider
+- Your selected cloud provider
 
-### Technical
+### Technical Prerequisites
 
-- [Ansible and docker dependencies](docs/user/Dependencies.md)
+- [Ansible and Docker dependencies](docs/user/Dependencies.md)
 
-### Infrastructure
+### Infrastructure Prerequisites
 
-Prior to running this playbook some infrastructure needs to be in place
+The viya4-deployment playbook requires some infrastructure.
 
-#### Kubernetes cluster
+#### Kubernetes Cluster
 
-You can either bring your own K8s cluster or use one of the Viya 4 IAC projects to create a cluster using terraform.
-  - [Viya 4 IaC for AWS](https://github.com/sassoftware/viya4-iac-aws)
-  - [Viya 4 IaC for Azure](https://github.com/sassoftware/viya4-iac-azure)
-  - [Viya 4 IaC for GCP](https://github.com/sassoftware/viya4-iac-gcp)
+You can either bring your own Kubernetes cluster or use one of the SAS Viya 4 IaC projects to create a cluster using Terraform scripts:
+  - [SAS Viya 4 IaC for AWS](https://github.com/sassoftware/viya4-iac-aws)
+  - [SAS Viya 4 IaC for Microsoft Azure](https://github.com/sassoftware/viya4-iac-azure)
+  - [SAS Viya 4 IaC for Google Cloud Platform](https://github.com/sassoftware/viya4-iac-gcp)
 
 
 #### Storage
 
-A file server that uses the network file system (NFS) protocol is the minimum requirement. You can either use one of the Viya 4 IAC projects to create the required storage or bring your own K8s storage. If the Viya 4 IAC projects were used to create an NFS server VM and JumpBox/Bastion server VM, the information can be passed in to viya4-deployment and the required directory structures below will be created. If bringing your own server that uses NFS, the following NFS exports folder structure must be created prior to running viya4-deployment. 
+A file server that uses the network file system (NFS) protocol is the minimum requirement for SAS Viya. You can either use one of the SAS Viya 4 IaC projects to create the required storage or bring your own Kubernetes storage. If you use the SAS Viya 4 IaC projects to create an NFS server VM and a jump box (bastion server) VM, the information can be passed in to viya4-deployment so that the required directory structures discussed in the next sections are created automatically. If you are bringing your own NFS-compliant server, the following NFS exports folder structure must be created prior to running viya4-deployment: 
 
   ```bash
   <export_dir>        <- NFS export path
@@ -63,61 +63,62 @@ A file server that uses the network file system (NFS) protocol is the minimum re
       /astores        <- location for astores
   ```
 
-#### JumpBox/Bastion
 
-The JumpBox/Bastion can manage NFS folders if you provide ssh access to a JumpBox that has the nfs storage mounted to it at <JUMP_SVR_RWX_FILESTORE_PATH>. If you wish to manage the nfs server yourself, the JumpBox is not required. Below is the JumpBox folder structure.
+#### Jump Virtual Machine
+
+The jump VM or bastion server can manage NFS folders if you provide SSH access to it. The jump VM must have the NFS storage mounted to it at `<JUMP_SVR_RWX_FILESTORE_PATH>`. If you want to manage the NFS server yourself, the jump VM is not required. Here is the required folder structure for the jump VM:
 
   ```bash
   <JUMP_SVR_RWX_FILESTORE_PATH>     <- mounted NFS export
     /pvs                            <- location for persistent volumes
     /<namespace>                    <- folder per namespace
       /bin                          <- location for open source directories
-      /data                         <- location for SAS and CAS Data
+      /data                         <- location for SAS and CAS data
       /homes                        <- location for user home directories to be mounted
-      /astores                      <- location for astores
+      /astores                      <- location for ASTORES
   ```
 
 ## Getting Started
 
-### Clone this project
+### Clone this Project
 
-Run these commands in a Terminal session:
+Run the following commands in a terminal session:
 
 ```bash
-# clone this repo
+# clone this repository
 git clone https://github.com/sassoftware/viya4-deployment
 
 # move to directory
 cd viya4-deployment
 ```
 
-### Authenticating Ansible to access Cloud Provider
+### Authenticating Ansible to Access Cloud Provider
 
 See [Ansible Cloud Authentication](./docs/user/AnsibleCloudAuthentication.md) for details.
 
-**NOTE:** At this time, only required for GCP with external postgres
+**NOTE:** At this time, additional setup is only required for GCP with external PostgreSQL.
 
 ### Customize Input Values
 
-The playbook uses ansible vars for configuration. It is recommended to encrypt both this file and the other configs (sitedefault, kubeconfig, and tfstate) using [ansible vault](https://docs.ansible.com/ansible/latest/user_guide/vault.html).
+The playbook uses Ansible variables for configuration. SAS recommends that you encrypt both this file and the other configuration files (sitedefault, kubeconfig, and tfstate) using [Ansible Vault](https://docs.ansible.com/ansible/latest/user_guide/vault.html).
 
-#### Ansible Vars
+#### Ansible Vars File
 
-The ansible vars file is the main configuration file. Create a file named ansible-vars.yaml to customize any input variable value. Example variable definition files are provided in the ./examples folder. For more details on the supported variables refer to [CONFIG-VARS.md](docs/CONFIG-VARS.md).
+The Ansible vars.yaml file is the main configuration file. Create a file named ansible-vars.yaml to specify values for any input variables. Example variable definition files are provided in the `./examples` folder. For more details on the supported variables, refer to [CONFIG-VARS.md](docs/CONFIG-VARS.md).
 
-#### Sitedefault
+#### (Optional) Sitedefault File
 
-This is a normal VIYA sitedefault file. If none is supplied, the example [sitedefault.yaml](examples/sitedefault.yaml) will be used.
+The value is the path to a standard SAS Viya sitedefault file. If none is supplied, the example [sitedefault.yaml](examples/sitedefault.yaml) file is used. A sitedefault file is not required for a SAS Viya deployment.
 
-#### Kubeconfig
+#### Kubeconfig File
 
-Kubernetes access config file. When integrating with SAS Viya 4 IaC projects, this value is not required.
+The Kubernetes access configuration file. If you used one of the SAS Viya 4 IaC projects to provision your cluster, this value is not required.
 
-#### Terraform state file
+#### Terraform State File
 
-When integrating with SAS Viya 4 IaC projects, you can provide the tfstate file to have the kubeconfig and other setting auto-discovered. The [ansible-vars-iac.yaml](examples/ansible-vars-iac.yaml) example file shows the values that need to be set when using the iac integration.
+If you used a SAS Viya 4 IaC project to provision your cluster, you can provide the resulting tfstate file to have the kubeconfig and other settings auto-discovered. The [ansible-vars-iac.yaml](examples/ansible-vars-iac.yaml) example file shows the values that must be set when using the SAS Viya 4 IaC integration.
 
-This following information is parsed from the integration:
+The following information is parsed from the integration:
 
 - Cloud
   - PROVIDER
@@ -127,7 +128,7 @@ This following information is parsed from the integration:
 - RWX Filestore
   - V4_CFG_RWX_FILESTORE_ENDPOINT
   - V4_CFG_RWX_FILESTORE_PATH
-- JumpBox
+- Jump VM
   - JUMP_SVR_HOST
   - JUMP_SVR_USER
   - JUMP_SVR_RWX_FILESTORE_PATH
@@ -141,7 +142,7 @@ This following information is parsed from the integration:
 
 ### Customize Deployment Overlays
 
-viya4-deployment fully manages the kustomization.yaml file. Users can make changes by adding custom overlays into sub-folders under the site-config folder. If this is the first time running the tool and customizations will be provided, create the folder structure below.
+The Ansible playbook in viya4-deployment fully manages the kustomization.yaml file. Users can make changes by adding custom overlays into subfolders under the `/site-config` folder. If this is the first time that you are running the playbook and plan to add customizations, create the following folder structure:
 
 ```bash
 <base_dir>            <- parent directory
@@ -151,18 +152,18 @@ viya4-deployment fully manages the kustomization.yaml file. Users can make chang
         ...           <- folders containing user defined customizations
 ```
 
-#### Viya Customizations
+#### SAS Viya Customizations
 
-Viya customizations are automatically read in from folders under site-config. To do so, first create the folder structure detailed in the [Customize Deployment Overlays](#customize-deployment-overlays) section above. Afterwards you can copy the desired overlays into a sub-folder under site-config. Once complete you can run the viya4-deployment tool and it will detect and add the overlays to the proper section in the kustomization.yaml
+SAS Viya deployment customizations are automatically read in from folders under `/site-config`. To provide customizations, first create the folder structure detailed in the [Customize Deployment Overlays](#customize-deployment-overlays) section above. Then copy the desired overlays into a subfolder under `/site-config`. When you have completed these steps, you can run the viya4-deployment playbook. It will detect and add the overlays to the proper section of the kustomization.yaml file for the SAS Viya deployment.
 
-<sub> Note that you do not need to modify the kustomization.yaml. The tool will automatically add the custom overlays to the kustomization.yaml file.<sub>
+**Note:** You do not need to modify the kustomization.yaml file. The playbook automatically adds the custom overlays to the kustomization.yaml file, based on the values you have specified.
 
-For Example:
+For example:
 
-- /deployments is the BASE_DIR
-- Cluster named demo-cluster
-- Namespace will be named demo-ns
-- Add in a custom overlay that modifies cas
+- `/deployments` is the BASE_DIR
+- The target cluster is named demo-cluster
+- The namespace will be named demo-ns
+- Add in a custom overlay that modifies the CAS server
 
 ```bash
   /deployments                        <- parent directory
@@ -173,18 +174,23 @@ For Example:
             /my_custom_overlay.yaml   <- my custom overlay
  ```
 
-#### Openldap Customizations
+#### OpenLDAP Customizations
 
-If the embedded openldap server is enabled, it is possible to change the users/groups that will be created. This can be done like any other customizations. First create the folder structure detailed in the [Customize Deployment Overlays](#customize-deployment-overlays). Then, copy the ./examples/openldap folder into the site-config folder. Inside the openldap folder is openldap-modify-users.yaml file. Modify it to match the desired setup. Once complete, run the viya4-deployment tool and it will see and use this setup when creating the openldap server.
+If the embedded OpenLDAP server is enabled, it is possible to change the users and groups that will be created. The required steps are similar to other customizations:
+1. Create the folder structure detailed in the [Customize Deployment Overlays](#customize-deployment-overlays). 
+2. Copy the `./examples/openldap` folder into the `/site-config` folder. 
+3. Locate the openldap-modify-users.yaml file in the `/openldap` folder. 
+4. Modify it to match the desired setup. 
+5. Run the viya4-deployment playbook. It will use this setup when creating the OpenLDAP server.
 
-<sub>Note that then can only be used when first deploying the openldap server. Afterwards, you can either delete and redeploy the openldap server with a new config or add users via ldapadd.</sub>
+**Note:** This method can only be used when you are first deploying the OpenLDAP server. Subsequently, you can either delete and redeploy the OpenLDAP server with a new configuration, or add users using `ldapadd`.</sub>
 
-For Example:
+For example:
 
-- /deployments is the BASE_DIR
-- Cluster named demo-cluster
-- Namespace will be named demo-ns
-- Add overlay with custom ldap setup
+- `/deployments` is the BASE_DIR
+- The cluster is named demo-cluster
+- The namespace will be named demo-ns
+- Add overlay with custom LDAP setup
 
 ```bash
   /deployments                          <- parent directory
@@ -195,24 +201,25 @@ For Example:
             /openldap-modify-users.yaml <- openldap overlay
  ```
 
-## Creating and Managing deployment
+## Creating and Managing Deployments
 
-Create and manage deployments by either: 
+Create and manage deployments using one of the following methods: 
 
-- running [Docker container](docs/user/DockerUsage.md) - **Recommended**,  or
+- running the [Docker container](docs/user/DockerUsage.md) (recommended)
 - running [Ansible](docs/user/AnsibleUsage.md) directly on your workstation
   
 ### DNS
 
-During the installation, an ingress loadbalancer can be installed for viya and the monitoring and logging stack. The hostname for these services must be registered with your dns provider to resolve to the loadbalancer's endpoint. This can be done by creating a record per unique ingress host. However, when managing multiple viya deployments, this could get cumbersome. In which case, we recommend creating a dns record that points to the ingress controller's endpoint. The endpoint may be an ip address or fqdn depending on the cloud provider. 
+During the installation, an ingress load balancer can be installed for SAS Viya and for the monitoring and logging stack. The host name for these services must be registered with your DNS provider in order to resolve to the LoadBalancer endpoint. This can be done by creating a record for each unique ingress controller host. 
 
-- Create an A record or CNAME (depending on cloud provider) that resolves the desired hostname to the loadbalancers' endpoint. 
-- Create a wildcard CNAME record that resolves to the record created in the previous step.
-  
+However, when you are managing multiple SAS Viya deployments, creating these records can be time-consuming. In such a case, SAS recommends creating a DNS record that points to the ingress controller's endpoint. The endpoint might be an IP address or FQDN, depending on the cloud provider. Take these steps:
+
+1. Create an A record or CNAME (depending on cloud provider) that resolves the desired host name to the LoadBalancer endpoint. 
+2. Create a wildcard CNAME record that resolves to the record that you created in the previous step.
 
 For example:
 
-First lookup the ingress controller's loadbalancer endpoint. The example below uses kubectl. This information can also be looked up in the cloud providers portal.
+First, look up the ingress controller's LoadBalancer endpoint. The example below uses kubectl. This information can also be looked up in the cloud provider's admin portal.
 
 ```bash
 $ kubectl get service -n ingress-nginx
@@ -222,24 +229,24 @@ ingress-nginx-controller             LoadBalancer   10.0.225.39   52.52.52.52   
 ingress-nginx-controller-admission   ClusterIP      10.0.99.105   <none>           443/TCP                      12d
 ```
 
-In the above example, the ingress controller's loadbalancer endpoint is 52.52.52.52. So, we would create the following records:
+In the above example, the ingress controller's LoadBalancer endpoint is 52.52.52.52. So, we would create the following records:
 
-- An A record (ex. example.com) that points to the 52.52.52.52 address
-- A wildcard CNAME (ex *.example.com) that points to the example.com
+- An A record (such as `example.com`) that points to the 52.52.52.52 address
+- A wildcard CNAME (`*.example.com`) that points to example.com
 
 
 #### SAS/CONNECT
 
-When running the `viya` action with `V4_CFG_CONNECT_ENABLE_LOADBALANCER=true` a separate service loadbalancer will be created to allow external SAS/CONNECT clients to connect to Viya. You will need to register this loadbalancer endpoint with your dns provider such that an desired hostname (ex. connect.example.com) points to the loadbalancer's endpoint
+When running the `viya` action with `V4_CFG_CONNECT_ENABLE_LOADBALANCER=true`, a separate loadbalancer service is created to allow external SAS/CONNECT clients to connect to SAS Viya. You will need to register this LoadBalancer endpoint with your DNS provider such that the desired host name (for example, connect.example.com) points to the LoadBalancer endpoint.
 
 
 ### Troubleshooting
 
-See [troubleshooting](./docs/Troubleshooting.md) page.
+See the [Troubleshooting](./docs/Troubleshooting.md) page.
 
 ## Contributing
 
-> We welcome your contributions! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to submit contributions to this project.
+> We welcome your contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to submit contributions to this project.
 
 ## License
 
@@ -247,9 +254,9 @@ See [troubleshooting](./docs/Troubleshooting.md) page.
 
 ## Additional Resources
 
-- [Viya Resource Guide](https://github.com/sassoftware/viya4-resource-guide)
+- [SAS Viya Resource Guide](https://github.com/sassoftware/viya4-resource-guide)
 - [SAS Viya 4 Infrastructure as Code (IaC) for Amazon Web Services (AWS)](https://github.com/sassoftware/viya4-iac-aws)
 - [SAS Viya 4 Infrastructure as Code (IaC) for Microsoft Azure](https://github.com/sassoftware/viya4-iac-azure)
 - [SAS Viya 4 Infrastructure as Code (IaC) for Google Cloud Platform (GCP)](https://github.com/sassoftware/viya4-iac-gcp)
-- [Viya Monitoring for Kubernetes](https://github.com/sassoftware/viya4-monitoring-kubernetes)
-- [Viya Orders CLI](https://github.com/sassoftware/viya4-orders-cli)
+- [SAS Viya Monitoring for Kubernetes](https://github.com/sassoftware/viya4-monitoring-kubernetes)
+- [SAS Viya Orders CLI](https://github.com/sassoftware/viya4-orders-cli)
