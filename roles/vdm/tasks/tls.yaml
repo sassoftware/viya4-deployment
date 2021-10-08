@@ -23,7 +23,7 @@
     add:
       - { resources: "overlays/network/{{ V4_CFG_INGRESS_TYPE }}", max: "2021.1.5" }
       - { resources: "overlays/network/{{ V4_CFG_INGRESS_TYPE }}/security", max: "2021.1.2" }
-      - { resources: "overlays/network/{{ network_name_map[V4_CFG_INGRESS_TYPE] }}", min: "2021.1.6" }
+      - { resources: "overlays/network/{{ network_name_map[V4_CFG_INGRESS_TYPE] }}", min: "2021.1.5" }
   tags:
     - install
     - uninstall
