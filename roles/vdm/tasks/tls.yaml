@@ -198,7 +198,7 @@
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { transformers: "nginx-ingressclass.yaml", vdm: true }
+      - { transformers: "nginx-ingressclass.yaml", vdm: true, min: "2021.1.6" }
   when:
     - V4_CFG_INGRESS_TYPE == "ingress"
   tags:
