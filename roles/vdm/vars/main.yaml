@@ -6,8 +6,9 @@ db_default_name_map: {
   default: "SharedServices"
 }
 
+# TODO - Fix once 2021.1.6 is ready and the kustomization files have been updated
 network_name_map: {
-  ingress: "networking.k8s.io/v1/ingress",
-  contour: "projectcountour.io/v1/httpproxy",
-  route: "route.openshift.io/v1/route"
+  ingress: "networking.k8s.io",
+  contour: "projectcountour.io",
+  route: "route.openshift.io"
 }
