@@ -140,7 +140,7 @@
   - ansible.builtin.file:
       path: "{{ DEPLOY_DIR }}/site-config/vdm/security"
       state: directory
-      mode: "0660"
+      mode: "0755"
   - copy:
       src: "{{ item.src }}"
       dest: "{{ DEPLOY_DIR }}/site-config/vdm/security/{{ item.dest }}"
