@@ -11,6 +11,19 @@
     - install
     - update
 
+- name: prereqs - cluster-api
+  shell: |
+    kubectl --kubeconfig {{ KUBECONFIG }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=cluster-api" -f {{ DEPLOY_DIR }}/site.yaml
+    kubectl --kubeconfig {{ KUBECONFIG }} wait --for condition=established --timeout=60s -l "sas.com/admin=cluster-api" crd
+  register: result
+  failed_when:
+    - result["stderr"]|length > 0
+    - result["stderr"] is not regex(".* no matches for kind .* in version .*")  
+    - result["stderr"] is not regex(".*Warning.*")
+  tags:
+    - install
+    - update
+
 - name: prereqs - cluster-wide
   shell: |
     kubectl --kubeconfig {{ KUBECONFIG }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=cluster-wide" -f {{ DEPLOY_DIR }}/site.yaml
