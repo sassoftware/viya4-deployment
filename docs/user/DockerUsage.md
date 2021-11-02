@@ -117,8 +117,8 @@ Any number of tasks can be run at the same time. An action can run against a sin
     --user $(id -u):$(id -g) \
     --volume $HOME/deployments:/data \
     --volume $HOME/deployments/dev-cluster/test-namespace/ansible-vars.yaml:/config/config \
-    --volume $HOME/deployments/dev-cluster/.ssh:/config/jump_svr_private_key \
-    --volume $HOME/deployments/dev-cluster/.kube:/config/kubeconfig \
+    --volume $HOME/deployments/dev-cluster/.ssh/id_rsa:/config/jump_svr_private_key \
+    --volume $HOME/deployments/dev-cluster/.kube/config:/config/kubeconfig \
     viya4-deployment --tags "viya,viya-monitoring,install"
   ```
 
