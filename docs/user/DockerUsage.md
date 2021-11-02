@@ -89,7 +89,7 @@ Any number of tasks can be run at the same time. An action can run against a sin
     --group-add root \
     --user $(id -u):$(id -g) \
     --volume $HOME/deployments:/data \
-    --volume $HOME/deployments/dev-cluster/.kube:/config/kubeconfig \
+    --volume $HOME/deployments/dev-cluster/.kube/config:/config/kubeconfig \
     --volume $HOME/deployments/dev-cluster/dev-namespace/ansible-vars.yaml:/config/config \
     --volume $HOME/.ssh/id_rsa:/config/jump_svr_private_key \
     viya4-deployment --tags "baseline,viya,install"
