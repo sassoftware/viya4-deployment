@@ -19,7 +19,7 @@
   failed_when:
     - result["stderr"] is not regex(".* no matches for kind .* in version .*")
     - result["stderr"] is not regex(".*Warning.*")
-    - result["stderr"] is not regex(".*error: no matching resources found.*") and not result["rc"] == 1
+    - result["stderr"] is not regex(".*error: no matching resources found.*") and result["rc"] == 1
   tags:
     - install
     - update
