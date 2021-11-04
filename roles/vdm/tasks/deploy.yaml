@@ -17,6 +17,7 @@
     kubectl --kubeconfig {{ KUBECONFIG }} wait --for condition=established --timeout=60s -l "sas.com/admin=cluster-api" crd
   register: result
   failed_when:
+    - result["stderr"]|length > 0
     - '"no matches for kind" not in result.stderr'
     - '"Warning" not in result.stderr'
     - '"no matching resources found" not in result.stderr'
