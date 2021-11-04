@@ -31,7 +31,7 @@
     kubectl --kubeconfig {{ KUBECONFIG }} wait --for condition=established --timeout=60s -l "sas.com/admin=cluster-wide" crd
   register: result
   failed_when:
-    - result["stderr"]|length > 0
+    # - result["stderr"]|length > 0
     - result["stderr"] is not regex(".* no matches for kind .* in version .*")
     - result["stderr"] is not regex(".*Warning.*")
     - result["stderr"] is not regex(".*error: no matching resources found.*") and result["rc"] != 0
