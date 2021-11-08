@@ -1,6 +1,7 @@
 V4_CFG_TLS_MODE: "full-stack" # other valid values are front-door and disabled
 V4_CFG_RWX_FILESTORE_ENDPOINT: /export
 V4_CFG_INGRESS_TYPE: ingress
+V4_CFG_INGRESS_MODE: public
 
 ## Cert-manager
 CERT_MANAGER_ENABLED: true
@@ -98,9 +99,8 @@ CLUSTER_AUTOSCALER_CONFIG:
         "eks.amazonaws.com/role-arn": "{{ CLUSTER_AUTOSCALER_ACCOUNT }}"
 
 
-INFRA_MODE: "standard"
 
-private_cluster:
+private_ingress:
   aws:
     controller:
       service:

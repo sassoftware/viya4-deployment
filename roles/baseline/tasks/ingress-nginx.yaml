@@ -1,9 +1,9 @@
 ---
 - set_fact:
-    INGRESS_NGINX_CONFIG: "{{ INGRESS_NGINX_CONFIG |combine(private_cluster[PROVIDER], recursive=True)}}"
+    INGRESS_NGINX_CONFIG: "{{ INGRESS_NGINX_CONFIG |combine(private_ingress[PROVIDER], recursive=True)}}"
   when:
-    - INFRA_MODE == "private"
-    - PROVIDER in private_cluster
+    - V4_CFG_INGRESS_MODE == "private"
+    - PROVIDER in private_ingress
   tags:
     - install
     - update

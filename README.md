@@ -138,7 +138,8 @@ This following information is parsed from the integration:
   - V4_CFG_CLUSTER_NODE_POOL_MODE
   - CLUSTER_AUTOSCALER_ACCOUNT
   - CLUSTER_AUTOSCALER_LOCATION
-  - INFRA_MODE
+- Ingress
+  - default value for V4_CFG_INGRESS_MODE (from CLUSTER_API_MODE)
 
 ### Customize Deployment Overlays
 

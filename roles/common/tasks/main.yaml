@@ -185,10 +185,10 @@
         - tfstate.postgres_ssl_enforcement_enabled is defined
     - name: tfstate - infra_mode
       set_fact:
-        INFRA_MODE: "{{ tfstate.infra_mode.value }}"
+        V4_CFG_INGRESS_MODE: "{{ tfstate.cluster_api_mode.value }}"
       when:
-        - tfstate.infra_mode is defined
-        - tfstate.infra_mode.value|length > 0
+        - tfstate.cluster_api_mode is defined
+        - tfstate.cluster_api_mode.value|length > 0
     - set_fact:
         tfstate: ""
   when:
