@@ -189,6 +189,7 @@
       when:
         - tfstate.cluster_api_mode is defined
         - tfstate.cluster_api_mode.value|length > 0
+        - V4_CFG_INGRESS_MODE is not defined
     - set_fact:
         tfstate: ""
   when:
