@@ -57,8 +57,6 @@
     cmd: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/logging/bin/deploy_logging_open.sh"
   environment: "{{ logging_map['env'] }}"
   register: result
-  failed_when:
-    - "'can be ignored' not in result.stdout"
   tags:
     - install
     - update
