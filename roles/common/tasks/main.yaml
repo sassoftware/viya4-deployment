@@ -183,6 +183,13 @@
         - V4_CFG_POSTGRES_TYPE is defined
         - V4_CFG_POSTGRES_TYPE == "external"
         - tfstate.postgres_ssl_enforcement_enabled is defined
+    - name: tfstate - infra_mode
+      set_fact:
+        V4_CFG_INGRESS_MODE: "{{ tfstate.cluster_api_mode.value }}"
+      when:
+        - tfstate.cluster_api_mode is defined
+        - tfstate.cluster_api_mode.value|length > 0
+        - V4_CFG_INGRESS_MODE is not defined
     - set_fact:
         tfstate: ""
   when:

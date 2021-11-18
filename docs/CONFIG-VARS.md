@@ -126,8 +126,9 @@ When setting V4_CFG_MANAGE_STORAGE to true, A new storage classes will be create
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_INGRESS_TYPE | Which ingress to deploy | string | | true | [ingress] | baseline, viya |
+| V4_CFG_INGRESS_TYPE | Which ingress controller to deploy | string | "ingress" | true | Possible values: "ingress" | baseline, viya |
 | V4_CFG_INGRESS_FQDN | FQDN to for viya installation | string | | true | | viya |
+| V4_CFG_INGRESS_MODE | Public vs. Private Loadbalancer endpoint | string | "public" | false | Possible values: "public", "private". Setting this option to "private" adds options to the Ingress Controller that create a LoadBalancer with private IP(s) only. | baseline |
 
 ## Monitoring and Logging
 
