@@ -139,7 +139,7 @@ This following information is parsed from the integration:
   - CLUSTER_AUTOSCALER_ACCOUNT
   - CLUSTER_AUTOSCALER_LOCATION
 - Ingress
-  - default value for V4_CFG_INGRESS_MODE (from CLUSTER_API_MODE)
+  - V4_CFG_INGRESS_MODE (from CLUSTER_API_MODE)
 
 ### Customize Deployment Overlays
 
