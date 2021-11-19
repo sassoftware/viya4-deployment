@@ -66,9 +66,9 @@ A file server that uses the network file system (NFS) protocol is the minimum re
   ```
 
 
-#### Jump Virtual Machine
+#### Jump Box Virtual Machine
 
-The jump VM or bastion server can manage NFS folders if you provide SSH access to it. The jump VM must have the NFS storage mounted to it at `<JUMP_SVR_RWX_FILESTORE_PATH>`. If you want to manage the NFS server yourself, the jump VM is not required. Here is the required folder structure for the jump VM:
+The jump box or bastion server can manage NFS folders if you provide SSH access to it. The jump box must have the NFS storage mounted to it at `<JUMP_SVR_RWX_FILESTORE_PATH>`. If you want to manage the NFS server yourself, the jump box is not required. Here is the required folder structure for the jump box:
 
   ```bash
   <JUMP_SVR_RWX_FILESTORE_PATH>     <- mounted NFS export
@@ -130,7 +130,7 @@ The following information is parsed from the integration:
 - RWX Filestore
   - V4_CFG_RWX_FILESTORE_ENDPOINT
   - V4_CFG_RWX_FILESTORE_PATH
-- Jump VM
+- JumpBox
   - JUMP_SVR_HOST
   - JUMP_SVR_USER
   - JUMP_SVR_RWX_FILESTORE_PATH
