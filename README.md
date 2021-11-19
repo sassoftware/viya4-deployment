@@ -24,6 +24,8 @@ This project contains Ansible code that creates a baseline cluster in an existin
 - Manage SAS Viya Deployments
   - Organize and persist configuration for any number of SAS Viya deployments across namespaces, clusters, or cloud providers.
 
+_**NOTE:**_ These tools do not support a SAS Viya deployment with multi-tenancy enabled at this time. Support is planned for a future release. 
+
 ## Prerequisites
 
 Use of these tools requires operational knowledge of the following technologies: 
