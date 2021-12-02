@@ -18,11 +18,11 @@
   register: result
   failed_when:
     - result["stderr"]|length > 0
-    - '"no matches for kind" not in result.stderr
-    - '"in version"' not in result.stderr
-    - '"Warning"' not in result.stderr
-    - '"no matching resources found"' not in result.stderr
-    - '"error: no objects passed to apply"' not in result.stderr
+    - '"no matches for kind" not in result.stderr'
+    - '"in version" not in result.stderr'
+    - '"Warning" not in result.stderr'
+    - '"no matching resources found" not in result.stderr'
+    - '"error: no objects passed to apply"'
   tags:
     - install
     - update
@@ -34,10 +34,10 @@
   register: result
   failed_when:
     - result["stderr"]|length > 0
-    - '"no matches for kind"' not in result.stderr
-    - '"in version"' not in result.stderr
-    - '"Warning"' not in result.stderr
-    - '"no matching resources found"' not in result.stderr
+    - '"no matches for kind" not in result.stderr'
+    - '"in version" not in result.stderr'
+    - '"Warning" not in result.stderr'
+    - '"no matching resources found" not in result.stderr'
   tags:
     - install
     - update
