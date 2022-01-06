@@ -1,0 +1,30 @@
+## Cluster
+PROVIDER: custom
+
+NAMESPACE: viyanamespace
+
+## MISC
+DEPLOY: true # Set to false to stop at generating the manifest
+
+## Storage
+V4_CFG_MANAGE_STORAGE: true
+
+## SAS API Access
+# raw not base64
+V4_CFG_SAS_API_KEY: '<api_client_id>'
+V4_CFG_SAS_API_SECRET: '<api_client_secret>'
+V4_CFG_ORDER_NUMBER:  '<order_number>'
+
+## Ingress
+V4_CFG_INGRESS_TYPE: ingress
+V4_CFG_INGRESS_FQDN: 'viya.publb.oke.internal'
+V4_CFG_TLS_MODE: "full-stack" # [full-stack|front-door|disabled]
+
+
+## Postgres
+V4_CFG_POSTGRES_TYPE: internal
+
+## peg cadence
+
+V4_CFG_CADENCE_NAME: stable
+V4_CFG_CADENCE_VERSION: 2021.1.5

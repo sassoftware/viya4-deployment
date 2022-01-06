@@ -12,6 +12,8 @@ Run the following command to create the `viya4-deployment` Docker image using th
 
 ```bash
 docker build -t viya4-deployment .
+#or
+sudo docker build -t viya4-deployment .
 ```
 The Docker image `viya4-deployment` will contain ansible, cloud provider cli's and 'kubectl' executables. The Docker entrypoint for the image is `ansible-playbook` that will be run with sub-commands in the subsequent steps.
 
@@ -82,7 +84,7 @@ Any number of tasks can be run at the same time. An action can run against a sin
     viya4-deployment --tags "baseline,viya,cluster-logging,cluster-monitoring,viya-monitoring,install"
   ```
 
-- I have a custom built cluster and want to baseline and deploy viya only
+- I have a custom built cluster and want to install baseline and deploy viya only
 
   ```bash
   docker run --rm \
@@ -93,6 +95,21 @@ Any number of tasks can be run at the same time. An action can run against a sin
     --volume $HOME/deployments/dev-cluster/dev-namespace/ansible-vars.yaml:/config/config \
     --volume $HOME/.ssh/id_rsa:/config/jump_svr_private_key \
     viya4-deployment --tags "baseline,viya,install"
+  ```
+
+- I have a new cluster, deployed in OCI using https://github.com/oracle-quickstart/oke-sas-viya-public project, and I want to install baseline and deploy viya only
+- I run as non-root user
+
+  ```bash
+  sudo docker run --rm -t \
+    --group-add root \
+    --user $(id -u):$(id -g)  \
+    --volume $HOME/repos:/data:Z  \
+    --volume $HOME/repos/viya4-deployment/ansible-vars.yaml:/config/config:Z \
+    --volume $HOME/repos/oke-sas-viya-public/terraform.tfstate:/config/tfstate:Z  \
+    --volume $HOME/.ssh/id_rsa:/config/jump_svr_private_key:z  \
+    --volume $HOME/repos/viya4-deployment/.oci:/viya4-deployment/.oci:Z \
+    viya4-deployment --tags "baseline,viya,install"  
   ```
 
 - I want to modify a customization under site-config for an existing viya deployment and reapply the manifest. I wish to continue to use the same deployment assets rather than pull the latest copy.

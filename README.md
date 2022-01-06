@@ -49,6 +49,7 @@ You can either bring your own Kubernetes cluster or use one of the SAS Viya 4 Ia
   - [SAS Viya 4 IaC for AWS](https://github.com/sassoftware/viya4-iac-aws)
   - [SAS Viya 4 IaC for Microsoft Azure](https://github.com/sassoftware/viya4-iac-azure)
   - [SAS Viya 4 IaC for Google Cloud Platform](https://github.com/sassoftware/viya4-iac-gcp)
+  - [Viya 4 IaC for OKE](https://github.com/oracle-quickstart/oke-sas-viya-public)
 
 
 #### Storage
@@ -262,5 +263,6 @@ See the [Troubleshooting](./docs/Troubleshooting.md) page.
 - [SAS Viya 4 Infrastructure as Code (IaC) for Amazon Web Services (AWS)](https://github.com/sassoftware/viya4-iac-aws)
 - [SAS Viya 4 Infrastructure as Code (IaC) for Microsoft Azure](https://github.com/sassoftware/viya4-iac-azure)
 - [SAS Viya 4 Infrastructure as Code (IaC) for Google Cloud Platform (GCP)](https://github.com/sassoftware/viya4-iac-gcp)
+- [SAS Viya 4 Infrastructure as Code (IaC) for Oracle Cloud Infrastructure (OCI)](https://github.com/oracle-quickstart/oke-sas-viya-public)
 - [SAS Viya Monitoring for Kubernetes](https://github.com/sassoftware/viya4-monitoring-kubernetes)
 - [SAS Viya Orders CLI](https://github.com/sassoftware/viya4-orders-cli)
