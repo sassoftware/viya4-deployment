@@ -84,7 +84,7 @@ Any number of tasks can be run at the same time. An action can run against a sin
     viya4-deployment --tags "baseline,viya,cluster-logging,cluster-monitoring,viya-monitoring,install"
   ```
 
-- I have a custom built cluster and want to install baseline and deploy viya only
+- I have a custom built cluster and want to baseline and deploy viya only
 
   ```bash
   docker run --rm \
