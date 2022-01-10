@@ -20,7 +20,6 @@ V4_CFG_INGRESS_TYPE: ingress
 V4_CFG_INGRESS_FQDN: 'viya.publb.oke.internal'
 V4_CFG_TLS_MODE: "full-stack" # [full-stack|front-door|disabled]
 
-
 ## Postgres
 V4_CFG_POSTGRES_TYPE: internal
 
