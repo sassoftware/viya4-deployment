@@ -30,7 +30,7 @@ INGRESS_NGINX_NAME: ingress-nginx
 INGRESS_NGINX_NAMESPACE: ingress-nginx
 INGRESS_NGINX_CHART_NAME: ingress-nginx
 INGRESS_NGINX_CHART_URL: https://kubernetes.github.io/ingress-nginx
-INGRESS_NGINX_CHART_VERSION: 4.0.12
+INGRESS_NGINX_CHART_VERSION: 4.0.13
 INGRESS_NGINX_CONFIG:
   controller:
     service: 
