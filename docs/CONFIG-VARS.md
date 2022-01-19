@@ -306,7 +306,7 @@ Cluster-autoscaler is currently only used for AWS EKS clusters. GCP GKE and Azur
 | INGRESS_NGINX_NAMESPACE | ingress-nginx helm install namespace | string | ingress-nginx | false | | baseline |
 | INGRESS_NGINX_CHART_URL | ingress-nginx helm chart url | string | https://kubernetes.github.io/ingress-nginx | false | | baseline |
 | INGRESS_NGINX_CHART_NAME | ingress-nginx helm chart name | string | ingress-nginx | false | | baseline |
-| INGRESS_NGINX_CHART_VERSION | ingress-nginx helm chart version | string | 3.20.1| false | | baseline |
+| INGRESS_NGINX_CHART_VERSION | ingress-nginx helm chart version | string | 4.0.13 | false | | baseline |
 | INGRESS_NGINX_CONFIG | ingress-nginx helm values | string | see [here](../roles/baseline/defaults/main.yml) | false | | baseline |
 
 ### Metrics Server
