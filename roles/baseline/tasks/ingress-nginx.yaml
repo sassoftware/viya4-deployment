@@ -8,6 +8,24 @@
     - install
     - update
 
+- name: Set the default INGRESS_NGINX_CHART_VERSION if not specified
+  block:
+    - name: Retreive K8s cluster information
+      community.kubernetes.k8s_cluster_info:
+        kubeconfig: "{{ KUBECONFIG }}"
+      register: cluster_info
+    - name: Determine and set the default INGRESS_NGINX_CHART_VERSION based on K8s server minor version
+      set_fact:
+        INGRESS_NGINX_CHART_VERSION: "{{ INGRESS_NGINX_CHART_VERSION_K8S_22_AND_ABOVE if cluster_info.version.server.kubernetes.minor is version('22', 'ge') else INGRESS_NGINX_CHART_VERSION_K8S_21_AND_BELOW }}"
+    - name: Output INGRESS_NGINX_CHART_VERSION
+      debug:
+        msg: "{{ INGRESS_NGINX_CHART_VERSION }}"
+  when:
+    - INGRESS_NGINX_CHART_VERSION == "UNSPECIFIED"
+  tags:
+    - install
+    - update
+
 - name: Deploy ingress-nginx
   community.kubernetes.helm:
     name: "{{ INGRESS_NGINX_NAME }}"
