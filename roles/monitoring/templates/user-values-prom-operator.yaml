@@ -10,6 +10,7 @@ prometheus:
     annotations:
       nginx.ingress.kubernetes.io/backend-protocol: HTTPS
     enabled: true
+    ingressClassName: nginx
     tls:
     - hosts:
       - {{ V4M_PROMETHEUS_FQDN }}
@@ -31,6 +32,7 @@ alertmanager:
   # Define host-based ingress
   ingress:
     enabled: true
+    ingressClassName: nginx
     tls:
     - hosts:
       - {{ V4M_ALERTMANAGER_FQDN }}
@@ -55,6 +57,7 @@ grafana:
       nginx.ingress.kubernetes.io/backend-protocol: HTTPS
       # nginx.ingress.kubernetes.io/rewrite-target: "/grafana"
     enabled: true
+    ingressClassName: nginx
     tls:
     - hosts:
       - {{ V4M_GRAFANA_FQDN }}
