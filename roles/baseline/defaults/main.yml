@@ -25,12 +25,25 @@ METRICS_SERVER_CONFIG:
   apiService:
     create: true
 
+## Ingress-nginx - Defaults
+ingressVersions:
+  k8sMinorVersionCeiling:
+    value: 21
+    api:
+      chartVersion: 3.20.1
+      appVersion: 0.43.0
+  k8sMinorVersionFloor:
+    value: 22
+    api:
+      chartVersion: 4.0.13
+      appVersion: 1.1.0
+
 ## Ingress-nginx - Ingress
 INGRESS_NGINX_NAME: ingress-nginx
 INGRESS_NGINX_NAMESPACE: ingress-nginx
 INGRESS_NGINX_CHART_NAME: ingress-nginx
 INGRESS_NGINX_CHART_URL: https://kubernetes.github.io/ingress-nginx
-INGRESS_NGINX_CHART_VERSION: 4.0.13
+INGRESS_NGINX_CHART_VERSION: UNSPECIFIED
 INGRESS_NGINX_CONFIG:
   controller:
     service: 
