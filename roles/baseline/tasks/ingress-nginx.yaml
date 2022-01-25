@@ -23,7 +23,7 @@
       debug:
         msg: "{{ INGRESS_NGINX_CHART_VERSION }}"
   when:
-    - (INGRESS_NGINX_CHART_VERSION == "UNSPECIFIED") or (not INGRESS_NGINX_CHART_VERSION)
+    - INGRESS_NGINX_CHART_VERSION|length == 0
   tags:
     - install
     - update
