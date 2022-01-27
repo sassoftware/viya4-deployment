@@ -7,7 +7,7 @@ RUN apt update && apt upgrade -y \
 
 FROM baseline as tool_builder
 ARG kustomize_version=3.7.0
-ARG kubectl_version=1.19.9
+ARG kubectl_version=1.21.8
 
 WORKDIR /build
 
