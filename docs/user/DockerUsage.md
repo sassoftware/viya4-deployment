@@ -12,8 +12,7 @@ Run the following command to create the `viya4-deployment` Docker image using th
 
 ```bash
 docker build -t viya4-deployment .
-#or
-sudo docker build -t viya4-deployment .
+
 ```
 The Docker image `viya4-deployment` will contain ansible, cloud provider cli's and 'kubectl' executables. The Docker entrypoint for the image is `ansible-playbook` that will be run with sub-commands in the subsequent steps.
 
@@ -101,7 +100,7 @@ Any number of tasks can be run at the same time. An action can run against a sin
 - I run as non-root user
 
   ```bash
-  sudo docker run --rm -t \
+  docker run --rm -t \
     --group-add root \
     --user $(id -u):$(id -g)  \
     --volume $HOME/repos:/data:Z  \
