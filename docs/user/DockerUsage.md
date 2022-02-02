@@ -97,17 +97,16 @@ Any number of tasks can be run at the same time. An action can run against a sin
   ```
 
 - I have a new cluster, deployed in OCI using https://github.com/oracle-quickstart/oke-sas-viya-public project, and I want to install baseline and deploy viya only
-- I run as non-root user
 
   ```bash
   docker run --rm -t \
     --group-add root \
     --user $(id -u):$(id -g)  \
-    --volume $HOME/repos:/data:Z  \
-    --volume $HOME/repos/viya4-deployment/ansible-vars.yaml:/config/config:Z \
-    --volume $HOME/repos/oke-sas-viya-public/terraform.tfstate:/config/tfstate:Z  \
-    --volume $HOME/.ssh/id_rsa:/config/jump_svr_private_key:z  \
-    --volume $HOME/repos/viya4-deployment/.oci:/viya4-deployment/.oci:Z \
+    --volume $HOME/repos:/data  \
+    --volume $HOME/repos/viya4-deployment/ansible-vars.yaml:/config/config \
+    --volume $HOME/repos/oke-sas-viya-public/terraform.tfstate:/config/tfstate \
+    --volume $HOME/.ssh/id_rsa:/config/jump_svr_private_key  \
+    --volume $HOME/repos/viya4-deployment/.oci:/viya4-deployment/.oci \
     viya4-deployment --tags "baseline,viya,install"  
   ```
 
