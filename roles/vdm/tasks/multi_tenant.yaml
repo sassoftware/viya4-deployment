@@ -26,7 +26,7 @@
 - name: create multi-tenant folder
   file:
     state: directory
-    dest: "{{ DEPLOY_DIR }}/site-config/multi-tenant"
+    dest: '{{ DEPLOY_DIR }}/site-config/multi-tenant'
     mode: "0770"
   when: V4_CFG_MULTITENANT_ENABLE
   tags:
