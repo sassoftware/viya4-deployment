@@ -1,0 +1,56 @@
+---
+- name: multitenant - folder check
+  stat:
+    path: "{{ DEPLOY_DIR }}/sas-bases/overlays/multi-tenant"
+  register: result
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: multitenant - add overlays
+  overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { transformers: "overlays/multi-tenant/sas-shared-configmap-transformer.yaml" }
+  when:
+    - V4_CFG_MULTITENANT_ENABLE
+    - result.stat.exists
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: create multi-tenant folder
+  file:
+    state: directory
+    dest: "{{ DEPLOY_DIR }}/site-config/multi-tenant"
+    mode: "0770"
+  when: V4_CFG_MULTITENANT_ENABLE
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: copy - multi-tenant/sasdefault.yaml
+  template:
+    src: "{{ DEPLOY_DIR }}/sas-bases/examples/multi-tenant/sasdefault.yaml"
+    dest: "{{ DEPLOY_DIR }}/site-config/multi-tenant"
+    mode: "0660"
+  when: V4_CFG_MULTITENANT_ENABLE
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: sasdefault - update host
+  replace:
+    path: "{{ DEPLOY_DIR }}/site-config/multi-tenant/sasdefault.yaml"
+    regexp: "{INGRESS_HOST}"
+    replace: "V4_CFG_INGRESS_FQDN"
+  tags:
+    - install
+    - uninstall
+    - update
