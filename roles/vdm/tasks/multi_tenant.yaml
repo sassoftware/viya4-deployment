@@ -49,7 +49,7 @@
   replace:
     path: "{{ DEPLOY_DIR }}/site-config/multi-tenant/sasdefault.yaml"
     regexp: "{INGRESS_HOST}"
-    replace: "V4_CFG_INGRESS_FQDN"
+    replace: "{{ V4_CFG_INGRESS_FQDN }}"
   tags:
     - install
     - uninstall
