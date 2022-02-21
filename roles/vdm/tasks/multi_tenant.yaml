@@ -54,3 +54,14 @@
     - install
     - uninstall
     - update
+
+- name: db mode - uncomment db-mode
+  replace:
+    path: "{{ DEPLOY_DIR }}/site-config/multi-tenant/sasdefault.yaml"
+    regexp: '#\s*sas.multi.tenancy.db.mode.*$'
+    replace: "    sas.multi.tenancy.db.mode: databasePerTenant"
+  when: V4_CFG_MULTITENANT_DB_MODE
+  tags:
+    - install
+    - uninstall
+    - update

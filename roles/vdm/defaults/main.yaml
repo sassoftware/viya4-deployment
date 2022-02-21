@@ -75,7 +75,11 @@ V4_CFG_ELASTICSEARCH_ENABLE: true
 V4_CFG_CLOUD_SERVICE_ACCOUNT_NAME: null
 V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH: null
 
-## Multi-tenant
+## Multi-tenant 
+# Multi-tenant is enabled within Viya4 deployment
 V4_CFG_MULTITENANT_ENABLE: false
+# SAS Viya supports two modes of data isolation (schemaPerApplicationTenant and databasePerTenant) for tenant data. 
+# schemaPerApplicationTenant Mode is enabled by default. To use databasePerTenant set V4_CFG_MULTITENANT_DB_MODE true.
+V4_CFG_MULTITENANT_DB_MODE: false
 
 internal_postgres: false
