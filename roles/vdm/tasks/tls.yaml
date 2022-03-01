@@ -96,6 +96,33 @@
     - uninstall
     - update
 
+- name: tls - Ingress-only TLS - check cadence
+  ansible.builtin.fail:
+    msg: "V4_CFG_TLS_MODE=ingress-only is not supported for cadences older than 2021.2.4"
+  when:
+    - V4_CFG_TLS_MODE == "ingress-only"
+    - V4_CFG_CADENCE_VERSION is version('2021.2.4', "<")
+    - V4_CFG_CADENCE_NAME != "fast"
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: tls - Ingress-only TLS
+  overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { components: "components/security/core/ingress-only-tls", min: "2021.2.4" }
+      - { components: "components/security/network/networking.k8s.io/ingress/nginx.ingress.kubernetes.io/front-door-tls", min: "2021.2.4" }
+  when:
+    - V4_CFG_TLS_MODE == "ingress-only"
+  tags:
+    - install
+    - uninstall
+    - update
+
 - name: tls - Truststores only
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
