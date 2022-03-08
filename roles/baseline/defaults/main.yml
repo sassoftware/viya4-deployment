@@ -54,6 +54,9 @@ INGRESS_NGINX_CONFIG:
 
     config:
       use-forwarded-headers: "true"
+      allow-snippet-annotations: "true"
+      large-client-header-buffers: "4 32k"
+      annotation-value-word-blocklist: "load_module,lua_package,_by_lua,location,root,proxy_pass,serviceaccount,{,},\\"
     tcp: {}
     udp: {}
     lifecycle:
@@ -61,16 +64,6 @@ INGRESS_NGINX_CONFIG:
         exec:
           command: ["/bin/sh", "-c", "sleep 5; /usr/local/nginx/sbin/nginx -c /etc/nginx/nginx.conf -s quit; while pgrep -x nginx; do sleep 1; done"]
     terminationGracePeriodSeconds: 600
-
-# Ingress-nginx - CVE-2021-25742 Mitigation
-INGRESS_NGINX_CVE_PATCH:
-  controller:
-    config:
-      allow-snippet-annotations: "true"
-      large-client-header-buffers: "4 32k"
-      use-forwarded-headers: "true"
-      annotation-value-word-blocklist: "load_module,lua_package,_by_lua,location,root,proxy_pass,serviceaccount,{,},\\"
-
 
 ## Nfs-subdir-external-provisioner
 NFS_CLIENT_NAME: nfs-subdir-external-provisioner
