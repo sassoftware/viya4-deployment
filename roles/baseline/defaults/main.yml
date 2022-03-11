@@ -30,8 +30,8 @@ ingressVersions:
   k8sMinorVersionCeiling:
     value: 21
     api:
-      chartVersion: 3.20.1
-      appVersion: 0.43.0
+      chartVersion: 3.40.0
+      appVersion: 0.50.0
   k8sMinorVersionFloor:
     value: 22
     api:
@@ -54,6 +54,9 @@ INGRESS_NGINX_CONFIG:
 
     config:
       use-forwarded-headers: "true"
+      allow-snippet-annotations: "true"
+      large-client-header-buffers: "4 32k"
+      annotation-value-word-blocklist: "load_module,lua_package,_by_lua,location,root,proxy_pass,serviceaccount,{,},\\"
     tcp: {}
     udp: {}
     lifecycle:
