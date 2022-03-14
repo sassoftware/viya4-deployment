@@ -65,3 +65,52 @@
     - install
     - uninstall
     - update
+
+#######----Tenant Onboard offboard temp code
+- name: create multi-tenant-job folder
+  file:
+    state: directory
+    dest: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job"
+    mode: "0770"
+  when: V4_CFG_MULTITENANT_ENABLE
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: copy - sas-tenant-job
+  copy:
+    src: "{{ DEPLOY_DIR }}/sas-bases/examples/sas-tenant-job/"
+    dest: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job"
+    mode: "0770"
+  when: V4_CFG_MULTITENANT_ENABLE
+  tags:
+    - install
+    - uninstall
+    - update
+
+# Apply the Service Account Role for the Tenant Job
+# If you are onboarding:
+# cp -v kustomization-onboard.yaml kustomization.yaml
+# If you are offboarding:
+# cp -v kustomization-offboard.yaml kustomization.yaml
+
+# - name: kustomize - Generate onboard kustomization.yaml
+#   template:
+#     src: "kustomization.yaml"
+#     dest: "{{ DEPLOY_DIR }}/kustomization.yaml"
+#     mode: "0660"
+#   tags:
+#     - install
+#     - uninstall
+#     - update
+
+# - name: kustomize - Generate deployment manifest
+#   command: |
+#     kustomize build {{ DEPLOY_DIR }} --load_restrictor='none' -o {{ DEPLOY_DIR }}/site.yaml
+#   tags:
+#     - install
+#     - uninstall
+#     - update
+
+## Cas server creation -- needs to happen after
