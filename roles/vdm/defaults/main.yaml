@@ -81,5 +81,8 @@ V4_CFG_MULTITENANT_ENABLE: false
 # SAS Viya supports two modes of data isolation (schemaPerApplicationTenant and databasePerTenant) for tenant data. 
 # schemaPerApplicationTenant Mode is enabled by default. To use databasePerTenant set V4_CFG_MULTITENANT_DB_MODE true.
 V4_CFG_MULTITENANT_DB_MODE: false
+VIYA-DEPLOYMENT-NAMESPACE: "{{ NAMESPACE }}"
+SAS-TENANT-IDS: null
+SAS-PROVIDER-PASSWORD: null
 
 internal_postgres: false
