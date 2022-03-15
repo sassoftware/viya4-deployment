@@ -10,7 +10,7 @@
 
 - name: Set the default INGRESS_NGINX_CHART_VERSION if not specified
   block:
-    - name: Retreive K8s cluster information
+    - name: Retrieve K8s cluster information
       community.kubernetes.k8s_cluster_info:
         kubeconfig: "{{ KUBECONFIG }}"
       register: cluster_info
