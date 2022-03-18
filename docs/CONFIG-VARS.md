@@ -183,7 +183,7 @@ Viya 4 supports 2 different types of certificate generators, Cert-manager and op
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_TLS_GENERATOR | Which tool to use for certificate generation | string | cert-manager | false | Supported values: [`cert-manager`,`openssl`]. | viya, cluster-logging, cluster-monitoring |
-| V4_CFG_TLS_MODE | Which TLS mode to configure | string | front-door | false | Supported values: [`full-stack`,`front-door`,`ingress-only`,`disabled.`] When deploying full-stack you must set V4_CFG_TLS_TRUSTED_CA_CERTS to trust external postgres server ca. `ingress-only` is only supported on cadence versions 2021.2.4 and above. | all |
+| V4_CFG_TLS_MODE | Which TLS mode to configure | string | front-door | false | Supported values: [`full-stack`,`front-door`,`disabled.`] When deploying full-stack you must set V4_CFG_TLS_TRUSTED_CA_CERTS to trust external postgres server ca. | all |
 | V4_CFG_TLS_CERT | Path to ingress certificate file | string | | false | If specified, used instead of cert-manager issued certificates | viya |
 | V4_CFG_TLS_KEY | Path to ingress key file | string | | false | Required when V4_CFG_TLS_CERT is specified | viya |
 | V4_CFG_TLS_TRUSTED_CA_CERTS | Path to directory containing only PEM encoded trusted CA certificates files | string | | false | Required when V4_CFG_TLS_CERT is specified. Must include all the CAs in the trust chain for V4_CFG_TLS_CERT. Can be used with or without V4_CFG_TLS_CERT to specify any additionally trusted CAs  | viya |
@@ -306,8 +306,8 @@ Cluster-autoscaler is currently only used for AWS EKS clusters. GCP GKE and Azur
 | INGRESS_NGINX_NAMESPACE | ingress-nginx helm install namespace | string | ingress-nginx | false | | baseline |
 | INGRESS_NGINX_CHART_URL | ingress-nginx helm chart url | string | https://kubernetes.github.io/ingress-nginx | false | | baseline |
 | INGRESS_NGINX_CHART_NAME | ingress-nginx helm chart name | string | ingress-nginx | false | | baseline |
-| INGRESS_NGINX_CHART_VERSION | ingress-nginx helm chart version | string | "" | false | If left as "" (empty string), version 3.20.1 will be used for K8s clusters whose version is <= 1.21.X and version 4.0.13 will be used for K8s clusters whose version is >= 1.22.X| baseline |
-| INGRESS_NGINX_CONFIG | ingress-nginx helm values | string | see [here](../roles/baseline/defaults/main.yml) | false | | baseline |
+| INGRESS_NGINX_CHART_VERSION | ingress-nginx helm chart version | string | "" | false | If left as "" (empty string), version 3.40.0 will be used for K8s clusters whose version is <= 1.21.X and version 4.0.13 will be used for K8s clusters whose version is >= 1.22.X| baseline |
+| INGRESS_NGINX_CONFIG | ingress-nginx helm values | string | see [here](../roles/baseline/defaults/main.yml) Altering this value will affect the cluster | false | | baseline |
 
 ### Metrics Server
 
