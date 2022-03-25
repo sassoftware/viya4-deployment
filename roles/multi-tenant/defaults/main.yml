@@ -1,0 +1,11 @@
+## Multi-tenant 
+# Multi-tenant is enabled within Viya4 deployment
+V4_CFG_MULTITENANT_ENABLE: false
+# SAS Viya supports two modes of data isolation (schemaPerApplicationTenant and databasePerTenant) for tenant data. 
+# schemaPerApplicationTenant Mode is enabled by default. To use databasePerTenant set V4_CFG_MULTITENANT_DB_MODE true.
+V4_CFG_MULTITENANT_DB_MODE: false
+
+SAS_TENANT_IDS: null
+SAS_PROVIDER_PASSWORD: null
+CAS_WORKER_COUNT: 0
+BACKUP: 0
