@@ -6,6 +6,8 @@
     - install
     - uninstall
     - update
+    - onboard
+    - offboard
 
 - name: Set BASE_DIR default path
   set_fact:
@@ -15,6 +17,8 @@
     - install
     - uninstall
     - update
+    - onboard
+    - offboard
 - block:
     - name: Parse tfstate
       set_fact: 
@@ -198,6 +202,8 @@
     - install
     - uninstall
     - update
+    - onboard
+    - offboard
 
 - name: Set DEPLOY_DIR
   set_fact:
@@ -207,6 +213,8 @@
     - install
     - uninstall
     - update
+    - onboard
+    - offboard
 
 - name: migrations
   include_tasks: 

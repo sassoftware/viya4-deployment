@@ -84,6 +84,14 @@
     - uninstall
     - update
 
+- name: Include MultiTenant
+  include_tasks: multi_tenant.yaml
+  when: V4_CFG_MULTITENANT_ENABLE
+  tags:
+    - install
+    - uninstall
+    - update
+
 - name: Include CAS
   include_tasks: cas.yaml
   tags:
@@ -130,13 +138,6 @@
 
 - name: Include Elasticsearch
   include_tasks: elasticsearch.yaml
-  tags:
-    - install
-    - uninstall
-    - update
-
-- name: Include MultiTenant
-  include_tasks: multi_tenant.yaml
   tags:
     - install
     - uninstall
