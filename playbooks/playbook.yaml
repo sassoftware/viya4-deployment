@@ -8,6 +8,8 @@
         - install
         - uninstall
         - update
+        - onboard
+        - offboard
     - name: common role
       include_role: 
         name: common
@@ -16,6 +18,8 @@
         - install
         - uninstall
         - update
+        - onboard
+        - offboard
     - name: jump-server role
       include_role:
         name: jump-server
@@ -43,6 +47,27 @@
         name: vdm
       tags:
         - viya
+    - name: multi-tenant role - pre
+      include_role:
+        name: multi-tenant
+        tasks_from: multi_tenant_pre_deploy
+      when: V4_CFG_MULTITENANT_ENABLE
+      tags:
+        - install
+        - uninstall
+    - name: multi-tenant role - onboard offboard
+      include_role:
+        name: multi-tenant
+        tasks_from: multi_tenant_post_deploy
+      tags:
+        - onboard
+        - offboard
+    - name: multi-tenant role - cas
+      include_role:
+        name: multi-tenant
+        tasks_from: onboard_cas_servers
+      tags:
+        - onboard
     - name: monitoring role - namespace
       include_role:
         name: monitoring
