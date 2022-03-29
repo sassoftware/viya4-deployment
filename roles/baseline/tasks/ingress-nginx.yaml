@@ -28,7 +28,7 @@
     - install
     - update
 
-- name: Apply Mitagation for CVE-2021-25742
+- name: Apply Mitigation for CVE-2021-25742
   block:
     - name: Retreive K8s cluster information
       community.kubernetes.k8s_cluster_info:
