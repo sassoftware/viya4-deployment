@@ -81,6 +81,11 @@
   tags:
     - onboard
 
-# TODO: Add verification for cas pods
-## Not sure if this should be manual verification, it took more than 10 mins for cas pods to stabilize
-
+# Offboard CAS servers
+# kubectl -n name-of-namespace delete pods casdeployments -l sas.com/tenant=tenantID
+- name: kubectl delete cas servers for tenants
+  ansible.builtin.shell: |
+    kubectl --kubeconfig {{ KUBECONFIG }} -n {{ NAMESPACE }} delete casdeployment {{ item | trim }}-default
+  with_items: "{{ SAS_TENANT_IDS.split(',') }}"
+  tags:
+    - offboard

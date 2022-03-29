@@ -47,27 +47,27 @@
         name: vdm
       tags:
         - viya
-    - name: multi-tenant role - pre
+    - name: multi-tenant role - setup
       include_role:
         name: multi-tenant
-        tasks_from: multi_tenant_pre_deploy
-      when: V4_CFG_MULTITENANT_ENABLE
+        tasks_from: multi_tenant_setup
       tags:
-        - install
-        - uninstall
+        - onboard
+        - offboard
     - name: multi-tenant role - onboard offboard
       include_role:
         name: multi-tenant
-        tasks_from: multi_tenant_post_deploy
+        tasks_from: multi_tenant_onboard_offboard
       tags:
         - onboard
         - offboard
     - name: multi-tenant role - cas
       include_role:
         name: multi-tenant
-        tasks_from: onboard_cas_servers
+        tasks_from: onboard_offboard_cas_servers
       tags:
         - onboard
+        - offboard
     - name: monitoring role - namespace
       include_role:
         name: monitoring

@@ -118,13 +118,31 @@
     - offboard
 
 # Wait for the tenant-onboard pod to be in Running state
-- name: get sas-tenant job status
+- name: get sas-tenant-onboard job status
   ansible.builtin.shell: |
-    kubectl --kubeconfig {{ KUBECONFIG }} get pods -n {{ NAMESPACE }} | grep sas-tenant | awk '{print $3}'
+    kubectl --kubeconfig {{ KUBECONFIG }} get pods -n {{ NAMESPACE }} --sort-by=.metadata.creationTimestamp | tac | grep sas-tenant-onboard | awk '{print $3}'
   register: pod_status
-  until: pod_status.stdout == "Running"
+  until: pod_status.stdout_lines[0] == "Completed"
   retries: 5
   delay: 30
   tags:
     - onboard
+
+- name: get sas-tenant-offboard job status
+  ansible.builtin.shell: |
+    kubectl --kubeconfig {{ KUBECONFIG }} get pods -n {{ NAMESPACE }} --sort-by=.metadata.creationTimestamp | tac | grep sas-tenant-offboard | awk '{print $3}'
+  register: pod_status
+  until: pod_status.stdout_lines[0] == "Completed"
+  retries: 5
+  delay: 30
+  tags:
+    - offboard
+
+# After offboard cleanup the cas servers
+- name: delete cas tenant directory
+  file:
+    state: absent
+    path: "{{ DEPLOY_DIR }}/multi-tenant/cas-{{ item | trim }}-default"
+  with_items: "{{ SAS_TENANT_IDS.split(',') }}"
+  tags:
     - offboard
