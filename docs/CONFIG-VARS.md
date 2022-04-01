@@ -30,6 +30,7 @@ Supported configuration variables are listed in the table below.  All variables 
     - [Ingress-nginx](#ingress-nginx)
     - [Metrics Server](#metrics-server)
     - [NFS Client](#nfs-client)
+  - [Multi-Tenancy](#multi-tenancy)
 
 ## BASE
 
@@ -333,3 +334,14 @@ The nfs-client is currently supported by the newer nfs-subdir-external-provision
 | NFS_CLIENT_CHART_NAME | nfs-subdir-external-provisioner helm chart name | string | nfs-subdir-external-provisioner | false | | baseline |
 | NFS_CLIENT_CHART_VERSION | nfs-subdir-external-provisioner helm chart version | string | 4.0.8| false | | baseline |
 | NFS_CLIENT_CONFIG | nfs-subdir-external-provisioner helm values | string | see [here](../roles/baseline/defaults/main.yml) | false | | baseline |
+
+## Multi-Tenancy
+
+| Name | Description | Type | Default | Required | Notes | Tasks |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
+| V4_CFG_MULTITENANT_ENABLE | Enables Multi-tenancy in the SAS Viya deployment | bool | false | false || baseline, viya |
+| V4_CFG_MULTITENANT_DB_MODE | Set this flag to true to use databasePerTenant mode | bool | false | false | Two modes of data isolation (schemaPerApplicationTenant, databasePerTenant) for tenant data. schemaPerApplicationTenant is default.  | baseline, viya |
+| SAS_TENANT_IDS | One or more tenant IDs to onboard or offboard | string | | false | Example: Single tenant ID: "acme" or Multiple tenant IDs: "acme, cyberdyne, intech" | onboard, offboard |
+| SAS_PROVIDER_PASSWORD | The password that is applied to the tenant administrator on each onboarded tenant | string | | false | | onboard, offboard |
+| CAS_WORKER_COUNT | The number of CAS worker nodes. Default is 0 (SMP) | int | 0 | false | | onboard, offboard |
+| BACKUP | Set this flag to 1 to include a CAS backup controller | int | Disabled by default | false | | onboard, offboard |
