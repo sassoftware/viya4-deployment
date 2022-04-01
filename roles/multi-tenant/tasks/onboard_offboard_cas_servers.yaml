@@ -82,7 +82,6 @@
     - onboard
 
 # Offboard CAS servers
-# kubectl -n name-of-namespace delete pods casdeployments -l sas.com/tenant=tenantID
 - name: kubectl delete cas servers for tenants
   ansible.builtin.shell: |
     kubectl --kubeconfig {{ KUBECONFIG }} -n {{ NAMESPACE }} delete casdeployment {{ item | trim }}-default
