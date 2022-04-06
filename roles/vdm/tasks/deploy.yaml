@@ -99,6 +99,7 @@
     kind: Namespace
     name: "{{ NAMESPACE }}"
     wait: true
+    wait_timeout: 300
     kubeconfig: "{{ KUBECONFIG }}"
     state: absent
   tags:

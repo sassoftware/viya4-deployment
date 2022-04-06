@@ -82,9 +82,20 @@
     - onboard
 
 # Offboard CAS servers
+- name: kubectl get cas servers for tenants
+  ansible.builtin.shell: |
+    kubectl --kubeconfig {{ KUBECONFIG }} -n {{ NAMESPACE }} get casdeployments
+  register: result
+  failed_when:
+    - result["stderr"]|length > 0
+  tags:
+    - offboard
+
 - name: kubectl delete cas servers for tenants
   ansible.builtin.shell: |
-    kubectl --kubeconfig {{ KUBECONFIG }} -n {{ NAMESPACE }} delete casdeployment {{ item | trim }}-default
-  with_items: "{{ SAS_TENANT_IDS.split(',') }}"
+    echo {{ item }}
+    kubectl --kubeconfig {{ KUBECONFIG }} -n {{ NAMESPACE }} delete casdeployment -l sas.com/tenant={{ item | trim }}
+  when: 'item|trim in result.stdout'
+  with_items: '{{ SAS_TENANT_IDS.split(",") | replace(" ", "") }}'
   tags:
     - offboard
