@@ -1,13 +1,13 @@
 # Multi-Tenancy
 
-
-See details on how Multi-tenancy works [here](https://pubshelpcenter.unx.sas.com/test/doc/en/sasadmincdc/v_026/caltenants/titlepage.htm)
+See details on how Multi-tenancy works [here](https://go.documentation.sas.com/doc/en/itopscdc/v_025/caltenants/titlepage.htm)
 
 ## Multi-tenancy is implemented in the following steps
 
 1. Deploy SAS Viya and a provider tenant into a single Kubernetes namespace. The deployment includes shared mid-tier services such as SAS Logon, and shared applications such as SAS Studio. Applications other than SAS Environment Manager are not accessed from the provider tenant, and application users are not added to the provider tenant.
 2. Onboard one or more tenants, and then onboard one or more instances of SAS Cloud Analytic Services into each tenant. Each instance of CAS is customized to meet its expected tenant workload. Also installed during tenant onboarding are the database schemas that will support authorization and authentication. Database servers can be internal or external to SAS.
-Note: You need to configure all the tenant-specific users and groups during the intial deployment. Any changes to users or groups after the deployment are manual.
+
+**Note:** You need to configure all the tenant-specific users and groups during the intial deployment. Any changes to users or groups after the deployment are manual. For more details on setting up tenant users and groups see [LDAP Requirements for Multi-Tenancy](https://go.documentation.sas.com/doc/en/itopscdc/v_025/itopssr/p0440nbofn1b5qn1l6j1l6ygm7qg.htm#p1dr09lqs9w0w7n1iaklneorpy4r)
 
 ## Preparation
 
