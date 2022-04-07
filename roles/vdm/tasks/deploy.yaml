@@ -1,6 +1,5 @@
 ---
-
-- name: Create namespace
+- name: deploy - Create namespace
   community.kubernetes.k8s:
     api_version: v1
     kind: Namespace
@@ -11,77 +10,56 @@
     - install
     - update
 
-- name: prereqs - cluster-api
-  ansible.builtin.shell: |
-    kubectl --kubeconfig {{ KUBECONFIG }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=cluster-api" --server-side --force-conflicts -f {{ DEPLOY_DIR }}/site.yaml
-    kubectl --kubeconfig {{ KUBECONFIG }} wait --for condition=established --timeout=60s -l "sas.com/admin=cluster-api" crd
-  register: result
-  failed_when:
-    - result["stderr"]|length > 0
-    - '"no matches for kind" not in result.stderr'
-    - '"in version" not in result.stderr'
-    - '"Warning" not in result.stderr'
-    - '"no matching resources found" not in result.stderr'
-    - '"error: no objects passed to apply" not in result.stderr'
+- name: deploy - Apply SAS Viya deployment
+  community.kubernetes.k8s:
+    src: "{{ DEPLOY_DIR }}/SASDeployment.yaml"
+    state: present
+    namespace: "{{ NAMESPACE }}"
+    kubeconfig: "{{ KUBECONFIG }}"
+  when:
+    - DEPLOYMENT_OPERATOR_ENABLED
   tags:
     - install
     - update
 
-- name: prereqs - cluster-wide
-  ansible.builtin.shell: |
-    kubectl --kubeconfig {{ KUBECONFIG }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=cluster-wide" -f {{ DEPLOY_DIR }}/site.yaml
-    kubectl --kubeconfig {{ KUBECONFIG }} wait --for condition=established --timeout=60s -l "sas.com/admin=cluster-wide" crd
-  register: result
-  failed_when:
-    - result["stderr"]|length > 0
-    - '"no matches for kind" not in result.stderr'
-    - '"in version" not in result.stderr'
-    - '"Warning" not in result.stderr'
-    - '"no matching resources found" not in result.stderr'
-    - '"error: no objects passed to apply" not in result.stderr'
+- name: deploy - Apply SAS Viya deployment
+  block:
+    - name: deploy - Gather all resource files
+      find:
+        paths: "{{ ORCHESTRATION_TOOLING_INSTALL_MANIFESTS_DIRECTORY }}"
+        patterns: "*.yaml"
+      register: manifests
+    - name: deploy - Gather SAS Viya deployment resource files
+      find:
+        paths: "{{ ORCHESTRATION_TOOLING_INSTALL_MANIFESTS_DIRECTORY }}"
+        patterns: "*.yaml"
+        contains: "^kind: SASDeployment"
+      register: deployment_manifests
+      failed_when:
+        - ( deployment_manifests.files | length ) != 1
+    - name: deploy - Apply supporting resources
+      community.kubernetes.k8s:
+        src: "{{ item.path }}"
+        state: present
+        namespace: "{{ NAMESPACE }}"
+        kubeconfig: "{{ KUBECONFIG }}"
+      with_items:
+        - "{{ manifests.files | difference(deployment_manifests.files) }}"
+    - name: deploy - Deploy SAS Viya
+      environment:
+        PATH: "{{ ORCHESTRATION_TOOLING_PATH }}"
+        KUBECONFIG: "/kubeconfig.yaml"
+      command: |
+        chroot "{{ ORCHESTRATION_TOOLING_DIRECTORY }}" orchestration deploy
+             --namespace "{{ NAMESPACE }}"
+             --sas-deployment-cr "{{ item.path | replace(ORCHESTRATION_TOOLING_DIRECTORY, '/') }}"
+      with_items:
+        - "{{ deployment_manifests.files }}"
+  when:
+    - DEPLOYMENT_OPERATOR_ENABLED == False
   tags:
     - install
     - update
-
-- name: prereqs - cluster-local deploy
-  ansible.builtin.command: |
-    kubectl --kubeconfig {{ KUBECONFIG }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=cluster-local" -f {{ DEPLOY_DIR }}/site.yaml --prune
-  register: result
-  failed_when:
-    - result["stderr"]|length > 0
-    - '"no matches for kind" not in result.stderr'
-    - '"in version" not in result.stderr'
-    - '"Warning" not in result.stderr'
-  tags:
-    - install
-    - update
-
-- name: manifest - deploy
-  ansible.builtin.command: |
-    kubectl --kubeconfig {{ KUBECONFIG }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=namespace" -f {{ DEPLOY_DIR }}/site.yaml --prune
-  register: result
-  failed_when:
-    - result["stderr"]|length > 0
-    - '"no matches for kind" not in result.stderr'
-    - '"in version" not in result.stderr'
-    - '"Warning" not in result.stderr'
-  tags:
-    - install
-    - update
-
-- name: manifest - deploy update
-  command: |
-    kubectl --kubeconfig {{ KUBECONFIG }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=namespace" -f {{ DEPLOY_DIR }}/site.yaml --prune --prune-whitelist=autoscaling/v2beta2/HorizontalPodAutoscaler
-  register: result
-  failed_when:
-    - result["stderr"]|length > 0
-    - '"no matches for kind" not in result.stderr'
-    - '"in version" not in result.stderr'
-    - '"Warning" not in result.stderr'
-  tags:
-    - install
-    - update
-
 - name: deploy - Uninstall postgresclusters
   environment:
     KUBECONFIG: "{{ KUBECONFIG }}"
@@ -94,18 +72,17 @@
   tags:
     - uninstall
 
-- name: Remove Viya
+- name: deploy - Remove Viya
   community.kubernetes.k8s:
     state: absent
-    src:  "{{ DEPLOY_DIR }}/site.yaml"
-    wait: false
+    src:  "{{ ORCHESTRATION_TOOLING_UNINSTALL_MANIFEST }}"
+    wait: true
     kubeconfig: "{{ KUBECONFIG }}"
-  register: result
   ignore_errors: yes
   tags:
     - uninstall
 
-- name: Delete namespace
+- name: deploy - Delete namespace
   community.kubernetes.k8s:
     api_version: v1
     kind: Namespace

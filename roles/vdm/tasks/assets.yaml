@@ -22,6 +22,17 @@
     - uninstall
     - update
 
+- name: assets - Get Certificates
+  command:
+    cmd: "{{ tmpdir.path }}/viya4-orders-cli certificates --file-path {{ tmpdir.path }}/ --file-name certs {{ V4_CFG_ORDER_NUMBER }}"
+  environment:
+    CLIENTCREDENTIALSID: "{{ V4_CFG_SAS_API_KEY | string | b64encode }}"
+    CLIENTCREDENTIALSSECRET: "{{ V4_CFG_SAS_API_SECRET | string | b64encode }}"
+  tags:
+    - install
+    - uninstall
+    - update
+
 - name: assets - Download
   command:
     cmd: "{{ tmpdir.path }}/viya4-orders-cli dep --file-path {{ DEPLOY_DIR }} -o json {{ V4_CFG_ORDER_NUMBER }} {{ V4_CFG_CADENCE_NAME }} {{ V4_CFG_CADENCE_VERSION }}"
@@ -36,7 +47,8 @@
     - update
   register: res
 
-- set_fact:
+- name: assets - Set assets location
+  set_fact:
     order_output: "{{ res.stdout|from_json }}"
   when:
     - V4_CFG_DEPLOYMENT_ASSETS is none

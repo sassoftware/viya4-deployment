@@ -42,6 +42,7 @@ Supported configuration variables are listed in the table below.  All variables 
 | KUBECONFIG | Path to kubeconfig file | string | | true | | viya |
 | V4_CFG_SITEDEFAULT | Path to sitedefault file | string | | false | When not set [sitedefault](../examples/sitedefault.yaml) is used | viya |
 | V4_CFG_SSSD | Path to sssd file | string | | false | | viya |
+| DEPLOYMENT_OPERATOR_ENABLED | Is the SAS Deployment Operator present in the cluster | bool | false | false | | viya |
 
 ## Cloud
 
