@@ -318,7 +318,7 @@ Metric server is currently only used for AWS EKS clusters. GCP GKE and Azure AKS
 | METRICS_SERVER_ENABLED | Whether to deploy tool | bool | true | false | | baseline |
 | METRICS_SERVER_CHART_URL | metrics-server helm chart url | string | https://charts.bitnami.com/bitnami/ | false | If an existing metric-server is installed, these options will be ignored | baseline |
 | METRICS_SERVER_CHART_NAME | metrics-server helm chart name | string | metrics-server | false | If an existing metric-server is installed, these options will be ignored | baseline |
-| METRICS_SERVER_CHART_VERSION | metrics-server helm chart version | string | 5.3.5 | false | If an existing metric-server is installed, these options will be ignored | baseline |
+| METRICS_SERVER_CHART_VERSION | metrics-server helm chart version | string | 5.11.7 | false | If an existing metric-server is installed, these options will be ignored | baseline |
 | METRICS_SERVER_CONFIG | metrics-server helm values | string | see [here](../roles/baseline/defaults/main.yml) | false | If an existing metric-server is installed, these options will be ignored | baseline |
 
 ### NFS Client
