@@ -182,9 +182,16 @@
     - uninstall
     - update
 
+- name: Include Orchestration
+  include_tasks: orchestration.yaml
+  tags:
+    - install
+    - uninstall
+    - update
+
 - name: Include Deploy
   include_tasks: deploy.yaml
-  when: 
+  when:
     - DEPLOY
   tags:
     - install

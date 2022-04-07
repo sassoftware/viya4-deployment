@@ -3,6 +3,7 @@
 # Each can have either customer provided certs or cert-manager generated certs
 # Regardless of type or source of certificates, additional root CA certs can be provided
 # See sas-bases/examples/security/README.md for full details
+---
 - name: tls - openssl-generator check
   fail:
     msg: "When using openssl-generator, and V4_CFG_TLS_MODE is not 'disabled', and your V4_CFG_CADENCE_VERSION is <= 2021.1, you must provide: V4_CFG_TLS_CERT, V4_CFG_TLS_KEY, V4_CFG_TLS_TRUSTED_CA_CERTS"

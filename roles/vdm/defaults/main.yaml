@@ -2,6 +2,7 @@ PROVIDER: custom #[azure|aws|gcp|custom]
 NAMESPACE: null
 CLUSTER_NAME: null
 DEPLOY: True
+DEPLOYMENT_OPERATOR_ENABLED: False
 
 V4_CFG_LICENSE: null
 V4_CFG_DEPLOYMENT_ASSETS: null
