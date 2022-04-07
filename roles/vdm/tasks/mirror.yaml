@@ -1,3 +1,4 @@
+---
 - name: mirror - copy example
   copy:
     src: "{{ DEPLOY_DIR }}/sas-bases/examples/mirror/mirror.yaml"
