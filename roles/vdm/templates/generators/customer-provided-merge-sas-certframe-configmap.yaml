@@ -14,4 +14,6 @@ literals:
 - SAS_CERTIFICATE_ADDITIONAL_SAN_IP={{ V4_CFG_TLS_ADDITIONAL_SAN_IP }}
 {% if V4_CFG_TLS_GENERATOR == "openssl" %}
 - SAS_CERTIFICATE_GENERATOR=openssl
+{% elif V4_CFG_TLS_GENERATOR == "cert-manager" %}
+- SAS_CERTIFICATE_GENERATOR=cert-manager
 {% endif -%}
