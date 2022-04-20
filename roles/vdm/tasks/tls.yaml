@@ -192,22 +192,35 @@
     - uninstall
     - update
 
-- name: tls - Certificate Generation
+- name: tls - Certificate Generation - cert-manager
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
       - { transformers: "cert-manager-provided-ingress-certificate.yaml", vdm: true, priority: 70 }
-      - { generators: "customer-provided-merge-sas-certframe-configmap.yaml", vdm: true }
   when:
     - V4_CFG_TLS_MODE != "disabled"
-    - (V4_CFG_TLS_CERT is none and V4_CFG_TLS_KEY is none and V4_CFG_TLS_GENERATOR == "cert-manager") or V4_CFG_TLS_GENERATOR == "openssl"
+    - (V4_CFG_TLS_CERT is none and V4_CFG_TLS_KEY is none and V4_CFG_TLS_GENERATOR == "cert-manager")
   tags:
     - install
     - uninstall
     - update
 
+- name: tls - Configuring Certificate Attributes
+  overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { generators: "customer-provided-merge-sas-certframe-configmap.yaml", vdm: true }
+  when:
+    - V4_CFG_TLS_MODE != "disabled"
+    - (V4_CFG_TLS_GENERATOR == "cert-manager" or V4_CFG_TLS_GENERATOR == "openssl")
+  tags:
+    - install
+    - uninstall
+    - update
 
 - name: tls - Consul UI
   overlay_facts:
