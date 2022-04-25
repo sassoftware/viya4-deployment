@@ -46,7 +46,7 @@ RUN pip install -r ./requirements.txt \
   && ansible-galaxy install -r ./requirements.yaml \
   && chmod -R g=u /etc/passwd /etc/group /viya4-deployment/ \
   && chmod 755 /viya4-deployment/docker-entrypoint.sh \
-  && git config --global --add safe.directory /viya4-deployment
+  && git config --system --add safe.directory /viya4-deployment
 
 ENV PLAYBOOK=playbook.yaml
 ENV VIYA4_DEPLOYMENT_TOOLING=docker
