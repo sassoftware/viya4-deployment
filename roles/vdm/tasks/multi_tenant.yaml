@@ -45,6 +45,7 @@
     - uninstall
     - update
 
+# New update suggests no need to set INGRESS_HOST
 - name: sasdefault - update host
   replace:
     path: "{{ DEPLOY_DIR }}/multi-tenant/sasdefault.yaml"
