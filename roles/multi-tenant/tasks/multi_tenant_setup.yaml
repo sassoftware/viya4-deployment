@@ -30,7 +30,7 @@
   tags:
     - onboard
 
-- name: sas-tenant-job - update sas-tenant-ids and sas-provider-password
+- name: sas-tenant-job - update sas-tenant-ids
   replace:
     path: "{{ item.path }}"
     regexp: "{{ item.regexp }}"
@@ -38,11 +38,71 @@
   with_items:
     - { path: '{{ DEPLOY_DIR }}/multi-tenant/sas-tenant-job/tenant-onboard-job.yaml', regexp: '{% raw %}{{ SAS-TENANT-IDS }}{% endraw %}', replace: '{{ SAS_TENANT_IDS }}' }
     - { path: '{{ DEPLOY_DIR }}/multi-tenant/sas-tenant-job/tenant-offboard-job.yaml', regexp: '{% raw %}{{ SAS-TENANT-IDS }}{% endraw %}', replace: '{{ SAS_TENANT_IDS }}' }
-    - { path: '{{ DEPLOY_DIR }}/multi-tenant/sas-tenant-job/tenant-onboard-job.yaml', regexp: '{% raw %}{{ SAS-PROVIDER-PASSWORD }}{% endraw %}', replace: '{{ SAS_PROVIDER_PASSWORD }}'}
-    - { path: '{{ DEPLOY_DIR }}/multi-tenant/sas-tenant-job/tenant-offboard-job.yaml', regexp: '{% raw %}{{ SAS-PROVIDER-PASSWORD }}{% endraw %}', replace: '{{ SAS_PROVIDER_PASSWORD }}'}
   when: V4_CFG_MULTITENANT_ENABLE
   tags:
     - onboard
+    - offboard
+
+- name: sas-tenant-job - update sas-provider-password
+  replace:
+    path: "{{ item.path }}"
+    regexp: "{{ item.regexp }}"
+    replace: "{{ item.replace }}"
+  with_items:
+    - { path: '{{ DEPLOY_DIR }}/multi-tenant/sas-tenant-job/tenant-onboard-job.yaml', regexp: '{% raw %}{{ SAS-PROVIDER-PASSWORD }}{% endraw %}', replace: '{{ SAS_PROVIDER_PASSWORD }}'}
+    - { path: '{{ DEPLOY_DIR }}/multi-tenant/sas-tenant-job/tenant-offboard-job.yaml', regexp: '{% raw %}{{ SAS-PROVIDER-PASSWORD }}{% endraw %}', replace: '{{ SAS_PROVIDER_PASSWORD }}'}
+  when: SAS_PROVIDER_PASSWORD
+  tags:
+    - onboard
+
+- name: Create tenant password list
+  set_fact:
+    tenant_password_list: "{{ tenant_password_list }} + [ 'SAS_PROVIDER_PASSWORD_{{ item }}' ]"
+  with_items: '{{ SAS_TENANT_IDS.split(",") | replace(" ", "") }}'
+  vars:
+    tenant_password_list: []
+  when: not SAS_PROVIDER_PASSWORD
+  tags:
+    - onboard
+
+- name: sas-tenant-job - add sas-provider-password-TENANT-ID
+  lineinfile:
+    path: '{{ DEPLOY_DIR }}/multi-tenant/sas-tenant-job/tenant-onboard-job.yaml'
+    insertafter: "{% raw %}value: {{ SAS-PROVIDER-PASSWORD }}{% endraw %}"
+    line: "          - name: {{ item }}\n            value: {% raw %}{{{% endraw %} {{ item }} {% raw %}}}{% endraw %}"
+  with_items: "{{ tenant_password_list }}"
+  when: 
+    - ({{ item }} is defined)
+    - not SAS_PROVIDER_PASSWORD
+  tags:
+    - onboard
+        
+- name: sas-tenant-job - update sas-provider-password-TENANT-ID
+  replace:
+    path: '{{ DEPLOY_DIR }}/multi-tenant/sas-tenant-job/tenant-onboard-job.yaml'
+    regexp: '{% raw %}{{{% endraw %} {{ item }} {% raw %}}}{% endraw %}'
+    replace: '{{ vars[item] }}'
+  when: 
+    - ({{ item }} is defined)
+    - not SAS_PROVIDER_PASSWORD
+  with_items: "{{ tenant_password_list }}"
+  tags:
+    - onboard
+
+- name: Remove SAS_PROVIDER_PASSWORD
+  lineinfile:
+    path: "{{ item.path }}"
+    state: absent
+    line: "{{ item.line }}"
+  with_items:
+    - { path: '{{ DEPLOY_DIR }}/multi-tenant/sas-tenant-job/tenant-onboard-job.yaml', line: '          - name: SAS_PROVIDER_PASSWORD'}
+    - { path: '{{ DEPLOY_DIR }}/multi-tenant/sas-tenant-job/tenant-onboard-job.yaml', line: '            value: {% raw %}{{ SAS-PROVIDER-PASSWORD }}{% endraw %}'}
+    - { path: '{{ DEPLOY_DIR }}/multi-tenant/sas-tenant-job/tenant-offboard-job.yaml', line: '          - name: SAS_PROVIDER_PASSWORD'}
+    - { path: '{{ DEPLOY_DIR }}/multi-tenant/sas-tenant-job/tenant-offboard-job.yaml', line: '            value: {% raw %}{{ SAS-PROVIDER-PASSWORD }}{% endraw %}'}
+  when: not SAS_PROVIDER_PASSWORD
+  tags:
+    - onboard
+    - offboard
 
 - name: copy - create-cas-server script
   template:
