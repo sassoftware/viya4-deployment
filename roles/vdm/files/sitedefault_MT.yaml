@@ -1,0 +1,34 @@
+cacerts:
+config:
+    application:
+        sas.multi.tenancy.enabled: true
+        sas.multi.tenancy.from.uaa: true
+        sas.identities.providers.ldap.connection:
+            host: ldap-svc
+            password: Password123
+            port: 389
+            userDN: cn=admin,dc=example,dc=com
+        sas.identities.providers.ldap.group:
+            baseDN: ou=groups,dc=example,dc=com
+            accountId: cn
+            member: uniqueMember
+            memberOf: memberOf
+            objectClass: groupOfUniqueNames
+            objectFilter: (objectClass=groupOfUniqueNames)
+            searchFilter: cn={0}
+        sas.identities.providers.ldap.user:
+            baseDN: ou=people,dc=example,dc=com
+            accountId: uid
+            memberOf: memberOf
+            objectClass: inetOrgPerson
+            objectFilter: (objectClass=inetOrgPerson)
+            searchFilter: uid={0}
+        sas.identities.providers.ldap.tenancy.userRdn: ou=people
+    identities:
+        sas.identities:
+            # disable cache until it is multi-tenant compatible
+            cache.enabled: false
+    SASLogon:
+        sas.logon.initial:
+            user: viya_admin
+            password: Password123

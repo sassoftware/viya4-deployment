@@ -38,9 +38,9 @@ V4_CFG_POSTGRES_SERVERS:
 V4_CFG_EMBEDDED_LDAP_ENABLE: false
 
 ## Multi-Tenant
-V4_CFG_MULTITENANT_ENABLE: true
+V4MT_ENABLE: true
 # SAS Viya supports two modes of data isolation (schemaPerApplicationTenant and databasePerTenant) for tenant data.
-# Set DB_MODE true to use databasePerTenant
-V4_CFG_MULTITENANT_DB_MODE: <desired_mode>
+# Set V4MT_MODE to either schema or database
+V4MT_MODE: "<desired_mode>"
 SAS_TENANT_IDS: "<desired_tenant_ids>"
 

@@ -1,21 +1,18 @@
-
 ---
-- name: MultiTenant Pre-deploy tasks
-  include_tasks: multi_tenant_pre_deploy.yaml
-  when: V4_CFG_MULTITENANT_ENABLE
-  tags:
-    - install
-    - uninstall
-    - update
-
-- name: MultiTenant onboard task
-  include_tasks: multi_tenant_post_deploy.yaml
-  when: V4_CFG_MULTITENANT_ENABLE
+- name: multi-tenant role - setup
+  include_tasks: multi_tenant_setup.yaml
   tags:
     - onboard
+    - offboard
 
-- name: MultiTenant offboard task
-  include_tasks: multi_tenant_post_deploy.yaml
-  when: V4_CFG_MULTITENANT_ENABLE
+- name: multi-tenant role - onboard offboard
+  include_tasks: multi_tenant_onboard_offboard.yaml
   tags:
+    - onboard
+    - offboard
+
+- name: multi-tenant role - cas
+  include_tasks: onboard_offboard_cas_servers.yaml
+  tags:
+    - onboard
     - offboard
