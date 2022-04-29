@@ -47,24 +47,9 @@
         name: vdm
       tags:
         - viya
-    - name: multi-tenant role - setup
+    - name: multi-tenant
       include_role:
         name: multi-tenant
-        tasks_from: multi_tenant_setup
-      tags:
-        - onboard
-        - offboard
-    - name: multi-tenant role - onboard offboard
-      include_role:
-        name: multi-tenant
-        tasks_from: multi_tenant_onboard_offboard
-      tags:
-        - onboard
-        - offboard
-    - name: multi-tenant role - cas
-      include_role:
-        name: multi-tenant
-        tasks_from: onboard_offboard_cas_servers
       tags:
         - onboard
         - offboard

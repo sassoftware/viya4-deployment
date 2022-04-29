@@ -86,7 +86,7 @@
 
 - name: Include MultiTenant
   include_tasks: multi_tenant.yaml
-  when: V4_CFG_MULTITENANT_ENABLE
+  when: V4MT_ENABLE
   tags:
     - install
     - uninstall

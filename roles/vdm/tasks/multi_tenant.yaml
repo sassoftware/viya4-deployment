@@ -16,7 +16,7 @@
     add:
       - { transformers: "overlays/multi-tenant/sas-shared-configmap-transformer.yaml" }
   when:
-    - V4_CFG_MULTITENANT_ENABLE
+    - V4MT_ENABLE
     - result.stat.exists
   tags:
     - install
@@ -28,7 +28,7 @@
     state: directory
     dest: '{{ DEPLOY_DIR }}/multi-tenant'
     mode: "0770"
-  when: V4_CFG_MULTITENANT_ENABLE
+  when: V4MT_ENABLE
   tags:
     - install
     - uninstall
@@ -39,29 +39,29 @@
     src: "{{ DEPLOY_DIR }}/sas-bases/examples/multi-tenant/sasdefault.yaml"
     dest: "{{ DEPLOY_DIR }}/multi-tenant"
     mode: "0660"
-  when: V4_CFG_MULTITENANT_ENABLE
+  when: V4MT_ENABLE
   tags:
     - install
     - uninstall
     - update
 
 # New update suggests no need to set INGRESS_HOST
-- name: sasdefault - update host
-  replace:
-    path: "{{ DEPLOY_DIR }}/multi-tenant/sasdefault.yaml"
-    regexp: "{INGRESS_HOST}"
-    replace: "{{ V4_CFG_INGRESS_FQDN }}"
-  tags:
-    - install
-    - uninstall
-    - update
+# - name: sasdefault - update host
+#   replace:
+#     path: "{{ DEPLOY_DIR }}/multi-tenant/sasdefault.yaml"
+#     regexp: "{INGRESS_HOST}"
+#     replace: "{{ V4_CFG_INGRESS_FQDN }}"
+#   tags:
+#     - install
+#     - uninstall
+#     - update
 
 - name: db mode - uncomment db-mode
   replace:
     path: "{{ DEPLOY_DIR }}/multi-tenant/sasdefault.yaml"
     regexp: '#config/application/sas.multi.tenancy.db.mode: databasePerTenant.*$'
     replace: "config/application/sas.multi.tenancy.db.mode: databasePerTenant"
-  when: V4_CFG_MULTITENANT_DB_MODE
+  when: V4MT_MODE|lower == "database"
   tags:
     - install
     - uninstall

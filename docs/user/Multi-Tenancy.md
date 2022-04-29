@@ -19,7 +19,7 @@ The SAS Viya _IT Operations Guide_ provides detailed information about requireme
 
 ### Variable Definitions File (ansible-vars.yaml) 
 
-Prepare your `ansible-vars.yaml` file, and set the variables as described in [Multi-Tenancy](../CONFIG-VARS.md#multi-tenancy). The variables V4_CFG_MULTITENANT_ENABLE and V4_CFG_MULTITENANT_DB_MODE must be set before you perform the deployment. Other variables can be set before the deployment or during the onboarding or offboarding procedures.
+Prepare your `ansible-vars.yaml` file, and set the variables as described in [Multi-Tenancy](../CONFIG-VARS.md#multi-tenancy). The variables V4MT_ENABLE and V4MT_MODE must be set before you perform the deployment. Other variables can be set before the deployment or during the onboarding or offboarding procedures.
 
 ### Example Steps to Configure a Multi-Tenant Deployment
 
