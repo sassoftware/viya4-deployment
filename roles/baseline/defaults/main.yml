@@ -54,6 +54,7 @@ INGRESS_NGINX_CONFIG:
 
     config:
       use-forwarded-headers: "true"
+      hsts-max-age: "63072000"
     tcp: {}
     udp: {}
     lifecycle:
