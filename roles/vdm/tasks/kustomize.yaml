@@ -35,6 +35,8 @@
     path: "{{ DEPLOY_DIR }}"
     exclude: 
       - vdm
+      - multi-tenant
+      - sas-tenant-job
   register: user_customizations
   tags:
     - install

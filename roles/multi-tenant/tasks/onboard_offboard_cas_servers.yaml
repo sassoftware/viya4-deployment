@@ -4,7 +4,7 @@
   lineinfile:
     path: "{{ DEPLOY_DIR }}/kustomization.yaml"
     insertafter: "resources:" 
-    line: "  - multi-tenant/cas-{{ item | trim }}-default"
+    line: "  - site-config/cas-{{ item | trim }}-default"
     firstmatch: yes
     state: present
   with_items: "{{ SAS_TENANT_IDS.split(',') }}"
