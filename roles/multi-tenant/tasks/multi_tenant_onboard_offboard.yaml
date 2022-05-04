@@ -2,7 +2,7 @@
 # Apply the service account role
 - name: apply service account role
   ansible.builtin.shell: |
-    kubectl --kubeconfig {{ KUBECONFIG }} apply -n {{ NAMESPACE }} -f {{ DEPLOY_DIR }}/multi-tenant/sas-tenant-job/tenant-job-service-account-role.yaml
+    kubectl --kubeconfig {{ KUBECONFIG }} apply -n {{ NAMESPACE }} -f {{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-job-service-account-role.yaml
   register: result
   failed_when:
     - result["stderr"]|length > 0
@@ -17,20 +17,20 @@
 
 # create the kustomization.yaml for onboard
 - name: copy - kustomization-onboard yaml
-  ansible.builtin.shell: cp -v "{{ DEPLOY_DIR }}/multi-tenant/sas-tenant-job/kustomization-onboard.yaml" "{{ DEPLOY_DIR }}/multi-tenant/sas-tenant-job/kustomization.yaml"
+  ansible.builtin.shell: cp -v "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/kustomization-onboard.yaml" "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/kustomization.yaml"
   tags:
     - onboard
 
 # create the kustomization.yaml for offboard
 - name: copy - kustomization-offboard yaml
-  ansible.builtin.shell: cp -v "{{ DEPLOY_DIR }}/multi-tenant/sas-tenant-job/kustomization-offboard.yaml" "{{ DEPLOY_DIR }}/multi-tenant/sas-tenant-job/kustomization.yaml"
+  ansible.builtin.shell: cp -v "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/kustomization-offboard.yaml" "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/kustomization.yaml"
   tags:
     - offboard
 
 # Update kustomization files if TLS disabled
 - name: tls disabled - onboard
   replace:
-    path: "{{ DEPLOY_DIR }}/multi-tenant/sas-tenant-job/kustomization.yaml"
+    path: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/kustomization.yaml"
     regexp: "tenant-onboard-job-tls-transformer.yaml"
     replace: "# - tenant-onboard-job-tls-transformer.yaml"
   when:
@@ -40,7 +40,7 @@
 
 - name: tls disabled - offboard
   replace:
-    path: "{{ DEPLOY_DIR }}/multi-tenant/sas-tenant-job/kustomization.yaml"
+    path: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/kustomization.yaml"
     regexp: "tenant-offboard-job-tls-transformer.yaml"
     replace: "# - tenant-offboard-job-tls-transformer.yaml"
   when:
@@ -51,13 +51,13 @@
 # Build the manifest file
 - name: kustomize - generate onboard manifest
   ansible.builtin.shell: |
-    kustomize build {{ DEPLOY_DIR }}/multi-tenant/sas-tenant-job/ --load_restrictor='none' -o {{ DEPLOY_DIR }}/multi-tenant/sas-tenant-job/site-onboard.yaml
+    kustomize build {{ DEPLOY_DIR }}/site-config/sas-tenant-job/ --load_restrictor='none' -o {{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-onboard.yaml
   tags:
     - onboard
 
 - name: kustomize - generate offboard manifest
   ansible.builtin.shell: |
-    kustomize build {{ DEPLOY_DIR }}/multi-tenant/sas-tenant-job/ --load_restrictor='none' -o {{ DEPLOY_DIR }}/multi-tenant/sas-tenant-job/site-offboard.yaml
+    kustomize build {{ DEPLOY_DIR }}/site-config/sas-tenant-job/ --load_restrictor='none' -o {{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-offboard.yaml
   tags:
     - offboard
 
@@ -76,8 +76,8 @@
     regexp: "{{ item.regexp }}"
     replace: "{{ item.replace }}"
   with_items:
-    - { path: '{{ DEPLOY_DIR }}/multi-tenant/sas-tenant-job/site-onboard.yaml', regexp: 'sas-image-pull-secrets.*$', replace: '{{ secret_name.stdout }}' }
-    - { path: '{{ DEPLOY_DIR }}/multi-tenant/sas-tenant-job/site-onboard.yaml', regexp: 'cr.sas.com', replace: '{{ V4_CFG_CR_URL }}' }
+    - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-onboard.yaml', regexp: 'sas-image-pull-secrets.*$', replace: '{{ secret_name.stdout }}' }
+    - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-onboard.yaml', regexp: 'cr.sas.com', replace: '{{ V4_CFG_CR_URL }}' }
   tags:
     - onboard
 
@@ -87,15 +87,15 @@
     regexp: "{{ item.regexp }}"
     replace: "{{ item.replace }}"
   with_items:
-    - { path: '{{ DEPLOY_DIR }}/multi-tenant/sas-tenant-job/site-offboard.yaml', regexp: 'sas-image-pull-secrets.*$', replace: '{{ secret_name.stdout }}' }
-    - { path: '{{ DEPLOY_DIR }}/multi-tenant/sas-tenant-job/site-offboard.yaml', regexp: 'cr.sas.com', replace: '{{ V4_CFG_CR_URL }}' }
+    - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-offboard.yaml', regexp: 'sas-image-pull-secrets.*$', replace: '{{ secret_name.stdout }}' }
+    - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-offboard.yaml', regexp: 'cr.sas.com', replace: '{{ V4_CFG_CR_URL }}' }
   tags:
     - offboard
 
 # Run the onboarding command
 - name: run onboarding command
   ansible.builtin.shell: |
-    kubectl --kubeconfig {{ KUBECONFIG }} create -n {{ NAMESPACE }} -f {{ DEPLOY_DIR }}/multi-tenant/sas-tenant-job/site-onboard.yaml
+    kubectl --kubeconfig {{ KUBECONFIG }} create -n {{ NAMESPACE }} -f {{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-onboard.yaml
   register: result
   failed_when:
     - result["stderr"]|length > 0
@@ -107,7 +107,7 @@
 
 - name: run offboarding command
   ansible.builtin.shell: |
-    kubectl --kubeconfig {{ KUBECONFIG }} create -n {{ NAMESPACE }} -f {{ DEPLOY_DIR }}/multi-tenant/sas-tenant-job/site-offboard.yaml
+    kubectl --kubeconfig {{ KUBECONFIG }} create -n {{ NAMESPACE }} -f {{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-offboard.yaml
   register: result
   failed_when:
     - result["stderr"]|length > 0
@@ -142,7 +142,7 @@
 - name: delete cas tenant directory
   file:
     state: absent
-    path: "{{ DEPLOY_DIR }}/multi-tenant/cas-{{ item | trim }}-default"
+    path: "{{ DEPLOY_DIR }}/site-config/cas-{{ item | trim }}-default"
   with_items: "{{ SAS_TENANT_IDS.split(',') }}"
   tags:
     - offboard
