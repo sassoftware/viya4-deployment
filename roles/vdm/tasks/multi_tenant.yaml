@@ -46,21 +46,21 @@
     - update
 
 # New update suggests no need to set INGRESS_HOST
-# - name: sasdefault - update host
-#   replace:
-#     path: "{{ DEPLOY_DIR }}/site-config/multi-tenant/sasdefault.yaml"
-#     regexp: "{INGRESS_HOST}"
-#     replace: "{{ V4_CFG_INGRESS_FQDN }}"
-#   tags:
-#     - install
-#     - uninstall
-#     - update
+- name: sasdefault - update host
+  replace:
+    path: "{{ DEPLOY_DIR }}/site-config/multi-tenant/sasdefault.yaml"
+    regexp: "{INGRESS_HOST}"
+    replace: "{{ V4_CFG_INGRESS_FQDN }}"
+  tags:
+    - install
+    - uninstall
+    - update
 
 - name: db mode - uncomment db-mode
   replace:
     path: "{{ DEPLOY_DIR }}/site-config/multi-tenant/sasdefault.yaml"
-    regexp: '#config/application/sas.multi.tenancy.db.mode: databasePerTenant.*$'
-    replace: "config/application/sas.multi.tenancy.db.mode: databasePerTenant"
+    regexp: '#\s*sas.multi.tenancy.db.mode.*$'
+    replace: "    sas.multi.tenancy.db.mode: databasePerTenant"
   when: V4MT_MODE|lower == "database"
   tags:
     - install
