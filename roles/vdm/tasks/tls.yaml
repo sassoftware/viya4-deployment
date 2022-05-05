@@ -5,11 +5,13 @@
 # See sas-bases/examples/security/README.md for full details
 - name: tls - openssl-generator check
   fail:
-    msg: "When using openssl-generator and V4_CFG_TLS_MODE is not 'disabled' you must provide: V4_CFG_TLS_CERT, V4_CFG_TLS_KEY, V4_CFG_TLS_TRUSTED_CA_CERTS"
+    msg: "When using openssl-generator, and V4_CFG_TLS_MODE is not 'disabled', and your V4_CFG_CADENCE_VERSION is <= 2021.1, you must provide: V4_CFG_TLS_CERT, V4_CFG_TLS_KEY, V4_CFG_TLS_TRUSTED_CA_CERTS"
   when:
     - V4_CFG_TLS_MODE != "disabled"
     - V4_CFG_TLS_GENERATOR == "openssl"
     - V4_CFG_TLS_CERT is none or V4_CFG_TLS_KEY is none or V4_CFG_TLS_TRUSTED_CA_CERTS is none
+    - V4_CFG_CADENCE_VERSION is version('2021.1', "<=")
+    - V4_CFG_CADENCE_NAME != "fast"
   tags:
     - install
     - uninstall
@@ -205,6 +207,20 @@
   tags:
     - install
     - uninstall
+    - update
+
+- name: tls - Certificate Generation - openssl
+  overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { resources: "openssl-generated-ingress-certificate.yaml", vdm: true, min: "2021.2" }
+  when:
+    - V4_CFG_TLS_MODE != "disabled"
+    - (V4_CFG_TLS_CERT is none and V4_CFG_TLS_KEY is none and V4_CFG_TLS_GENERATOR == "openssl")
+  tags:
+    - install
     - update
 
 - name: tls - Configuring Certificate Attributes
