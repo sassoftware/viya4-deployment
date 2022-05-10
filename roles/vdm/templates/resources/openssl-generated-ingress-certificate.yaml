@@ -1,0 +1,77 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  labels:
+    sas.com/admin: namespace
+  name: sas-create-openssl-ingress-certificate
+spec:
+  template:
+    spec:
+      imagePullSecrets: []
+      containers:
+      - env:
+        - name: KUBE_POD_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.name
+# The following lines are optional and should only be set if you want to exclude SAN DNS or IP entries from the ingress controller certificate that are included on back-end server certificates
+{% if V4_CFG_TLS_ADDITIONAL_SAN_DNS|length %}
+        - name: SAS_CERTIFICATE_ADDITIONAL_SAN_DNS
+          value: "{{ V4_CFG_TLS_ADDITIONAL_SAN_DNS }}"
+{% endif %}
+{% if V4_CFG_TLS_ADDITIONAL_SAN_IP|length %}
+        - name: SAS_CERTIFICATE_ADDITIONAL_SAN_IP
+          value: "{{ V4_CFG_TLS_ADDITIONAL_SAN_IP }}"
+{% endif %}
+        - name: SAS_CERTIFICATE_COMMON_NAME
+          value: sas-viya-openssl-ingress-certificate
+        - name: SAS_CERTFRAME_TOKEN_DIR
+          value: /certframe-token
+        - name: SAS_CERTIFICATE_SECRET_NAME
+          value: sas-ingress-certificate
+        - name: SAS_CERTIFICATE_GENERATOR
+          value: openssl
+        - name: SAS_CERTIFICATE_FILE_FORMAT
+          value: pem
+        - name: SAS_CERTIFICATE_CA_CERTIFICATE_FILE
+          value: /security/ca.crt
+        - name: SAS_CERTIFICATE_FILE
+          value: /security/tls.crt
+        - name: SAS_CERTIFICATE_PRIVATE_KEY_FILE
+          value: /security/tls.key
+        - name: SAS_CERTIFICATE_EXCLUDE_POD_OWNERREF
+          value: "true"
+        envFrom:
+        - configMapRef:
+            name: sas-certframe-user-config
+        image: sas-certframe
+        imagePullPolicy: IfNotPresent
+        name: sas-certframe
+        resources:
+          limits:
+            cpu: 500m
+            memory: 500Mi
+          requests:
+            cpu: 50m
+            memory: 50Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          privileged: false
+          readOnlyRootFilesystem: true
+        volumeMounts:
+        - mountPath: /certframe-token
+          name: certframe-token
+        - mountPath: /security
+          name: security
+      restartPolicy: OnFailure
+      volumes:
+      - name: certframe-token
+        secret:
+          defaultMode: 420
+          secretName: sas-certframe-token
+      - emptyDir: {}
+        name: security
