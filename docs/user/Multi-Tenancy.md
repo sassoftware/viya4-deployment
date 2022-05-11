@@ -19,17 +19,18 @@ The SAS Viya _IT Operations Guide_ provides detailed information about requireme
 
 ### Variable Definitions File (ansible-vars.yaml) 
 
-Prepare your `ansible-vars.yaml` file, and set the variables as described in [Multi-Tenancy](../CONFIG-VARS.md#multi-tenancy). The variables V4MT_ENABLE and V4MT_MODE must be set before you perform the deployment. Other variables can be set before the deployment or during the onboarding or offboarding procedures.
+Prepare your `ansible-vars.yaml` file, and set the variables as described in [Multi-Tenancy](../CONFIG-VARS.md#multi-tenancy). The variables V4MT_ENABLE and V4MT_MODE must be set before you perform the deployment. Other variables can be set before the deployment or during the onboarding or offboarding procedures. See example [ansible-vars-multi-tenancy.yaml](../../examples/multi-tenancy/ansible-vars-multi-tenancy.yaml)
 
 ### Example Steps to Configure a Multi-Tenant Deployment
 
-Step 1. Have a new cluster with sufficient CAS node resources to support the number of tenants being onboarded. Deploy using the ansible-vars.yaml file that you prepared previously. Run the following command to deploy SAS Viya:
+Step 1. Have a new cluster with sufficient CAS node resources to support the number of tenants being onboarded. If you have a sitedefault yaml file specify it as variable here, else the example [sitedefault_MT.yaml](../../examples/multi-tenancy/sitedefault_MT.yaml) will be used. Deploy using the ansible-vars.yaml file that you prepared previously. Run the following command to deploy SAS Viya:
 
   ```bash
   ansible-playbook \
     -e BASE_DIR=$HOME/deployments \
     -e CONFIG=$HOME/deployments/dev-cluster/dev-namespace/ansible-vars.yaml \
     -e TFSTATE=$HOME/deployments/dev-cluster/terraform.tfstate \
+    -e V4_CFG_SITEDEFAULT=$HOME/deployments/dev-cluster/dev-namespace/sitedefault_MT.yaml
     -e JUMP_SVR_PRIVATE_KEY=$HOME/.ssh/id_rsa \
     playbooks/playbook.yaml --tags "baseline,viya,install"
   ```

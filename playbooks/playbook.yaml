@@ -42,17 +42,18 @@
       tags:
         - cluster-monitoring
         - cluster-logging
-    - name: vdm role
-      include_role:
-        name: vdm
-      tags:
-        - viya
     - name: multi-tenant
       include_role:
         name: multi-tenant
       tags:
         - onboard
         - offboard
+        - uninstall
+    - name: vdm role
+      include_role:
+        name: vdm
+      tags:
+        - viya
     - name: monitoring role - namespace
       include_role:
         name: monitoring
