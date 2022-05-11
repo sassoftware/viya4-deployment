@@ -179,7 +179,7 @@ When setting V4_CFG_MANAGE_STORAGE to true, A new storage classes will be create
 
 ## TLS
 
-Viya 4 supports 2 different types of certificate generators, Cert-manager and openssl. When using the openssl certificate generator, you must provide: V4_CFG_TLS_CERT, V4_CFG_TLS_KEY, V4_CFG_TLS_TRUSTED_CA_CERTS. Also, the openssl certificate generator cannot be used in conjunction with the viya4-monitoring-kubernetes stack.
+Viya 4 supports 2 different types of certificate generators, Cert-manager and openssl. The openssl certificate generator cannot be used in conjunction with the viya4-monitoring-kubernetes stack.
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -194,9 +194,9 @@ Viya 4 supports 2 different types of certificate generators, Cert-manager and op
 
 Notes:
 
-*Values can be use to configure the tls generator when V4_CFG_TLS_MODE is not set to `disabled` and one of the following conditions is met.*
+*Values can be used to configure the tls generator when V4_CFG_TLS_MODE is not set to `disabled` and one of the following conditions is met.*
   - V4_CFG_TLS_GENERATOR is set to `cert-manager` and no V4_CFG_TLS_CERT/V4_CFG_TLS_KEY are defined
-  - V4_CFG_TLS_GENERATOR is set to `openssl`
+  - V4_CFG_TLS_GENERATOR is set to `openssl` and no V4_CFG_TLS_CERT/V4_CFG_TLS_KEY are defined
 
 ## Postgres
 
