@@ -88,8 +88,10 @@
   register: result
   failed_when:
     - result["stderr"]|length > 0
+  when: V4MT_ENABLE
   tags:
     - offboard
+    - uninstall
 
 - name: kubectl delete cas servers for tenants
   ansible.builtin.shell: |
@@ -99,3 +101,16 @@
   with_items: '{{ SAS_TENANT_IDS.split(",") | replace(" ", "") }}'
   tags:
     - offboard
+
+# After offboard cas servers delete the cas tenant directories
+- name: delete cas tenant directory
+  file:
+    state: absent
+    path: "{{ DEPLOY_DIR }}/site-config/cas-{{ item | trim }}-default"
+  with_items: '{{ SAS_TENANT_IDS.split(",") | replace(" ", "") }}'
+  when: 
+    - V4MT_ENABLE
+    - 'item|trim in result.stdout'
+  tags:
+    - offboard
+    - uninstall

@@ -72,8 +72,8 @@
     line: "          - name: {{ item }}\n            value: {% raw %}{{{% endraw %} {{ item }} {% raw %}}}{% endraw %}"
   with_items: "{{ tenant_password_list }}"
   when: 
-    - ({{ item }} is defined)
     - not SAS_PROVIDER_PASSWORD
+    - ({{ item }} is defined)
   tags:
     - onboard
         
@@ -83,8 +83,8 @@
     regexp: '{% raw %}{{{% endraw %} {{ item }} {% raw %}}}{% endraw %}'
     replace: '{{ vars[item] }}'
   when: 
-    - ({{ item }} is defined)
     - not SAS_PROVIDER_PASSWORD
+    - ({{ item }} is defined)
   with_items: "{{ tenant_password_list }}"
   tags:
     - onboard
