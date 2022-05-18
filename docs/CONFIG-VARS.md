@@ -175,10 +175,11 @@ When setting V4_CFG_MANAGE_STORAGE to true, A new storage classes will be create
 | V4M_ELASTICSEARCH_FQDN | FQDN to use for elasticsearch ingress  | string | elasticsearch.<V4M_BASE_DOMAIN> | false | | cluster-logging |
 | V4M_ELASTICSEARCH_CERT | Path to tls certificate to use for elasticsearch ingress | string |<V4M_CERT> | false | If both this and V4M_CERT are not set a self-signed cert will be used | cluster-logging |
 | V4M_ELASTICSEARCH_KEY | Path to tls key to use for elasticsearch ingress | string | <V4M_KEY> | false | If both this and V4M_KEY are not set a self-signed cert will be used | cluster-logging |
+| V4M_KB_KNOWN_NODEPORT_ENABLE |  If you want to make OpenSearch Dashboards accessible via NodePort, set the environment variable V4M_KB_KNOWN_NODEPORT_ENABLE to true. OpenSearch Dashboards will be accessible from port 31034 | bool | false | false | | cluster-logging
 
 ## TLS
 
-Viya 4 supports 2 different types of certificate generators, Cert-manager and openssl. When using the openssl certificate generator, you must provide: V4_CFG_TLS_CERT, V4_CFG_TLS_KEY, V4_CFG_TLS_TRUSTED_CA_CERTS. Also, the openssl certificate generator cannot be used in conjunction with the viya4-monitoring-kubernetes stack.
+Viya 4 supports 2 different types of certificate generators, Cert-manager and openssl. The openssl certificate generator cannot be used in conjunction with the viya4-monitoring-kubernetes stack.
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -193,9 +194,9 @@ Viya 4 supports 2 different types of certificate generators, Cert-manager and op
 
 Notes:
 
-*Values can be use to configure the tls generator when V4_CFG_TLS_MODE is not set to `disabled` and one of the following conditions is met.*
+*Values can be used to configure the tls generator when V4_CFG_TLS_MODE is not set to `disabled` and one of the following conditions is met.*
   - V4_CFG_TLS_GENERATOR is set to `cert-manager` and no V4_CFG_TLS_CERT/V4_CFG_TLS_KEY are defined
-  - V4_CFG_TLS_GENERATOR is set to `openssl`
+  - V4_CFG_TLS_GENERATOR is set to `openssl` and no V4_CFG_TLS_CERT/V4_CFG_TLS_KEY are defined
 
 ## Postgres
 
@@ -282,7 +283,7 @@ V4_CFG_POSTGRES_SERVERS:
 | CERT_MANAGER_NAMESPACE | cert-manager helm install namespace | string | cert-manager | false | | baseline |
 | CERT_MANAGER_CHART_URL | cert-manager helm chart url | string | https://charts.jetstack.io/ | false | | baseline |
 | CERT_MANAGER_CHART_NAME| cert-manager helm chart name | string | cert-manager| false | | baseline |
-| CERT_MANAGER_CHART_VERSION | cert-manager helm chart version | string | 1.6.1 | false | | baseline |
+| CERT_MANAGER_CHART_VERSION | cert-manager helm chart version | string | 1.7.2 | false | | baseline |
 | CERT_MANAGER_CONFIG | cert-manager helm values | string | see [here](../roles/baseline/defaults/main.yml) | false | | baseline |
 
 ### Cluster Autoscaler

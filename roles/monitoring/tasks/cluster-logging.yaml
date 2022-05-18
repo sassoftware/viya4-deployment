@@ -54,7 +54,7 @@
 
 - name: cluster-logging - deploy
   command:
-    cmd: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/logging/bin/deploy_logging_open.sh"
+    cmd: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/logging/bin/deploy_logging_opensearch.sh"
   environment: "{{ logging_map['env'] }}"
   tags:
     - install
@@ -108,7 +108,7 @@
 
 - name: cluster-logging - uninstall
   command:
-    cmd: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/logging/bin/remove_logging_open.sh"
+    cmd: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/logging/bin/remove_logging_opensearch.sh"
   environment: "{{ logging_map['env'] }}"
   tags:
     - uninstall
