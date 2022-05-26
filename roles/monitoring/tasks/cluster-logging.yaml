@@ -42,11 +42,30 @@
   tags:
     - install
 
-- name: cluster-logging - user values
+- name: cluster-logging - opensearch user values
   template:
-    src: "user-values-elasticsearch-open.yaml"
-    dest: "{{ tmpdir.path }}/logging/user-values-elasticsearch-open.yaml"
+    src: "user-values-elasticsearch-opensearch.yaml"
+    dest: "{{ tmpdir.path }}/logging/user-values-elasticsearch-opensearch.yaml"
     mode: "0660"
+  tags:
+    - install
+    - update
+    - uninstall
+
+- name: cluster-logging - osd user values
+  template:
+    src: "user-values-osd-opensearch.yaml"
+    dest: "{{ tmpdir.path }}/logging/user-values-osd-opensearch.yaml"
+    mode: "0660"
+  tags:
+    - install
+    - update
+    - uninstall
+
+- name : Display logging map prior to deploy V4M deploy
+  ansible.builtin.debug:
+    var: "logging_map['env']"
+    verbosity: 1
   tags:
     - install
     - update

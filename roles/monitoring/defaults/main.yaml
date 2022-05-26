@@ -13,7 +13,7 @@ V4M_KB_KNOWN_NODEPORT_ENABLE: false
 V4M_LOGGING_NAMESPACE: logging
 V4M_MONITORING_NAMESPACE: monitoring
 
-V4M_KIBANA_FQDN: "kibana.{{ V4M_BASE_DOMAIN }}"
+V4M_KIBANA_FQDN: "dashboards.{{ V4M_BASE_DOMAIN }}"
 V4M_KIBANA_CERT: "{{ V4M_CERT }}"
 V4M_KIBANA_KEY: "{{ V4M_KEY }}"
 V4M_KIBANA_PASSWORD: "{{ lookup('password', '/dev/null chars=ascii_letters,digits') }}"
@@ -21,7 +21,7 @@ V4M_KIBANASERVER_PASSWORD: "{{ lookup('password', '/dev/null chars=ascii_letters
 V4M_LOGCOLLECTOR_PASSWORD: "{{ lookup('password', '/dev/null chars=ascii_letters,digits') }}"
 V4M_METRICGETTER_PASSWORD: "{{ lookup('password', '/dev/null chars=ascii_letters,digits') }}"
 
-V4M_ELASTICSEARCH_FQDN: "elasticsearch.{{ V4M_BASE_DOMAIN }}"
+V4M_ELASTICSEARCH_FQDN: "search.{{ V4M_BASE_DOMAIN }}"
 V4M_ELASTICSEARCH_CERT: "{{ V4M_CERT }}"
 V4M_ELASTICSEARCH_KEY: "{{ V4M_KEY }}"
 
