@@ -21,6 +21,7 @@
     - install
     - update
 
+    V4M_GRAFANA_PASSWORD: "{{ V4M_GRAFANA_PASSWORD }}"
 - name: cluster-monitoring - save credentials
   set_fact:
     V4M_GRAFANA_PASSWORD: "{{ monitoring_creds.resources[0].data['admin-password']|b64decode }}"

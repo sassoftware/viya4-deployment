@@ -1,8 +1,7 @@
 - hosts: localhost
   tasks:
     - name: global tmp dir
-      file:
-        path: /home/david/.ansible_deleteme
+      tempfile:
         state: directory
       register: tmpdir
       tags:

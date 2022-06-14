@@ -21,6 +21,15 @@
   tags:
     - install
 
+- name: Set password facts
+  set_fact:
+    V4M_KIBANA_PASSWORD: "{{ V4M_KIBANA_PASSWORD }}"
+    V4M_KIBANASERVER_PASSWORD: "{{ V4M_KIBANASERVER_PASSWORD }}"
+    V4M_LOGCOLLECTOR_PASSWORD: "{{ V4M_LOGCOLLECTOR_PASSWORD }}" 
+    V4M_METRICGETTER_PASSWORD: "{{ V4M_METRICGETTER_PASSWORD }}" 
+  tags:
+    - install
+
 - name: cluster-logging - save credentials
   set_fact: 
     "{{ logging_map['secret'][item.metadata.name] }}": "{{ item.data.password|b64decode }}"
@@ -35,17 +44,17 @@
 - name: cluster-logging - output credentials
   debug:
     msg:
-      - "Kibana admin  - username: admin,        password: {{ V4M_KIBANA_PASSWORD }}"
-      - "Kibana Server - username: kibanaserver, password: {{ V4M_KIBANASERVER_PASSWORD }}"
-      - "Log Collector - username: logcollector, password: {{ V4M_LOGCOLLECTOR_PASSWORD }}"
-      - "Metric Getter - username: metricgetter, password: {{ V4M_METRICGETTER_PASSWORD }}"
+      - "OpenSearch admin  - username: admin,                   password: {{ V4M_KIBANA_PASSWORD }}"
+      - "OpenSearch Dashboards Server - username: kibanaserver, password: {{ V4M_KIBANASERVER_PASSWORD }}"
+      - "Log Collector - username: logcollector,                password: {{ V4M_LOGCOLLECTOR_PASSWORD }}"
+      - "Metric Getter - username: metricgetter,                password: {{ V4M_METRICGETTER_PASSWORD }}"
   tags:
     - install
 
 - name: cluster-logging - opensearch user values
   template:
     src: "user-values-elasticsearch-opensearch.yaml"
-    dest: "{{ tmpdir.path }}/logging/user-values-elasticsearch-opensearch.yaml"
+    dest: "{{ tmpdir.path }}/logging/user-values-opensearch.yaml"
     mode: "0660"
   tags:
     - install
@@ -55,17 +64,8 @@
 - name: cluster-logging - osd user values
   template:
     src: "user-values-osd-opensearch.yaml"
-    dest: "{{ tmpdir.path }}/logging/user-values-osd-opensearch.yaml"
+    dest: "{{ tmpdir.path }}/logging/user-values-osd.yaml"
     mode: "0660"
-  tags:
-    - install
-    - update
-    - uninstall
-
-- name : Display logging map prior to deploy V4M deploy
-  ansible.builtin.debug:
-    var: "logging_map['env']"
-    verbosity: 1
   tags:
     - install
     - update
@@ -73,7 +73,7 @@
 
 - name: cluster-logging - deploy
   command:
-    cmd: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/logging/bin/deploy_logging_opensearch.sh"
+    cmd: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/logging/bin/deploy_logging.sh"
   environment: "{{ logging_map['env'] }}"
   tags:
     - install
@@ -127,7 +127,7 @@
 
 - name: cluster-logging - uninstall
   command:
-    cmd: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/logging/bin/remove_logging_opensearch.sh"
+    cmd: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/logging/bin/remove_logging.sh"
   environment: "{{ logging_map['env'] }}"
   tags:
     - uninstall
