@@ -20,4 +20,4 @@ do
 done
 
 echo  "Running: ansible-playbook $OPTS $@ playbooks/${PLAYBOOK}"
-exec ansible-playbook $OPTS $@ playbooks/${PLAYBOOK}
+ANSIBLE_STDOUT_CALLBACK=yaml exec ansible-playbook $OPTS $@ playbooks/${PLAYBOOK}
