@@ -135,7 +135,7 @@ When setting V4_CFG_MANAGE_STORAGE to true, A new storage classes will be create
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4M_VERSION | Branch or tag of [viya4-monitoring-kubernetes](https://github.com/sassoftware/viya4-monitoring-kubernetes) | string | stable | false | | cluster-logging, cluster-monitoring, viya-monitoring |
-| V4M_BASE_DOMAIN | Base domain in which subdomains for elasticsearch, kibana, grafana, prometheus and alertmanager will be created | string | | false | This or the per service fqdn's must be set | cluster-logging, cluster-monitoring, viya-monitoring |
+| V4M_BASE_DOMAIN | Base domain in which subdomains for search, dashboards, grafana, prometheus and alertmanager will be created | string | | false | This or the per service fqdn's must be set | cluster-logging, cluster-monitoring, viya-monitoring |
 | V4M_CERT | Path to tls certificate to use for all monitoring/logging services | string | | false | Alternately you can set the per service cert | cluster-logging, cluster-monitoring, viya-monitoring |
 | V4M_KEY | Path to tls key to use for all monitoring/logging services | string | | false | Alternately you can set the per service cert | cluster-logging, cluster-monitoring, viya-monitoring |
 | V4M_NODE_PLACEMENT_ENABLE | Enable workload node placement for viya4-monitoring-kubernetes stack | bool | false | false | | cluster-logging, cluster-monitoring, viya-monitoring |
@@ -164,17 +164,17 @@ When setting V4_CFG_MANAGE_STORAGE to true, A new storage classes will be create
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4M_LOGGING_NAMESPACE | Namespace for the logging resources | string | logging | false | | cluster-logging |
-| V4M_KIBANA_FQDN | FQDN to use for kibana ingress | string | dashboards.<V4M_BASE_DOMAIN> | false | | cluster-logging |
-| V4M_KIBANA_CERT | Path to tls certificate to use for kibana ingress | string |<V4M_CERT> | false | If both this and V4M_CERT are not set a self-signed cert will be used | cluster-logging |
-| V4M_KIBANA_KEY | Path to tls key to use for kibana ingress | string | <V4M_KEY> | false | If both this and V4M_KEY are not set a self-signed cert will be used | cluster-logging |
-| V4M_KIBANA_PASSWORD | Kibana admin password | string | randomly generated | false | If not provided, a random password will be generated and written to the log output | cluster-logging |
-| V4M_KIBANASERVER_PASSWORD | Kibana server password | string | randomly generated | false | If not provided, a random password will be generated and written to the log output | cluster-logging |
+| V4M_KIBANA_FQDN | FQDN to use for dashboards ingress | string | dashboards.<V4M_BASE_DOMAIN> | false | | cluster-logging |
+| V4M_KIBANA_CERT | Path to tls certificate to use for dashboards ingress | string |<V4M_CERT> | false | If both this and V4M_CERT are not set a self-signed cert will be used | cluster-logging |
+| V4M_KIBANA_KEY | Path to tls key to use for dashboards ingress | string | <V4M_KEY> | false | If both this and V4M_KEY are not set a self-signed cert will be used | cluster-logging |
+| V4M_KIBANA_PASSWORD | Dashboards admin password | string | randomly generated | false | If not provided, a random password will be generated and written to the log output | cluster-logging |
+| V4M_KIBANASERVER_PASSWORD | Dashboards server password | string | randomly generated | false | If not provided, a random password will be generated and written to the log output | cluster-logging |
 | V4M_LOGCOLLECTOR_PASSWORD | Logcollector password | string | randomly generated | false | If not provided, a random password will be generated and written to the log output | cluster-logging |
 | V4M_METRICGETTER_PASSWORD | Metricgetter password | string | randomly generated | false | If not provided, a random password will be generated and written to the log output | cluster-logging |
 | | | | | | | |
-| V4M_ELASTICSEARCH_FQDN | FQDN to use for elasticsearch ingress  | string | search.<V4M_BASE_DOMAIN> | false | | cluster-logging |
-| V4M_ELASTICSEARCH_CERT | Path to tls certificate to use for elasticsearch ingress | string |<V4M_CERT> | false | If both this and V4M_CERT are not set a self-signed cert will be used | cluster-logging |
-| V4M_ELASTICSEARCH_KEY | Path to tls key to use for elasticsearch ingress | string | <V4M_KEY> | false | If both this and V4M_KEY are not set a self-signed cert will be used | cluster-logging |
+| V4M_ELASTICSEARCH_FQDN | FQDN to use for search ingress  | string | search.<V4M_BASE_DOMAIN> | false | | cluster-logging |
+| V4M_ELASTICSEARCH_CERT | Path to tls certificate to use for search ingress | string |<V4M_CERT> | false | If both this and V4M_CERT are not set a self-signed cert will be used | cluster-logging |
+| V4M_ELASTICSEARCH_KEY | Path to tls key to use for search ingress | string | <V4M_KEY> | false | If both this and V4M_KEY are not set a self-signed cert will be used | cluster-logging |
 | V4M_OSD_NODEPORT_ENABLE |  If you want to make OpenSearch Dashboards accessible via NodePort, set the environment variable V4M_OSD_NODEPORT_ENABLE to true. OpenSearch Dashboards will be accessible from port 31034 | bool | false | false | | cluster-logging
 
 ## TLS
@@ -271,7 +271,7 @@ V4_CFG_POSTGRES_SERVERS:
 | V4_CFG_CLUSTER_NODE_POOL_MODE | What mode of cluster node pool to use | string | "standard" | false | [standard, minimal] | viya |
 | V4_CFG_EMBEDDED_LDAP_ENABLE | Deploy openldap in the namespace for authentication | bool | false | false | [Openldap Config](../roles/vdm/templates/generators/openldap-bootstrap-config.yaml) | viya |
 | V4_CFG_CONSUL_ENABLE_LOADBALANCER | Setup LB to access consul ui | bool | false | false | Consul ui port is 8500 | viya |
-| V4_CFG_ELASTICSEARCH_ENABLE | Enable opendistro elasticsearch | bool | true | false | When deploying LTS less than 2020.1 or Stable less than 2020.1.2 set to false | viya |
+| V4_CFG_ELASTICSEARCH_ENABLE | Enable opendistro search | bool | true | false | When deploying LTS less than 2020.1 or Stable less than 2020.1.2 set to false | viya |
 
 ## 3rd Party tools
 
