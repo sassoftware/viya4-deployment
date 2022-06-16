@@ -37,8 +37,8 @@ localhost                  : ok=52   changed=12   unreachable=0    failed=1    s
   ```
 
 ### Diagnosis:
-A release of sassoftware/viya4-monitoring-kubernetes prior to 1.2.0 was run by a release of sassoftware/viya4-deployment at release 4.13.0 or later.
-Releases of sassoftware/viya4-monitoring-kubernetes prior to 1.2.0 do not support the installation of OpenSearch logging software which sassoftware/viya4-deployment 4.13.0 or later will attempt to install.
+The cluster-logging task of sassoftware/viya4-monitoring tried to execute code from a release of sassoftware/viya4-monitoring-kubernetes prior to 1.2.0 using a release of sassoftware/viya4-deployment at release 5.0.0 or later.
+Releases of sassoftware/viya4-monitoring-kubernetes prior to 1.2.0 do not support the installation of the OpenSearch logging software which sassoftware/viya4-deployment 5.0.0 or later installs.
 
 ### Solution:
-When running DAC releases 4.13.0 or later, specify either the stable branch or a valid sassoftware/viya4-monitoring-kubernetes release tag of 1.2.0 or later for the value of the V4M_VERSION sassoftware/viya4-deployment variable, For more details on supported variables, refer to [CONFIG-VARS.md](./CONFIG-VARS.md)
+When using sassoftware/viya4-deployment releases 5.0.0 or later, specify either the stable branch or a valid sassoftware/viya4-monitoring-kubernetes release tag of 1.2.0 or later for the value of the V4M_VERSION sassoftware/viya4-deployment variable, For more details on supported variables, refer to [CONFIG-VARS.md](./CONFIG-VARS.md)
