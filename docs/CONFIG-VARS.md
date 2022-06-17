@@ -135,7 +135,7 @@ When setting V4_CFG_MANAGE_STORAGE to true, A new storage classes will be create
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4M_VERSION | Branch or tag of [viya4-monitoring-kubernetes](https://github.com/sassoftware/viya4-monitoring-kubernetes) | string | stable | false | | cluster-logging, cluster-monitoring, viya-monitoring |
-| V4M_BASE_DOMAIN | Base domain in which subdomains for elasticsearch, kibana, grafana, prometheus and alertmanager will be created | string | | false | This or the per service fqdn's must be set | cluster-logging, cluster-monitoring, viya-monitoring |
+| V4M_BASE_DOMAIN | Base domain in which subdomains for search, dashboards, grafana, prometheus and alertmanager will be created | string | | false | This or the per service fqdn's must be set | cluster-logging, cluster-monitoring, viya-monitoring |
 | V4M_CERT | Path to tls certificate to use for all monitoring/logging services | string | | false | Alternately you can set the per service cert | cluster-logging, cluster-monitoring, viya-monitoring |
 | V4M_KEY | Path to tls key to use for all monitoring/logging services | string | | false | Alternately you can set the per service cert | cluster-logging, cluster-monitoring, viya-monitoring |
 | V4M_NODE_PLACEMENT_ENABLE | Enable workload node placement for viya4-monitoring-kubernetes stack | bool | false | false | | cluster-logging, cluster-monitoring, viya-monitoring |
@@ -164,21 +164,22 @@ When setting V4_CFG_MANAGE_STORAGE to true, A new storage classes will be create
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4M_LOGGING_NAMESPACE | Namespace for the logging resources | string | logging | false | | cluster-logging |
-| V4M_KIBANA_FQDN | FQDN to use for kibana ingress | string | kibana.<V4M_BASE_DOMAIN> | false | | cluster-logging |
-| V4M_KIBANA_CERT | Path to tls certificate to use for kibana ingress | string |<V4M_CERT> | false | If both this and V4M_CERT are not set a self-signed cert will be used | cluster-logging |
-| V4M_KIBANA_KEY | Path to tls key to use for kibana ingress | string | <V4M_KEY> | false | If both this and V4M_KEY are not set a self-signed cert will be used | cluster-logging |
-| V4M_KIBANA_PASSWORD | Kibana admin password | string | randomly generated | false | If not provided, a random password will be generated and written to the log output | cluster-logging |
-| V4M_KIBANASERVER_PASSWORD | Kibana server password | string | randomly generated | false | If not provided, a random password will be generated and written to the log output | cluster-logging |
+| V4M_KIBANA_FQDN | FQDN to use for dashboards ingress | string | dashboards.<V4M_BASE_DOMAIN> | false | | cluster-logging |
+| V4M_KIBANA_CERT | Path to tls certificate to use for dashboards ingress | string |<V4M_CERT> | false | If both this and V4M_CERT are not set a self-signed cert will be used | cluster-logging |
+| V4M_KIBANA_KEY | Path to tls key to use for dashboards ingress | string | <V4M_KEY> | false | If both this and V4M_KEY are not set a self-signed cert will be used | cluster-logging |
+| V4M_KIBANA_PASSWORD | Dashboards admin password | string | randomly generated | false | If not provided, a random password will be generated and written to the log output | cluster-logging |
+| V4M_KIBANASERVER_PASSWORD | Dashboards server password | string | randomly generated | false | If not provided, a random password will be generated and written to the log output | cluster-logging |
 | V4M_LOGCOLLECTOR_PASSWORD | Logcollector password | string | randomly generated | false | If not provided, a random password will be generated and written to the log output | cluster-logging |
 | V4M_METRICGETTER_PASSWORD | Metricgetter password | string | randomly generated | false | If not provided, a random password will be generated and written to the log output | cluster-logging |
 | | | | | | | |
-| V4M_ELASTICSEARCH_FQDN | FQDN to use for elasticsearch ingress  | string | elasticsearch.<V4M_BASE_DOMAIN> | false | | cluster-logging |
-| V4M_ELASTICSEARCH_CERT | Path to tls certificate to use for elasticsearch ingress | string |<V4M_CERT> | false | If both this and V4M_CERT are not set a self-signed cert will be used | cluster-logging |
-| V4M_ELASTICSEARCH_KEY | Path to tls key to use for elasticsearch ingress | string | <V4M_KEY> | false | If both this and V4M_KEY are not set a self-signed cert will be used | cluster-logging |
+| V4M_ELASTICSEARCH_FQDN | FQDN to use for search ingress  | string | search.<V4M_BASE_DOMAIN> | false | | cluster-logging |
+| V4M_ELASTICSEARCH_CERT | Path to tls certificate to use for search ingress | string |<V4M_CERT> | false | If both this and V4M_CERT are not set a self-signed cert will be used | cluster-logging |
+| V4M_ELASTICSEARCH_KEY | Path to tls key to use for search ingress | string | <V4M_KEY> | false | If both this and V4M_KEY are not set a self-signed cert will be used | cluster-logging |
+| V4M_OSD_NODEPORT_ENABLE |  If you want to make OpenSearch Dashboards accessible via NodePort, set the environment variable V4M_OSD_NODEPORT_ENABLE to true. OpenSearch Dashboards will be accessible from port 31034 | bool | false | false | | cluster-logging
 
 ## TLS
 
-Viya 4 supports 2 different types of certificate generators, Cert-manager and openssl. When using the openssl certificate generator, you must provide: V4_CFG_TLS_CERT, V4_CFG_TLS_KEY, V4_CFG_TLS_TRUSTED_CA_CERTS. Also, the openssl certificate generator cannot be used in conjunction with the viya4-monitoring-kubernetes stack.
+Viya 4 supports 2 different types of certificate generators, Cert-manager and openssl. The openssl certificate generator cannot be used in conjunction with the viya4-monitoring-kubernetes stack.
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -193,9 +194,9 @@ Viya 4 supports 2 different types of certificate generators, Cert-manager and op
 
 Notes:
 
-*Values can be use to configure the tls generator when V4_CFG_TLS_MODE is not set to `disabled` and one of the following conditions is met.*
+*Values can be used to configure the tls generator when V4_CFG_TLS_MODE is not set to `disabled` and one of the following conditions is met.*
   - V4_CFG_TLS_GENERATOR is set to `cert-manager` and no V4_CFG_TLS_CERT/V4_CFG_TLS_KEY are defined
-  - V4_CFG_TLS_GENERATOR is set to `openssl`
+  - V4_CFG_TLS_GENERATOR is set to `openssl` and no V4_CFG_TLS_CERT/V4_CFG_TLS_KEY are defined
 
 ## Postgres
 
@@ -270,7 +271,7 @@ V4_CFG_POSTGRES_SERVERS:
 | V4_CFG_CLUSTER_NODE_POOL_MODE | What mode of cluster node pool to use | string | "standard" | false | [standard, minimal] | viya |
 | V4_CFG_EMBEDDED_LDAP_ENABLE | Deploy openldap in the namespace for authentication | bool | false | false | [Openldap Config](../roles/vdm/templates/generators/openldap-bootstrap-config.yaml) | viya |
 | V4_CFG_CONSUL_ENABLE_LOADBALANCER | Setup LB to access consul ui | bool | false | false | Consul ui port is 8500 | viya |
-| V4_CFG_ELASTICSEARCH_ENABLE | Enable opendistro elasticsearch | bool | true | false | When deploying LTS less than 2020.1 or Stable less than 2020.1.2 set to false | viya |
+| V4_CFG_ELASTICSEARCH_ENABLE | Enable opendistro search | bool | true | false | When deploying LTS less than 2020.1 or Stable less than 2020.1.2 set to false | viya |
 
 ## 3rd Party tools
 
@@ -282,7 +283,7 @@ V4_CFG_POSTGRES_SERVERS:
 | CERT_MANAGER_NAMESPACE | cert-manager helm install namespace | string | cert-manager | false | | baseline |
 | CERT_MANAGER_CHART_URL | cert-manager helm chart url | string | https://charts.jetstack.io/ | false | | baseline |
 | CERT_MANAGER_CHART_NAME| cert-manager helm chart name | string | cert-manager| false | | baseline |
-| CERT_MANAGER_CHART_VERSION | cert-manager helm chart version | string | 1.6.1 | false | | baseline |
+| CERT_MANAGER_CHART_VERSION | cert-manager helm chart version | string | 1.7.2 | false | | baseline |
 | CERT_MANAGER_CONFIG | cert-manager helm values | string | see [here](../roles/baseline/defaults/main.yml) | false | | baseline |
 
 ### Cluster Autoscaler
@@ -306,7 +307,7 @@ Cluster-autoscaler is currently only used for AWS EKS clusters. GCP GKE and Azur
 | INGRESS_NGINX_NAMESPACE | ingress-nginx helm install namespace | string | ingress-nginx | false | | baseline |
 | INGRESS_NGINX_CHART_URL | ingress-nginx helm chart url | string | https://kubernetes.github.io/ingress-nginx | false | | baseline |
 | INGRESS_NGINX_CHART_NAME | ingress-nginx helm chart name | string | ingress-nginx | false | | baseline |
-| INGRESS_NGINX_CHART_VERSION | ingress-nginx helm chart version | string | "" | false | If left as "" (empty string), version 3.40.0 will be used for K8s clusters whose version is <= 1.21.X and version 4.0.13 will be used for K8s clusters whose version is >= 1.22.X| baseline |
+| INGRESS_NGINX_CHART_VERSION | ingress-nginx helm chart version | string | "" | false | If left as "" (empty string), version 3.40.0 will be used for K8s clusters whose version is <= 1.21.X and version 4.0.17 will be used for K8s clusters whose version is >= 1.22.X| baseline |
 | INGRESS_NGINX_CONFIG | ingress-nginx helm values | string | see [here](../roles/baseline/defaults/main.yml) Altering this value will affect the cluster | false | | baseline |
 
 ### Metrics Server

@@ -106,6 +106,13 @@
       when:
         - tfstate.jump_public_ip is defined
         - tfstate.jump_public_ip.value|length > 0
+    - name: tfstate - jump server private
+      set_fact:
+        JUMP_SVR_HOST: "{{ tfstate.jump_private_ip.value }}"
+      when:
+        - tfstate.jump_private_ip is defined
+        - tfstate.jump_private_ip.value|length > 0
+        - JUMP_SVR_HOST is not defined
     - name: tfstate - jump user
       set_fact:
         JUMP_SVR_USER: "{{ tfstate.jump_admin_username.value }}"
