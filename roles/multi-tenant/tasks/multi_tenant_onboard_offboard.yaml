@@ -77,7 +77,7 @@
     replace: "{{ item.replace }}"
   with_items:
     - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-onboard.yaml', regexp: 'sas-image-pull-secrets.*$', replace: '{{ secret_name.stdout }}' }
-    - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-onboard.yaml', regexp: 'cr.sas.com', replace: '{{ V4_CFG_CR_URL }}' }
+    - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-onboard.yaml', regexp: 'cr.sas.com', replace: '{{ V4_CFG_CR_HOST }}' }
   tags:
     - onboard
 
@@ -88,7 +88,7 @@
     replace: "{{ item.replace }}"
   with_items:
     - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-offboard.yaml', regexp: 'sas-image-pull-secrets.*$', replace: '{{ secret_name.stdout }}' }
-    - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-offboard.yaml', regexp: 'cr.sas.com', replace: '{{ V4_CFG_CR_URL }}' }
+    - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-offboard.yaml', regexp: 'cr.sas.com', replace: '{{ V4_CFG_CR_HOST }}' }
   tags:
     - offboard
 

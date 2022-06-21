@@ -1,11 +1,18 @@
-## Multi-tenant 
+## Multi-tenant
+
+# Updating HOST to remove https
+V4_CFG_CR_URL: https://cr.sas.com
+V4_CFG_CR_HOST: '{{ V4_CFG_CR_URL | regex_replace("^https?:\/\/(.*)\/?", "\1") }}'
+
 # Multi-tenant is enabled within Viya4 deployment
 V4MT_ENABLE: false
+
 # SAS Viya supports two modes of data isolation (schemaPerApplicationTenant and databasePerTenant) for tenant data. 
 # Set V4MT_MODE to either schema or database. schemaPerApplicationTenant Mode is enabled by default. 
 V4MT_MODE: "schema"
 
 SAS_TENANT_IDS: null
+
 # Optional job paramter
 SAS_PROVIDER_PASSWORD: null
 
