@@ -183,7 +183,7 @@ Viya 4 supports 2 different types of certificate generators, Cert-manager and op
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_TLS_GENERATOR | Which tool to use for certificate generation | string | cert-manager | false | Supported values: [`cert-manager`,`openssl`]. | viya, cluster-logging, cluster-monitoring |
+| V4_CFG_TLS_GENERATOR | Which tool to use for certificate generation | string | openssl | false | Supported values: [`cert-manager`,`openssl`]. | viya, cluster-logging, cluster-monitoring |
 | V4_CFG_TLS_MODE | Which TLS mode to configure | string | front-door | false | Supported values: [`full-stack`,`front-door`,`disabled.`] When deploying full-stack you must set V4_CFG_TLS_TRUSTED_CA_CERTS to trust external postgres server ca. | all |
 | V4_CFG_TLS_CERT | Path to ingress certificate file | string | | false | If specified, used instead of cert-manager issued certificates | viya |
 | V4_CFG_TLS_KEY | Path to ingress key file | string | | false | Required when V4_CFG_TLS_CERT is specified | viya |
@@ -279,7 +279,7 @@ V4_CFG_POSTGRES_SERVERS:
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| CERT_MANAGER_ENABLED | Whether to deploy tool | bool | true | false | | baseline |
+| CERT_MANAGER_ENABLED | Whether to deploy tool | bool | false | false | | baseline |
 | CERT_MANAGER_NAMESPACE | cert-manager helm install namespace | string | cert-manager | false | | baseline |
 | CERT_MANAGER_CHART_URL | cert-manager helm chart url | string | https://charts.jetstack.io/ | false | | baseline |
 | CERT_MANAGER_CHART_NAME| cert-manager helm chart name | string | cert-manager| false | | baseline |
