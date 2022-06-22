@@ -200,7 +200,8 @@
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { transformers: "cert-manager-provided-ingress-certificate.yaml", vdm: true, priority: 70 }
+      - { transformers: "cert-manager-provided-ingress-certificate.yaml", vdm: true, max: "2022.1", priority: 70 }
+      - { transformers: "overlays/cert-manager-provided-ingress-certificate/ingress-annotation-transformer.yaml", min: "2022.1.1", priority: 70 }
   when:
     - V4_CFG_TLS_MODE != "disabled"
     - (V4_CFG_TLS_CERT is none and V4_CFG_TLS_KEY is none and V4_CFG_TLS_GENERATOR == "cert-manager")
