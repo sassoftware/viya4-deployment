@@ -29,6 +29,8 @@
   when: V4MT_ENABLE
   tags:
     - onboard
+    - offboard
+
 
 - name: sas-tenant-job - update sas-tenant-ids
   replace:
@@ -36,8 +38,8 @@
     regexp: "{{ item.regexp }}"
     replace: "{{ item.replace }}"
   with_items:
-    - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-onboard-job.yaml', regexp: '{% raw %}{{ SAS-TENANT-IDS }}{% endraw %}', replace: '{{ SAS_TENANT_IDS }}' }
-    - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-offboard-job.yaml', regexp: '{% raw %}{{ SAS-TENANT-IDS }}{% endraw %}', replace: '{{ SAS_TENANT_IDS }}' }
+    - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-onboard-job.yaml', regexp: '- name: SAS_TENANT_IDS\n[^\n]+', replace: '- name: SAS_TENANT_IDS\n            value: "{{ SAS_TENANT_IDS }}"' }
+    - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-offboard-job.yaml', regexp: '- name: SAS_TENANT_IDS\n[^\n]+', replace: '- name: SAS_TENANT_IDS\n            value: "{{ SAS_TENANT_IDS }}"' }
   when: V4MT_ENABLE
   tags:
     - onboard
@@ -50,7 +52,8 @@
     replace: "{{ item.replace }}"
   with_items:
     - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-onboard-job.yaml', regexp: '{% raw %}{{ SAS-PROVIDER-PASSWORD }}{% endraw %}', replace: '{{ SAS_PROVIDER_PASSWORD }}'}
-    - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-offboard-job.yaml', regexp: '{% raw %}{{ SAS-PROVIDER-PASSWORD }}{% endraw %}', replace: '{{ SAS_PROVIDER_PASSWORD }}'}
+    # SAS provider password removed from offboard example (COMPUTESVCS-33526)
+    # - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-offboard-job.yaml', regexp: '{% raw %}{{ SAS-PROVIDER-PASSWORD }}{% endraw %}', replace: '{{ SAS_PROVIDER_PASSWORD }}'}
   when: SAS_PROVIDER_PASSWORD
   tags:
     - onboard
@@ -97,19 +100,38 @@
   with_items:
     - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-onboard-job.yaml', line: '          - name: SAS_PROVIDER_PASSWORD'}
     - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-onboard-job.yaml', line: '            value: {% raw %}{{ SAS-PROVIDER-PASSWORD }}{% endraw %}'}
-    - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-offboard-job.yaml', line: '          - name: SAS_PROVIDER_PASSWORD'}
-    - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-offboard-job.yaml', line: '            value: {% raw %}{{ SAS-PROVIDER-PASSWORD }}{% endraw %}'}
+    # - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-offboard-job.yaml', line: '          - name: SAS_PROVIDER_PASSWORD'}
+    # - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-offboard-job.yaml', line: '            value: {% raw %}{{ SAS-PROVIDER-PASSWORD }}{% endraw %}'}
   when: not SAS_PROVIDER_PASSWORD
   tags:
     - onboard
-    - offboard
+
+- name: Check if create-cas-server script exists
+  stat:
+    path: "{{ DEPLOY_DIR }}/site-config/create-cas-server.sh"
+  register: result
+  tags:
+    - onboard
 
 - name: copy - create-cas-server script
-  template:
+  copy:
     src: "{{ DEPLOY_DIR }}/sas-bases/examples/cas/create/create-cas-server.sh"
     dest: "{{ DEPLOY_DIR }}/site-config"
     mode: "0770"
-  when: V4MT_ENABLE
+  when:
+    - not result.stat.exists 
+    - V4MT_ENABLE
+  tags:
+    - onboard
+
+# Delete the cas tenant directories if present to recreate new directories for re-onboarding
+- name: delete cas tenant directory
+  file:
+    state: absent
+    path: "{{ DEPLOY_DIR }}/site-config/cas-{{ item | trim }}-default"
+  with_items: '{{ SAS_TENANT_IDS.split(",") | replace(" ", "") }}'
+  when: 
+    - V4MT_ENABLE
   tags:
     - onboard
 

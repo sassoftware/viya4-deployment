@@ -1,15 +1,40 @@
 ---
 # Update Resources in Kustomization.yaml
-- name: apply service account role
+- name: add cas resources
+  lineinfile:
+    path: "{{ DEPLOY_DIR }}/kustomization.yaml"
+    # insertafter: "resources:" 
+    line: "  - site-config/cas-{{ item | trim }}-default"
+    # firstmatch: yes
+    state: present
+  check_mode: yes
+  register: out
+  with_items: "{{ SAS_TENANT_IDS.split(',') }}"
+  tags:
+    - onboard
+
+- name: add cas resources
+  lineinfile:
+    path: "{{ DEPLOY_DIR }}/kustomization.yaml"
+    insertafter: "resources:" 
+    line: "  - site-config/cas-{{ item | trim }}-default"
+    # firstmatch: yes
+    state: present
+  with_items: "{{ SAS_TENANT_IDS.split(',') }}"
+  when: out.changed
+  tags:
+    - onboard
+
+- name: remove cas resources
   lineinfile:
     path: "{{ DEPLOY_DIR }}/kustomization.yaml"
     insertafter: "resources:" 
     line: "  - site-config/cas-{{ item | trim }}-default"
     firstmatch: yes
-    state: present
+    state: absent
   with_items: "{{ SAS_TENANT_IDS.split(',') }}"
   tags:
-    - onboard
+    - offboard
 
 # Delete the site.yaml file
 - name: delete site.yaml
@@ -18,6 +43,7 @@
     path: "{{ DEPLOY_DIR }}/site.yaml"
   tags:
     - onboard
+    - offboard
 
 # Generate new site.yaml
 - name: kustomize - generate new manifest
@@ -25,6 +51,7 @@
     kustomize build {{ DEPLOY_DIR }} -o {{ DEPLOY_DIR }}/site.yaml
   tags:
     - onboard
+    - offboard
 
 # Re-deploy after enabling cas servers
 - name: prereqs - cluster-api
@@ -109,8 +136,8 @@
     path: "{{ DEPLOY_DIR }}/site-config/cas-{{ item | trim }}-default"
   with_items: '{{ SAS_TENANT_IDS.split(",") | replace(" ", "") }}'
   when: 
-    - V4MT_ENABLE
     - 'item|trim in result.stdout'
+    - V4MT_ENABLE
   tags:
     - offboard
     - uninstall
