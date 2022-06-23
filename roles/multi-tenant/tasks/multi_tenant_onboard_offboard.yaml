@@ -122,8 +122,8 @@
   ansible.builtin.shell: |
     kubectl --kubeconfig {{ KUBECONFIG }} get pods -n {{ NAMESPACE }} --sort-by=.metadata.creationTimestamp | tac | grep sas-tenant-onboard | awk '{print $3}'
   register: pod_status
-  until: pod_status.stdout_lines[0] == "Completed"
-  retries: 5
+  until: pod_status.stdout_lines[0] in ["Completed", "Running"]
+  retries: 10
   delay: 30
   tags:
     - onboard
@@ -132,8 +132,8 @@
   ansible.builtin.shell: |
     kubectl --kubeconfig {{ KUBECONFIG }} get pods -n {{ NAMESPACE }} --sort-by=.metadata.creationTimestamp | tac | grep sas-tenant-offboard | awk '{print $3}'
   register: pod_status
-  until: pod_status.stdout_lines[0] == "Completed"
-  retries: 5
+  until: pod_status.stdout_lines[0] in ["Completed", "Running"]
+  retries: 10
   delay: 30
   tags:
     - offboard
