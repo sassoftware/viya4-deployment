@@ -100,8 +100,6 @@
   with_items:
     - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-onboard-job.yaml', line: '          - name: SAS_PROVIDER_PASSWORD'}
     - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-onboard-job.yaml', line: '            value: {% raw %}{{ SAS-PROVIDER-PASSWORD }}{% endraw %}'}
-    # - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-offboard-job.yaml', line: '          - name: SAS_PROVIDER_PASSWORD'}
-    # - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-offboard-job.yaml', line: '            value: {% raw %}{{ SAS-PROVIDER-PASSWORD }}{% endraw %}'}
   when: not SAS_PROVIDER_PASSWORD
   tags:
     - onboard

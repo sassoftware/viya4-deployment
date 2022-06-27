@@ -92,7 +92,7 @@
   tags:
     - offboard
 
-# Run the onboarding command
+# Run Onboard job
 - name: run onboarding command
   ansible.builtin.shell: |
     kubectl --kubeconfig {{ KUBECONFIG }} create -n {{ NAMESPACE }} -f {{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-onboard.yaml
@@ -105,6 +105,7 @@
   tags:
     - onboard
 
+# Run Offboard job
 - name: run offboarding command
   ansible.builtin.shell: |
     kubectl --kubeconfig {{ KUBECONFIG }} create -n {{ NAMESPACE }} -f {{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-offboard.yaml
@@ -117,23 +118,32 @@
   tags:
     - offboard
 
-# Wait for the tenant-onboard pod to be in Running state
+# Count number of tenants
+- name: get tenant count
+  set_fact:
+    tenant_count: '{{ SAS_TENANT_IDS.split(",") | length }}'
+  tags:
+    - onboard
+    - offboard
+
+# Wait for the tenant-onboard pod to be in Completed state
 - name: get sas-tenant-onboard job status
   ansible.builtin.shell: |
     kubectl --kubeconfig {{ KUBECONFIG }} get pods -n {{ NAMESPACE }} --sort-by=.metadata.creationTimestamp | tac | grep sas-tenant-onboard | awk '{print $3}'
   register: pod_status
-  until: pod_status.stdout_lines[0] in ["Completed", "Running"]
-  retries: 10
-  delay: 30
+  until: pod_status.stdout_lines[0] == "Completed"
+  retries: "{{ tenant_count|int }}"
+  delay: 75
   tags:
     - onboard
 
+# Wait for the tenant-offboard pod to be in Completed state
 - name: get sas-tenant-offboard job status
   ansible.builtin.shell: |
     kubectl --kubeconfig {{ KUBECONFIG }} get pods -n {{ NAMESPACE }} --sort-by=.metadata.creationTimestamp | tac | grep sas-tenant-offboard | awk '{print $3}'
   register: pod_status
-  until: pod_status.stdout_lines[0] in ["Completed", "Running"]
-  retries: 10
-  delay: 30
+  until: pod_status.stdout_lines[0] == "Completed"
+  retries: "{{ tenant_count|int }}"
+  delay: 75
   tags:
     - offboard

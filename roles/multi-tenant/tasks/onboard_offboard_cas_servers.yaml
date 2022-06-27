@@ -106,16 +106,16 @@
     - onboard
 
 # Offboard CAS servers
-- name: kubectl get cas servers for tenants
-  ansible.builtin.shell: |
-    kubectl --kubeconfig {{ KUBECONFIG }} -n {{ NAMESPACE }} get casdeployments
-  register: result
-  failed_when:
-    - result["stderr"]|length > 0
-  when: V4MT_ENABLE
-  tags:
-    - offboard
-    - uninstall
+# - name: kubectl get cas servers for tenants
+#   ansible.builtin.shell: |
+#     kubectl --kubeconfig {{ KUBECONFIG }} -n {{ NAMESPACE }} get casdeployments
+#   register: result
+#   failed_when:
+#     - result["stderr"]|length > 0
+#   when: V4MT_ENABLE
+#   tags:
+#     - offboard
+#     - uninstall
 
 - name: kubectl delete cas servers for tenants
   ansible.builtin.shell: |
@@ -133,7 +133,7 @@
     path: "{{ DEPLOY_DIR }}/site-config/cas-{{ item | trim }}-default"
   with_items: '{{ SAS_TENANT_IDS.split(",") | replace(" ", "") }}'
   when: 
-    - 'item|trim in result.stdout'
+    # - 'item|trim in result.stdout'
     - V4MT_ENABLE
   tags:
     - offboard
