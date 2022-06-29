@@ -35,7 +35,7 @@ V4_CFG_POSTGRES_SERVERS:
     database: <desired_database>
 
 ## LDAP
-V4_CFG_EMBEDDED_LDAP_ENABLE: false
+V4_CFG_EMBEDDED_LDAP_ENABLE: true
 
 ## Multi-Tenant
 V4MT_ENABLE: true

@@ -116,6 +116,24 @@
       - { transformers: "openldap.yaml", vdm: true }
       - { generators: "openldap-bootstrap-config.yaml", vdm: true }
   when: 
+    - not V4MT_ENABLE
+    - V4_CFG_EMBEDDED_LDAP_ENABLE 
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: Include Openldap - Multi-Tenancy
+  overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { resources: "openldap.yaml", vdm: true }
+      - { transformers: "openldap.yaml", vdm: true }
+      - { generators: "openldap-bootstrap-mt-config.yaml", vdm: true }
+  when: 
+    - V4MT_ENABLE
     - V4_CFG_EMBEDDED_LDAP_ENABLE 
   tags:
     - install

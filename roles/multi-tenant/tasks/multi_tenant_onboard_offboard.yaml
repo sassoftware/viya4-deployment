@@ -31,7 +31,7 @@
 - name: tls disabled - onboard
   replace:
     path: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/kustomization.yaml"
-    regexp: "tenant-onboard-job-tls-transformer.yaml"
+    regexp: "- tenant-onboard-job-tls-transformer.yaml"
     replace: "# - tenant-onboard-job-tls-transformer.yaml"
   when:
     V4_CFG_TLS_MODE == "disabled"
@@ -41,7 +41,7 @@
 - name: tls disabled - offboard
   replace:
     path: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/kustomization.yaml"
-    regexp: "tenant-offboard-job-tls-transformer.yaml"
+    regexp: "- tenant-offboard-job-tls-transformer.yaml"
     replace: "# - tenant-offboard-job-tls-transformer.yaml"
   when:
     V4_CFG_TLS_MODE == "disabled"
