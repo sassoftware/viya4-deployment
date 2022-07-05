@@ -179,7 +179,7 @@ When setting V4_CFG_MANAGE_STORAGE to true, A new storage classes will be create
 
 ## TLS
 
-Viya 4 supports 2 different types of certificate generators, Cert-manager and openssl. The openssl certificate generator cannot be used in conjunction with the viya4-monitoring-kubernetes stack.
+Viya 4 supports 2 different types of certificate generators, cert-manager and openssl.
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
