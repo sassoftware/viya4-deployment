@@ -279,7 +279,7 @@ V4_CFG_POSTGRES_SERVERS:
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| CERT_MANAGER_ENABLED | Whether to deploy tool | bool | false | false | | baseline |
+| CERT_MANAGER_ENABLED | Whether to deploy cert-manager into the cluster using helm | bool | false | false | Required if V4_CFG_TLS_GENERATOR is set to `cert-manager` and it's not already installed | baseline |
 | CERT_MANAGER_NAMESPACE | cert-manager helm install namespace | string | cert-manager | false | | baseline |
 | CERT_MANAGER_CHART_URL | cert-manager helm chart url | string | https://charts.jetstack.io/ | false | | baseline |
 | CERT_MANAGER_CHART_NAME| cert-manager helm chart name | string | cert-manager| false | | baseline |
