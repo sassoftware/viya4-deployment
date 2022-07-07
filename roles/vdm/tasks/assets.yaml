@@ -5,6 +5,8 @@
     url: "https://github.com/sassoftware/viya4-orders-cli/releases/download/{{ V4_ORDERS_CLI_VERSION }}/viya4-orders-cli_{{ hostvars[inventory_hostname]['ansible_system']|lower }}_amd64"
     dest: "{{ tmpdir.path }}/viya4-orders-cli"
     mode: "0755"
+  when:
+    - V4_CFG_LICENSE is none or V4_CFG_DEPLOYMENT_ASSETS is none
   tags:
     - install
     - uninstall
