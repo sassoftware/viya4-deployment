@@ -23,12 +23,12 @@ Prepare your `ansible-vars.yaml` file, and set the variables as described in [Mu
 
 If the embedded OpenLDAP server is enabled, it is possible to change the users and groups that will be created. The required steps are similar to other customizations:
 
-1. Create the folder structure detailed in the [Customize Deployment Overlays](../../README.md#customize-deployment-overlays). 
-2. Copy the `./examples/multi-tenancy/openldap` folder into the `/site-config` folder. 
-3. Locate the openldap-modify-mt-users-groups.yaml file in the `/openldap` folder. 
+1. Create the folder structure detailed in the [Customize Deployment Overlays](../../README.md#customize-deployment-overlays).
+2. Copy the `./examples/multi-tenancy/openldap` folder into the `/site-config` folder.
+3. Locate the openldap-modify-mt-users-groups.yaml file in the `/openldap` folder.
 4. Modify it to match the desired setup. The file contains example user and groups defined for tenant1 and tenant2, make sure to update them to match your tenant IDs.
 
-**Note:** You must configure all the tenant-specific users and groups during the intial deployment as this method can only be used when you are first deploying the OpenLDAP server. Subsequently, you can either delete and redeploy the OpenLDAP server with a new configuration, or add users using `ldapadd`.
+**Note:** You must configure all the tenant-specific users and groups during the intial deployment as this method can only be used when you are first deploying the OpenLDAP server.Subsequently, you can either delete and redeploy the OpenLDAP server with a new configuration, or add users using `ldapadd`.
 For more information about setting up tenant users and groups, see [LDAP Requirements for Multi-Tenancy](https://go.documentation.sas.com/doc/en/itopscdc/v_025/itopssr/p0440nbofn1b5qn1l6j1l6ygm7qg.htm#p1dr09lqs9w0w7n1iaklneorpy4r).
 
 For example:
@@ -69,10 +69,22 @@ Step 3. Onboard tenants. Run the following command:
     -e BASE_DIR=$HOME/deployments \
     -e KUBECONFIG=$HOME/deployments/.kube/config \
     -e CONFIG=$HOME/deployments/dev-cluster/dev-namespace/ansible-vars.yaml \
-    -e JUMP_SVR_PRIVATE_KEY=$HOME/.ssh/id_rsa \
     playbooks/playbook.yaml --tags "onboard"
   ```
-**Note:** The tenant CAS servers might take several mins to stabilize after the onboard tenant command above has completed successfully.
+
+Step 4. Add any additional CAS customizations for tenants as needed and then run following command to onboard the CAS servers:
+
+  ```bash
+  ansible-playbook \
+    -e BASE_DIR=$HOME/deployments \
+    -e KUBECONFIG=$HOME/deployments/.kube/config \
+    -e CONFIG=$HOME/deployments/dev-cluster/dev-namespace/ansible-vars.yaml \
+    playbooks/playbook.yaml --tags "cas-onboard"
+  ```
+
+**Note:** 
+- If there are no additional CAS customizations required for tenants then run 'onboard' and 'cas-onboard' tags together in Step 3 and skip Step 4.
+- The tenant CAS servers might take several mins to stabilize after the cas-onboard command above has completed successfully.
 
 ### Example Command to Offboard Tenants
 

@@ -14,6 +14,6 @@
 - name: multi-tenant role - cas
   include_tasks: onboard_offboard_cas_servers.yaml
   tags:
-    - onboard
+    - cas-onboard
     - offboard
     - uninstall

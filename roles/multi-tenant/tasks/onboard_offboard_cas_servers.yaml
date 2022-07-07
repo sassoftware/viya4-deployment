@@ -9,7 +9,7 @@
   register: out
   with_items: "{{ SAS_TENANT_IDS.split(',') }}"
   tags:
-    - onboard
+    - cas-onboard
 
 - name: add cas resources
   lineinfile:
@@ -20,7 +20,7 @@
   with_items: "{{ SAS_TENANT_IDS.split(',') }}"
   when: out.changed
   tags:
-    - onboard
+    - cas-onboard
 
 - name: remove cas resources
   lineinfile:
@@ -39,7 +39,7 @@
     state: absent
     path: "{{ DEPLOY_DIR }}/site.yaml"
   tags:
-    - onboard
+    - cas-onboard
     - offboard
 
 # Generate new site.yaml
@@ -47,7 +47,7 @@
   ansible.builtin.shell: |
     kustomize build {{ DEPLOY_DIR }} -o {{ DEPLOY_DIR }}/site.yaml
   tags:
-    - onboard
+    - cas-onboard
     - offboard
 
 # Re-deploy after enabling cas servers
@@ -64,7 +64,7 @@
     - '"no matching resources found" not in result.stderr'
     - '"error: no objects passed to apply" not in result.stderr'
   tags:
-    - onboard
+    - cas-onboard
 
 - name: prereqs - cluster-wide
   ansible.builtin.shell: |
@@ -79,7 +79,7 @@
     - '"no matching resources found" not in result.stderr'
     - '"error: no objects passed to apply" not in result.stderr'
   tags:
-    - onboard
+    - cas-onboard
 
 - name: prereqs - cluster-local deploy
   ansible.builtin.command: |
@@ -91,7 +91,7 @@
     - '"in version" not in result.stderr'
     - '"Warning" not in result.stderr'
   tags:
-    - onboard
+    - cas-onboard
 
 - name: manifest - deploy
   ansible.builtin.command: |
@@ -103,25 +103,13 @@
     - '"in version" not in result.stderr'
     - '"Warning" not in result.stderr'
   tags:
-    - onboard
+    - cas-onboard
 
 # Offboard CAS servers
-# - name: kubectl get cas servers for tenants
-#   ansible.builtin.shell: |
-#     kubectl --kubeconfig {{ KUBECONFIG }} -n {{ NAMESPACE }} get casdeployments
-#   register: result
-#   failed_when:
-#     - result["stderr"]|length > 0
-#   when: V4MT_ENABLE
-#   tags:
-#     - offboard
-#     - uninstall
-
 - name: kubectl delete cas servers for tenants
   ansible.builtin.shell: |
     echo {{ item }}
     kubectl --kubeconfig {{ KUBECONFIG }} -n {{ NAMESPACE }} delete casdeployment -l sas.com/tenant={{ item | trim }}
-  when: 'item|trim in result.stdout'
   with_items: '{{ SAS_TENANT_IDS.split(",") | replace(" ", "") }}'
   tags:
     - offboard
@@ -133,7 +121,6 @@
     path: "{{ DEPLOY_DIR }}/site-config/cas-{{ item | trim }}-default"
   with_items: '{{ SAS_TENANT_IDS.split(",") | replace(" ", "") }}'
   when: 
-    # - 'item|trim in result.stdout'
     - V4MT_ENABLE
   tags:
     - offboard

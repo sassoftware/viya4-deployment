@@ -7,6 +7,7 @@
     - uninstall
     - update
     - onboard
+    - cas-onboard
     - offboard
 
 - name: Set BASE_DIR default path
@@ -18,6 +19,7 @@
     - uninstall
     - update
     - onboard
+    - cas-onboard
     - offboard
 - block:
     - name: Parse tfstate
@@ -210,6 +212,7 @@
     - uninstall
     - update
     - onboard
+    - cas-onboard
     - offboard
 
 - name: Set DEPLOY_DIR
@@ -221,6 +224,7 @@
     - uninstall
     - update
     - onboard
+    - cas-onboard
     - offboard
 
 - name: migrations

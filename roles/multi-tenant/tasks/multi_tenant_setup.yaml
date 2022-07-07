@@ -47,13 +47,9 @@
 
 - name: sas-tenant-job - update sas-provider-password
   replace:
-    path: "{{ item.path }}"
-    regexp: "{{ item.regexp }}"
-    replace: "{{ item.replace }}"
-  with_items:
-    - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-onboard-job.yaml', regexp: '{% raw %}{{ SAS-PROVIDER-PASSWORD }}{% endraw %}', replace: '{{ SAS_PROVIDER_PASSWORD }}'}
-    # SAS provider password removed from offboard example (COMPUTESVCS-33526)
-    # - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-offboard-job.yaml', regexp: '{% raw %}{{ SAS-PROVIDER-PASSWORD }}{% endraw %}', replace: '{{ SAS_PROVIDER_PASSWORD }}'}
+    path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-onboard-job.yaml'
+    regexp: '{% raw %}{{ SAS-PROVIDER-PASSWORD }}{% endraw %}'
+    replace: '{{ SAS_PROVIDER_PASSWORD }}'
   when: SAS_PROVIDER_PASSWORD
   tags:
     - onboard
@@ -136,7 +132,7 @@
 # Preparing cas servers
 - name: Create cas servers for tenants
   command:
-  #$deploy/sas-bases/examples/cas/create/create-cas-server.sh --tenant acme --output ../site-config/ --workers 2 --backup 1
+  #Example cmd: $deploy/sas-bases/examples/cas/create/create-cas-server.sh --tenant acme --output ../site-config/ --workers 2 --backup 1
     cmd: "{{ DEPLOY_DIR }}/site-config/create-cas-server.sh --tenant {{ item }} --output {{ DEPLOY_DIR }}/site-config --workers {{ V4MT_CAS_WORKER_COUNT }} --backup {{ V4MT_CAS_BACKUP }}"
   with_items: "{{ SAS_TENANT_IDS.split(',') }}"
   when: V4MT_ENABLE

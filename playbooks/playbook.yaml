@@ -9,6 +9,7 @@
         - uninstall
         - update
         - onboard
+        - cas-onboard
         - offboard
     - name: common role
       include_role: 
@@ -19,6 +20,7 @@
         - uninstall
         - update
         - onboard
+        - cas-onboard
         - offboard
     - name: jump-server role
       include_role:
@@ -47,6 +49,7 @@
         name: multi-tenant
       tags:
         - onboard
+        - cas-onboard
         - offboard
         - uninstall
     - name: vdm role
