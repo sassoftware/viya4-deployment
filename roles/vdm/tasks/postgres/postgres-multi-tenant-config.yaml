@@ -1,0 +1,62 @@
+- set_fact:
+    max_connections: '{{ ((((SAS_TENANT_IDS.split(",") | length) | int ) + 1 ) * 1128) }}'
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: postgres - copy custom config
+  copy:
+    src: "{{ file.src }}"
+    dest: "{{ file.dest }}"
+    mode: "0660"
+  with_items:
+    - {src: "{{ DEPLOY_DIR }}/sas-bases/examples/postgres/custom-config/sas-{{ 'postgres' if role == 'default' else role }}-custom-config.yaml", dest: "{{ role_path }}/templates/resources/sas-{{ 'postgres' if role == 'default' else role }}-custom-config.yaml"}
+    - {src: "{{ DEPLOY_DIR }}/sas-bases/examples/postgres/custom-config/sas-{{ 'postgres' if role == 'default' else role }}-custom-config-transformer.yaml", dest: "{{ role_path }}/templates/transformers/sas-{{ 'postgres' if role == 'default' else role }}-custom-config-transformer.yaml"}
+  loop_control:
+    loop_var: file
+  when: 
+    - settings.internal
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: postgres - update config default
+  block:
+    - name: postgres - remove example shared_buffers line
+      lineinfile:
+        path: "{{ role_path }}/templates/resources/sas-{{ 'postgres' if role == 'default' else role }}-custom-config.yaml"
+        regexp: "shared_buffers: 2GB" 
+        state: absent
+
+    - name: postgres - add max_connections block
+      lineinfile:
+        path: "{{ role_path }}/templates/resources/sas-{{ 'postgres' if role == 'default' else role }}-custom-config.yaml"
+        insertafter: "data:" 
+        line: "{{ outer_item }}"
+      with_items:
+        - '  max_prepared_transactions: "{{ max_connections }}"'
+        - '  max_connections: "{{ max_connections }}"'
+      loop_control:
+        loop_var: outer_item
+  when: 
+    - settings.internal
+  tags:
+    - install
+    - uninstall
+
+- name: postgres - add resource
+  overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { transformers: "sas-{{ 'postgres' if role == 'default' else role }}-custom-config-transformer.yaml", vdm: true, priority: 65 }
+      - { resources: "sas-{{ 'postgres' if role == 'default' else role }}-custom-config.yaml", vdm: true,}
+  when: 
+    - settings.internal
+  tags: 
+    - install
+    - uninstall
+    - update
