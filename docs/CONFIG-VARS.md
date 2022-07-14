@@ -341,8 +341,8 @@ The nfs-client is currently supported by the newer nfs-subdir-external-provision
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4MT_ENABLE | Enables Multi-tenancy in the SAS Viya deployment | bool | false | false || baseline, viya |
 | V4MT_MODE | Set V4MT_MODE to either schema or database | string | schema | false | Two modes of data isolation (schemaPerApplicationTenant, databasePerTenant) for tenant data. schemaPerApplicationTenant is default.  | baseline, viya |
-| SAS_TENANT_IDS | One or more tenant IDs to onboard or offboard | string | | false | Example: Single tenant ID: "acme" or Multiple tenant IDs: "acme, cyberdyne, intech" | onboard, offboard |
-| SAS_PROVIDER_PASSWORD | Optional: The password that is applied to the tenant administrator on each onboarded tenant | string | | false | When SAS_PROVIDER_PASSWORD is specified SAS_PROVIDER_PASSWORD_{{TENANT-ID}} can not be used | onboard, offboard |
-| SAS_PROVIDER_PASSWORD_{{TENANT-ID}} | Optional: Unique sasprovider password for each tenant being onboarded| string | | false | When SAS_PROVIDER_PASSWORD_{{TENANT-ID}} is specified SAS_PROVIDER_PASSWORD can not be used | onboard, offboard |
-| V4MT_CAS_WORKER_COUNT | The number of CAS worker nodes for tenants. Default is 0 (SMP) | int | 0 | false | | onboard, offboard |
-| V4MT_CAS_BACKUP | Set this flag to 1 to include a CAS backup controller | int | Disabled by default | false | | onboard, offboard |
+| SAS_TENANT_IDS | One or more tenant IDs to onboard or offboard | string | | false | Example: Single tenant ID: "acme" or Multiple tenant IDs: "acme, cyberdyne, intech" | onboard, cas-onboard, offboard |
+| SAS_PROVIDER_PASSWORD | Optional: The password that is applied to the tenant administrator on each onboarded tenant | string | | false | When SAS_PROVIDER_PASSWORD is specified SAS_PROVIDER_PASSWORD_{{TENANT-ID}} can not be used. See details [here](https://go.documentation.sas.com/doc/en/itopscdc/v_029/caltenants/p0emzq13c0zbhxn1hktsdlmig934.htm#p1ghvmezrb3cvxn1h7vg4uguqct6) | onboard, cas-onboard, offboard |
+| SAS_PROVIDER_PASSWORD_{{TENANT-ID}} | Optional: Unique sasprovider password for each tenant being onboarded| string | | false | When SAS_PROVIDER_PASSWORD_{{TENANT-ID}} is specified SAS_PROVIDER_PASSWORD can not be used. See details [here](https://go.documentation.sas.com/doc/en/itopscdc/v_029/caltenants/p0emzq13c0zbhxn1hktsdlmig934.htm#p1ghvmezrb3cvxn1h7vg4uguqct6) | onboard, cas-onboard, offboard |
+| V4MT_CAS_WORKER_COUNT | The number of CAS worker nodes for tenants. Default is 0 (SMP) | int | 0 | false | | onboard, cas-onboard, offboard |
+| V4MT_CAS_BACKUP | Set this flag to 1 to include a CAS backup controller | int | Disabled by default | false | | onboard, cas-onboard, offboard |

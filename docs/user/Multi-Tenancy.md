@@ -1,23 +1,37 @@
 # Multi-Tenancy
 
-The SAS Viya _IT Operations Guide_ provides detailed information about requirements and onboarding procedures for a multi-tenant deployment of SAS Viya. Access it [here](https://go.documentation.sas.com/doc/en/itopscdc/default/caltenants/titlepage.htm).
+SAS Viya supports a multi-tenant environment where multiple tenants can use the applications of a single deployment. Each tenant has access to the licensed software and can manage their own resources but has no visibility into the data and workflows of other tenants. The SAS Viya _IT Operations Guide_ provides detailed information about requirements and onboarding procedures for a multi-tenant deployment of SAS Viya. Access it [here](https://go.documentation.sas.com/doc/en/itopscdc/default/caltenants/titlepage.htm).
 
 ## Overview: Required Steps
 
-1. Deploy SAS Viya and a provider tenant into a single Kubernetes namespace.
+1. CAS Server Resources Requirement
+   
+   With multi-tenancy enabled in your deployment, the tenants will share most of the nodes with the provider tenant. However, because each tenant has its own CAS server, the total number of nodes required for CAS for the full deployment is greater than that for a non-multi-tenant deployment. The number of additional CAS nodes required per tenant depends on whether the tenant is deploying SMP or MPP CAS. See [CAS Server Resources](https://go.documentation.sas.com/doc/en/itopscdc/v_029/itopssr/n0ampbltwqgkjkn1j3qogztsbbu0.htm#p1phbohacgeubcn0zgt2pdlqu0fu) for more details and [plan workload placement](https://go.documentation.sas.com/doc/en/itopscdc/v_029/dplyml0phy0dkr/p0om33z572ycnan1c1ecfwqntf24.htm#p1ujrdxsdddpdpn1r3xavgwaa0tu) accordingly.
+
+2. Deploy SAS Viya and a provider tenant into a single Kubernetes namespace.
 
    The deployment includes shared mid-tier services, such as SAS Logon Manager, and shared applications, such as SAS Studio. 
-  Applications other than SAS Environment Manager are not accessed from the provider tenant, and application users are not added to the provider tenant.
+   Applications other than SAS Environment Manager are not accessed from the provider tenant, and application users are not added to the provider tenant.
 
-2. Onboard one or more tenants, and then onboard one or more instances of SAS Cloud Analytic Services (the CAS server) into each tenant. Each instance of CAS is customized to meet its expected tenant workload.  
+3. Onboard one or more tenants, and then onboard one or more instances of SAS Cloud Analytic Services (the CAS server) into each tenant. Each instance of CAS is customized to meet its expected tenant workload.
 
    During tenant onboarding, the database schemas that will support authorization and authentication are also installed. Database servers can be internal or external to SAS.
+
+## Tags
+
+List of tags introduced in Multi-tenancy. 
+
+| Name | Description |
+| :--- | :--- |
+| onboard | Adds and configures one or more tenants alongside the existing provider tenant |
+| cas-onboard | Onboards a CAS server for an onboarded tenant |
+| offboard | Removes one or more onboarded tenants |
 
 ## Preparation
 
 ### Variable Definitions File (ansible-vars.yaml) 
 
-Prepare your `ansible-vars.yaml` file, and set the variables as described in [Multi-Tenancy](../CONFIG-VARS.md#multi-tenancy). The variables V4MT_ENABLE and V4MT_MODE must be set before you perform the deployment. Other variables can be set before the deployment or during the onboarding or offboarding procedures. See example [ansible-vars-multi-tenancy.yaml](../../examples/multi-tenancy/ansible-vars-multi-tenancy.yaml)
+Prepare your `ansible-vars.yaml` file, and set the variables as described in [Multi-Tenancy](../CONFIG-VARS.md#multi-tenancy). The variables V4MT_ENABLE, V4MT_MODE and SAS_TENANT_IDS must be set before you perform the deployment. Other variables can be set before the deployment or during the onboarding or offboarding procedures. See example [ansible-vars-multi-tenancy.yaml](../../examples/multi-tenancy/ansible-vars-multi-tenancy.yaml)
 
 ### OpenLDAP Customizations
 
@@ -49,7 +63,7 @@ For example:
 
 ## Example Steps to Configure a Multi-Tenant Deployment
 
-Step 1. Have a new cluster with sufficient CAS node resources to support the number of tenants being onboarded. Deploy using the ansible-vars.yaml file that you prepared previously. Run the following command to deploy SAS Viya:
+Step 1. Have a cluster with sufficient CAS node resources to support the number of tenants being onboarded. Deploy using the ansible-vars.yaml file that you prepared previously. Run the following command to deploy SAS Viya:
 
   ```bash
   ansible-playbook \
@@ -93,7 +107,6 @@ Step 4. Add any additional CAS customizations for tenants as needed and then run
     -e BASE_DIR=$HOME/deployments \
     -e KUBECONFIG=$HOME/deployments/.kube/config \
     -e CONFIG=$HOME/deployments/dev-cluster/dev-namespace/ansible-vars.yaml \
-    -e JUMP_SVR_PRIVATE_KEY=$HOME/.ssh/id_rsa \
     playbooks/playbook.yaml --tags "offboard"
   ```
 
@@ -107,6 +120,9 @@ Step 4. Add any additional CAS customizations for tenants as needed and then run
     -e JUMP_SVR_PRIVATE_KEY=$HOME/.ssh/id_rsa \
     playbooks/playbook.yaml --tags "baseline,viya,uninstall"
   ```
+
+## Log In and Validate an Onboarded Tenant
+After the tenant is onboarded see the steps [here](https://go.documentation.sas.com/doc/en/itopscdc/v_029/caltenants/p0emzq13c0zbhxn1hktsdlmig934.htm#n05u0e3vmr5lcqn1l5xa2rhkdu6x) to login and validate an onboarded tenant.
 
 ## Troubleshooting
 
