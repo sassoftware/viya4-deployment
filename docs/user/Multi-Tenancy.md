@@ -2,9 +2,9 @@
 
 SAS Viya supports a multi-tenant environment where multiple tenants can use the applications of a single deployment. Each tenant has access to the licensed software and can manage their own resources but has no visibility into the data and workflows of other tenants. The SAS Viya _IT Operations Guide_ provides detailed information about requirements and onboarding procedures for a multi-tenant deployment of SAS Viya. Access it [here](https://go.documentation.sas.com/doc/en/itopscdc/default/caltenants/titlepage.htm).
 
-## Overview: Required Steps
+## Overview of required steps
 
-1. CAS Server Resources Requirement
+1. CAS Server Resources Requirement.
    
    With multi-tenancy enabled in your deployment, the tenants will share most of the nodes with the provider tenant. However, because each tenant has its own CAS server, the total number of nodes required for CAS for the full deployment is greater than that for a non-multi-tenant deployment. The number of additional CAS nodes required per tenant depends on whether the tenant is deploying SMP or MPP CAS. See [CAS Server Resources](https://go.documentation.sas.com/doc/en/itopscdc/v_029/itopssr/n0ampbltwqgkjkn1j3qogztsbbu0.htm#p1phbohacgeubcn0zgt2pdlqu0fu) for more details and [plan workload placement](https://go.documentation.sas.com/doc/en/itopscdc/v_029/dplyml0phy0dkr/p0om33z572ycnan1c1ecfwqntf24.htm#p1ujrdxsdddpdpn1r3xavgwaa0tu) accordingly.
 
@@ -42,7 +42,7 @@ If the embedded OpenLDAP server is enabled, it is possible to change the users a
 3. Locate the openldap-modify-mt-users-groups.yaml file in the `/openldap` folder.
 4. Modify it to match the desired setup. The file contains example user and groups defined for tenant1 and tenant2, make sure to update them to match your tenant IDs.
 
-**Note:** You must configure all the tenant-specific users and groups during the intial deployment as this method can only be used when you are first deploying the OpenLDAP server.Subsequently, you can either delete and redeploy the OpenLDAP server with a new configuration, or add users using `ldapadd`.
+**Note:** You must configure all the tenant-specific users and groups during the initial deployment as this method can only be used when you are first deploying the OpenLDAP server. Subsequently, you can either delete and redeploy the OpenLDAP server with a new configuration or add users using `ldapadd`.
 For more information about setting up tenant users and groups, see [LDAP Requirements for Multi-Tenancy](https://go.documentation.sas.com/doc/en/itopscdc/v_025/itopssr/p0440nbofn1b5qn1l6j1l6ygm7qg.htm#p1dr09lqs9w0w7n1iaklneorpy4r).
 
 For example:
