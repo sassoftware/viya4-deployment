@@ -37,5 +37,3 @@ V4M_GRAFANA_FQDN: "grafana.{{ V4M_BASE_DOMAIN }}"
 V4M_GRAFANA_CERT: "{{ V4M_CERT }}"
 V4M_GRAFANA_KEY: "{{ V4M_KEY }}"
 V4M_GRAFANA_PASSWORD: "{{ lookup('password', '/dev/null chars=ascii_letters,digits') }}"
-
-V4_CFG_TLS_GENERATOR: openssl # [cert-manager,openssl]
