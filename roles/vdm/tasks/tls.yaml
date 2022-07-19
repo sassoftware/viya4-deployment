@@ -11,7 +11,7 @@
     - V4_CFG_TLS_GENERATOR == "openssl"
     - V4_CFG_TLS_CERT is none or V4_CFG_TLS_KEY is none or V4_CFG_TLS_TRUSTED_CA_CERTS is none
     - V4_CFG_CADENCE_VERSION is version('2021.1', "<=")
-    - V4_CFG_CADENCE_NAME != "fast"
+    - V4_CFG_CADENCE_NAME|lower != "fast"
   tags:
     - install
     - uninstall
@@ -104,7 +104,7 @@
   when:
     - V4_CFG_TLS_MODE == "ingress-only"
     - V4_CFG_CADENCE_VERSION is version('2021.2.4', "<")
-    - V4_CFG_CADENCE_NAME != "fast"
+    - V4_CFG_CADENCE_NAME|lower != "fast"
   tags:
     - install
     - uninstall
