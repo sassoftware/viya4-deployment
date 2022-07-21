@@ -24,6 +24,7 @@
 - name: Set password facts
   set_fact:
     V4M_KIBANA_PASSWORD: "{{ V4M_KIBANA_PASSWORD }}"
+    V4M_KIBANA_LOGADM_PASSWORD: "{{ V4M_KIBANA_LOGADM_PASSWORD }}"
     V4M_KIBANASERVER_PASSWORD: "{{ V4M_KIBANASERVER_PASSWORD }}"
     V4M_LOGCOLLECTOR_PASSWORD: "{{ V4M_LOGCOLLECTOR_PASSWORD }}" 
     V4M_METRICGETTER_PASSWORD: "{{ V4M_METRICGETTER_PASSWORD }}" 
@@ -37,7 +38,7 @@
   when:
     - item.metadata is defined
     - item.metadata.name is defined
-    - item.metadata.name in ("internal-user-admin", "internal-user-kibanaserver", "internal-user-logcollector", "internal-user-metricgetter")
+    - item.metadata.name in ("internal-user-admin", "internal-user-logadm", "internal-user-kibanaserver", "internal-user-logcollector", "internal-user-metricgetter")
   tags:
     - install
 
@@ -45,6 +46,7 @@
   debug:
     msg:
       - "OpenSearch admin  - username: admin,                   password: {{ V4M_KIBANA_PASSWORD }}"
+      - "OpenSearch admin  - username: logadm,                   password: {{ V4M_KIBANA_LOGADM_PASSWORD }}"
       - "OpenSearch Dashboards Server - username: kibanaserver, password: {{ V4M_KIBANASERVER_PASSWORD }}"
       - "Log Collector - username: logcollector,                password: {{ V4M_LOGCOLLECTOR_PASSWORD }}"
       - "Metric Getter - username: metricgetter,                password: {{ V4M_METRICGETTER_PASSWORD }}"
