@@ -46,7 +46,7 @@
   debug:
     msg:
       - "OpenSearch admin  - username: admin,                   password: {{ V4M_KIBANA_PASSWORD }}"
-      - "OpenSearch admin  - username: logadm,                   password: {{ V4M_KIBANA_LOGADM_PASSWORD }}"
+      - "OpenSearch admin  - username: logadm,                  password: {{ V4M_KIBANA_LOGADM_PASSWORD }}"
       - "OpenSearch Dashboards Server - username: kibanaserver, password: {{ V4M_KIBANASERVER_PASSWORD }}"
       - "Log Collector - username: logcollector,                password: {{ V4M_LOGCOLLECTOR_PASSWORD }}"
       - "Metric Getter - username: metricgetter,                password: {{ V4M_METRICGETTER_PASSWORD }}"
