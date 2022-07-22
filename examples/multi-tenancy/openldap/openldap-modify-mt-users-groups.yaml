@@ -1,3 +1,15 @@
+# List of users and groups present in the example
+#    provider
+#      +-- viya_admin
+#      +-- basic_user1
+#    Tenant1 -- replace with your Tenant's name
+#      +-- tenant1_admin
+#      +-- tenant1_user1
+#    Tenant2 -- replace with your Tenant's name
+#      +-- tenant2_admin
+#      +-- tenant2_user1
+# Follow same format for adding additional tenants and users.
+
 ---
 apiVersion: builtin
 kind: PatchTransformer
