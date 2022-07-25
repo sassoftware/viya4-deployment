@@ -2,20 +2,25 @@
 
 SAS Viya supports a multi-tenant environment where multiple tenants can use the applications of a single deployment. Each tenant has access to the licensed software and can manage their own resources but has no visibility into the data and workflows of other tenants. The SAS Viya _IT Operations Guide_ provides detailed information about requirements and onboarding procedures for a multi-tenant deployment of SAS Viya. Access it [here](https://go.documentation.sas.com/doc/en/itopscdc/default/caltenants/titlepage.htm).
 
-## Overview of required steps
+## Requirements for a Multi-Tenant Environment
 
-1. CAS Server Resources Requirement.
+1. CAS Server Resources Requirement. Each tenant requires a dedicated CAS server.
    
    With multi-tenancy enabled in your deployment, the tenants will share most of the nodes with the provider tenant. However, because each tenant has its own CAS server, the total number of nodes required for CAS for the full deployment is greater than that for a non-multi-tenant deployment. The number of additional CAS nodes required per tenant depends on whether the tenant is deploying SMP or MPP CAS. See [CAS Server Resources](https://go.documentation.sas.com/doc/en/itopscdc/v_029/itopssr/n0ampbltwqgkjkn1j3qogztsbbu0.htm#p1phbohacgeubcn0zgt2pdlqu0fu) for more details and [plan workload placement](https://go.documentation.sas.com/doc/en/itopscdc/v_029/dplyml0phy0dkr/p0om33z572ycnan1c1ecfwqntf24.htm#p1ujrdxsdddpdpn1r3xavgwaa0tu) accordingly.
 
-2. Deploy SAS Viya and a provider tenant into a single Kubernetes namespace.
+2. SAS Infrastructure Data Server. 
 
-   The deployment includes shared mid-tier services, such as SAS Logon Manager, and shared applications, such as SAS Studio. 
-   Applications other than SAS Environment Manager are not accessed from the provider tenant, and application users are not added to the provider tenant.
+   SAS Viya requires either an internal PostgreSQL instance, which is the default option that is deployed automatically, or an external instance that you configure and maintain. Both the internal and external PostgreSQL options are supported for multi-tenancy. If you deploy with the default option, SAS configures and maintains the deployment for you. If you instead deploy an external PostgreSQL instance, you are responsible for configuring and maintaining it. For external PostgreSQL, see [Requirements for External PostgreSQL](https://go.documentation.sas.com/doc/en/itopscdc/v_030/itopssr/p05lfgkwib3zxbn1t6nyihexp12n.htm#p1wq8ouke3c6ixn1la636df9oa1u). Also for details see [PostgreSQL Requirements for a Multi-Tenant Deployment](https://go.documentation.sas.com/doc/en/itopscdc/v_030/itopssr/p05lfgkwib3zxbn1t6nyihexp12n.htm#p1r5u2f0yyiql5n11qb61lldcq1j).
 
-3. Onboard one or more tenants, and then onboard one or more instances of SAS Cloud Analytic Services (the CAS server) into each tenant. Each instance of CAS is customized to meet its expected tenant workload.
+3. TLS certificates. See [TLS Requirements](https://go.documentation.sas.com/doc/en/itopscdc/v_030/itopssr/n18dxcft030ccfn1ws2mujww1fav.htm#p0bskqphz9np1ln14ejql9ush824).
 
-   During tenant onboarding, the database schemas that will support authorization and authentication are also installed. Database servers can be internal or external to SAS.
+4. DNS configuration. See [DNS Requirements for Multi-Tenancy](https://go.documentation.sas.com/doc/en/itopscdc/v_030/itopssr/n18dxcft030ccfn1ws2mujww1fav.htm#n0mfva3uqvw78nn14s2deu1um3m1).
+
+5. User accounts in your LDAP or SCIM identity provider. To configure LDAP see the steps in [OpenLDAP Customizations](#openldap-customizations).
+
+   For more information on requirements see [Additional LDAP Requirements for Multi-Tenancy](https://go.documentation.sas.com/doc/en/itopscdc/v_030/itopssr/n18dxcft030ccfn1ws2mujww1fav.htm#p1dr09lqs9w0w7n1iaklneorpy4r) or [Additional SCIM Requirements for Multi-Tenancy](https://go.documentation.sas.com/doc/en/itopscdc/v_030/itopssr/n18dxcft030ccfn1ws2mujww1fav.htm#n0snw477kspeqln1fmoeq3hu6c4m).
+
+Multi-tenancy is not supported in every customer environment. For more information, see [Limitations to Multi-Tenancy Support](https://go.documentation.sas.com/doc/en/itopscdc/v_030/itopssr/n0jq6u1duu7sqnn13cwzecyt475u.htm#p11lcjg42kzdgjn1obgqb9zlaltw).
 
 ## Tags
 
@@ -61,7 +66,7 @@ For example:
             /openldap-modify-mt-users-groups.yaml  <- openldap overlay
  ```
 
-## Example Steps to Configure a Multi-Tenant Deployment
+## Steps to Configure a Multi-Tenant Deployment and Onboard Tenants
 
 Step 1. Have a cluster with sufficient CAS node resources to support the number of tenants being onboarded. Deploy using the ansible-vars.yaml file that you prepared previously. Run the following command to deploy SAS Viya:
 
