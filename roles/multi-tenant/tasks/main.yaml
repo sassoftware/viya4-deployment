@@ -1,18 +1,18 @@
 ---
 - name: multi-tenant role - setup
-  include_tasks: multi_tenant_setup.yaml
+  include_tasks: multi-tenant-setup.yaml
   tags:
     - onboard
     - offboard
 
 - name: multi-tenant role - onboard offboard
-  include_tasks: multi_tenant_onboard_offboard.yaml
+  include_tasks: multi-tenant-onboard-offboard.yaml
   tags:
     - onboard
     - offboard
 
 - name: multi-tenant role - cas
-  include_tasks: onboard_offboard_cas_servers.yaml
+  include_tasks: onboard-offboard-cas-servers.yaml
   tags:
     - cas-onboard
     - offboard

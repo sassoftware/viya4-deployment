@@ -5,6 +5,7 @@
 #    Tenant1 -- replace with your Tenant's name
 #      +-- tenant1_admin
 #      +-- tenant1_user1
+#      +-- tenant1_user2
 #    Tenant2 -- replace with your Tenant's name
 #      +-- tenant2_admin
 #      +-- tenant2_user1
@@ -95,6 +96,21 @@ patch: |-
       homeDirectory: /home/tenant1_user1
       mail: tenant1_user1@example.com
       
+      dn: uid=tenant1_user2,ou=people,ou=tenant1,dc=example,dc=com
+      changetype: add
+      objectClass: inetOrgPerson
+      objectclass: extensibleObject
+      uid: tenant1_user2
+      uidNumber: 4002
+      gidNumber: 4000
+      cn: tenant1_user2
+      sn: Tester
+      distinguishedName: uid=tenant1_user2,ou=people,ou=tenant1,dc=example,dc=com
+      displayName: tenant1 Test User 2
+      userPassword: Password123
+      homeDirectory: /home/tenant1_user2
+      mail: tenant1_user2@example.com
+      
       dn: cn=users,ou=groups,ou=tenant1,dc=example,dc=com
       changetype: add
       objectclass: groupofUniqueNames
@@ -102,6 +118,7 @@ patch: |-
       gidNumber: 4000
       distinguishedName: cn=group1,ou=groups,ou=tenant1,dc=example,dc=com
       uniqueMember:uid=tenant1_user1,ou=people,ou=tenant1,dc=example,dc=com
+      uniqueMember:uid=tenant1_user2,ou=people,ou=tenant1,dc=example,dc=com
       
       dn: cn=admins,ou=groups,ou=tenant1,dc=example,dc=com
       changetype: add

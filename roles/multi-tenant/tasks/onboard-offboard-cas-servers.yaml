@@ -7,7 +7,7 @@
     state: present
   check_mode: yes
   register: out
-  with_items: "{{ SAS_TENANT_IDS.split(',') }}"
+  with_items: "{{ V4MT_TENANT_IDS.split(',') }}"
   tags:
     - cas-onboard
 
@@ -17,7 +17,7 @@
     insertafter: "resources:" 
     line: "  - site-config/cas-{{ item | trim }}-default"
     state: present
-  with_items: "{{ SAS_TENANT_IDS.split(',') }}"
+  with_items: "{{ V4MT_TENANT_IDS.split(',') }}"
   when: out.changed
   tags:
     - cas-onboard
@@ -29,7 +29,7 @@
     line: "  - site-config/cas-{{ item | trim }}-default"
     firstmatch: yes
     state: absent
-  with_items: "{{ SAS_TENANT_IDS.split(',') }}"
+  with_items: "{{ V4MT_TENANT_IDS.split(',') }}"
   tags:
     - offboard
 
@@ -110,7 +110,7 @@
   ansible.builtin.shell: |
     echo {{ item }}
     kubectl --kubeconfig {{ KUBECONFIG }} -n {{ NAMESPACE }} delete casdeployment -l sas.com/tenant={{ item | trim }}
-  with_items: '{{ SAS_TENANT_IDS.split(",") | replace(" ", "") }}'
+  with_items: '{{ V4MT_TENANT_IDS.split(",") | replace(" ", "") }}'
   tags:
     - offboard
 
@@ -119,7 +119,7 @@
   file:
     state: absent
     path: "{{ DEPLOY_DIR }}/site-config/cas-{{ item | trim }}-default"
-  with_items: '{{ SAS_TENANT_IDS.split(",") | replace(" ", "") }}'
+  with_items: '{{ V4MT_TENANT_IDS.split(",") | replace(" ", "") }}'
   when: 
     - V4MT_ENABLE
   tags:

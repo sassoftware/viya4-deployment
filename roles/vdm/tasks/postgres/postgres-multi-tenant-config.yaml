@@ -1,5 +1,5 @@
 - set_fact:
-    max_connections: '{{ ((((SAS_TENANT_IDS.split(",") | length) | int ) + 1 ) * 1128) }}'
+    max_connections: '{{ ((((V4MT_TENANT_IDS.split(",") | length) | int ) + 1 ) * 1128) }}'
   tags:
     - install
     - uninstall

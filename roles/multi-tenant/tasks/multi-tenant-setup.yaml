@@ -38,8 +38,8 @@
     regexp: "{{ item.regexp }}"
     replace: "{{ item.replace }}"
   with_items:
-    - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-onboard-job.yaml', regexp: '- name: SAS_TENANT_IDS\n[^\n]+', replace: '- name: SAS_TENANT_IDS\n            value: "{{ SAS_TENANT_IDS }}"' }
-    - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-offboard-job.yaml', regexp: '- name: SAS_TENANT_IDS\n[^\n]+', replace: '- name: SAS_TENANT_IDS\n            value: "{{ SAS_TENANT_IDS }}"' }
+    - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-onboard-job.yaml', regexp: '- name: SAS_TENANT_IDS\n[^\n]+', replace: '- name: SAS_TENANT_IDS\n            value: "{{ V4MT_TENANT_IDS }}"' }
+    - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-offboard-job.yaml', regexp: '- name: SAS_TENANT_IDS\n[^\n]+', replace: '- name: SAS_TENANT_IDS\n            value: "{{ V4MT_TENANT_IDS }}"' }
   when: V4MT_ENABLE
   tags:
     - onboard
@@ -49,29 +49,29 @@
   replace:
     path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-onboard-job.yaml'
     regexp: '{% raw %}{{ SAS-PROVIDER-PASSWORD }}{% endraw %}'
-    replace: '{{ SAS_PROVIDER_PASSWORD }}'
-  when: SAS_PROVIDER_PASSWORD
+    replace: '{{ V4MT_PROVIDER_PASSWORD }}'
+  when: V4MT_PROVIDER_PASSWORD
   tags:
     - onboard
 
 - name: Create tenant password list
   set_fact:
-    tenant_password_list: "{{ tenant_password_list }} + [ 'SAS_PROVIDER_PASSWORD_{{ item }}' ]"
-  with_items: '{{ SAS_TENANT_IDS.split(",") | replace(" ", "") }}'
+    tenant_password_list: "{{ tenant_password_list }} + [ 'V4MT_PROVIDER_PASSWORD_{{ item }}' ]"
+  with_items: '{{ V4MT_TENANT_IDS.split(",") | replace(" ", "") | upper }}'
   vars:
     tenant_password_list: []
-  when: not SAS_PROVIDER_PASSWORD
+  when: not V4MT_PROVIDER_PASSWORD
   tags:
     - onboard
 
-- name: sas-tenant-job - add sas-provider-password-TENANT-ID
+- name: sas-tenant-job - add sas-provider-password-TENANT-ID if provided
   lineinfile:
     path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-onboard-job.yaml'
     insertafter: "{% raw %}value: {{ SAS-PROVIDER-PASSWORD }}{% endraw %}"
-    line: "          - name: {{ item }}\n            value: {% raw %}{{{% endraw %} {{ item }} {% raw %}}}{% endraw %}"
+    line: "          - name: SAS_PROVIDER_PASSWORD_{{ item.split('_')[-1] }}\n            value: {% raw %}{{{% endraw %} {{ item }} {% raw %}}}{% endraw %}"
   with_items: "{{ tenant_password_list }}"
   when: 
-    - not SAS_PROVIDER_PASSWORD
+    - not V4MT_PROVIDER_PASSWORD
     - ({{ item }} is defined)
   tags:
     - onboard
@@ -82,7 +82,7 @@
     regexp: '{% raw %}{{{% endraw %} {{ item }} {% raw %}}}{% endraw %}'
     replace: '{{ vars[item] }}'
   when: 
-    - not SAS_PROVIDER_PASSWORD
+    - not V4MT_PROVIDER_PASSWORD
     - ({{ item }} is defined)
   with_items: "{{ tenant_password_list }}"
   tags:
@@ -96,7 +96,7 @@
   with_items:
     - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-onboard-job.yaml', line: '          - name: SAS_PROVIDER_PASSWORD'}
     - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-onboard-job.yaml', line: '            value: {% raw %}{{ SAS-PROVIDER-PASSWORD }}{% endraw %}'}
-  when: not SAS_PROVIDER_PASSWORD
+  when: not V4MT_PROVIDER_PASSWORD
   tags:
     - onboard
 
@@ -123,7 +123,7 @@
   file:
     state: absent
     path: "{{ DEPLOY_DIR }}/site-config/cas-{{ item | trim }}-default"
-  with_items: '{{ SAS_TENANT_IDS.split(",") | replace(" ", "") }}'
+  with_items: '{{ V4MT_TENANT_IDS.split(",") | replace(" ", "") }}'
   when: 
     - V4MT_ENABLE
   tags:
@@ -134,7 +134,7 @@
   command:
   #Example cmd: $deploy/sas-bases/examples/cas/create/create-cas-server.sh --tenant acme --output ../site-config/ --workers 2 --backup 1
     cmd: "{{ DEPLOY_DIR }}/site-config/create-cas-server.sh --tenant {{ item }} --output {{ DEPLOY_DIR }}/site-config --workers {{ V4MT_CAS_WORKER_COUNT }} --backup {{ V4MT_CAS_BACKUP }}"
-  with_items: "{{ SAS_TENANT_IDS.split(',') }}"
+  with_items: "{{ V4MT_TENANT_IDS.split(',') }}"
   when: V4MT_ENABLE
   tags:
     - onboard

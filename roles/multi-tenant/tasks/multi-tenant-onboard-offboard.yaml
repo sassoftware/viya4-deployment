@@ -17,13 +17,17 @@
 
 # create the kustomization.yaml for onboard
 - name: copy - kustomization-onboard yaml
-  ansible.builtin.shell: cp -v "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/kustomization-onboard.yaml" "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/kustomization.yaml"
+  copy:
+    src: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/kustomization-onboard.yaml"
+    dest: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/kustomization.yaml"
   tags:
     - onboard
 
 # create the kustomization.yaml for offboard
-- name: copy - kustomization-offboard yaml
-  ansible.builtin.shell: cp -v "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/kustomization-offboard.yaml" "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/kustomization.yaml"
+- name: copy - kustomization-onboard yaml
+  copy:
+    src: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/kustomization-offboard.yaml"
+    dest: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/kustomization.yaml"
   tags:
     - offboard
 
@@ -121,7 +125,7 @@
 # Count number of tenants
 - name: get tenant count
   set_fact:
-    tenant_count: '{{ SAS_TENANT_IDS.split(",") | length }}'
+    tenant_count: '{{ V4MT_TENANT_IDS.split(",") | length }}'
   tags:
     - onboard
     - offboard

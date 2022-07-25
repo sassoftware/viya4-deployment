@@ -11,10 +11,10 @@ V4MT_ENABLE: false
 # Set V4MT_MODE to either schema or database. schemaPerApplicationTenant Mode is enabled by default. 
 V4MT_MODE: "schema"
 
-SAS_TENANT_IDS: null
+V4MT_TENANT_IDS: null
 
 # Optional job paramter
-SAS_PROVIDER_PASSWORD: null
+V4MT_PROVIDER_PASSWORD: null
 
 V4MT_CAS_WORKER_COUNT: 0
 V4MT_CAS_BACKUP: 0
