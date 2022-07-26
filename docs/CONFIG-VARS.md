@@ -169,6 +169,7 @@ When setting V4_CFG_MANAGE_STORAGE to true, A new storage classes will be create
 | V4M_KIBANA_CERT | Path to tls certificate to use for dashboards ingress | string |<V4M_CERT> | false | If both this and V4M_CERT are not set a self-signed cert will be used | cluster-logging |
 | V4M_KIBANA_KEY | Path to tls key to use for dashboards ingress | string | <V4M_KEY> | false | If both this and V4M_KEY are not set a self-signed cert will be used | cluster-logging |
 | V4M_KIBANA_PASSWORD | Dashboards admin password | string | randomly generated | false | If not provided, a random password will be generated and written to the log output | cluster-logging |
+| V4M_KIBANA_LOGADM_PASSWORD | Dashboards logadm user's password | string | randomly generated | false | If not provided and V4M_KIBANA_PASSWORD is not set, a random password will be generated and written to the log output | cluster-logging |
 | V4M_KIBANASERVER_PASSWORD | Dashboards server password | string | randomly generated | false | If not provided, a random password will be generated and written to the log output | cluster-logging |
 | V4M_LOGCOLLECTOR_PASSWORD | Logcollector password | string | randomly generated | false | If not provided, a random password will be generated and written to the log output | cluster-logging |
 | V4M_METRICGETTER_PASSWORD | Metricgetter password | string | randomly generated | false | If not provided, a random password will be generated and written to the log output | cluster-logging |
