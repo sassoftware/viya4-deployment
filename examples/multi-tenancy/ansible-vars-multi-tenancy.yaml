@@ -42,7 +42,7 @@ V4MT_ENABLE: true
 # SAS Viya supports two modes of data isolation (schemaPerApplicationTenant and databasePerTenant) for tenant data.
 # Set V4MT_MODE to either schema or database
 V4MT_MODE: "<desired_mode>"
-V4MT_TENANT_IDS: "<desired_tenant_ids>"
+V4MT_TENANT_IDS: "<desired_tenant_ids>"    #For single tenant ID: "acme" or for multiple tenant IDs: "acme, cyberdyne, intech"
 
 # Optional: Either set password for sasprovider, common to all tenants or set unique passwords for each tenants.
 # V4MT_PROVIDER_PASSWORD: "<desired_password>"

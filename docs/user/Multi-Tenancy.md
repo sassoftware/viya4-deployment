@@ -1,4 +1,4 @@
-# SAS Viya: Multi-Tenancy
+# SAS Viya Application Multi-Tenancy
 
 SAS Viya supports a multi-tenant environment where multiple tenants can use the applications of a single deployment. Each tenant has access to the licensed software and can manage their own resources but has no visibility into the data and workflows of other tenants. The SAS Viya _IT Operations Guide_ provides detailed information about requirements and onboarding procedures for a multi-tenant deployment of SAS Viya. Access it [here](https://go.documentation.sas.com/doc/en/itopscdc/default/caltenants/titlepage.htm).
 
@@ -22,15 +22,23 @@ SAS Viya supports a multi-tenant environment where multiple tenants can use the 
 
 Multi-tenancy is not supported in every customer environment. For more information, see [Limitations to Multi-Tenancy Support](https://go.documentation.sas.com/doc/en/itopscdc/v_030/itopssr/n0jq6u1duu7sqnn13cwzecyt475u.htm#p11lcjg42kzdgjn1obgqb9zlaltw).
 
-## Tags
+## Actions
 
-List of tags introduced in Multi-tenancy. 
+Actions to perform onboard, cas-onboard or offboard tenants. 
 
 | Name | Description |
 | :--- | :--- |
 | onboard | Adds and configures one or more tenants alongside the existing provider tenant |
 | cas-onboard | Onboards a CAS server for an onboarded tenant |
 | offboard | Removes one or more onboarded tenants |
+
+## Tasks
+
+Task introduced to facilitate Multi-tenancy actions.
+
+| Name | Description |
+| :--- | :--- |
+| multi-tenancy | Enables to onboard, cas-onboard and offboard on a multi-tenant deployment |
 
 ## Preparation
 
@@ -88,7 +96,7 @@ Step 3. Onboard tenants. Run the following command:
     -e BASE_DIR=$HOME/deployments \
     -e KUBECONFIG=$HOME/deployments/.kube/config \
     -e CONFIG=$HOME/deployments/dev-cluster/dev-namespace/ansible-vars.yaml \
-    playbooks/playbook.yaml --tags "onboard"
+    playbooks/playbook.yaml --tags "multi-tenancy,onboard"
   ```
 
 Step 4. Add any additional CAS customizations for tenants as needed and then run following command to onboard the CAS servers:
@@ -98,7 +106,7 @@ Step 4. Add any additional CAS customizations for tenants as needed and then run
     -e BASE_DIR=$HOME/deployments \
     -e KUBECONFIG=$HOME/deployments/.kube/config \
     -e CONFIG=$HOME/deployments/dev-cluster/dev-namespace/ansible-vars.yaml \
-    playbooks/playbook.yaml --tags "cas-onboard"
+    playbooks/playbook.yaml --tags "multi-tenancy,cas-onboard"
   ```
 
 **Note:** 
@@ -112,7 +120,7 @@ Step 4. Add any additional CAS customizations for tenants as needed and then run
     -e BASE_DIR=$HOME/deployments \
     -e KUBECONFIG=$HOME/deployments/.kube/config \
     -e CONFIG=$HOME/deployments/dev-cluster/dev-namespace/ansible-vars.yaml \
-    playbooks/playbook.yaml --tags "offboard"
+    playbooks/playbook.yaml --tags "multi-tenancy,offboard"
   ```
 
 ### Example Command to Uninstall SAS Viya with Multi-Tenancy
@@ -123,7 +131,7 @@ Step 4. Add any additional CAS customizations for tenants as needed and then run
     -e KUBECONFIG=$HOME/deployments/.kube/config \
     -e CONFIG=$HOME/deployments/dev-cluster/dev-namespace/ansible-vars.yaml \
     -e JUMP_SVR_PRIVATE_KEY=$HOME/.ssh/id_rsa \
-    playbooks/playbook.yaml --tags "baseline,viya,uninstall"
+    playbooks/playbook.yaml --tags "baseline,viya,multi-tenancy,uninstall"
   ```
 
 ## Log In and Validate an Onboarded Tenant

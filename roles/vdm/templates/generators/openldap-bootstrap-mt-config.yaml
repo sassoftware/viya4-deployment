@@ -1,3 +1,9 @@
+# List of users and groups present
+#    provider
+#      +-- viya_admin
+#      +-- user1
+#      +-- user2
+
 ---
 apiVersion: builtin
 kind: ConfigMapGenerator
@@ -90,4 +96,3 @@ literals:
     ou: people
     objectClass: organizationalUnit
     objectClass: top
-

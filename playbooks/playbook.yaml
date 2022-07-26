@@ -44,14 +44,11 @@
       tags:
         - cluster-monitoring
         - cluster-logging
-    - name: multi-tenant
+    - name: multi-tenancy role
       include_role:
-        name: multi-tenant
+        name: multi-tenancy
       tags:
-        - onboard
-        - cas-onboard
-        - offboard
-        - uninstall
+        - multi-tenancy
     - name: vdm role
       include_role:
         name: vdm
