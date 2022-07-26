@@ -6,21 +6,21 @@ SAS Viya supports a multi-tenant environment where multiple tenants can use the 
 
 1. CAS Server Resources Requirement. Each tenant requires a dedicated CAS server.
    
-   With multi-tenancy enabled in your deployment, the tenants will share most of the nodes with the provider tenant. However, because each tenant has its own CAS server, the total number of nodes required for CAS for the full deployment is greater than that for a non-multi-tenant deployment. The number of additional CAS nodes required per tenant depends on whether the tenant is deploying SMP or MPP CAS. See [CAS Server Resources](https://go.documentation.sas.com/doc/en/itopscdc/v_029/itopssr/n0ampbltwqgkjkn1j3qogztsbbu0.htm#p1phbohacgeubcn0zgt2pdlqu0fu) for more details and [plan workload placement](https://go.documentation.sas.com/doc/en/itopscdc/v_029/dplyml0phy0dkr/p0om33z572ycnan1c1ecfwqntf24.htm#p1ujrdxsdddpdpn1r3xavgwaa0tu) accordingly.
+   With multi-tenancy enabled in your deployment, the tenants will share most of the nodes with the provider tenant. However, because each tenant has its own CAS server, the total number of nodes required for CAS for the full deployment is greater than that for a non-multi-tenant deployment. The number of additional CAS nodes required per tenant depends on whether the tenant is deploying SMP or MPP CAS. See [CAS Server Resources](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/n0ampbltwqgkjkn1j3qogztsbbu0.htm#p1phbohacgeubcn0zgt2pdlqu0fu) for more details and [plan workload placement](https://go.documentation.sas.com/doc/en/itopscdc/default/dplyml0phy0dkr/p0om33z572ycnan1c1ecfwqntf24.htm#p1ujrdxsdddpdpn1r3xavgwaa0tu) accordingly.
 
 2. SAS Infrastructure Data Server. 
 
-   SAS Viya requires either an internal PostgreSQL instance, which is the default option that is deployed automatically, or an external instance that you configure and maintain. Both the internal and external PostgreSQL options are supported for multi-tenancy. If you deploy with the default option, SAS configures and maintains the deployment for you. If you instead deploy an external PostgreSQL instance, you are responsible for configuring and maintaining it. For external PostgreSQL, see [Requirements for External PostgreSQL](https://go.documentation.sas.com/doc/en/itopscdc/v_030/itopssr/p05lfgkwib3zxbn1t6nyihexp12n.htm#p1wq8ouke3c6ixn1la636df9oa1u). Also for details see [PostgreSQL Requirements for a Multi-Tenant Deployment](https://go.documentation.sas.com/doc/en/itopscdc/v_030/itopssr/p05lfgkwib3zxbn1t6nyihexp12n.htm#p1r5u2f0yyiql5n11qb61lldcq1j).
+   SAS Viya requires either an internal PostgreSQL instance, which is the default option that is deployed automatically, or an external instance that you configure and maintain. Both the internal and external PostgreSQL options are supported for multi-tenancy. If you deploy with the default option, SAS configures and maintains the deployment for you. If you instead deploy an external PostgreSQL instance, you are responsible for configuring and maintaining it. For external PostgreSQL, see [Requirements for External PostgreSQL](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/p05lfgkwib3zxbn1t6nyihexp12n.htm#p1wq8ouke3c6ixn1la636df9oa1u). Also for details see [PostgreSQL Requirements for a Multi-Tenant Deployment](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/p05lfgkwib3zxbn1t6nyihexp12n.htm#p1r5u2f0yyiql5n11qb61lldcq1j).
 
-3. TLS certificates. See [TLS Requirements](https://go.documentation.sas.com/doc/en/itopscdc/v_030/itopssr/n18dxcft030ccfn1ws2mujww1fav.htm#p0bskqphz9np1ln14ejql9ush824).
+3. TLS certificates. See [TLS Requirements](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/n18dxcft030ccfn1ws2mujww1fav.htm#p0bskqphz9np1ln14ejql9ush824).
 
-4. DNS configuration. See [DNS Requirements for Multi-Tenancy](https://go.documentation.sas.com/doc/en/itopscdc/v_030/itopssr/n18dxcft030ccfn1ws2mujww1fav.htm#n0mfva3uqvw78nn14s2deu1um3m1).
+4. DNS configuration. See [DNS Requirements for Multi-Tenancy](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/n18dxcft030ccfn1ws2mujww1fav.htm#n0mfva3uqvw78nn14s2deu1um3m1).
 
 5. User accounts in your LDAP or SCIM identity provider. To configure LDAP see the steps in [OpenLDAP Customizations](#openldap-customizations).
 
-   For more information on requirements see [Additional LDAP Requirements for Multi-Tenancy](https://go.documentation.sas.com/doc/en/itopscdc/v_030/itopssr/n18dxcft030ccfn1ws2mujww1fav.htm#p1dr09lqs9w0w7n1iaklneorpy4r) or [Additional SCIM Requirements for Multi-Tenancy](https://go.documentation.sas.com/doc/en/itopscdc/v_030/itopssr/n18dxcft030ccfn1ws2mujww1fav.htm#n0snw477kspeqln1fmoeq3hu6c4m).
+   For more information on requirements see [Additional LDAP Requirements for Multi-Tenancy](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/n18dxcft030ccfn1ws2mujww1fav.htm#p1dr09lqs9w0w7n1iaklneorpy4r) or [Additional SCIM Requirements for Multi-Tenancy](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/n18dxcft030ccfn1ws2mujww1fav.htm#n0snw477kspeqln1fmoeq3hu6c4m).
 
-Multi-tenancy is not supported in every customer environment. For more information, see [Limitations to Multi-Tenancy Support](https://go.documentation.sas.com/doc/en/itopscdc/v_030/itopssr/n0jq6u1duu7sqnn13cwzecyt475u.htm#p11lcjg42kzdgjn1obgqb9zlaltw).
+Multi-tenancy is not supported in every customer environment. For more information, see [Limitations to Multi-Tenancy Support](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/n0jq6u1duu7sqnn13cwzecyt475u.htm#p11lcjg42kzdgjn1obgqb9zlaltw).
 
 ## Actions
 
@@ -56,7 +56,6 @@ If the embedded OpenLDAP server is enabled, it is possible to change the users a
 4. Modify it to match the desired setup. The file contains example user and groups defined for tenant1 and tenant2, make sure to update them to match your tenant IDs.
 
 **Note:** You must configure all the tenant-specific users and groups during the initial deployment as this method can only be used when you are first deploying the OpenLDAP server. Subsequently, you can either delete and redeploy the OpenLDAP server with a new configuration or add users using `ldapadd`.
-For more information about setting up tenant users and groups, see [LDAP Requirements for Multi-Tenancy](https://go.documentation.sas.com/doc/en/itopscdc/v_025/itopssr/p0440nbofn1b5qn1l6j1l6ygm7qg.htm#p1dr09lqs9w0w7n1iaklneorpy4r).
 
 For example:
 
@@ -135,7 +134,7 @@ Step 4. Add any additional CAS customizations for tenants as needed and then run
   ```
 
 ## Log In and Validate an Onboarded Tenant
-After the tenant is onboarded see the steps [here](https://go.documentation.sas.com/doc/en/itopscdc/v_029/caltenants/p0emzq13c0zbhxn1hktsdlmig934.htm#n05u0e3vmr5lcqn1l5xa2rhkdu6x) to login and validate an onboarded tenant.
+After the tenant is onboarded see the steps [here](https://go.documentation.sas.com/doc/en/itopscdc/default/caltenants/p0emzq13c0zbhxn1hktsdlmig934.htm#n05u0e3vmr5lcqn1l5xa2rhkdu6x) to login and validate an onboarded tenant.
 
 ## Troubleshooting
 
