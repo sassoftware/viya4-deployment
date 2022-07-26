@@ -1,0 +1,153 @@
+---
+# Apply the service account role
+- name: apply service account role
+  ansible.builtin.shell: |
+    kubectl --kubeconfig {{ KUBECONFIG }} apply -n {{ NAMESPACE }} -f {{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-job-service-account-role.yaml
+  register: result
+  failed_when:
+    - result["stderr"]|length > 0
+    - '"no matches for kind" not in result.stderr'
+    - '"in version" not in result.stderr'
+    - '"Warning" not in result.stderr'
+    - '"no matching resources found" not in result.stderr'
+    - '"error: no objects passed to apply" not in result.stderr'
+  tags:
+    - onboard
+    - offboard
+
+# create the kustomization.yaml for onboard
+- name: copy - kustomization-onboard yaml
+  copy:
+    src: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/kustomization-onboard.yaml"
+    dest: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/kustomization.yaml"
+  tags:
+    - onboard
+
+# create the kustomization.yaml for offboard
+- name: copy - kustomization-onboard yaml
+  copy:
+    src: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/kustomization-offboard.yaml"
+    dest: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/kustomization.yaml"
+  tags:
+    - offboard
+
+# Update kustomization files if TLS disabled
+- name: tls disabled - onboard
+  replace:
+    path: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/kustomization.yaml"
+    regexp: "- tenant-onboard-job-tls-transformer.yaml"
+    replace: "# - tenant-onboard-job-tls-transformer.yaml"
+  when:
+    V4_CFG_TLS_MODE == "disabled"
+  tags:
+    - onboard
+
+- name: tls disabled - offboard
+  replace:
+    path: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/kustomization.yaml"
+    regexp: "- tenant-offboard-job-tls-transformer.yaml"
+    replace: "# - tenant-offboard-job-tls-transformer.yaml"
+  when:
+    V4_CFG_TLS_MODE == "disabled"
+  tags:
+    - offboard
+
+# Build the manifest file
+- name: kustomize - generate onboard manifest
+  ansible.builtin.shell: |
+    kustomize build {{ DEPLOY_DIR }}/site-config/sas-tenant-job/ --load_restrictor='none' -o {{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-onboard.yaml
+  tags:
+    - onboard
+
+- name: kustomize - generate offboard manifest
+  ansible.builtin.shell: |
+    kustomize build {{ DEPLOY_DIR }}/site-config/sas-tenant-job/ --load_restrictor='none' -o {{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-offboard.yaml
+  tags:
+    - offboard
+
+# Get the full name of the sas-image-pull-secrets in current deployment
+- name: get - sas-image-pull-secrets
+  ansible.builtin.shell: |
+    kubectl --kubeconfig {{ KUBECONFIG }} get secrets -n {{ NAMESPACE }} | grep sas-image-pull-secrets | awk '{print $1}'
+  register: secret_name
+  tags:
+    - onboard
+    - offboard
+
+- name: update onboard manifest
+  replace:
+    path: "{{ item.path }}"
+    regexp: "{{ item.regexp }}"
+    replace: "{{ item.replace }}"
+  with_items:
+    - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-onboard.yaml', regexp: 'sas-image-pull-secrets.*$', replace: '{{ secret_name.stdout }}' }
+    - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-onboard.yaml', regexp: 'cr.sas.com', replace: '{{ V4_CFG_CR_HOST }}' }
+  tags:
+    - onboard
+
+- name: update offboard manifest
+  replace:
+    path: "{{ item.path }}"
+    regexp: "{{ item.regexp }}"
+    replace: "{{ item.replace }}"
+  with_items:
+    - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-offboard.yaml', regexp: 'sas-image-pull-secrets.*$', replace: '{{ secret_name.stdout }}' }
+    - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-offboard.yaml', regexp: 'cr.sas.com', replace: '{{ V4_CFG_CR_HOST }}' }
+  tags:
+    - offboard
+
+# Run Onboard job
+- name: run onboarding command
+  ansible.builtin.shell: |
+    kubectl --kubeconfig {{ KUBECONFIG }} create -n {{ NAMESPACE }} -f {{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-onboard.yaml
+  register: result
+  failed_when:
+    - result["stderr"]|length > 0
+    - '"no matches for kind" not in result.stderr'
+    - '"Warning" not in result.stderr'
+    - '"no matching resources found" not in result.stderr'
+  tags:
+    - onboard
+
+# Run Offboard job
+- name: run offboarding command
+  ansible.builtin.shell: |
+    kubectl --kubeconfig {{ KUBECONFIG }} create -n {{ NAMESPACE }} -f {{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-offboard.yaml
+  register: result
+  failed_when:
+    - result["stderr"]|length > 0
+    - '"no matches for kind" not in result.stderr'
+    - '"Warning" not in result.stderr'
+    - '"no matching resources found" not in result.stderr'
+  tags:
+    - offboard
+
+# Count number of tenants
+- name: get tenant count
+  set_fact:
+    tenant_count: '{{ V4MT_TENANT_IDS.split(",") | length }}'
+  tags:
+    - onboard
+    - offboard
+
+# Wait for the tenant-onboard pod to be in Completed state
+- name: get sas-tenant-onboard job status
+  ansible.builtin.shell: |
+    kubectl --kubeconfig {{ KUBECONFIG }} get pods -n {{ NAMESPACE }} --sort-by=.metadata.creationTimestamp | tac | grep sas-tenant-onboard | awk '{print $3}'
+  register: pod_status
+  until: pod_status.stdout_lines[0] == "Completed"
+  retries: "{{ tenant_count|int }}"
+  delay: 75
+  tags:
+    - onboard
+
+# Wait for the tenant-offboard pod to be in Completed state
+- name: get sas-tenant-offboard job status
+  ansible.builtin.shell: |
+    kubectl --kubeconfig {{ KUBECONFIG }} get pods -n {{ NAMESPACE }} --sort-by=.metadata.creationTimestamp | tac | grep sas-tenant-offboard | awk '{print $3}'
+  register: pod_status
+  until: pod_status.stdout_lines[0] == "Completed"
+  retries: "{{ tenant_count|int }}"
+  delay: 75
+  tags:
+    - offboard

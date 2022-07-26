@@ -1,16 +1,56 @@
 ---
-
-- name: Create namespace
-  community.kubernetes.k8s:
-    api_version: v1
-    kind: Namespace
-    name: "{{ NAMESPACE }}"
-    wait: true
-    kubeconfig: "{{ KUBECONFIG }}"
+# Update Resources in Kustomization.yaml
+- name: check if cas resources present
+  lineinfile:
+    path: "{{ DEPLOY_DIR }}/kustomization.yaml"
+    line: "  - site-config/cas-{{ item | trim }}-default"
+    state: present
+  check_mode: yes
+  register: out
+  with_items: "{{ V4MT_TENANT_IDS.split(',') }}"
   tags:
-    - install
-    - update
+    - cas-onboard
 
+- name: add cas resources
+  lineinfile:
+    path: "{{ DEPLOY_DIR }}/kustomization.yaml"
+    insertafter: "resources:" 
+    line: "  - site-config/cas-{{ item | trim }}-default"
+    state: present
+  with_items: "{{ V4MT_TENANT_IDS.split(',') }}"
+  when: out.changed
+  tags:
+    - cas-onboard
+
+- name: remove cas resources
+  lineinfile:
+    path: "{{ DEPLOY_DIR }}/kustomization.yaml"
+    insertafter: "resources:" 
+    line: "  - site-config/cas-{{ item | trim }}-default"
+    firstmatch: yes
+    state: absent
+  with_items: "{{ V4MT_TENANT_IDS.split(',') }}"
+  tags:
+    - offboard
+
+# Delete the site.yaml file
+- name: delete site.yaml
+  file:
+    state: absent
+    path: "{{ DEPLOY_DIR }}/site.yaml"
+  tags:
+    - cas-onboard
+    - offboard
+
+# Generate new site.yaml
+- name: kustomize - generate new manifest
+  ansible.builtin.shell: |
+    kustomize build {{ DEPLOY_DIR }} -o {{ DEPLOY_DIR }}/site.yaml
+  tags:
+    - cas-onboard
+    - offboard
+
+# Re-deploy after enabling cas servers
 - name: prereqs - cluster-api
   ansible.builtin.shell: |
     kubectl --kubeconfig {{ KUBECONFIG }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=cluster-api" --server-side --force-conflicts -f {{ DEPLOY_DIR }}/site.yaml
@@ -24,8 +64,7 @@
     - '"no matching resources found" not in result.stderr'
     - '"error: no objects passed to apply" not in result.stderr'
   tags:
-    - install
-    - update
+    - cas-onboard
 
 - name: prereqs - cluster-wide
   ansible.builtin.shell: |
@@ -40,8 +79,7 @@
     - '"no matching resources found" not in result.stderr'
     - '"error: no objects passed to apply" not in result.stderr'
   tags:
-    - install
-    - update
+    - cas-onboard
 
 - name: prereqs - cluster-local deploy
   ansible.builtin.command: |
@@ -53,8 +91,7 @@
     - '"in version" not in result.stderr'
     - '"Warning" not in result.stderr'
   tags:
-    - install
-    - update
+    - cas-onboard
 
 - name: manifest - deploy
   ansible.builtin.command: |
@@ -66,41 +103,25 @@
     - '"in version" not in result.stderr'
     - '"Warning" not in result.stderr'
   tags:
-    - install
-    - update
+    - cas-onboard
 
-- name: manifest - deploy update
-  command: |
-    kubectl --kubeconfig {{ KUBECONFIG }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=namespace" -f {{ DEPLOY_DIR }}/site.yaml --prune --prune-whitelist=autoscaling/v2beta2/HorizontalPodAutoscaler
-  register: result
-  failed_when:
-    - result["stderr"]|length > 0
-    - '"no matches for kind" not in result.stderr'
-    - '"in version" not in result.stderr'
-    - '"Warning" not in result.stderr'
+# Offboard CAS servers
+- name: kubectl delete cas servers for tenants
+  ansible.builtin.shell: |
+    echo {{ item }}
+    kubectl --kubeconfig {{ KUBECONFIG }} -n {{ NAMESPACE }} delete casdeployment -l sas.com/tenant={{ item | trim }}
+  with_items: '{{ V4MT_TENANT_IDS.split(",") | replace(" ", "") }}'
   tags:
-    - install
-    - update
+    - offboard
 
-- name: Remove Viya
-  community.kubernetes.k8s:
+# After offboard cas servers delete the cas tenant directories
+- name: delete cas tenant directory
+  file:
     state: absent
-    src:  "{{ DEPLOY_DIR }}/site.yaml"
-    wait: false
-    kubeconfig: "{{ KUBECONFIG }}"
-  register: result
-  ignore_errors: yes
+    path: "{{ DEPLOY_DIR }}/site-config/cas-{{ item | trim }}-default"
+  with_items: '{{ V4MT_TENANT_IDS.split(",") | replace(" ", "") }}'
+  when: 
+    - V4MT_ENABLE
   tags:
-    - uninstall
-
-- name: Delete namespace
-  community.kubernetes.k8s:
-    api_version: v1
-    kind: Namespace
-    name: "{{ NAMESPACE }}"
-    wait: true
-    wait_timeout: 300
-    kubeconfig: "{{ KUBECONFIG }}"
-    state: absent
-  tags:
+    - offboard
     - uninstall

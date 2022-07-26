@@ -91,3 +91,18 @@
     - install
     - uninstall
     - update
+
+- name: custom postgres - max connection
+  include_tasks: postgres-multi-tenant-config.yaml
+  vars:
+    role: "{{ item.key }}"
+    settings: "{{ item.value }}"
+    internal: "{{ internal_postgres }}"
+  with_dict: "{{ V4_CFG_POSTGRES_SERVERS }}"
+  when:
+    - V4MT_ENABLE
+    - internal_postgres
+  tags:
+    - install
+    - uninstall
+    - update

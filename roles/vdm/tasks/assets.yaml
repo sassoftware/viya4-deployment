@@ -1,5 +1,4 @@
 ---
-- 
 - name: Download viya4-orders-cli
   get_url:
     url: "https://github.com/sassoftware/viya4-orders-cli/releases/download/{{ V4_ORDERS_CLI_VERSION }}/viya4-orders-cli_{{ hostvars[inventory_hostname]['ansible_system']|lower }}_amd64"

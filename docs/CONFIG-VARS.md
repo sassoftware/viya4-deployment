@@ -30,6 +30,7 @@ Supported configuration variables are listed in the table below.  All variables 
     - [Ingress-nginx](#ingress-nginx)
     - [Metrics Server](#metrics-server)
     - [NFS Client](#nfs-client)
+  - [Multi-Tenancy](#multi-tenancy)
 
 ## BASE
 
@@ -216,7 +217,7 @@ V4_CFG_POSTGRES_SERVERS:
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| internal | Whether the database is internal or external | bool | | true | All servers must but internal or all must be external | viya |
+| internal | Whether the database is internal or external | bool | | true | All servers must either be internal or all must be external | viya |
 | database | Database name | string | Database server role | false | Default database name for default server is SharedServices | viya |
 | admin | External postgres username | string | | false | Required for external postgres servers | viya |
 | password | External postgres password | string | | false | Required for external postgres servers | viya |
@@ -334,3 +335,15 @@ The nfs-client is currently supported by the newer nfs-subdir-external-provision
 | NFS_CLIENT_CHART_NAME | nfs-subdir-external-provisioner helm chart name | string | nfs-subdir-external-provisioner | false | | baseline |
 | NFS_CLIENT_CHART_VERSION | nfs-subdir-external-provisioner helm chart version | string | 4.0.8| false | | baseline |
 | NFS_CLIENT_CONFIG | nfs-subdir-external-provisioner helm values | string | see [here](../roles/baseline/defaults/main.yml) | false | | baseline |
+
+## Multi-Tenancy
+
+| Name | Description | Type | Default | Required | Notes | Tasks |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
+| V4MT_ENABLE | Enables Multi-tenancy in the SAS Viya deployment | bool | false | false || viya, multi-tenancy |
+| V4MT_MODE | Set V4MT_MODE to either schema or database | string | schema | false | Two modes of data isolation (schemaPerApplicationTenant, databasePerTenant) for tenant data. schemaPerApplicationTenant is default.  | viya, multi-tenancy |
+| V4MT_TENANT_IDS | Maps to SAS_TENANT_IDS. One or more tenant IDs to onboard or offboard | string | | false | Example: Single tenant ID: "acme" or Multiple tenant IDs: "acme, cyberdyne, intech" | viya, multi-tenancy |
+| V4MT_PROVIDER_PASSWORD | Optional: The password that is applied to the tenant administrator on each onboarded tenant | string | | false | Maps to SAS_PROVIDER_PASSWORD. When V4MT_PROVIDER_PASSWORD is specified V4MT_PROVIDER_PASSWORD_{{TENANT-ID}} can not be used. See details [here](https://go.documentation.sas.com/doc/en/itopscdc/default/caltenants/p0emzq13c0zbhxn1hktsdlmig934.htm#p1ghvmezrb3cvxn1h7vg4uguqct6) | multi-tenancy |
+| V4MT_PROVIDER_PASSWORD_{{TENANT-ID}} | Optional: Unique sasprovider password for each tenant being onboarded. {{TENANT-ID}} must be in uppercase | string | | false | Maps to SAS_PROVIDER_PASSWORD_{{TENANT-ID}}. When V4MT_PROVIDER_PASSWORD_{{TENANT-ID}} is specified V4MT_PROVIDER_PASSWORD can not be used. See details [here](https://go.documentation.sas.com/doc/en/itopscdc/default/caltenants/p0emzq13c0zbhxn1hktsdlmig934.htm#p1ghvmezrb3cvxn1h7vg4uguqct6) | multi-tenancy |
+| V4MT_CAS_WORKER_COUNT | The number of CAS worker nodes for tenants. Default is 0 (SMP) | int | 0 | false | | multi-tenancy |
+| V4MT_CAS_BACKUP | Set this flag to 1 to include a CAS backup controller | int | Disabled by default | false | | multi-tenancy |
