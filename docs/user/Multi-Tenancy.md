@@ -112,7 +112,17 @@ Step 4. Add any additional CAS customizations for tenants as needed and then run
 - If there are no additional CAS customizations required for tenants then run 'onboard' and 'cas-onboard' tags together in Step 3 and skip Step 4.
 - The tenant CAS servers might take several mins to stabilize after the cas-onboard command above has completed successfully.
 
-### Example Command to Offboard Tenants
+## Log In and Validate an Onboarded Tenant
+After the onboard and cas-onboard steps are complete see the steps [here](https://go.documentation.sas.com/doc/en/itopscdc/default/caltenants/p0emzq13c0zbhxn1hktsdlmig934.htm#n05u0e3vmr5lcqn1l5xa2rhkdu6x) to login and validate an onboarded tenant.
+
+## Offboard Tenants and CAS Servers
+Best practice before running offboard command:
+
+1. Perform a backup as a best-practice task. For more information, see [Backup and Restore: Perform an Ad Hoc Backup](https://go.documentation.sas.com/doc/en/sasadmincdc/default/calbr/p0cw7yuvwc83znn1igjc16zah2se.htm) in SAS Viya: Backup and Restore.
+
+2. Check for scheduled jobs and suspend all scheduled jobs to prevent them from automatically starting during or after offboarding. The jobs need to remain suspended at least until the offboarding of tenant CAS servers. If your deployment includes SAS Workflow Manager, use the [Workload Orchestrator](https://go.documentation.sas.com/doc/en/sasadmincdc/default/evfun/n15gjfza5o8i6hn1kr8f408c2et3.htm) page in SAS Environment Manager. Otherwise, use the [Jobs](https://go.documentation.sas.com/doc/en/sasadmincdc/v_030/caljobs/n0x3w4aokfoi1wn1q33jg4yrifge.htm) page in SAS Environment Manager.
+
+### Run the following command to Offboard Tenants and Offboard CAS Servers for tenants
 
   ```bash
   ansible-playbook \
@@ -122,7 +132,10 @@ Step 4. Add any additional CAS customizations for tenants as needed and then run
     playbooks/playbook.yaml --tags "multi-tenancy,offboard"
   ```
 
-### Example Command to Uninstall SAS Viya with Multi-Tenancy
+## Uninstall SAS Viya with Multi-Tenancy Enabled Deployment
+Before you run uninstall command make sure to run offboard command for any onboarded tenants.
+
+### Run the following command to uninstall deployment
 
   ```bash
   ansible-playbook \
@@ -130,11 +143,8 @@ Step 4. Add any additional CAS customizations for tenants as needed and then run
     -e KUBECONFIG=$HOME/deployments/.kube/config \
     -e CONFIG=$HOME/deployments/dev-cluster/dev-namespace/ansible-vars.yaml \
     -e JUMP_SVR_PRIVATE_KEY=$HOME/.ssh/id_rsa \
-    playbooks/playbook.yaml --tags "baseline,viya,multi-tenancy,uninstall"
+    playbooks/playbook.yaml --tags "baseline,viya,uninstall"
   ```
-
-## Log In and Validate an Onboarded Tenant
-After the tenant is onboarded see the steps [here](https://go.documentation.sas.com/doc/en/itopscdc/default/caltenants/p0emzq13c0zbhxn1hktsdlmig934.htm#n05u0e3vmr5lcqn1l5xa2rhkdu6x) to login and validate an onboarded tenant.
 
 ## Troubleshooting
 

@@ -47,6 +47,7 @@
     - name: multi-tenancy role
       include_role:
         name: multi-tenancy
+      when: V4MT_ENABLE is defined
       tags:
         - multi-tenancy
     - name: vdm role
