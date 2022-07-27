@@ -121,7 +121,7 @@
         tls.crt: >-
           {{ lookup('file', V4M_ALERTMANAGER_CERT ) |b64encode }}
         tls.key: >-
-          {{ lookup('file', V4M_ALERTMANAGER_CERT ) |b64encode }}
+          {{ lookup('file', V4M_ALERTMANAGER_KEY ) |b64encode }}
       type: kubernetes.io/tls
   when: 
     - V4M_ALERTMANAGER_CERT is not none
@@ -143,6 +143,7 @@
     kind: Namespace
     name: "{{ V4M_MONITORING_NAMESPACE }}"
     wait: true
+    wait_timeout: 600
     kubeconfig: "{{ KUBECONFIG }}"
     state: absent
   tags:

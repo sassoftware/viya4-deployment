@@ -140,6 +140,7 @@
     kind: Namespace
     name: "{{ V4M_LOGGING_NAMESPACE }}"
     wait: true
+    wait_timeout: 600
     kubeconfig: "{{ KUBECONFIG }}"
     state: absent
   tags:
