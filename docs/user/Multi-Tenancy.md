@@ -120,7 +120,7 @@ Best practice before running offboard command:
 
 1. Perform a backup as a best-practice task. For more information, see [Backup and Restore: Perform an Ad Hoc Backup](https://go.documentation.sas.com/doc/en/sasadmincdc/default/calbr/p0cw7yuvwc83znn1igjc16zah2se.htm) in SAS Viya: Backup and Restore.
 
-2. Check for scheduled jobs and suspend all scheduled jobs to prevent them from automatically starting during or after offboarding. The jobs need to remain suspended at least until the offboarding of tenant CAS servers. If your deployment includes SAS Workflow Manager, use the [Workload Orchestrator](https://go.documentation.sas.com/doc/en/sasadmincdc/default/evfun/n15gjfza5o8i6hn1kr8f408c2et3.htm) page in SAS Environment Manager. Otherwise, use the [Jobs](https://go.documentation.sas.com/doc/en/sasadmincdc/v_030/caljobs/n0x3w4aokfoi1wn1q33jg4yrifge.htm) page in SAS Environment Manager.
+2. Check for scheduled jobs and suspend all scheduled jobs to prevent them from automatically starting during or after offboarding. The jobs need to remain suspended at least until the offboarding of tenant CAS servers. If your deployment includes SAS Workflow Manager, use the [Workload Orchestrator](https://go.documentation.sas.com/doc/en/sasadmincdc/default/evfun/n15gjfza5o8i6hn1kr8f408c2et3.htm) page in SAS Environment Manager. Otherwise, use the [Jobs](https://go.documentation.sas.com/doc/en/sasadmincdc/default/caljobs/n0x3w4aokfoi1wn1q33jg4yrifge.htm) page in SAS Environment Manager.
 
 ### Run the following command to Offboard Tenants and Offboard CAS Servers for tenants
 
