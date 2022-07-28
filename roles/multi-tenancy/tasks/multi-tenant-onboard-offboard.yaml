@@ -24,7 +24,7 @@
     - onboard
 
 # create the kustomization.yaml for offboard
-- name: copy - kustomization-onboard yaml
+- name: copy - kustomization-offboard yaml
   copy:
     src: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/kustomization-offboard.yaml"
     dest: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/kustomization.yaml"
@@ -122,10 +122,8 @@
   tags:
     - offboard
 
-# Count number of tenants
-- name: get tenant count
-  set_fact:
-    tenant_count: '{{ V4MT_TENANT_IDS.split(",") | length }}'
+- set_fact:
+    pod_fail_list: ["Error", "Init:Error", "CrashLoopBackOff", "Failed", "Unknown"]
   tags:
     - onboard
     - offboard
@@ -135,9 +133,9 @@
   ansible.builtin.shell: |
     kubectl --kubeconfig {{ KUBECONFIG }} get pods -n {{ NAMESPACE }} --sort-by=.metadata.creationTimestamp | tac | grep sas-tenant-onboard | awk '{print $3}'
   register: pod_status
-  until: pod_status.stdout_lines[0] == "Completed"
-  retries: "{{ tenant_count|int }}"
-  delay: 75
+  until: pod_status.stdout_lines[0] == "Completed" or pod_status.stdout_lines[0] in pod_fail_list
+  retries: "{{ V4MT_ONBOARD_RETRY | int }}"
+  delay: "{{ V4MT_ONBOARD_DELAY | int }}"
   tags:
     - onboard
 
@@ -146,8 +144,16 @@
   ansible.builtin.shell: |
     kubectl --kubeconfig {{ KUBECONFIG }} get pods -n {{ NAMESPACE }} --sort-by=.metadata.creationTimestamp | tac | grep sas-tenant-offboard | awk '{print $3}'
   register: pod_status
-  until: pod_status.stdout_lines[0] == "Completed"
-  retries: "{{ tenant_count|int }}"
-  delay: 75
+  until: pod_status.stdout_lines[0] == "Completed" or pod_status.stdout_lines[0] in pod_fail_list
+  retries: "{{ V4MT_OFFBOARD_RETRY | int }}"
+  delay: "{{ V4MT_OFFBOARD_DELAY | int }}"
   tags:
+    - offboard
+
+- name: check for pods failing status
+  ansible.builtin.fail:
+    msg: '{{ ansible_run_tags | select("match", "[on|off].*") | list | first }} job failed with status {{ pod_status.stdout_lines[0] }}. Please check pod log for more details.'
+  when: pod_status.stdout_lines[0] in pod_fail_list
+  tags:
+    - onboard
     - offboard

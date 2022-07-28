@@ -22,14 +22,33 @@
   tags:
     - cas-onboard
 
+# Remove all the tenant cas resources
 - name: remove cas resources
   lineinfile:
     path: "{{ DEPLOY_DIR }}/kustomization.yaml"
-    insertafter: "resources:" 
-    line: "  - site-config/cas-{{ item | trim }}-default"
-    firstmatch: yes
+    regexp: '.*site-config/cas-{{ item | trim }}-default.*$'
     state: absent
   with_items: "{{ V4MT_TENANT_IDS.split(',') }}"
+  tags:
+    - offboard
+
+# Offboard CAS servers
+- name: kubectl delete cas servers for tenants
+  ansible.builtin.shell: |
+    echo {{ item }}
+    kubectl --kubeconfig {{ KUBECONFIG }} -n {{ NAMESPACE }} delete casdeployment -l sas.com/tenant={{ item | trim }}
+  with_items: '{{ V4MT_TENANT_IDS.split(",") | replace(" ", "") }}'
+  tags:
+    - offboard
+
+# After offboard cas servers delete the cas tenant directories
+- name: delete cas tenant directory
+  file:
+    state: absent
+    path: "{{ DEPLOY_DIR }}/site-config/cas-{{ item | trim }}-default"
+  with_items: '{{ V4MT_TENANT_IDS.split(",") | replace(" ", "") }}'
+  when: 
+    - V4MT_ENABLE
   tags:
     - offboard
 
@@ -104,24 +123,3 @@
     - '"Warning" not in result.stderr'
   tags:
     - cas-onboard
-
-# Offboard CAS servers
-- name: kubectl delete cas servers for tenants
-  ansible.builtin.shell: |
-    echo {{ item }}
-    kubectl --kubeconfig {{ KUBECONFIG }} -n {{ NAMESPACE }} delete casdeployment -l sas.com/tenant={{ item | trim }}
-  with_items: '{{ V4MT_TENANT_IDS.split(",") | replace(" ", "") }}'
-  tags:
-    - offboard
-
-# After offboard cas servers delete the cas tenant directories
-- name: delete cas tenant directory
-  file:
-    state: absent
-    path: "{{ DEPLOY_DIR }}/site-config/cas-{{ item | trim }}-default"
-  with_items: '{{ V4MT_TENANT_IDS.split(",") | replace(" ", "") }}'
-  when: 
-    - V4MT_ENABLE
-  tags:
-    - offboard
-    - uninstall
