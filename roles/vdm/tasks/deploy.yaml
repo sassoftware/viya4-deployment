@@ -48,11 +48,13 @@
     - name: deploy - Deploy SAS Viya
       environment:
         PATH: "{{ ORCHESTRATION_TOOLING_PATH }}"
-        KUBECONFIG: "/kubeconfig.yaml"
+        KUBECONFIG: "{{ KUBECONFIG }}"
       command: |
-        chroot "{{ ORCHESTRATION_TOOLING_DIRECTORY }}" orchestration deploy
+        orchestration deploy
              --namespace "{{ NAMESPACE }}"
              --sas-deployment-cr "{{ item.path | replace(ORCHESTRATION_TOOLING_DIRECTORY, '/') }}"
+      args:
+        chdir: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}"
       with_items:
         - "{{ deployment_manifests.files }}"
   when:
