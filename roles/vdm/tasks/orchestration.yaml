@@ -23,7 +23,7 @@
 
 - name: orchestration - Download orchestration tooling image
   command: |
-    skopeo copy docker://{{ V4_CFG_CR_HOST }}/{{ ORCHESTRATION_IMAGE }} oci-archive:{{ ORCHESTRATION_TOOLING_ARCHIVE }}
+    skopeo copy docker://{{ V4_CFG_CR_HOST }}/{{ ORCHESTRATION_IMAGE }} oci-archive:{{ ORCHESTRATION_TOOLING_ARCHIVE }} --src-creds {{ V4_CFG_CR_USER }}:{{ V4_CFG_CR_PASSWORD }}
   tags:
     - install
     - uninstall
@@ -50,7 +50,7 @@
         chdir: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}"
         cmd: |
           manifest=$(cat index.json | jq -r '.manifests[0].digest' | cut -d: -f2)
-          cat "blobs/sha256/$manifest" | jq -r '.layers[].digest' | cut -d: -f2 | while read layer; do tar -xf "blobs/sha256/$layer"; done;
+          cat "blobs/sha256/$manifest" | jq -r '.layers[].digest' | cut -d: -f2 | while read layer; do tar -xf "blobs/sha256/$layer"; chmod 700 * .; done;
     - name: orchestration - Extract orchestration tooling path
       shell:
         chdir: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}"
@@ -59,41 +59,37 @@
           config=$(cat blobs/sha256/$manifest | jq -r '.config.digest' | cut -d: -f2)
           cat blobs/sha256/$config | jq -r '.config.Env[]' | grep PATH= | cut -d= -f2
       register: orchestration_path
+    - name: orchestration - Prepend path with tooling directory
+      set_fact:
+        path_list: "{{ path_list | default([]) + [''.join((ORCHESTRATION_TOOLING_DIRECTORY,item))] }}"
+      loop: "{{ orchestration_path.stdout.split(':') | list}}"
     - name: orchestration - Set orchestration tooling path
       set_fact:
-        ORCHESTRATION_TOOLING_PATH: "{{ orchestration_path.stdout }}"
+        ORCHESTRATION_TOOLING_PATH: "{{ path_list | join(':') }}"
+    - name: orchestration - tmp debug 2
+      debug:
+        var: ORCHESTRATION_TOOLING_PATH
   tags:
     - install
     - uninstall
     - update
 
-- name: orchestration - Setup orchestration tooling chroot
+- name: orchestration - Setup orchestration tooling directory
   block:
-    - name: orchestration - Make data directory in orchestration chroot
+    - name: orchestration - Make data directory in orchestration tooling directory
       file:
         path: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/data/"
         state: directory
         mode: "0700"
-    - name: orchestration - Copy site-config into orchestration chroot
+    - name: orchestration - Copy site-config into orchestration tooling directory
       synchronize:
         src: "{{ DEPLOY_DIR }}/site-config"
         dest: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/data"
-    - name: orchestration - Copy kustomization.yaml into orchestration chroot
+    - name: orchestration - Copy kustomization.yaml into orchestration tooling directory
       synchronize:
         src: "{{ DEPLOY_DIR }}/kustomization.yaml"
         dest: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/data/kustomization.yaml"
-    - name: orchestration - Copy kubeconfig into orchestration chroot
-      synchronize:
-        src: "{{ KUBECONFIG }}"
-        dest: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/kubeconfig.yaml"
-    - name: orchestration - Copy resolv.conf into orchestration chroot
-      synchronize:
-        src: "/etc/resolv.conf"
-        dest: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/etc/resolv.conf"
-    - name: orchestration - Create /dev/null in orchestration chroot
-      command:
-        cmd: mknod -m 0666 "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/dev/null" c 1 3
-    - name: orchestration - Link certificates into orchestration chroot
+    - name: orchestration - Link certificates into orchestration tooling directory
       file:
         src: "{{ tmpdir.path }}/certs.zip"
         path: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/certs.zip"
@@ -116,13 +112,15 @@
     PATH: "{{ ORCHESTRATION_TOOLING_PATH }}"
   command:
     cmd: |
-      chroot "{{ ORCHESTRATION_TOOLING_DIRECTORY }}" orchestration create sas-deployment-cr
+      orchestration create sas-deployment-cr
         --cadence-name "{{ V4_CFG_CADENCE_NAME }}"
         --cadence-version "{{ V4_CFG_CADENCE_VERSION }}"
         --cadence-release "{{ V4_CFG_CADENCE_RELEASE }}"
         --image-registry "{{ V4_CFG_CR_HOST }}"
         --deployment-data "/certs.zip"
         --user-content "/data"
+  args:
+    chdir: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}"
   tags:
     - install
     - update
@@ -137,14 +135,14 @@
     - install
     - update
 
-- name: orchestration - Write SAS Viya deployment manifests into orchestration tooling chroot
+- name: orchestration - Write SAS Viya deployment manifests into orchestration tooling directory
   block:
-    - name: orchestration - Create manifests directory in orchestration chroot
+    - name: orchestration - Create manifests directory in orchestration tooling directory
       file:
         path: "{{ ORCHESTRATION_TOOLING_INSTALL_MANIFESTS_DIRECTORY }}"
         state: directory
         mode: "0700"
-    - name: orchestration - Split SAS Viya deployment manifest into orchestration chroot
+    - name: orchestration - Split SAS Viya deployment manifest into orchestration directory
       command:
         chdir: "{{ ORCHESTRATION_TOOLING_INSTALL_MANIFESTS_DIRECTORY }}"
         cmd: |
@@ -166,13 +164,15 @@
         PATH: "{{ ORCHESTRATION_TOOLING_PATH }}"
       command:
         cmd: |
-          chroot "{{ ORCHESTRATION_TOOLING_DIRECTORY }}" orchestration create sas-deployment-cr
+          orchestration create sas-deployment-cr
             --cadence-name "{{ V4_CFG_CADENCE_NAME }}"
             --cadence-version "{{ V4_CFG_CADENCE_VERSION }}"
             --cadence-release "{{ V4_CFG_CADENCE_RELEASE }}"
             --image-registry "{{ V4_CFG_CR_HOST }}"
             --deployment-data "/certs.zip"
             --user-content "/data"
+      args:
+        chdir: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}"
       register: sasdeployment
     - name: orchestration - Write SAS Viya uninstall manifest
       copy:
@@ -186,7 +186,7 @@
 
 - name: orchestration - Create SAS Viya uninstall manifest
   block:
-    - name: orchestration - Copy sas-bases into orchestration chroot
+    - name: orchestration - Copy sas-bases into orchestration tooling directory
       synchronize:
         src: "{{ DEPLOY_DIR }}/sas-bases"
         dest: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/data"
@@ -195,7 +195,9 @@
         PATH: "{{ ORCHESTRATION_TOOLING_PATH }}"
       command:
         cmd: |
-          chroot "{{ ORCHESTRATION_TOOLING_DIRECTORY }}" kustomize build /data/
+          kustomize build /data/
+      args:
+        chdir: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}"
       register: uninstall
     - name: orchestration - Write SAS Viya uninstall manifest
       copy:
