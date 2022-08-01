@@ -4,13 +4,13 @@ SAS Viya supports a multi-tenant environment where multiple tenants can use the 
 
 ## Requirements for a Multi-Tenant Environment
 
-1. CAS Server Resources Requirement. Each tenant requires a dedicated CAS server.
-   
-   With multi-tenancy enabled in your deployment, the tenants will share most of the nodes with the provider tenant. However, because each tenant has its own CAS server, the total number of nodes required for CAS for the full deployment is greater than that for a non-multi-tenant deployment. The number of additional CAS nodes required per tenant depends on whether the tenant is deploying SMP or MPP CAS. See [CAS Server Resources](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/n0ampbltwqgkjkn1j3qogztsbbu0.htm#p1phbohacgeubcn0zgt2pdlqu0fu) for more details and [plan workload placement](https://go.documentation.sas.com/doc/en/itopscdc/default/dplyml0phy0dkr/p0om33z572ycnan1c1ecfwqntf24.htm#p1ujrdxsdddpdpn1r3xavgwaa0tu) accordingly.
+1. CAS Server Resources Requirement. Each tenant requires a dedicated CAS server. See [CAS Server Resources](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/n0ampbltwqgkjkn1j3qogztsbbu0.htm#p1phbohacgeubcn0zgt2pdlqu0fu) for more details and [plan workload placement](https://go.documentation.sas.com/doc/en/itopscdc/default/dplyml0phy0dkr/p0om33z572ycnan1c1ecfwqntf24.htm#p1ujrdxsdddpdpn1r3xavgwaa0tu) accordingly.
 
 2. SAS Infrastructure Data Server. 
 
    SAS Viya requires either an internal PostgreSQL instance, which is the default option that is deployed automatically, or an external instance that you configure and maintain. Both the internal and external PostgreSQL options are supported for multi-tenancy. If you deploy with the default option, SAS configures and maintains the deployment for you. If you instead deploy an external PostgreSQL instance, you are responsible for configuring and maintaining it. For external PostgreSQL, see [Requirements for External PostgreSQL](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/p05lfgkwib3zxbn1t6nyihexp12n.htm#p1wq8ouke3c6ixn1la636df9oa1u). Also for details see [PostgreSQL Requirements for a Multi-Tenant Deployment](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/p05lfgkwib3zxbn1t6nyihexp12n.htm#p1r5u2f0yyiql5n11qb61lldcq1j).
+
+   **Note**: You need to size the total number of tenants that will onboarded to calculate max_connections correctly before deployment.
 
 3. TLS certificates. See [TLS Requirements](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/n18dxcft030ccfn1ws2mujww1fav.htm#p0bskqphz9np1ln14ejql9ush824).
 
@@ -44,7 +44,8 @@ Task introduced to facilitate Multi-tenancy actions.
 
 ### Variable Definitions File (ansible-vars.yaml) 
 
-Prepare your `ansible-vars.yaml` file, and set the variables as described in [Multi-Tenancy](../CONFIG-VARS.md#multi-tenancy). The variables V4MT_ENABLE, V4MT_MODE and V4MT_TENANT_IDS must be set before you perform the deployment. Other variables can be set before the deployment or during the onboarding or offboarding procedures. See example [ansible-vars-multi-tenancy.yaml](../../examples/multi-tenancy/ansible-vars-multi-tenancy.yaml)
+Prepare your `ansible-vars.yaml` file, and set the variables as described in [Multi-Tenancy](../CONFIG-VARS.md#multi-tenancy). The variables V4MT_ENABLE, V4MT_MODE and V4MT_TENANT_IDS must be set before you perform the deployment. For the `install` step V4MT_TENANT_IDS must contain all the tenants that you plan to onboard in your deployment. This is required for internal PostgreSQL to calculate the `max_connections` correctly. You can change V4MT_TENANT_IDS later during `onboard/offboard` step to only onboard or offboard tenants that you need.
+Other variables can be set before the deployment or during the onboarding or offboarding procedures. See example [ansible-vars-multi-tenancy.yaml](../../examples/multi-tenancy/ansible-vars-multi-tenancy.yaml)
 
 ### OpenLDAP Customizations
 
