@@ -44,8 +44,11 @@ Task introduced to facilitate Multi-tenancy actions.
 
 ### Variable Definitions File (ansible-vars.yaml) 
 
-Prepare your `ansible-vars.yaml` file, and set the variables as described in [Multi-Tenancy](../CONFIG-VARS.md#multi-tenancy). The variables V4MT_ENABLE, V4MT_MODE and V4MT_TENANT_IDS must be set before you perform the deployment. For the `install` step V4MT_TENANT_IDS must contain all the tenants that you plan to onboard in your deployment. This is required for internal PostgreSQL to calculate the `max_connections` correctly. You can change V4MT_TENANT_IDS later during `onboard/offboard` step to only onboard or offboard specific tenants that you need.
-Other variables can be set before the deployment or during the onboarding or offboarding procedures. See example [ansible-vars-multi-tenancy.yaml](../../examples/multi-tenancy/ansible-vars-multi-tenancy.yaml)
+Prepare your `ansible-vars.yaml` file, and set the variables as described in [Multi-Tenancy](../CONFIG-VARS.md#multi-tenancy). The variables `V4MT_ENABLE`, `V4MT_MODE` must be set before you perform the deployment. Other variables can be set before the deployment or during the onboarding or offboarding procedures. See example [ansible-vars-multi-tenancy.yaml](../../examples/multi-tenancy/ansible-vars-multi-tenancy.yaml)
+
+**Note:** If your deployment has internal PostgreSQL then you must also set the variable `V4MT_TENANT_IDS` before deployment. You must include all the tenants that you plan to onboard in your deployment to calculate the `max_connections` correctly. You can change V4MT_TENANT_IDS post deployment during `onboard/offboard` step to onboard or offboard specific tenants that you need.
+
+For external PostgreSQL, `V4MT_TENANT_IDS` is optional for deployment step. You can set it along with other variable during the onboarding or offboarding procedures.
 
 ### OpenLDAP Customizations
 
