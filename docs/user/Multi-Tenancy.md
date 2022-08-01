@@ -10,7 +10,7 @@ SAS Viya supports a multi-tenant environment where multiple tenants can use the 
 
    SAS Viya requires either an internal PostgreSQL instance, which is the default option that is deployed automatically, or an external instance that you configure and maintain. Both the internal and external PostgreSQL options are supported for multi-tenancy. If you deploy with the default option, SAS configures and maintains the deployment for you. If you instead deploy an external PostgreSQL instance, you are responsible for configuring and maintaining it. For external PostgreSQL, see [Requirements for External PostgreSQL](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/p05lfgkwib3zxbn1t6nyihexp12n.htm#p1wq8ouke3c6ixn1la636df9oa1u). Also for details see [PostgreSQL Requirements for a Multi-Tenant Deployment](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/p05lfgkwib3zxbn1t6nyihexp12n.htm#p1r5u2f0yyiql5n11qb61lldcq1j).
 
-   **Note**: You need to size the total number of tenants that will onboarded to calculate max_connections correctly before deployment. This cannot be changed after deployment, cluster rebuild will be required for any post deploy resource changes.
+   **Note:** You need to size the total number of tenants that will onboarded to calculate max_connections correctly before deployment. This cannot be changed after deployment, cluster rebuild will be required for any post deploy resource changes.
 
 3. TLS certificates. See [TLS Requirements](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/n18dxcft030ccfn1ws2mujww1fav.htm#p0bskqphz9np1ln14ejql9ush824).
 
