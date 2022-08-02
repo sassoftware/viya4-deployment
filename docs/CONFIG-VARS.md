@@ -187,17 +187,11 @@ Viya 4 supports 2 different types of certificate generators, Cert-manager and op
 | V4_CFG_TLS_MODE | Which TLS mode to configure | string | front-door | false | Supported values: [`full-stack`,`front-door`,`disabled.`] When deploying full-stack you must set V4_CFG_TLS_TRUSTED_CA_CERTS to trust external postgres server ca. | all |
 | V4_CFG_TLS_CERT | Path to ingress certificate file | string | | false | If specified, used instead of cert-manager issued certificates | viya |
 | V4_CFG_TLS_KEY | Path to ingress key file | string | | false | Required when V4_CFG_TLS_CERT is specified | viya |
-| V4_CFG_TLS_TRUSTED_CA_CERTS | Path to directory containing only PEM encoded trusted CA certificates files | string | | false | Required when using an external database and TLS is enabled, see the following table for exceptions.  Required when V4_CFG_TLS_CERT is specified. Must include all the CAs in the trust chain for V4_CFG_TLS_CERT. Can be used with or without V4_CFG_TLS_CERT to specify any additionally trusted CAs  | viya |
-
-
-| K8s or Cloud environment | External postgres database in use| TLS Enabled | V4_CFG_TLS_TRUSTED_CA_CERTS value is required |
-| :--- | ---: | ---: |    ---: |
-| AWS (EKS) | true |true | true|
-| Open Source K8s |true | true | true|
-| AWS (EKS) | false |true or false | false|
-| Open Source K8s |false | true or false | false|
-| Azure (AKS) |true or false| true | false|
-| GCP (GKE) |true or false| true | false|
+| V4_CFG_TLS_TRUSTED_CA_CERTS | Path to directory containing only PEM encoded trusted CA certificates files | string | | false | Required when using an external database and TLS is enabled and the deployment target is an IAC created AWS or Open Source Kubernetes cluster. See the [Trusted CA Certs](user/TrustedCACerts.md) for AWS and Open Source Kubernetes cert information. Required when V4_CFG_TLS_CERT is specified. Must include all the CAs in the trust chain for V4_CFG_TLS_CERT. Can be used with or without V4_CFG_TLS_CERT to specify any additionally trusted CAs  | viya |
+| V4_CFG_TLS_DURATION | Certificate time to expiry in hours | int | 17531 | false | See note below | viya |
+| V4_CFG_TLS_ADDITIONAL_SAN_DNS | A space separated list of additional SAN DNS entries that you want added to generated certificates. | string | | false | See note below  | viya |
+| V4_CFG_TLS_ADDITIONAL_SAN_IP | A space separated list of additional SAN IP addresses that you want added to generated certificates. | string | | false | See note below  | viya |
+|
 
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
