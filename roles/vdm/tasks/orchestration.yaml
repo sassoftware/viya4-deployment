@@ -50,7 +50,7 @@
         chdir: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}"
         cmd: |
           manifest=$(cat index.json | jq -r '.manifests[0].digest' | cut -d: -f2)
-          cat "blobs/sha256/$manifest" | jq -r '.layers[].digest' | cut -d: -f2 | while read layer; do tar -xf "blobs/sha256/$layer"; chmod 700 * .; done;
+          cat "blobs/sha256/$manifest" | jq -r '.layers[].digest' | cut -d: -f2 | while read layer; do tar -xf "blobs/sha256/$layer"; chmod -R 700 * .; done;
     - name: orchestration - Extract orchestration tooling path
       shell:
         chdir: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}"
@@ -66,34 +66,6 @@
     - name: orchestration - Set orchestration tooling path
       set_fact:
         ORCHESTRATION_TOOLING_PATH: "{{ path_list | join(':') }}"
-    - name: orchestration - tmp debug 2
-      debug:
-        var: ORCHESTRATION_TOOLING_PATH
-  tags:
-    - install
-    - uninstall
-    - update
-
-- name: orchestration - Setup orchestration tooling directory
-  block:
-    - name: orchestration - Make data directory in orchestration tooling directory
-      file:
-        path: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/data/"
-        state: directory
-        mode: "0700"
-    - name: orchestration - Copy site-config into orchestration tooling directory
-      synchronize:
-        src: "{{ DEPLOY_DIR }}/site-config"
-        dest: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/data"
-    - name: orchestration - Copy kustomization.yaml into orchestration tooling directory
-      synchronize:
-        src: "{{ DEPLOY_DIR }}/kustomization.yaml"
-        dest: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/data/kustomization.yaml"
-    - name: orchestration - Link certificates into orchestration tooling directory
-      file:
-        src: "{{ tmpdir.path }}/certs.zip"
-        path: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/certs.zip"
-        state: "hard"
   tags:
     - install
     - uninstall
@@ -117,8 +89,8 @@
         --cadence-version "{{ V4_CFG_CADENCE_VERSION }}"
         --cadence-release "{{ V4_CFG_CADENCE_RELEASE }}"
         --image-registry "{{ V4_CFG_CR_HOST }}"
-        --deployment-data "/certs.zip"
-        --user-content "/data"
+        --deployment-data "{{ tmpdir.path }}/certs.zip"
+        --user-content "{{ DEPLOY_DIR }}"
   args:
     chdir: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}"
   tags:
@@ -169,8 +141,8 @@
             --cadence-version "{{ V4_CFG_CADENCE_VERSION }}"
             --cadence-release "{{ V4_CFG_CADENCE_RELEASE }}"
             --image-registry "{{ V4_CFG_CR_HOST }}"
-            --deployment-data "/certs.zip"
-            --user-content "/data"
+            --deployment-data "{{ tmpdir.path }}/certs.zip"
+            --user-content "{{ DEPLOY_DIR }}"
       args:
         chdir: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}"
       register: sasdeployment
@@ -186,16 +158,12 @@
 
 - name: orchestration - Create SAS Viya uninstall manifest
   block:
-    - name: orchestration - Copy sas-bases into orchestration tooling directory
-      synchronize:
-        src: "{{ DEPLOY_DIR }}/sas-bases"
-        dest: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/data"
     - name: orchestration - Generate SAS Viya uninstall manifest
       environment:
         PATH: "{{ ORCHESTRATION_TOOLING_PATH }}"
       command:
         cmd: |
-          kustomize build /data/
+          kustomize build {{ DEPLOY_DIR }}
       args:
         chdir: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}"
       register: uninstall
