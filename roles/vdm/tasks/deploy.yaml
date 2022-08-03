@@ -45,14 +45,19 @@
         kubeconfig: "{{ KUBECONFIG }}"
       with_items:
         - "{{ manifests.files | difference(deployment_manifests.files) }}"
+    - name: orchestration - Create orchestration tooling work directory
+      file:
+        path: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/work"
+        state: directory
     - name: deploy - Deploy SAS Viya
       environment:
         PATH: "{{ ORCHESTRATION_TOOLING_PATH }}"
         KUBECONFIG: "{{ KUBECONFIG }}"
+        WORK_DIRECTORY : "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/work"
       command: |
         orchestration deploy
              --namespace "{{ NAMESPACE }}"
-             --sas-deployment-cr "{{ item.path | replace(ORCHESTRATION_TOOLING_DIRECTORY, '/') }}"
+             --sas-deployment-cr "{{ item.path }}"
       args:
         chdir: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}"
       with_items:
