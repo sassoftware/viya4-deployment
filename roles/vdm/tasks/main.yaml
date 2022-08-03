@@ -45,6 +45,7 @@
       - { resources: "base", priority: 0 }
       - { resources: "overlays/update-checker" }
       - { configurations: "overlays/required/kustomizeconfig.yaml", priority: 51 }
+      - { transformers: "overlays/startup/ordered-startup-transformer.yaml", priority: 59 }
       - { transformers: "overlays/required/transformers.yaml", priority: 60 }
       - { generators: "sas-license.yaml", vdm: true }
       - { generators: "sas-shared-config.yaml", vdm: true }
