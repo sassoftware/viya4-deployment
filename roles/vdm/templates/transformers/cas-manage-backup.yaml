@@ -13,6 +13,10 @@ patch: |-
 target:
   group: viya.sas.com
   kind: CASDeployment
+  # Uncomment this to apply to all CAS servers:
   name: .*
+  # Uncomment this to apply to one particular named CAS server:
+  #name: { NAME-OF-SERVER }
+  # Uncomment this to apply to the default CAS server:
+  labelSelector: "sas.com/cas-server-default"
   version: v1alpha1
-

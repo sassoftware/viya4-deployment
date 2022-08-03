@@ -1,3 +1,5 @@
+# This block of code is for specifying the number of workers in an MPP
+# deployment. Do not use this block for SMP deployments. The default value is 2
 ---
 apiVersion: builtin
 kind: PatchTransformer
@@ -11,5 +13,10 @@ patch: |-
 target:
   group: viya.sas.com
   kind: CASDeployment
+  # Uncomment this to apply to all CAS servers:
   name: .*
+  # Uncomment this to apply to one particular named CAS server:
+  #name: { NAME-OF-SERVER }
+  # Uncomment this to apply to the default CAS server:
+  labelSelector: "sas.com/cas-server-default"
   version: v1alpha1
