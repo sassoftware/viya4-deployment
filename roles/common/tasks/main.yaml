@@ -227,6 +227,14 @@
     - cas-onboard
     - offboard
 
+- name: Set deployment_tooling
+  set_fact:
+    deployment_tooling: "{{ lookup('env', 'VIYA4_DEPLOYMENT_TOOLING') |default('ansible', -1) }}"
+  tags:
+    - install
+    - uninstall
+    - update
+
 - name: migrations
   include_tasks: 
     file: migrations.yaml

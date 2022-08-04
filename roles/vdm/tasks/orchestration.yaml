@@ -11,6 +11,24 @@
     - uninstall
     - update
 
+- name: orchestration - collect uuid for running docker container
+  block:
+    - name: orchestration - Get the current uid/gid
+      shell:
+        cmd: |
+          uid_gid_pair="$(id -u):$(id -g)"
+          echo $uid_gid_pair
+      register: out
+    - name: orchestration - Set the current uid/gid
+      set_fact:
+        UID_GID: "{{ out.stdout }}"
+  when:
+    - deployment_tooling == "ansible"
+  tags:
+    - install
+    - uninstall
+    - update
+
 - name: orchestration - Find orchestration tooling image
   set_fact:
     ORCHESTRATION_IMAGE: "{{ (lookup('file', '{{ DEPLOY_DIR }}/sas-bases/.orchestration/images.yaml')|from_yaml).spec.images['sas-orchestration'] }}"
@@ -24,6 +42,8 @@
 - name: orchestration - Download orchestration tooling image
   command: |
     skopeo copy docker://{{ V4_CFG_CR_HOST }}/{{ ORCHESTRATION_IMAGE }} oci-archive:{{ ORCHESTRATION_TOOLING_ARCHIVE }} --src-creds {{ V4_CFG_CR_USER }}:{{ V4_CFG_CR_PASSWORD }}
+  when:
+    - deployment_tooling == "docker"
   tags:
     - install
     - uninstall
@@ -66,6 +86,32 @@
     - name: orchestration - Set orchestration tooling path
       set_fact:
         ORCHESTRATION_TOOLING_PATH: "{{ path_list | join(':') }}"
+  when:
+    - deployment_tooling == "docker"
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: orchestration - log into V4_CFG_CR_HOST
+  community.docker.docker_login:
+    registry_url: "{{ V4_CFG_CR_HOST }}"
+    username: "{{ V4_CFG_CR_USER }}"
+    password: "{{ V4_CFG_CR_PASSWORD }}"
+  when:
+    - deployment_tooling == "ansible"
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: orchestration - orchestration tooling image
+  community.docker.docker_image:
+    name: "{{ V4_CFG_CR_HOST }}/{{ ORCHESTRATION_IMAGE }}"
+    source: pull
+    force_source: yes
+  when:
+    - deployment_tooling == "ansible"
   tags:
     - install
     - uninstall
@@ -79,30 +125,82 @@
     - uninstall
     - update
 
-- name: orchestration - Generate SAS Viya deployment manifest
-  environment:
-    PATH: "{{ ORCHESTRATION_TOOLING_PATH }}"
-  command:
-    cmd: |
-      orchestration create sas-deployment-cr
-        --cadence-name "{{ V4_CFG_CADENCE_NAME }}"
-        --cadence-version "{{ V4_CFG_CADENCE_VERSION }}"
-        --cadence-release "{{ V4_CFG_CADENCE_RELEASE }}"
-        --image-registry "{{ V4_CFG_CR_HOST }}"
-        --deployment-data "{{ tmpdir.path }}/certs.zip"
-        --user-content "{{ DEPLOY_DIR }}"
-  args:
-    chdir: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}"
+- name: orchestration - Setup orchestration tooling directory
+  block:
+    - name: orchestration - Make data directory in orchestration tooling directory
+      file:
+        path: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/data/"
+        state: directory
+        mode: "0700"
+    - name: orchestration - Copy site-config into orchestration tooling directory
+      copy:
+        src: "{{ DEPLOY_DIR }}/site-config"
+        dest: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/data"
+    - name: orchestration - Copy kustomization.yaml into orchestration tooling directory
+      copy:
+        src: "{{ DEPLOY_DIR }}/kustomization.yaml"
+        dest: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/data/kustomization.yaml"
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: orchestration - SAS Viya deployment manifest - Docker
+  block:
+    - name: orchestration - Generate SAS Viya deployment manifest
+      environment:
+        PATH: "{{ ORCHESTRATION_TOOLING_PATH }}"
+      command:
+        cmd: |
+          orchestration create sas-deployment-cr
+            --cadence-name "{{ V4_CFG_CADENCE_NAME }}"
+            --cadence-version "{{ V4_CFG_CADENCE_VERSION }}"
+            --cadence-release "{{ V4_CFG_CADENCE_RELEASE }}"
+            --image-registry "{{ V4_CFG_CR_HOST }}"
+            --deployment-data "{{ tmpdir.path }}/certs.zip"
+            --user-content "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/data/"
+      args:
+        chdir: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}"
+      register: sasdeployment
+    - name: orchestration - Write SAS Viya deployment manifest
+      copy:
+        content: "{{ sasdeployment.stdout }}"
+        dest: "{{ ORCHESTRATION_TOOLING_INSTALL_MANIFEST }}"
+        mode: "0660"
+  when:
+    - deployment_tooling == "docker"
   tags:
     - install
     - update
-  register: sasdeployment
 
-- name: orchestration - Write SAS Viya deployment manifest
-  copy:
-    content: "{{ sasdeployment.stdout }}"
-    dest: "{{ ORCHESTRATION_TOOLING_INSTALL_MANIFEST }}"
-    mode: "0660"
+- name: orchestration - SAS Viya deployment manifest - Ansible
+  block:
+    - name: orchestration - Generate SAS Viya deployment manifest
+      community.docker.docker_container:
+        name: orchestration
+        image: "{{ V4_CFG_CR_HOST }}/{{ ORCHESTRATION_IMAGE }}"
+        volumes:
+          - "{{ tmpdir.path }}:/tmp"
+          - "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/data:/data"
+        detach: false
+        cleanup: yes
+        user: "{{ UID_GID }}"
+        command:
+          - "create sas-deployment-cr"
+          - "--cadence-name {{ V4_CFG_CADENCE_NAME }}"
+          - "--cadence-version {{ V4_CFG_CADENCE_VERSION }}"
+          - "--cadence-release {{ V4_CFG_CADENCE_RELEASE }}"
+          - "--image-registry {{ V4_CFG_CR_HOST }}"
+          - "--deployment-data /tmp/certs.zip"
+          - "--user-content /data"
+      register: sasdeployment
+    - name: orchestration - Write SAS Viya deployment manifest
+      copy:
+        content: "{{ sasdeployment.container.Output }}"
+        dest: "{{ ORCHESTRATION_TOOLING_INSTALL_MANIFEST }}"
+        mode: "0660"
+  when:
+    - deployment_tooling == "ansible"
   tags:
     - install
     - update
@@ -129,7 +227,7 @@
     - install
     - update
 
-- name: orchestration - Create SAS Viya uninstall manifest
+- name: orchestration - Create SAS Viya uninstall manifest DEPLOYMENT_OPERATOR_ENABLED - Docker
   block:
     - name: orchestration - Generate SAS Viya uninstall manifest
       environment:
@@ -142,7 +240,7 @@
             --cadence-release "{{ V4_CFG_CADENCE_RELEASE }}"
             --image-registry "{{ V4_CFG_CR_HOST }}"
             --deployment-data "{{ tmpdir.path }}/certs.zip"
-            --user-content "{{ DEPLOY_DIR }}"
+            --user-content "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/data/"
       args:
         chdir: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}"
       register: sasdeployment
@@ -153,10 +251,43 @@
         mode: "0660"
   when:
     - DEPLOYMENT_OPERATOR_ENABLED
+    - deployment_tooling == "docker"
   tags:
     - uninstall
 
-- name: orchestration - Create SAS Viya uninstall manifest
+- name: orchestration - Create SAS Viya uninstall manifest DEPLOYMENT_OPERATOR_ENABLED - Ansible
+  block:
+    - name: orchestration - Generate SAS Viya uninstall manifest
+      community.docker.docker_container:
+        name: orchestration
+        image: "{{ V4_CFG_CR_HOST }}/{{ ORCHESTRATION_IMAGE }}"
+        volumes:
+          - "{{ tmpdir.path }}:/tmp"
+          - "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/data:/data"
+        detach: false
+        cleanup: yes
+        user: "{{ UID_GID }}"
+        command:
+          - "create sas-deployment-cr"
+          - "--cadence-name {{ V4_CFG_CADENCE_NAME }}"
+          - "--cadence-version {{ V4_CFG_CADENCE_VERSION }}"
+          - "--cadence-release {{ V4_CFG_CADENCE_RELEASE }}"
+          - "--image-registry {{ V4_CFG_CR_HOST }}"
+          - "--deployment-data /tmp/certs.zip"
+          - "--user-content /data"
+      register: sasdeployment
+    - name: orchestration - Write SAS Viya uninstall manifest
+      copy:
+        content: "{{ sasdeployment.container.Output }}"
+        dest: "{{ ORCHESTRATION_TOOLING_UNINSTALL_MANIFEST }}"
+        mode: "0660"
+  when:
+    - DEPLOYMENT_OPERATOR_ENABLED
+    - deployment_tooling == "ansible"
+  tags:
+    - uninstall
+
+- name: orchestration - Create SAS Viya uninstall manifest - Docker
   block:
     - name: orchestration - Generate SAS Viya uninstall manifest
       environment:
@@ -174,5 +305,33 @@
         mode: "0660"
   when:
     - DEPLOYMENT_OPERATOR_ENABLED == False
+    - deployment_tooling == "docker"
+  tags:
+    - uninstall
+
+- name: orchestration - Create SAS Viya uninstall manifest - Ansible
+  block:
+    - name: orchestration - Generate SAS Viya uninstall manifest
+      community.docker.docker_container:
+        name: orchestration
+        image: "{{ V4_CFG_CR_HOST }}/{{ ORCHESTRATION_IMAGE }}"
+        volumes:
+          - "{{ DEPLOY_DIR }}:/data"
+        detach: false
+        cleanup: yes
+        user: "{{ UID_GID }}"
+        entrypoint:
+          - "kustomize"
+        command:
+          - "build /data"
+      register: uninstall
+    - name: orchestration - Write SAS Viya uninstall manifest
+      copy:
+        content: "{{ uninstall.container.Output }}"
+        dest: "{{ ORCHESTRATION_TOOLING_UNINSTALL_MANIFEST }}"
+        mode: "0660"
+  when:
+    - DEPLOYMENT_OPERATOR_ENABLED == False
+    - deployment_tooling == "ansible"
   tags:
     - uninstall
