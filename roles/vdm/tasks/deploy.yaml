@@ -53,7 +53,7 @@
       environment:
         PATH: "{{ ORCHESTRATION_TOOLING_PATH }}"
         KUBECONFIG: "{{ KUBECONFIG }}"
-        WORK_DIRECTORY : "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/work"
+        WORK_DIRECTORY: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/work"
       command: |
         orchestration deploy
              --namespace "{{ NAMESPACE }}"
@@ -76,7 +76,7 @@
         user: "{{ UID_GID }}"
         env:
           KUBECONFIG: "/config/kubeconfig"
-          WORK_DIRECTORY : "/tmp/work"
+          WORK_DIRECTORY: "/tmp/work"
         command:
           - "deploy"
           - "--namespace {{ NAMESPACE }}"
@@ -105,7 +105,7 @@
 - name: deploy - Remove Viya
   community.kubernetes.k8s:
     state: absent
-    src:  "{{ ORCHESTRATION_TOOLING_UNINSTALL_MANIFEST }}"
+    src: "{{ ORCHESTRATION_TOOLING_UNINSTALL_MANIFEST }}"
     wait: true
     kubeconfig: "{{ KUBECONFIG }}"
   ignore_errors: yes
