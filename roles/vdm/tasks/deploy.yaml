@@ -21,6 +21,7 @@
   tags:
     - install
     - update
+    - cas-onboard
 
 - name: deploy - Apply SAS Viya deployment
   block:
@@ -90,6 +91,8 @@
   tags:
     - install
     - update
+    - cas-onboard
+
 - name: deploy - Uninstall postgresclusters
   environment:
     KUBECONFIG: "{{ KUBECONFIG }}"

@@ -10,6 +10,8 @@
     - install
     - uninstall
     - update
+    - cas-onboard
+    - offboard
 
 - name: orchestration - collect uuid for running docker container
   block:
@@ -28,6 +30,8 @@
     - install
     - uninstall
     - update
+    - cas-onboard
+    - offboard
 
 - name: orchestration - Find orchestration tooling image
   set_fact:
@@ -38,6 +42,8 @@
     - install
     - uninstall
     - update
+    - cas-onboard
+    - offboard
 
 - name: orchestration - Download orchestration tooling image
   command: |
@@ -48,6 +54,8 @@
     - install
     - uninstall
     - update
+    - cas-onboard
+    - offboard
 
 - name: orchestration - Create orchestration tooling directory
   file:
@@ -58,6 +66,8 @@
     - install
     - uninstall
     - update
+    - cas-onboard
+    - offboard
 
 - name: orchestration - Extract orchestration tooling
   block:
@@ -92,6 +102,8 @@
     - install
     - uninstall
     - update
+    - cas-onboard
+    - offboard
 
 - name: orchestration - log into V4_CFG_CR_HOST
   community.docker.docker_login:
@@ -104,6 +116,8 @@
     - install
     - uninstall
     - update
+    - cas-onboard
+    - offboard
 
 - name: orchestration - orchestration tooling image
   community.docker.docker_image:
@@ -116,6 +130,8 @@
     - install
     - uninstall
     - update
+    - cas-onboard
+    - offboard
 
 - name: orchestration - Find order cadence release
   set_fact:
@@ -124,6 +140,8 @@
     - install
     - uninstall
     - update
+    - cas-onboard
+    - offboard
 
 - name: orchestration - Setup orchestration tooling directory
   block:
@@ -144,6 +162,8 @@
     - install
     - uninstall
     - update
+    - cas-onboard
+    - offboard
 
 - name: orchestration - SAS Viya deployment manifest - Docker
   block:
@@ -172,6 +192,7 @@
   tags:
     - install
     - update
+    - cas-onboard
 
 - name: orchestration - SAS Viya deployment manifest - Ansible
   block:
@@ -204,6 +225,7 @@
   tags:
     - install
     - update
+    - cas-onboard
 
 - name: orchestration - Write SAS Viya deployment manifests into orchestration tooling directory
   block:
@@ -226,6 +248,7 @@
   tags:
     - install
     - update
+    - cas-onboard
 
 - name: orchestration - Create SAS Viya uninstall manifest DEPLOYMENT_OPERATOR_ENABLED - Docker
   block:
@@ -254,6 +277,7 @@
     - deployment_tooling == "docker"
   tags:
     - uninstall
+    - offboard
 
 - name: orchestration - Create SAS Viya uninstall manifest DEPLOYMENT_OPERATOR_ENABLED - Ansible
   block:
@@ -286,6 +310,7 @@
     - deployment_tooling == "ansible"
   tags:
     - uninstall
+    - offboard
 
 - name: orchestration - Create SAS Viya uninstall manifest - Docker
   block:
@@ -308,6 +333,7 @@
     - deployment_tooling == "docker"
   tags:
     - uninstall
+    - offboard
 
 - name: orchestration - Create SAS Viya uninstall manifest - Ansible
   block:
@@ -335,3 +361,4 @@
     - deployment_tooling == "ansible"
   tags:
     - uninstall
+    - offboard

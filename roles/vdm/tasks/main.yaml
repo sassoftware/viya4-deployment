@@ -195,6 +195,7 @@
     - install
     - uninstall
     - update
+    - multi-tenancy
 
 - name: Include Deploy
   include_tasks: deploy.yaml
@@ -204,3 +205,4 @@
     - install
     - uninstall
     - update
+    - multi-tenancy
