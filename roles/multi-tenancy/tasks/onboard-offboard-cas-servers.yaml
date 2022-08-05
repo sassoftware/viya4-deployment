@@ -56,70 +56,75 @@
 - name: delete site.yaml
   file:
     state: absent
-    path: "{{ DEPLOY_DIR }}/site.yaml"
+    path: "{{ DEPLOY_DIR }}/SASDeployment.yaml"
   tags:
     - cas-onboard
     - offboard
+
+
+# TODO REMOVE AFTER TESTING ############################################################################################
 
 # Generate new site.yaml
-- name: kustomize - generate new manifest
-  ansible.builtin.shell: |
-    kustomize build {{ DEPLOY_DIR }} -o {{ DEPLOY_DIR }}/site.yaml
-  tags:
-    - cas-onboard
-    - offboard
+#- name: kustomize - generate new manifest
+#  ansible.builtin.shell: |
+#    kustomize build {{ DEPLOY_DIR }} -o {{ DEPLOY_DIR }}/site.yaml
+#  tags:
+#    - cas-onboard
+#    - offboard
+#
+## Re-deploy after enabling cas servers
+#- name: prereqs - cluster-api
+#  ansible.builtin.shell: |
+#    kubectl --kubeconfig {{ KUBECONFIG }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=cluster-api" --server-side --force-conflicts -f {{ DEPLOY_DIR }}/site.yaml
+#    kubectl --kubeconfig {{ KUBECONFIG }} wait --for condition=established --timeout=60s -l "sas.com/admin=cluster-api" crd
+#  register: result
+#  failed_when:
+#    - result["stderr"]|length > 0
+#    - '"no matches for kind" not in result.stderr'
+#    - '"in version" not in result.stderr'
+#    - '"Warning" not in result.stderr'
+#    - '"no matching resources found" not in result.stderr'
+#    - '"error: no objects passed to apply" not in result.stderr'
+#  tags:
+#    - cas-onboard
+#
+#- name: prereqs - cluster-wide
+#  ansible.builtin.shell: |
+#    kubectl --kubeconfig {{ KUBECONFIG }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=cluster-wide" -f {{ DEPLOY_DIR }}/site.yaml
+#    kubectl --kubeconfig {{ KUBECONFIG }} wait --for condition=established --timeout=60s -l "sas.com/admin=cluster-wide" crd
+#  register: result
+#  failed_when:
+#    - result["stderr"]|length > 0
+#    - '"no matches for kind" not in result.stderr'
+#    - '"in version" not in result.stderr'
+#    - '"Warning" not in result.stderr'
+#    - '"no matching resources found" not in result.stderr'
+#    - '"error: no objects passed to apply" not in result.stderr'
+#  tags:
+#    - cas-onboard
+#
+#- name: prereqs - cluster-local deploy
+#  ansible.builtin.command: |
+#    kubectl --kubeconfig {{ KUBECONFIG }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=cluster-local" -f {{ DEPLOY_DIR }}/site.yaml --prune
+#  register: result
+#  failed_when:
+#    - result["stderr"]|length > 0
+#    - '"no matches for kind" not in result.stderr'
+#    - '"in version" not in result.stderr'
+#    - '"Warning" not in result.stderr'
+#  tags:
+#    - cas-onboard
+#
+#- name: manifest - deploy
+#  ansible.builtin.command: |
+#    kubectl --kubeconfig {{ KUBECONFIG }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=namespace" -f {{ DEPLOY_DIR }}/site.yaml --prune
+#  register: result
+#  failed_when:
+#    - result["stderr"]|length > 0
+#    - '"no matches for kind" not in result.stderr'
+#    - '"in version" not in result.stderr'
+#    - '"Warning" not in result.stderr'
+#  tags:
+#    - cas-onboard
 
-# Re-deploy after enabling cas servers
-- name: prereqs - cluster-api
-  ansible.builtin.shell: |
-    kubectl --kubeconfig {{ KUBECONFIG }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=cluster-api" --server-side --force-conflicts -f {{ DEPLOY_DIR }}/site.yaml
-    kubectl --kubeconfig {{ KUBECONFIG }} wait --for condition=established --timeout=60s -l "sas.com/admin=cluster-api" crd
-  register: result
-  failed_when:
-    - result["stderr"]|length > 0
-    - '"no matches for kind" not in result.stderr'
-    - '"in version" not in result.stderr'
-    - '"Warning" not in result.stderr'
-    - '"no matching resources found" not in result.stderr'
-    - '"error: no objects passed to apply" not in result.stderr'
-  tags:
-    - cas-onboard
-
-- name: prereqs - cluster-wide
-  ansible.builtin.shell: |
-    kubectl --kubeconfig {{ KUBECONFIG }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=cluster-wide" -f {{ DEPLOY_DIR }}/site.yaml
-    kubectl --kubeconfig {{ KUBECONFIG }} wait --for condition=established --timeout=60s -l "sas.com/admin=cluster-wide" crd
-  register: result
-  failed_when:
-    - result["stderr"]|length > 0
-    - '"no matches for kind" not in result.stderr'
-    - '"in version" not in result.stderr'
-    - '"Warning" not in result.stderr'
-    - '"no matching resources found" not in result.stderr'
-    - '"error: no objects passed to apply" not in result.stderr'
-  tags:
-    - cas-onboard
-
-- name: prereqs - cluster-local deploy
-  ansible.builtin.command: |
-    kubectl --kubeconfig {{ KUBECONFIG }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=cluster-local" -f {{ DEPLOY_DIR }}/site.yaml --prune
-  register: result
-  failed_when:
-    - result["stderr"]|length > 0
-    - '"no matches for kind" not in result.stderr'
-    - '"in version" not in result.stderr'
-    - '"Warning" not in result.stderr'
-  tags:
-    - cas-onboard
-
-- name: manifest - deploy
-  ansible.builtin.command: |
-    kubectl --kubeconfig {{ KUBECONFIG }} apply -n {{ NAMESPACE }} --selector="sas.com/admin=namespace" -f {{ DEPLOY_DIR }}/site.yaml --prune
-  register: result
-  failed_when:
-    - result["stderr"]|length > 0
-    - '"no matches for kind" not in result.stderr'
-    - '"in version" not in result.stderr'
-    - '"Warning" not in result.stderr'
-  tags:
-    - cas-onboard
+########################################################################################################################

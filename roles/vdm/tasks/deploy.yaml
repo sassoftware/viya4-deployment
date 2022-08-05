@@ -21,6 +21,7 @@
   tags:
     - install
     - update
+    - cas-onboard
 
 - name: deploy - Apply SAS Viya deployment
   block:
@@ -90,6 +91,7 @@
   tags:
     - install
     - update
+    - cas-onboard
 
 - name: deploy - Remove Viya
   community.kubernetes.k8s:
