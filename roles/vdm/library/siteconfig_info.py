@@ -62,7 +62,7 @@ class siteConfig(object):
           yamlblock = yaml.safe_load(file)
           # handle components
           if "kind" in yamlblock and yamlblock['kind'] == "Component":
-            self.add_overlays(Overlay.COMPONENT, kustomizefilefullpath)
+            self.add_overlays(Overlay.COMPONENT, folder)
           else:
             # handle kustomization
             self.add_overlays(Overlay.RESOURCE, folder)
