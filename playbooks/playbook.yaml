@@ -11,6 +11,12 @@
         - onboard
         - cas-onboard
         - offboard
+    - name: common role - task validations
+      include_role:
+        name: common
+        tasks_from: task-validations
+      tags:
+        - always
     - name: common role
       include_role: 
         name: common
