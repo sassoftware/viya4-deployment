@@ -193,6 +193,7 @@
     - install
     - update
     - cas-onboard
+    - offboard
 
 - name: orchestration - SAS Viya deployment manifest - Ansible
   block:
@@ -226,6 +227,7 @@
     - install
     - update
     - cas-onboard
+    - offboard
 
 - name: orchestration - Write SAS Viya deployment manifests into orchestration tooling directory
   block:
@@ -249,6 +251,7 @@
     - install
     - update
     - cas-onboard
+    - offboard
 
 - name: orchestration - Create SAS Viya uninstall manifest DEPLOYMENT_OPERATOR_ENABLED - Docker
   block:
@@ -333,7 +336,6 @@
     - deployment_tooling == "docker"
   tags:
     - uninstall
-    - offboard
 
 - name: orchestration - Create SAS Viya uninstall manifest - Ansible
   block:
@@ -361,4 +363,3 @@
     - deployment_tooling == "ansible"
   tags:
     - uninstall
-    - offboard

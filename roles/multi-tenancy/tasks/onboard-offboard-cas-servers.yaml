@@ -52,8 +52,8 @@
   tags:
     - offboard
 
-# Delete the site.yaml file
-- name: delete site.yaml
+# Delete the SASDeployment.yaml file
+- name: delete SASDeployment.yaml
   file:
     state: absent
     path: "{{ DEPLOY_DIR }}/SASDeployment.yaml"
