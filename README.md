@@ -27,6 +27,9 @@ This project contains Ansible code that creates a baseline cluster in an existin
 - SAS Viya Multi-tenant Deployment
   - Multi-tenancy in SAS Viya creates and manages separate and secure cloud-computing units. See [SAS Viya Multi-Tenancy Documentation](./docs/user/Multi-Tenancy.md) for details.
 
+- SAS Viya SingleStore Deployment
+  - SingleStore is a cloud-native database designed for data-intensive applications. See [SAS Viya SingleStore Documentation](./docs/user/SingleStore.md) for details.
+
 ## Prerequisites
 
 Use of these tools requires operational knowledge of the following technologies: 
