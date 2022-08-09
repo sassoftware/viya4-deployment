@@ -37,6 +37,7 @@
       - vdm
       - multi-tenant
       - sas-tenant-job
+      - operator-deploy
   register: user_customizations
   tags:
     - install
