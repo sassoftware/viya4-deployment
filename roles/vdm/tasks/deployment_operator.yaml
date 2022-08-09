@@ -1,0 +1,135 @@
+---
+# TODO Detect DO
+
+- name: orchestration - Set facts
+  set_fact:
+    OPERATOR_DEPLOY_DIRECTORY: "{{ DEPLOY_DIR }}/site-config/operator-deploy"
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: deployment-operator - create operator-deploy directory
+  file:
+    state: directory
+    dest: "{{ OPERATOR_DEPLOY_DIRECTORY }}"
+    mode: "0770"
+  tags:
+    - install
+
+# TODO TASK CLUSTER_WIDE HAS TO BE DEDICATED NAMESPACE + ERROR HANDLING
+
+
+# Retrieve the Files Required by the SAS Viya Deployment Operator FROM DOC
+
+- name: deployment-operator - create namespace
+  community.kubernetes.k8s:
+    api_version: v1
+    kind: Namespace
+    name: "{{ V4_DEPLOYMENT_OPERATOR_NAMESPACE }}"
+    wait: true
+    kubeconfig: "{{ KUBECONFIG }}"
+  when:
+    - V4_DEPLOYMENT_OPERATOR_SCOPE|lower == "cluster"
+  tags:
+    - install
+    - update
+
+- name: deployment-operator - copy example files
+  ansible.builtin.copy
+    src: "{{ DEPLOY_DIR }}/sas-bases/examples/deployment-operator/deploy/"
+    dest: "{{ OPERATOR_DEPLOY_DIRECTORY }}"
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: deployment-operator - make transformer.yaml writable
+  ansible.builtin.file:
+    path: "{{ OPERATOR_DEPLOY_DIRECTORY }}/site-config/transformer.yaml"
+    state: file
+    mode: "0660"
+  tags:
+    - install
+    - uninstall
+    - update
+
+# Edit the transformer.yaml File FROM DOC
+
+
+- name: deployment-operator - update namespace in transformer.yaml
+  replace:
+    path: "{{ OPERATOR_DEPLOY_DIRECTORY }}/site-config/transformer.yaml"
+    regexp: "{% raw %}{{ NAME-OF-NAMESPACE }}{% endraw %}"
+    replace: "{{ V4_DEPLOYMENT_OPERATOR_NAMESPACE }}"
+  when: V4MT_PROVIDER_PASSWORD
+  tags:
+    - install
+    - uninstall
+    - update
+
+
+- name: deployment-operator - update cluster role binding in transformer.yaml
+  replace:
+    path: "{{ OPERATOR_DEPLOY_DIRECTORY }}/site-config/transformer.yaml"
+    regexp: "{% raw %}{{ NAME-OF-CLUSTERROLEBINDING }}{% endraw %}"
+    replace: "{{ V4_DEPLOYMENT_OPERATOR_CRB }}"
+  tags:
+    - install
+    - uninstall
+    - update
+
+# Edit the kustomization.yaml for Cluster-Wide Mode FROM DOC
+
+- name: deployment-operator - update to cluster-wide mode in kustomization.yaml
+  replace:
+    path: "{{ OPERATOR_DEPLOY_DIRECTORY }}/kustomization.yaml"
+    regexp: '#- site-config/cluster-wide-transformer.yaml.*$'
+    replace: '- site-config/cluster-wide-transformer.yaml'
+  when:
+    - V4_DEPLOYMENT_OPERATOR_SCOPE|lower == "cluster"
+  tags:
+    - install
+    - uninstall
+    - update
+
+
+# Configure the Mirror Registry FROM DOC
+
+
+- name: deployment-operator - copy mirror example
+  copy:
+    src: "{{ DEPLOY_DIR }}/sas-bases/examples/mirror/mirror.yaml"
+    dest: "{{ OPERATOR_DEPLOY_DIRECTORY }}/site-config/mirror.yaml"
+    mode: "0660"
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: deployment-operator - update mirror example
+  replace:
+    path: "{{ OPERATOR_DEPLOY_DIRECTORY }}/site-config/mirror.yaml"
+    regexp: "{% raw %}{{ MIRROR-HOST }}{% endraw %}"
+    replace: "{{ V4_CFG_CR_HOST }}"
+  tags:
+    - install
+    - uninstall
+    - update
+
+# TODO
+
+- name: deployment-operator - update kustomization.yaml with mirror
+  replace:
+    path: "{{ OPERATOR_DEPLOY_DIRECTORY }}/site-config/mirror.yaml"
+    regexp: "{% raw %}{{ MIRROR-HOST }}{% endraw %}"
+    replace: "{{ V4_CFG_CR_HOST }}"
+  tags:
+    - install
+    - uninstall
+    - update
+
+# TODO Image Pull Secrets
+# TODO Deploy DO
+# TODO Uninstall
+
