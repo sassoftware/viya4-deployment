@@ -36,13 +36,13 @@ If deploying via the [Dockerfile](../../Dockerfile) overriding a dependency vers
 | kubectl_version | the version of kubectl to use |
 | aws_cli_version | the version of AWS CLI to use |
 | gcp_cli_version | the version of Google cloud SDK to use |
-| HELM_VERSION | the version helm to use |
+| helm_version | the version helm to use |
 
 As described in the [Docker Installation](./DockerUsage.md) section add additional build arguments to your docker build command:
 
 ```bash
 docker build \
-	--build-arg kustomize_version=3.7.0 \
+	--build-arg kubectl_version=1.23.9 \
 	-t viya4-deployment .
 ```
 
