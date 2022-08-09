@@ -1,0 +1,46 @@
+# This block of code is for adding resource requests and resource limits for
+# memory and CPU.
+# For memory, the AMOUNT-OF-RAM value is a numeric value followed by the units,
+# such as 32Gi for 32 gigabytes. In Kubernetes, the units for gigabytes is Gi and
+# is case-sensitive.
+# For CPUs, the NUMBER-OF-CORES is either a whole number, representing that
+# number of cores, or a number followed by m, indicating that number of milli-cores.
+# For example, 8 specifes to allocate 8 cores, and 500m specifies to allocate
+# 500 milli-cores or .5 cores.
+# By default, the requests for memory and CPU are set to 2Gi and 250m cores in
+# overlays. The memory and CPU resource requests are customized in this patch
+# by setting a replacement value. The CPU and memory resource limits do not
+# have default values. The resource limits are customized in this patch with
+# an add operation to set the values.
+---
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: cas-manage-cpu-and-memory
+patch: |-
+  - op: add
+    path: /spec/controllerTemplate/spec/containers/0/resources/limits
+    value:
+      memory: {{ AMOUNT-OF-RAM }}
+  - op: replace
+    path: /spec/controllerTemplate/spec/containers/0/resources/requests/memory
+    value:
+      {{ AMOUNT-OF-RAM }}
+  - op: add
+    path: /spec/controllerTemplate/spec/containers/0/resources/limits/cpu
+    value:
+      {{ NUMBER-OF-CORES }}
+  - op: replace
+    path: /spec/controllerTemplate/spec/containers/0/resources/requests/cpu
+    value:
+      {{ NUMBER-OF-CORES }}
+target:
+  group: viya.sas.com
+  kind: CASDeployment
+  # Uncomment this to apply to all CAS servers:
+  # name: .*
+  # This applies to one particular named CAS server:
+  name: {{ NAME-OF-SERVER }}
+  # Uncomment this to apply to the default CAS server:
+  #labelSelector: "sas.com/cas-server-default"
+  version: v1alpha1

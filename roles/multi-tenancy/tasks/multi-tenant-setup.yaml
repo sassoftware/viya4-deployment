@@ -124,17 +124,30 @@
     state: absent
     path: "{{ DEPLOY_DIR }}/site-config/cas-{{ item | trim }}-default"
   with_items: '{{ V4MT_TENANT_IDS.split(",") | replace(" ", "") }}'
-  when: 
-    - V4MT_ENABLE
+  when: V4MT_ENABLE
   tags:
     - onboard
 
-# Preparing cas servers
-- name: Create cas servers for tenants
+# Make tenant CAS customizations if user has specified values
+- name: tenant cas customizations
+  include_tasks: tenant-cas-customizations.yaml
+  vars:
+    tenant: "{{ item.key }}"
+    settings: "{{ item.value }}"
+  with_dict: "{{ V4MT_TENANT_CAS_CUSTOMIZATION }}"
+  when: 
+    - V4MT_ENABLE
+    - V4MT_TENANT_CAS_CUSTOMIZATION is defined
+  tags:
+    - onboard
+
+# If customizations not specified, create cas servers with default values
+- name: create cas servers for tenants
   command:
-  #Example cmd: $deploy/sas-bases/examples/cas/create/create-cas-server.sh --tenant acme --output ../site-config/ --workers 2 --backup 1
-    cmd: "{{ DEPLOY_DIR }}/site-config/create-cas-server.sh --tenant {{ item }} --output {{ DEPLOY_DIR }}/site-config --workers {{ V4MT_CAS_WORKER_COUNT }} --backup {{ V4MT_CAS_BACKUP }}"
-  with_items: "{{ V4MT_TENANT_IDS.split(',') }}"
-  when: V4MT_ENABLE
+  # Example cmd: $deploy/sas-bases/examples/cas/create/create-cas-server.sh --tenant acme --output ../site-config/ --workers 2 --backup 1
+    cmd: "{{ DEPLOY_DIR }}/site-config/create-cas-server.sh --tenant {{ item | lower }} \
+         --output {{ DEPLOY_DIR }}/site-config --workers 0 --backup 0"
+  with_items: '{{ V4MT_TENANT_IDS.split(",") | replace(" ", "") | upper }}'
+  when: (V4MT_TENANT_CAS_CUSTOMIZATION is undefined) or (item not in V4MT_TENANT_CAS_CUSTOMIZATION.keys())
   tags:
     - onboard

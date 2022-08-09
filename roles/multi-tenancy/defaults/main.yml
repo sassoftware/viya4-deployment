@@ -4,7 +4,7 @@
 V4_CFG_CR_URL: https://cr.sas.com
 V4_CFG_CR_HOST: '{{ V4_CFG_CR_URL | regex_replace("^https?:\/\/(.*)\/?", "\1") }}'
 
-# Multi-tenant is enabled within Viya4 deployment
+# Multi-tenant is enabled within SAS Viya deployment
 V4MT_ENABLE: false
 
 # SAS Viya supports two modes of data isolation (schemaPerApplicationTenant and databasePerTenant) for tenant data. 
@@ -13,13 +13,13 @@ V4MT_MODE: "schema"
 
 V4MT_TENANT_IDS: null
 
-# Optional job paramter
+# Optional job parameter
 V4MT_PROVIDER_PASSWORD: null
 
-V4MT_CAS_WORKER_COUNT: 0
-V4MT_CAS_BACKUP: 0
+# CAS customization values
+V4MT_TENANT_CAS_CUSTOMIZATION: null
 
-# Setting values for retry and delay to 60 seconds
+# Setting values for retry and delay to 60 seconds for Onboard and Offboard job
 V4MT_ONBOARD_RETRY: 60
 V4MT_ONBOARD_DELAY: 60
 V4MT_OFFBOARD_RETRY: 60
