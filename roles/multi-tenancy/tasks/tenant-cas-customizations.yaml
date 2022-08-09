@@ -5,10 +5,9 @@
       command:
         cmd: "{{ DEPLOY_DIR }}/site-config/create-cas-server.sh --tenant {{ tenant | lower }} \
              --output {{ DEPLOY_DIR }}/site-config \
-             --workers {{ settings.V4MT_CFG_CAS_WORKER_COUNT if (settings.V4MT_CFG_CAS_WORKER_COUNT is defined and \
-                                                                 settings.V4MT_CFG_CAS_WORKER_COUNT is not none ) else 0 }} \
-             --backup {{ 1 if (settings.V4MT_CFG_CAS_ENABLE_BACKUP_CONTROLLER is defined) and \
-                              (settings.V4MT_CFG_CAS_ENABLE_BACKUP_CONTROLLER|bool == True) else 0 }}"
+             --workers {{ settings.worker_count if (settings.worker_count is defined and settings.worker_count is not none ) else 0 }} \
+             --backup {{ 1 if (settings.backup_controller_enabled is defined) and \
+                              (settings.backup_controller_enabled|bool == True) else 0 }}"
 
     - name: tenant cas user-defined resources - copy template
       copy:
@@ -16,8 +15,8 @@
         dest: "{{ DEPLOY_DIR }}/site-config/cas-{{ tenant | lower }}-default/cas-manage-cpu-and-memory.yaml"
         mode: "0660"
       when:
-        - settings.V4MT_CFG_CAS_RAM is defined and settings.V4MT_CFG_CAS_RAM is not none
-        - settings.V4MT_CFG_CAS_CORES is defined and settings.V4MT_CFG_CAS_CORES is not none
+        - settings.memory is defined and settings.memory is not none
+        - settings.cpus is defined and settings.cpus is not none
 
     - name: tenant cas user-defined resources - update
       replace:
@@ -25,14 +24,14 @@
         regexp: "{{ outer_item.regexp }}"
         replace: "{{ outer_item.replace }}"
       with_items:
-        - { regexp: '{% raw %}{{ AMOUNT-OF-RAM }}{% endraw %}', replace: '{{ settings.V4MT_CFG_CAS_RAM }}' }
-        - { regexp: '{% raw %}{{ NUMBER-OF-CORES }}{% endraw %}', replace: '{{ settings.V4MT_CFG_CAS_CORES }}' }
+        - { regexp: '{% raw %}{{ AMOUNT-OF-RAM }}{% endraw %}', replace: '{{ settings.memory }}' }
+        - { regexp: '{% raw %}{{ NUMBER-OF-CORES }}{% endraw %}', replace: '{{ settings.cpus }}' }
         - { regexp: '{% raw %}{{ NAME-OF-SERVER }}{% endraw %}', replace: '{{ tenant | lower }}-default' }
       loop_control:
         loop_var: outer_item
       when:
-        - settings.V4MT_CFG_CAS_RAM is defined and settings.V4MT_CFG_CAS_RAM is not none
-        - settings.V4MT_CFG_CAS_CORES is defined and settings.V4MT_CFG_CAS_CORES is not none
+        - settings.memory is defined and settings.memory is not none
+        - settings.cpus is defined and settings.cpus is not none
 
     - name: add tenant cas user-defined resources to kustomization
       lineinfile:
@@ -40,8 +39,8 @@
         insertafter: "transformers:"
         line: "- cas-manage-cpu-and-memory.yaml"
       when:
-        - settings.V4MT_CFG_CAS_RAM is defined and settings.V4MT_CFG_CAS_RAM is not none
-        - settings.V4MT_CFG_CAS_CORES is defined and settings.V4MT_CFG_CAS_CORES is not none
+        - settings.memory is defined and settings.memory is not none
+        - settings.cpus is defined and settings.cpus is not none
 
     - name: tenant cas - external services copy template
       copy:
@@ -49,8 +48,8 @@
         dest: "{{ DEPLOY_DIR }}/site-config/cas-{{ tenant | lower }}-default"
         mode: "0660"
       when:
-        - settings.V4MT_CFG_CAS_ENABLE_LOADBALANCER is defined and settings.V4MT_CFG_CAS_ENABLE_LOADBALANCER is true
-        - settings.V4MT_LOADBALANCER_SOURCE_RANGES is defined and settings.V4MT_LOADBALANCER_SOURCE_RANGES is not none
+        - settings.loadbalancer_enabled is defined and settings.loadbalancer_enabled is true
+        - settings.loadbalancer_source_ranges is defined and settings.loadbalancer_source_ranges is not none
 
     - name: tenant cas external services - update
       replace:
@@ -58,13 +57,13 @@
         regexp: "{{ outer_item.regexp }}"
         replace: "{{ outer_item.replace }}"
       with_items:
-        - { regexp: '{% raw %}{{ LOADBALANCER_SOURCE_RANGES }}{% endraw %}', replace: '{{ settings.V4MT_LOADBALANCER_SOURCE_RANGES }}' }
+        - { regexp: '{% raw %}{{ LOADBALANCER_SOURCE_RANGES }}{% endraw %}', replace: '{{ settings.loadbalancer_source_ranges }}' }
         - { regexp: '{% raw %}{{ NAME-OF-SERVER }}{% endraw %}', replace: '{{ tenant | lower }}-default' }
       loop_control:
         loop_var: outer_item
       when:
-        - settings.V4MT_CFG_CAS_ENABLE_LOADBALANCER is defined and settings.V4MT_CFG_CAS_ENABLE_LOADBALANCER is true
-        - settings.V4MT_LOADBALANCER_SOURCE_RANGES is defined and settings.V4MT_LOADBALANCER_SOURCE_RANGES is not none
+        - settings.loadbalancer_enabled is defined and settings.loadbalancer_enabled is true
+        - settings.loadbalancer_source_ranges is defined and settings.loadbalancer_source_ranges is not none
 
     - name: add tenant cas external services to kustomization
       lineinfile:
@@ -72,8 +71,8 @@
         insertafter: "transformers:"
         line: "- cas-enable-external-services.yaml"
       when:
-        - settings.V4MT_CFG_CAS_ENABLE_LOADBALANCER is defined and settings.V4MT_CFG_CAS_ENABLE_LOADBALANCER is true
-        - settings.V4MT_LOADBALANCER_SOURCE_RANGES is defined and settings.V4MT_LOADBALANCER_SOURCE_RANGES is not none
+        - settings.loadbalancer_enabled is defined and settings.loadbalancer_enabled is true
+        - settings.loadbalancer_source_ranges is defined and settings.loadbalancer_source_ranges is not none
 
   when: V4MT_TENANT_IDS is search(tenant | lower)
   tags:

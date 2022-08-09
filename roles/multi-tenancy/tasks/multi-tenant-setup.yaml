@@ -145,9 +145,9 @@
 - name: create cas servers for tenants
   command:
   # Example cmd: $deploy/sas-bases/examples/cas/create/create-cas-server.sh --tenant acme --output ../site-config/ --workers 2 --backup 1
-    cmd: "{{ DEPLOY_DIR }}/site-config/create-cas-server.sh --tenant {{ item | lower }} \
+    cmd: "{{ DEPLOY_DIR }}/site-config/create-cas-server.sh --tenant {{ item }} \
          --output {{ DEPLOY_DIR }}/site-config --workers 0 --backup 0"
-  with_items: '{{ V4MT_TENANT_IDS.split(",") | replace(" ", "") | upper }}'
+  with_items: '{{ V4MT_TENANT_IDS.split(",") | replace(" ", "") | lower }}'
   when: (V4MT_TENANT_CAS_CUSTOMIZATION is undefined) or (item not in V4MT_TENANT_CAS_CUSTOMIZATION.keys())
   tags:
     - onboard

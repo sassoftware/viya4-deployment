@@ -363,27 +363,27 @@ Below is the list of parameters each element can contain.
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4MT_CFG_CAS_RAM | Amount of ram to allocate to per CAS node | string | | false | Numeric value followed by the units, such as 32Gi for 32 gigabytes. In Kubernetes, the units for gigabytes is Gi. | multi-tenancy |
-| V4MT_CFG_CAS_CORES | Amount of cpu cores to allocate per CAS node | string | | false | Either a whole number, representing that number of cores, or a number followed by m, indicating that number of milli-cores. | multi-tenancy |
-| V4MT_CFG_CAS_ENABLE_LOADBALANCER | Setup LB to access CAS binary ports | bool | false | false | | multi-tenancy |
-| V4MT_LOADBALANCER_SOURCE_RANGES | Loadbalancer source ranges specific to the tenant | list | false | false | | multi-tenancy |
-| V4MT_CFG_CAS_WORKER_COUNT | The number of CAS worker nodes for tenants. Default is 0 (SMP) | int | 0 | false | | multi-tenancy |
-| V4MT_CFG_CAS_ENABLE_BACKUP_CONTROLLER | Enable backup cas controller | bool | false | false | | multi-tenancy |
+| memory | Amount of ram to allocate to per CAS node | string | | false | Numeric value followed by the units, such as 32Gi for 32 gigabytes. In Kubernetes, the units for gigabytes is Gi. | multi-tenancy |
+| cpus | Amount of cpu cores to allocate per CAS node | string | | false | Either a whole number, representing that number of cores, or a number followed by m, indicating that number of milli-cores. | multi-tenancy |
+| loadbalancer_enabled | Setup LB to access CAS binary ports | bool | false | false | | multi-tenancy |
+| loadbalancer_source_ranges | Loadbalancer source ranges specific to the tenant | list | false | false | | multi-tenancy |
+| worker_count | The number of CAS worker nodes for tenants. Default is 0 (SMP) | int | 0 | false | | multi-tenancy |
+| backup_controller_enabled | Enable backup cas controller | bool | false | false | | multi-tenancy |
 
 Example:
 
 ```bash
 V4MT_TENANT_CAS_CUSTOMIZATION:
-  ACME:
-    V4MT_CFG_CAS_RAM: 3Gi
-    V4MT_CFG_CAS_CORES: 300m
-    V4MT_CFG_CAS_ENABLE_LOADBALANCER: true
-    V4MT_LOADBALANCER_SOURCE_RANGES: ['0.0.0.0/0']
-    V4MT_CFG_CAS_WORKER_COUNT: 0
-    V4MT_CFG_CAS_ENABLE_BACKUP_CONTROLLER: false
-  INTECH:
-    V4MT_CFG_CAS_RAM: 2Gi
-    V4MT_CFG_CAS_CORES: 250m
-    V4MT_CFG_CAS_WORKER_COUNT: 1
-    V4MT_CFG_CAS_ENABLE_BACKUP_CONTROLLER: true
+  acme:
+    memory: 3Gi
+    cpus: 300m
+    loadbalancer_enabled: true
+    loadbalancer_source_ranges: ['0.0.0.0/0']
+    worker_count: 0
+    backup_controller_enabled: false
+  intech:
+    memory: 2Gi
+    cpus: 250m
+    worker_count: 1
+    backup_controller_enabled: true
 ```
