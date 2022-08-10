@@ -88,3 +88,9 @@ V4MT_MODE: "schema"
 V4MT_TENANT_IDS: null
 
 internal_postgres: false
+
+# Deployment Operator
+V4_DEPLOYMENT_OPERATOR_ENABLED: false
+V4_DEPLOYMENT_OPERATOR_SCOPE: namespace
+V4_DEPLOYMENT_OPERATOR_NAMESPACE: sasoperator
+V4_DEPLOYMENT_OPERATOR_CRB: sasoperator
