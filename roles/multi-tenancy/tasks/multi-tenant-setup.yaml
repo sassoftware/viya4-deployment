@@ -132,7 +132,7 @@
 - name: tenant cas customizations
   include_tasks: tenant-cas-customizations.yaml
   vars:
-    tenant: "{{ item.key }}"
+    tenant: "{{ item.key | lower }}"
     settings: "{{ item.value }}"
   with_dict: "{{ V4MT_TENANT_CAS_CUSTOMIZATION }}"
   when: 
@@ -148,6 +148,6 @@
     cmd: "{{ DEPLOY_DIR }}/site-config/create-cas-server.sh --tenant {{ item }} \
          --output {{ DEPLOY_DIR }}/site-config --workers 0 --backup 0"
   with_items: '{{ V4MT_TENANT_IDS.split(",") | replace(" ", "") | lower }}'
-  when: (V4MT_TENANT_CAS_CUSTOMIZATION is undefined) or (item not in V4MT_TENANT_CAS_CUSTOMIZATION.keys())
+  when: (V4MT_TENANT_CAS_CUSTOMIZATION is undefined) or (item not in (V4MT_TENANT_CAS_CUSTOMIZATION.keys()| lower))
   tags:
     - onboard

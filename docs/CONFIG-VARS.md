@@ -353,9 +353,9 @@ Some of the tenant CAS customizations can be defined with the V4MT_TENANT_CAS_CU
 
 ```bash
 V4MT_TENANT_CAS_CUSTOMIZATION:
-  <TENANT-ID1>:
+  <tenant-id1>:
     ...
-  <TENANT-ID2>:
+  <tenant-id2>:
     ...
   ...
 ```

@@ -4,56 +4,18 @@ kind: PatchTransformer
 metadata:
   name: cas-enable-external-services
 patch: |-
-  # After you set publishBinaryService to true, apply
-  # the manifest, you can view the Service with
-  # `kubectl get svc sas-cas-server-default-bin`
   - op: add
     path: /spec/publishBinaryService
     value: true
-  # After you set publishHTTPService to true, apply
-  # the manifest, you can view the Service with
-  # `kubectl get svc sas-cas-server-default-http`
-  #- op: add
-  #  path: /spec/publishHTTPService
-  #  value: true
-  # By default, the services are added as NodePorts.
-  # To configure them as LoadBalancers, uncomment the following
-  # service template and optionally, set source ranges.
-  #
-  # Note: Setting the service template to LoadBalancer
-  #       affects all CAS services, including the publishDCServices
-  #       and publishEPCSService if those are set for SAS/ACCESS and
-  #       Data Connectors.
   - op: add
     path: /spec/serviceTemplate
     value:
       spec:
         type: LoadBalancer
         loadBalancerSourceRanges: {{ LOADBALANCER_SOURCE_RANGES }}
-  # Note: Some cloud providers may require additional settings
-  # in the service template. For example, adding the following
-  # annotation lets you set the load balancer timeout on AWS:
-  #
-  # - op: add
-  #   path: /spec/serviceTemplate
-  #   value:
-  #     spec:
-  #       type: LoadBalancer
-  #       loadBalancerSourceRanges:
-  #       - 192.168.0.0/16
-  #       - 10.0.0.0/8
-  #     metadata:
-  #       annotations:
-  #         service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "300"
-  #
-  # Consult your cloud provider's documentation for more information.
 target:
   group: viya.sas.com
   kind: CASDeployment
-  # Uncomment this to apply to all CAS servers:
-  # name: .*
   # This applies to one particular named CAS server:
   name: {{ NAME-OF-SERVER }}
-  # Uncomment this to apply to the default CAS server:
-  #labelSelector: "sas.com/cas-server-default"
   version: v1alpha1
