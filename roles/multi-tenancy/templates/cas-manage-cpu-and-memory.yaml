@@ -7,23 +7,22 @@ patch: |-
   - op: add
     path: /spec/controllerTemplate/spec/containers/0/resources/limits
     value:
-      memory: {{ V4_CFG_CAS_RAM }}
+      memory: {{ AMOUNT-OF-RAM }}
   - op: replace
     path: /spec/controllerTemplate/spec/containers/0/resources/requests/memory
     value:
-      {{ V4_CFG_CAS_RAM }}
+      {{ AMOUNT-OF-RAM }}
   - op: add
     path: /spec/controllerTemplate/spec/containers/0/resources/limits/cpu
     value:
-      {{ V4_CFG_CAS_CORES }}
+      {{ NUMBER-OF-CORES }}
   - op: replace
     path: /spec/controllerTemplate/spec/containers/0/resources/requests/cpu
     value:
-      {{ V4_CFG_CAS_CORES }}
+      {{ NUMBER-OF-CORES }}
 target:
   group: viya.sas.com
   kind: CASDeployment
-  name: .*
-  # This applies to the default CAS server:
-  labelSelector: "sas.com/cas-server-default"
+  # This applies to one particular named CAS server:
+  name: {{ NAME-OF-SERVER }}
   version: v1alpha1

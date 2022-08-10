@@ -16,7 +16,6 @@ patch: |-
 target:
   group: viya.sas.com
   kind: CASDeployment
-  name: .*
-  # This applies to the default CAS server:
-  labelSelector: "sas.com/cas-server-default"
+  # This applies to one particular named CAS server:
+  name: {{ NAME-OF-SERVER }}
   version: v1alpha1

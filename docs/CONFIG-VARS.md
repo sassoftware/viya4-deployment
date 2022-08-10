@@ -345,5 +345,45 @@ The nfs-client is currently supported by the newer nfs-subdir-external-provision
 | V4MT_TENANT_IDS | Maps to SAS_TENANT_IDS. One or more tenant IDs to onboard or offboard | string | | false | Example: Single tenant ID: "acme" or Multiple tenant IDs: "acme, cyberdyne, intech" | viya, multi-tenancy |
 | V4MT_PROVIDER_PASSWORD | Optional: The password that is applied to the tenant administrator on each onboarded tenant | string | | false | Maps to SAS_PROVIDER_PASSWORD. When V4MT_PROVIDER_PASSWORD is specified V4MT_PROVIDER_PASSWORD_{{TENANT-ID}} can not be used. See details [here](https://go.documentation.sas.com/doc/en/itopscdc/default/caltenants/p0emzq13c0zbhxn1hktsdlmig934.htm#p1ghvmezrb3cvxn1h7vg4uguqct6) | multi-tenancy |
 | V4MT_PROVIDER_PASSWORD_{{TENANT-ID}} | Optional: Unique sasprovider password for each tenant being onboarded. {{TENANT-ID}} must be in uppercase | string | | false | Maps to SAS_PROVIDER_PASSWORD_{{TENANT-ID}}. When V4MT_PROVIDER_PASSWORD_{{TENANT-ID}} is specified V4MT_PROVIDER_PASSWORD can not be used. See details [here](https://go.documentation.sas.com/doc/en/itopscdc/default/caltenants/p0emzq13c0zbhxn1hktsdlmig934.htm#p1ghvmezrb3cvxn1h7vg4uguqct6) | multi-tenancy |
-| V4MT_CAS_WORKER_COUNT | The number of CAS worker nodes for tenants. Default is 0 (SMP) | int | 0 | false | | multi-tenancy |
-| V4MT_CAS_BACKUP | Set this flag to 1 to include a CAS backup controller | int | Disabled by default | false | | multi-tenancy |
+| V4MT_TENANT_CAS_CUSTOMIZATION | Map of objects with all tenant CAS customization variables. See the format below | | | false | | multi-tenancy |
+
+### Tenant CAS Customization
+
+Some of the tenant CAS customizations can be defined with the V4MT_TENANT_CAS_CUSTOMIZATION variable which is a map of objects. The variable has the following format:
+
+```bash
+V4MT_TENANT_CAS_CUSTOMIZATION:
+  <tenant-id1>:
+    ...
+  <tenant-id2>:
+    ...
+  ...
+```
+Below is the list of parameters each element can contain.
+
+| Name | Description | Type | Default | Required | Notes | Tasks |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
+| memory | Amount of ram to allocate to per CAS node | string | | false | Numeric value followed by the units, such as 32Gi for 32 gigabytes. In Kubernetes, the units for gigabytes is Gi. | multi-tenancy |
+| cpus | Amount of cpu cores to allocate per CAS node | string | | false | Either a whole number, representing that number of cores, or a number followed by m, indicating that number of milli-cores. | multi-tenancy |
+| loadbalancer_enabled | Setup LB to access CAS binary ports | bool | false | false | | multi-tenancy |
+| loadbalancer_source_ranges | Loadbalancer source ranges specific to the tenant | list | false | false | | multi-tenancy |
+| worker_count | The number of CAS worker nodes for tenants. Default is 0 (SMP) | int | 0 | false | | multi-tenancy |
+| backup_controller_enabled | Enable backup cas controller | bool | false | false | | multi-tenancy |
+
+Example:
+
+```bash
+V4MT_TENANT_CAS_CUSTOMIZATION:
+  acme:
+    memory: 3Gi
+    cpus: 300m
+    loadbalancer_enabled: true
+    loadbalancer_source_ranges: ['0.0.0.0/0']
+    worker_count: 0
+    backup_controller_enabled: false
+  intech:
+    memory: 2Gi
+    cpus: 250m
+    worker_count: 1
+    backup_controller_enabled: true
+```
