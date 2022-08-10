@@ -26,3 +26,6 @@ namespace: {{ NAMESPACE }}
 
 {% endfor %}
 
+{% if 'customkustomize' in user_customizations.overlays %}
+{{ user_customizations.overlays['customkustomize'] }}
+{% endif %}

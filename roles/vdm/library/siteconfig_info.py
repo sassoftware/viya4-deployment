@@ -96,6 +96,12 @@ class siteConfig(object):
     for yamlfile in yamlfiles:
       self.addResource(yamlfile)
 
+  def add_customkustomize_block(self, folder):
+    if os.path.exists(os.path.join(folder, "customkustomize.yaml")):
+      kustomizeCustomfilefullpath = os.path.join(folder, "customkustomize.yaml")
+      with open(kustomizeCustomfilefullpath) as file:
+        self._overlays['customkustomize']  = file.read()
+
 def main():
   fields = {
     "path": {"required": True, "type": "str"},
@@ -111,6 +117,9 @@ def main():
       for exclude in module.params['exclude']:
         if folder == exclude:
           skip = True
+      if folder == "customkustomize":
+        sc.add_customkustomize_block(os.path.join(scFolder, folder))
+        skip = True
       if not skip:
         sc.traverse(os.path.join(scFolder, folder))
     module.exit_json(changed=True, overlays=sc.get_overlays())
