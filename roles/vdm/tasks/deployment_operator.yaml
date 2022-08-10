@@ -68,7 +68,6 @@
     - install
     - update
 
-
 - name: deployment-operator - update namespace in transformer.yaml
   replace:
     path: "{{ OPERATOR_DEPLOY_DIRECTORY }}/site-config/transformer.yaml"
@@ -79,7 +78,6 @@
     - install
     - update
 
-
 - name: deployment-operator - update cluster role binding in transformer.yaml
   replace:
     path: "{{ OPERATOR_DEPLOY_DIRECTORY }}/site-config/transformer.yaml"
@@ -88,7 +86,6 @@
   tags:
     - install
     - update
-
 
 - name: deployment-operator - determine if required/transformers.yaml overlay
   set_fact:
