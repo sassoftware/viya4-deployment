@@ -6,6 +6,8 @@
     ORCHESTRATION_TOOLING_INSTALL_MANIFEST: "{{ DEPLOY_DIR }}/SASDeployment.yaml"
     ORCHESTRATION_TOOLING_INSTALL_MANIFESTS_DIRECTORY: "{{ tmpdir.path }}/orchestration/manifests"
     ORCHESTRATION_TOOLING_UNINSTALL_MANIFEST: "{{ DEPLOY_DIR }}/uninstall.yaml"
+    ORCHESTRATION_CR_USER: "{{ V4_CFG_CR_USER }}"
+    ORCHESTRATION_CR_PASSWORD: "{{ V4_CFG_CR_PASSWORD }}"
   tags:
     - install
     - uninstall
@@ -45,9 +47,22 @@
     - cas-onboard
     - offboard
 
+- name: orchestration - set registry credentials if using defaults
+  set_fact:
+    ORCHESTRATION_CR_USER: "{{ lookup('file', '{{DEPLOY_DIR}}/sas-bases/base/secrets.yaml') | regex_search('username=(.+)', '\\1') | first }}"
+    ORCHESTRATION_CR_PASSWORD: "{{ lookup('file', '{{DEPLOY_DIR}}/sas-bases/base/secrets.yaml') | regex_search('password=(.+)', '\\1') | first }}"
+  when:
+    - ORCHESTRATION_CR_USER is none
+  tags:
+    - install
+    - uninstall
+    - update
+    - cas-onboard
+    - offboard
+
 - name: orchestration - Download orchestration tooling image
   command: |
-    skopeo copy docker://{{ V4_CFG_CR_HOST }}/{{ ORCHESTRATION_IMAGE }} oci-archive:{{ ORCHESTRATION_TOOLING_ARCHIVE }} --src-creds {{ V4_CFG_CR_USER }}:{{ V4_CFG_CR_PASSWORD }}
+    skopeo copy docker://{{ V4_CFG_CR_HOST }}/{{ ORCHESTRATION_IMAGE }} oci-archive:{{ ORCHESTRATION_TOOLING_ARCHIVE }} --src-creds {{ ORCHESTRATION_CR_USER }}:{{ ORCHESTRATION_CR_PASSWORD }}
   when:
     - deployment_tooling == "docker"
   tags:
@@ -108,8 +123,8 @@
 - name: orchestration - log into V4_CFG_CR_HOST
   community.docker.docker_login:
     registry_url: "{{ V4_CFG_CR_HOST }}"
-    username: "{{ V4_CFG_CR_USER }}"
-    password: "{{ V4_CFG_CR_PASSWORD }}"
+    username: "{{ ORCHESTRATION_CR_USER }}"
+    password: "{{ ORCHESTRATION_CR_PASSWORD }}"
   when:
     - deployment_tooling == "ansible"
   tags:
