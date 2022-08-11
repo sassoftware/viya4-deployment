@@ -17,7 +17,7 @@ V4MT_TENANT_IDS: null
 V4MT_PROVIDER_PASSWORD: null
 
 # CAS customization values
-V4MT_TENANT_CAS_CUSTOMIZATION: null
+V4MT_TENANT_CAS_CUSTOMIZATION: {}
 
 # Setting values for retry and delay to 60 seconds for Onboard and Offboard job
 V4MT_ONBOARD_RETRY: 60
