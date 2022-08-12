@@ -9,9 +9,8 @@ transformers:
 - site-config/transformer.yaml
 {% else %}
 - site-config/transformer.yaml
-# V4_CFG_CR_HOST != "cr.sas.com"
 {% if V4_CFG_CR_HOST != "cr.sas.com" %}
-- site-config/mirror.yaml # >= 2021.1.6
+- site-config/mirror.yaml
 {% endif %}
 {% endif %}
 ## Uncomment the following inclusion if you are deploying the

@@ -189,13 +189,12 @@
     - uninstall
     - update
 
-- name: Include Deployment Operator
+- name: Include Deployment Operator - Install
   include_tasks: deployment_operator.yaml
   when:
     - V4_DEPLOYMENT_OPERATOR_ENABLED
   tags:
     - install
-    - uninstall
     - update
 
 - name: Include Orchestration
@@ -215,3 +214,10 @@
     - uninstall
     - update
     - multi-tenancy
+
+- name: Include Deployment Operator - Uninstall
+  include_tasks: deployment_operator.yaml
+  when:
+    - V4_DEPLOYMENT_OPERATOR_ENABLED
+  tags:
+    - uninstall

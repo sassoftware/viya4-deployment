@@ -64,6 +64,7 @@
   with_items:
     - "{{ DEPLOY_DIR }}/sas-bases"
     - "{{ DEPLOY_DIR }}/site-config/vdm"
+    - "{{ DEPLOY_DIR }}/site-config/operator-deploy"
   tags:
     - install
     - uninstall
