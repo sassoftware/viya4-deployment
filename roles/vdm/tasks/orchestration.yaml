@@ -271,6 +271,17 @@
     - cas-onboard
     - offboard
 
+- name: orchestration - Create SAS Viya namespace
+  community.kubernetes.k8s:
+    api_version: v1
+    kind: Namespace
+    name: "{{ NAMESPACE }}"
+    wait: true
+    kubeconfig: "{{ KUBECONFIG }}"
+  tags:
+    - install
+    - update
+
 - name: orchestration - create sas-orchestration-secret
   environment:
     KUBECONFIG: "{{ KUBECONFIG }}"
