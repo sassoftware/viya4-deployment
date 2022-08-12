@@ -12,6 +12,7 @@ The following list details our dependencies and versions (~ indicates multiple p
 | ~ | tar | any |
 | ~ | docker | any |
 | ~ | git | any |
+| ~ | rsync | any |
 | ~ | kustomize | 3.7.0 |
 | ~ | kubectl | 1.21 - 1.23 |
 | ~ | Helm | 3 |
