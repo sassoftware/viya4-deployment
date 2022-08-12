@@ -1,15 +1,4 @@
 ---
-- name: deploy - Create namespace
-  community.kubernetes.k8s:
-    api_version: v1
-    kind: Namespace
-    name: "{{ NAMESPACE }}"
-    wait: true
-    kubeconfig: "{{ KUBECONFIG }}"
-  tags:
-    - install
-    - update
-
 - name: deploy - Apply SAS Viya deployment
   community.kubernetes.k8s:
     src: "{{ DEPLOY_DIR }}/SASDeployment.yaml"
@@ -112,5 +101,7 @@
     wait_timeout: 600
     kubeconfig: "{{ KUBECONFIG }}"
     state: absent
+  when:
+    - not (V4_DEPLOYMENT_OPERATOR_PRESERVE == True and V4_DEPLOYMENT_OPERATOR_ENABLED == True and V4_DEPLOYMENT_OPERATOR_NAMESPACE|lower == NAMESPACE)
   tags:
     - uninstall
