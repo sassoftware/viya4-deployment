@@ -22,7 +22,7 @@ ARG aws_cli_version=2.1.20
 ARG gcp_cli_version=395.0.0
 
 # Add extra packages
-RUN apt install -y gzip wget git git-lfs jq sshpass skopeo \
+RUN apt install -y gzip wget git git-lfs jq sshpass skopeo rsync \
   && curl -ksLO https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 && chmod 755 get-helm-3 \
   && ./get-helm-3 --version v$helm_version --no-sudo \
   && helm plugin install https://github.com/databus23/helm-diff \

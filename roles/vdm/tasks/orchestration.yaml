@@ -166,9 +166,12 @@
         state: directory
         mode: "0700"
     - name: orchestration - Copy site-config into orchestration tooling directory
-      copy:
+      synchronize:
         src: "{{ DEPLOY_DIR }}/site-config"
         dest: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/data"
+        rsync_opts:
+              - "--exclude=operator-deploy"
+              - "--exclude=sas-tenant-job"
     - name: orchestration - Copy kustomization.yaml into orchestration tooling directory
       copy:
         src: "{{ DEPLOY_DIR }}/kustomization.yaml"
@@ -261,14 +264,26 @@
               --elide-empty-files
               '/^----*$/' '{*}'
   when:
-    - DEPLOYMENT_OPERATOR_ENABLED == False
+    - V4_DEPLOYMENT_OPERATOR_ENABLED == False
   tags:
     - install
     - update
     - cas-onboard
     - offboard
 
-- name: orchestration - Create SAS Viya uninstall manifest DEPLOYMENT_OPERATOR_ENABLED - Docker
+- name: orchestration - create sas-orchestration-secret
+  environment:
+    KUBECONFIG: "{{ KUBECONFIG }}"
+  ansible.builtin.shell: >
+    kubectl -n deploy create secret generic sas-orchestration-secret 
+    --type=kubernetes.io/dockerconfigjson --from-file=.dockerconfigjson={{ DEPLOY_DIR }}/site-config/cr_access.json
+  when:
+    - V4_CFG_CR_USER is not none
+  tags:
+    - install
+    - update
+
+- name: orchestration - Create SAS Viya uninstall manifest V4_DEPLOYMENT_OPERATOR_ENABLED - Docker
   block:
     - name: orchestration - Generate SAS Viya uninstall manifest
       environment:
@@ -291,13 +306,13 @@
         dest: "{{ ORCHESTRATION_TOOLING_UNINSTALL_MANIFEST }}"
         mode: "0660"
   when:
-    - DEPLOYMENT_OPERATOR_ENABLED
+    - V4_DEPLOYMENT_OPERATOR_ENABLED
     - deployment_tooling == "docker"
   tags:
     - uninstall
     - offboard
 
-- name: orchestration - Create SAS Viya uninstall manifest DEPLOYMENT_OPERATOR_ENABLED - Ansible
+- name: orchestration - Create SAS Viya uninstall manifest V4_DEPLOYMENT_OPERATOR_ENABLED - Ansible
   block:
     - name: orchestration - Generate SAS Viya uninstall manifest
       community.docker.docker_container:
@@ -324,7 +339,7 @@
         dest: "{{ ORCHESTRATION_TOOLING_UNINSTALL_MANIFEST }}"
         mode: "0660"
   when:
-    - DEPLOYMENT_OPERATOR_ENABLED
+    - V4_DEPLOYMENT_OPERATOR_ENABLED
     - deployment_tooling == "ansible"
   tags:
     - uninstall
@@ -347,7 +362,7 @@
         dest: "{{ ORCHESTRATION_TOOLING_UNINSTALL_MANIFEST }}"
         mode: "0660"
   when:
-    - DEPLOYMENT_OPERATOR_ENABLED == False
+    - V4_DEPLOYMENT_OPERATOR_ENABLED == False
     - deployment_tooling == "docker"
   tags:
     - uninstall
@@ -374,7 +389,7 @@
         dest: "{{ ORCHESTRATION_TOOLING_UNINSTALL_MANIFEST }}"
         mode: "0660"
   when:
-    - DEPLOYMENT_OPERATOR_ENABLED == False
+    - V4_DEPLOYMENT_OPERATOR_ENABLED == False
     - deployment_tooling == "ansible"
   tags:
     - uninstall

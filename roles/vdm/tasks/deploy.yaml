@@ -17,7 +17,7 @@
     namespace: "{{ NAMESPACE }}"
     kubeconfig: "{{ KUBECONFIG }}"
   when:
-    - DEPLOYMENT_OPERATOR_ENABLED
+    - V4_DEPLOYMENT_OPERATOR_ENABLED
   tags:
     - install
     - update
@@ -87,7 +87,7 @@
       when:
         - deployment_tooling == "ansible"
   when:
-    - DEPLOYMENT_OPERATOR_ENABLED == False
+    - V4_DEPLOYMENT_OPERATOR_ENABLED == False
   tags:
     - install
     - update
