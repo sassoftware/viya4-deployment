@@ -18,7 +18,7 @@ RUN curl -sLO https://storage.googleapis.com/kubernetes-release/release/v{$kubec
 # Installation
 FROM baseline
 ARG helm_version=3.8.1
-ARG aws_cli_version=2.1.20
+ARG aws_cli_version=2.7.22
 ARG gcp_cli_version=395.0.0
 
 # Add extra packages
