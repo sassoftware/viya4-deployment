@@ -149,8 +149,18 @@
     - offboard
 
 - name: orchestration - Find order cadence release
-  set_fact:
-    V4_CFG_CADENCE_RELEASE: "{{ (lookup('file', '{{ DEPLOY_DIR }}/sas-bases/.orchestration/cadence.yaml')|from_yaml).spec.release }}"
+  block:
+    - name: orchestration - Find order cadence release from cadence.yaml
+      set_fact:
+        V4_CFG_CADENCE_RELEASE: "{{ (lookup('file', '{{ DEPLOY_DIR }}/sas-bases/.orchestration/cadence.yaml')|from_yaml).spec.release }}"
+      when:
+        - V4_CFG_CADENCE_VERSION is version('2021.1', ">") or V4_CFG_CADENCE_NAME|lower == "fast"
+    - name: orchestration - Find order cadence release from configmaps.yaml
+      set_fact:
+        V4_CFG_CADENCE_RELEASE: "{{ lookup('file', '{{DEPLOY_DIR}}/sas-bases/base/configmaps.yaml') | regex_search('SAS_CADENCE_RELEASE=(.+)', '\\1') | first }}"
+      when:
+        - V4_CFG_CADENCE_VERSION is version('2021.1', "<=")
+        - V4_CFG_CADENCE_NAME|lower != "fast"
   tags:
     - install
     - uninstall
