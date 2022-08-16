@@ -8,7 +8,7 @@ If your SAS software order included SAS Viya with SingleStore, there are additio
 
 ## Deploying SingleStore with SAS Viya Deployment
 
-You can deploy SAS Viya with SingleStore into a Kubernetes cluster that is running in Microsoft Azure. The [SAS Viya 4 Infrastructure as Code (IaC) for Microsoft Azure](https://github.com/sassoftware/viya4-iac-azure) GitHub project can automatically provision the required infrastructure components that support SAS Viya with SingleStore deployments. Refer to the [SingleStore sample input file](https://github.com/sassoftware/viya4-iac-azure/blob/singlestore/examples/sample-input-singlestore.tfvars) for terraform configuration values that create an Azure cluster suitable for deploying Viya and SingleStore to.
+You can deploy SAS Viya with SingleStore into a Kubernetes cluster that is running in Microsoft Azure. The [SAS Viya 4 Infrastructure as Code (IaC) for Microsoft Azure](https://github.com/sassoftware/viya4-iac-azure) GitHub project can automatically provision the required infrastructure components that support SAS Viya with SingleStore deployments. Refer to the [SingleStore sample input file](https://github.com/sassoftware/viya4-iac-azure/blob/main/examples/sample-input-singlestore.tfvars) for terraform configuration values that create an Azure cluster suitable for deploying Viya and SingleStore to.
 
 ## Customizing SingleStore Deployment Overlays
 
