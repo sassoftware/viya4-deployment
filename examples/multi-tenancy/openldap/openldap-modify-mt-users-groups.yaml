@@ -1,0 +1,236 @@
+# List of users and groups present in the example
+#    provider
+#      +-- viya_admin
+#      +-- basic_user1
+#    Tenant1 -- replace with your Tenant's name
+#      +-- tenant1_admin
+#      +-- tenant1_user1
+#      +-- tenant1_user2
+#    Tenant2 -- replace with your Tenant's name
+#      +-- tenant2_admin
+#      +-- tenant2_user1
+# Follow same format for adding additional tenants and users.
+
+---
+apiVersion: builtin
+kind: PatchTransformer
+metadata: 
+  name: openldap-users-and-groups
+patch: |-
+  - op: replace
+    path: /data/LDAP_USERS_CONF
+    value: |-
+      dn: uid=viya_admin,ou=people,ou=provider,dc=example,dc=com
+      changetype: add
+      objectClass: inetOrgPerson
+      objectclass: extensibleObject
+      uid: viya_admin
+      uidNumber: 2001
+      gidNumber: 2000
+      cn: administrator
+      sn: Admin
+      homeDirectory: /home/viya_admin
+      mail: viya_admin@example.com
+      distinguishedName: uid=viya_admin,ou=people,ou=provider,dc=example,dc=com
+      displayName: Viya Administrator
+      userPassword: Password123
+      
+      dn: uid=basic_user1,ou=people,ou=provider,dc=example,dc=com
+      changetype: add
+      objectClass: inetOrgPerson
+      objectclass: extensibleObject
+      uid: basic_user1
+      uidNumber: 1001
+      gidNumber: 1000
+      cn: basic_user1
+      sn: Tester
+      distinguishedName: uid=basic_user1,ou=people,ou=provider,dc=example,dc=com
+      displayName: Test User 1
+      userPassword: Password123
+      homeDirectory: /home/basic_user1
+      mail: basic_user1@example.com
+      
+      dn: cn=users,ou=groups,ou=provider,dc=example,dc=com
+      changetype: add
+      objectclass: groupofUniqueNames
+      objectclass: extensibleObject
+      gidNumber: 1000
+      distinguishedName: cn=group1,ou=groups,ou=provider,dc=example,dc=com
+      uniqueMember:uid=basic_user1,ou=people,ou=provider,dc=example,dc=com
+      
+      dn: cn=admins,ou=groups,ou=provider,dc=example,dc=com
+      changetype: add
+      objectclass: groupofUniqueNames
+      objectclass: extensibleObject
+      gidNumber: 2000
+      distinguishedName: cn=admins,ou=groups,ou=provider,dc=example,dc=com
+      uniqueMember:uid=viya_admin,ou=people,ou=provider,dc=example,dc=com
+      
+      dn: uid=tenant1_admin,ou=people,ou=tenant1,dc=example,dc=com
+      changetype: add
+      objectClass: inetOrgPerson
+      objectclass: extensibleObject
+      uid: tenant1_admin
+      uidNumber: 3001
+      gidNumber: 3000
+      cn: administrator
+      sn: Admin
+      homeDirectory: /home/tenant1_admin
+      mail: tenant1_admin@example.com
+      distinguishedName: uid=tenant1_admin,ou=people,ou=tenant1,dc=example,dc=com
+      displayName: tenant1 Administrator
+      userPassword: Password123
+      
+      dn: uid=tenant1_user1,ou=people,ou=tenant1,dc=example,dc=com
+      changetype: add
+      objectClass: inetOrgPerson
+      objectclass: extensibleObject
+      uid: tenant1_user1
+      uidNumber: 4001
+      gidNumber: 4000
+      cn: tenant1_user1
+      sn: Tester
+      distinguishedName: uid=tenant1_user1,ou=people,ou=tenant1,dc=example,dc=com
+      displayName: tenant1 Test User 1
+      userPassword: Password123
+      homeDirectory: /home/tenant1_user1
+      mail: tenant1_user1@example.com
+      
+      dn: uid=tenant1_user2,ou=people,ou=tenant1,dc=example,dc=com
+      changetype: add
+      objectClass: inetOrgPerson
+      objectclass: extensibleObject
+      uid: tenant1_user2
+      uidNumber: 4002
+      gidNumber: 4000
+      cn: tenant1_user2
+      sn: Tester
+      distinguishedName: uid=tenant1_user2,ou=people,ou=tenant1,dc=example,dc=com
+      displayName: tenant1 Test User 2
+      userPassword: Password123
+      homeDirectory: /home/tenant1_user2
+      mail: tenant1_user2@example.com
+      
+      dn: cn=users,ou=groups,ou=tenant1,dc=example,dc=com
+      changetype: add
+      objectclass: groupofUniqueNames
+      objectclass: extensibleObject
+      gidNumber: 4000
+      distinguishedName: cn=group1,ou=groups,ou=tenant1,dc=example,dc=com
+      uniqueMember:uid=tenant1_user1,ou=people,ou=tenant1,dc=example,dc=com
+      uniqueMember:uid=tenant1_user2,ou=people,ou=tenant1,dc=example,dc=com
+      
+      dn: cn=admins,ou=groups,ou=tenant1,dc=example,dc=com
+      changetype: add
+      objectclass: groupofUniqueNames
+      objectclass: extensibleObject
+      gidNumber: 3000
+      distinguishedName: cn=admins,ou=groups,ou=tenant1,dc=example,dc=com
+      uniqueMember:uid=tenant1_admin,ou=people,ou=tenant1,dc=example,dc=com
+      
+      dn: uid=tenant2_admin,ou=people,ou=tenant2,dc=example,dc=com
+      changetype: add
+      objectClass: inetOrgPerson
+      objectclass: extensibleObject
+      uid: tenant2_admin
+      uidNumber: 5001
+      gidNumber: 5000
+      cn: administrator
+      sn: Admin
+      homeDirectory: /home/tenant2_admin
+      mail: tenant2_admin@example.com
+      distinguishedName: uid=tenant2_admin,ou=people,ou=tenant2,dc=example,dc=com
+      displayName: tenant2 Administrator
+      userPassword: Password123
+      
+      dn: uid=tenant2_user1,ou=people,ou=tenant2,dc=example,dc=com
+      changetype: add
+      objectClass: inetOrgPerson
+      objectclass: extensibleObject
+      uid: tenant2_user1
+      uidNumber: 6001
+      gidNumber: 6000
+      cn: tenant2_user1
+      sn: Tester
+      distinguishedName: uid=tenant2_user1,ou=people,ou=tenant2,dc=example,dc=com
+      displayName: tenant2 Test User 1
+      userPassword: Password123
+      homeDirectory: /home/tenant2_user1
+      mail: tenant2_user1@example.com
+      
+      dn: cn=users,ou=groups,ou=tenant2,dc=example,dc=com
+      changetype: add
+      objectclass: groupofUniqueNames
+      objectclass: extensibleObject
+      gidNumber: 6000
+      distinguishedName: cn=group1,ou=groups,ou=tenant2,dc=example,dc=com
+      uniqueMember:uid=tenant2_user1,ou=people,ou=tenant2,dc=example,dc=com
+      
+      dn: cn=admins,ou=groups,ou=tenant2,dc=example,dc=com
+      changetype: add
+      objectclass: groupofUniqueNames
+      objectclass: extensibleObject
+      gidNumber: 5000
+      distinguishedName: cn=admins,ou=groups,ou=tenant2,dc=example,dc=com
+      uniqueMember:uid=tenant2_admin,ou=people,ou=tenant2,dc=example,dc=com
+  - op: replace
+    path: /data/LDAP_GROUPS_CONF
+    value: |-
+      dn: ou=provider,dc=example,dc=com
+      changetype: add
+      ou: provider
+      objectClass: organizationalUnit
+      objectClass: top
+      
+      dn: ou=groups,ou=provider,dc=example,dc=com
+      changetype: add
+      ou: groups
+      description: provider groups
+      objectClass: organizationalUnit
+      objectClass: top
+      
+      dn: ou=people,ou=provider,dc=example,dc=com
+      changetype: add
+      ou: people
+      objectClass: organizationalUnit
+      objectClass: top
+      
+      dn: ou=tenant1,dc=example,dc=com
+      changetype: add
+      ou: tenant1
+      objectClass: organizationalUnit
+      objectClass: top
+      
+      dn: ou=groups,ou=tenant1,dc=example,dc=com
+      changetype: add
+      ou: groups
+      objectClass: organizationalUnit
+      objectClass: top
+      
+      dn: ou=people,ou=tenant1,dc=example,dc=com
+      changetype: add
+      ou: people
+      objectClass: organizationalUnit
+      objectClass: top
+      
+      dn: ou=tenant2,dc=example,dc=com
+      changetype: add
+      ou: tenant1
+      objectClass: organizationalUnit
+      objectClass: top
+      
+      dn: ou=groups,ou=tenant2,dc=example,dc=com
+      changetype: add
+      ou: groups
+      objectClass: organizationalUnit
+      objectClass: top
+      
+      dn: ou=people,ou=tenant2,dc=example,dc=com
+      changetype: add
+      ou: people
+      objectClass: organizationalUnit
+      objectClass: top
+target:
+  kind: ConfigMap
+  name: openldap-bootstrap-config
+  version: v1

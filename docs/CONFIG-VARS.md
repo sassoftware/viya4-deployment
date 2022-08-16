@@ -30,6 +30,7 @@ Supported configuration variables are listed in the table below.  All variables 
     - [Ingress-nginx](#ingress-nginx)
     - [Metrics Server](#metrics-server)
     - [NFS Client](#nfs-client)
+  - [Multi-Tenancy](#multi-tenancy)
 
 ## BASE
 
@@ -168,6 +169,7 @@ When setting V4_CFG_MANAGE_STORAGE to true, A new storage classes will be create
 | V4M_KIBANA_CERT | Path to tls certificate to use for dashboards ingress | string |<V4M_CERT> | false | If both this and V4M_CERT are not set a self-signed cert will be used | cluster-logging |
 | V4M_KIBANA_KEY | Path to tls key to use for dashboards ingress | string | <V4M_KEY> | false | If both this and V4M_KEY are not set a self-signed cert will be used | cluster-logging |
 | V4M_KIBANA_PASSWORD | Dashboards admin password | string | randomly generated | false | If not provided, a random password will be generated and written to the log output | cluster-logging |
+| V4M_KIBANA_LOGADM_PASSWORD | Dashboards logadm user's password | string | randomly generated | false | If not provided and V4M_KIBANA_PASSWORD is not set, a random password will be generated and written to the log output | cluster-logging |
 | V4M_KIBANASERVER_PASSWORD | Dashboards server password | string | randomly generated | false | If not provided, a random password will be generated and written to the log output | cluster-logging |
 | V4M_LOGCOLLECTOR_PASSWORD | Logcollector password | string | randomly generated | false | If not provided, a random password will be generated and written to the log output | cluster-logging |
 | V4M_METRICGETTER_PASSWORD | Metricgetter password | string | randomly generated | false | If not provided, a random password will be generated and written to the log output | cluster-logging |
@@ -215,7 +217,7 @@ V4_CFG_POSTGRES_SERVERS:
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| internal | Whether the database is internal or external | bool | | true | All servers must but internal or all must be external | viya |
+| internal | Whether the database is internal or external | bool | | true | All servers must either be internal or all must be external | viya |
 | database | Database name | string | Database server role | false | Default database name for default server is SharedServices | viya |
 | admin | External postgres username | string | | false | Required for external postgres servers | viya |
 | password | External postgres password | string | | false | Required for external postgres servers | viya |
@@ -333,3 +335,55 @@ The nfs-client is currently supported by the newer nfs-subdir-external-provision
 | NFS_CLIENT_CHART_NAME | nfs-subdir-external-provisioner helm chart name | string | nfs-subdir-external-provisioner | false | | baseline |
 | NFS_CLIENT_CHART_VERSION | nfs-subdir-external-provisioner helm chart version | string | 4.0.8| false | | baseline |
 | NFS_CLIENT_CONFIG | nfs-subdir-external-provisioner helm values | string | see [here](../roles/baseline/defaults/main.yml) | false | | baseline |
+
+## Multi-Tenancy
+
+| Name | Description | Type | Default | Required | Notes | Tasks |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
+| V4MT_ENABLE | Enables Multi-tenancy in the SAS Viya deployment | bool | false | false || viya, multi-tenancy |
+| V4MT_MODE | Set V4MT_MODE to either schema or database | string | schema | false | Two modes of data isolation (schemaPerApplicationTenant, databasePerTenant) for tenant data. schemaPerApplicationTenant is default.  | viya, multi-tenancy |
+| V4MT_TENANT_IDS | Maps to SAS_TENANT_IDS. One or more tenant IDs to onboard or offboard | string | | false | Example: Single tenant ID: "acme" or Multiple tenant IDs: "acme, cyberdyne, intech" | viya, multi-tenancy |
+| V4MT_PROVIDER_PASSWORD | Optional: The password that is applied to the tenant administrator on each onboarded tenant | string | | false | Maps to SAS_PROVIDER_PASSWORD. When V4MT_PROVIDER_PASSWORD is specified V4MT_PROVIDER_PASSWORD_{{TENANT-ID}} can not be used. See details [here](https://go.documentation.sas.com/doc/en/itopscdc/default/caltenants/p0emzq13c0zbhxn1hktsdlmig934.htm#p1ghvmezrb3cvxn1h7vg4uguqct6) | multi-tenancy |
+| V4MT_PROVIDER_PASSWORD_{{TENANT-ID}} | Optional: Unique sasprovider password for each tenant being onboarded. {{TENANT-ID}} must be in uppercase | string | | false | Maps to SAS_PROVIDER_PASSWORD_{{TENANT-ID}}. When V4MT_PROVIDER_PASSWORD_{{TENANT-ID}} is specified V4MT_PROVIDER_PASSWORD can not be used. See details [here](https://go.documentation.sas.com/doc/en/itopscdc/default/caltenants/p0emzq13c0zbhxn1hktsdlmig934.htm#p1ghvmezrb3cvxn1h7vg4uguqct6) | multi-tenancy |
+| V4MT_TENANT_CAS_CUSTOMIZATION | Map of objects with all tenant CAS customization variables. See the format below | | | false | | multi-tenancy |
+
+### Tenant CAS Customization
+
+Some of the tenant CAS customizations can be defined with the V4MT_TENANT_CAS_CUSTOMIZATION variable which is a map of objects. The variable has the following format:
+
+```bash
+V4MT_TENANT_CAS_CUSTOMIZATION:
+  <tenant-id1>:
+    ...
+  <tenant-id2>:
+    ...
+  ...
+```
+Below is the list of parameters each element can contain.
+
+| Name | Description | Type | Default | Required | Notes | Tasks |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
+| memory | Amount of ram to allocate to per CAS node | string | | false | Numeric value followed by the units, such as 32Gi for 32 gigabytes. In Kubernetes, the units for gigabytes is Gi. | multi-tenancy |
+| cpus | Amount of cpu cores to allocate per CAS node | string | | false | Either a whole number, representing that number of cores, or a number followed by m, indicating that number of milli-cores. | multi-tenancy |
+| loadbalancer_enabled | Setup LB to access CAS binary ports | bool | false | false | | multi-tenancy |
+| loadbalancer_source_ranges | Loadbalancer source ranges specific to the tenant | list | false | false | | multi-tenancy |
+| worker_count | The number of CAS worker nodes for tenants. Default is 0 (SMP) | int | 0 | false | | multi-tenancy |
+| backup_controller_enabled | Enable backup cas controller | bool | false | false | | multi-tenancy |
+
+Example:
+
+```bash
+V4MT_TENANT_CAS_CUSTOMIZATION:
+  acme:
+    memory: 3Gi
+    cpus: 300m
+    loadbalancer_enabled: true
+    loadbalancer_source_ranges: ['0.0.0.0/0']
+    worker_count: 0
+    backup_controller_enabled: false
+  intech:
+    memory: 2Gi
+    cpus: 250m
+    worker_count: 1
+    backup_controller_enabled: true
+```

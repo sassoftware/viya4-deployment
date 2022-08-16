@@ -1,0 +1,98 @@
+# List of users and groups present
+#    provider
+#      +-- viya_admin
+#      +-- user1
+#      +-- user2
+
+---
+apiVersion: builtin
+kind: ConfigMapGenerator
+metadata:
+  name: openldap-bootstrap-config
+literals:
+  - LDAP_TLS="false"
+  - LDAP_ADMIN_PASSWORD="Password123"
+  - LDAP_DOMAIN="example.com"
+  - LDAP_REMOVE_CONFIG_AFTER_SETUP="false"
+  - DISABLE_CHOWN="false"
+  - |-
+    LDAP_USERS_CONF=dn: uid=viya_admin,ou=people,ou=provider,dc=example,dc=com
+    changetype: add
+    objectClass: inetOrgPerson
+    objectclass: extensibleObject
+    uid: viya_admin
+    uidNumber: 2001
+    gidNumber: 2000
+    cn: administrator
+    sn: Admin
+    homeDirectory: /home/viya_admin
+    mail: viya_admin@example.com
+    distinguishedName: uid=viya_admin,ou=people,ou=provider,dc=example,dc=com
+    displayName: Viya Administrator
+    userPassword: Password123
+    
+    dn: uid=user1,ou=people,ou=provider,dc=example,dc=com
+    changetype: add
+    objectClass: inetOrgPerson
+    objectclass: extensibleObject
+    uid: user1
+    uidNumber: 1001
+    gidNumber: 1000
+    cn: user1
+    sn: Tester
+    distinguishedName: uid=user1,ou=people,ou=provider,dc=example,dc=com
+    displayName: Test User 1
+    userPassword: Password123
+    homeDirectory: /home/user1
+    mail: user1@example.com
+    
+    dn: uid=user2,ou=people,ou=provider,dc=example,dc=com
+    changetype: add
+    objectClass: inetOrgPerson
+    objectclass: extensibleObject
+    uid: user2
+    uidNumber: 1002
+    gidNumber: 1000
+    cn: user2
+    sn: Tester
+    distinguishedName: uid=user2,ou=people,ou=provider,dc=example,dc=com
+    displayName: Test User 2
+    userPassword: Password123
+    homeDirectory: /home/user2
+    mail: user2@example.com
+    
+    dn: cn=users,ou=groups,ou=provider,dc=example,dc=com
+    changetype: add
+    objectclass: groupofUniqueNames
+    objectclass: extensibleObject
+    gidNumber: 1000
+    distinguishedName: cn=group1,ou=groups,ou=provider,dc=example,dc=com
+    uniqueMember:uid=user1,ou=people,ou=provider,dc=example,dc=com
+    uniqueMember:uid=user2,ou=people,ou=provider,dc=example,dc=com
+    
+    dn: cn=admins,ou=groups,ou=provider,dc=example,dc=com
+    changetype: add
+    objectclass: groupofUniqueNames
+    objectclass: extensibleObject
+    gidNumber: 2000
+    distinguishedName: cn=admins,ou=groups,ou=provider,dc=example,dc=com
+    uniqueMember:uid=viya_admin,ou=people,ou=provider,dc=example,dc=com
+  - |-
+    LDAP_GROUPS_CONF=dn: ou=provider,dc=example,dc=com
+    changetype: add
+    ou: provider
+    objectClass: organizationalUnit
+    objectClass: top
+
+    dn: ou=groups,ou=provider,dc=example,dc=com
+    changetype: add
+    ou: groups
+    description: provider groups
+    objectClass: organizationalUnit
+    objectClass: top
+
+    dn: ou=people,ou=provider,dc=example,dc=com
+    changetype: add
+    ou: people
+    objectClass: organizationalUnit
+    objectClass: top

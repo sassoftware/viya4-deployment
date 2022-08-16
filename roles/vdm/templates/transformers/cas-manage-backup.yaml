@@ -14,5 +14,6 @@ target:
   group: viya.sas.com
   kind: CASDeployment
   name: .*
+  # This applies to the default CAS server:
+  labelSelector: "sas.com/cas-server-default"
   version: v1alpha1
-

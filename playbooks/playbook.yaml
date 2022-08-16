@@ -8,6 +8,9 @@
         - install
         - uninstall
         - update
+        - onboard
+        - cas-onboard
+        - offboard
     - name: common role
       include_role: 
         name: common
@@ -16,6 +19,9 @@
         - install
         - uninstall
         - update
+        - onboard
+        - cas-onboard
+        - offboard
     - name: jump-server role
       include_role:
         name: jump-server
@@ -38,6 +44,12 @@
       tags:
         - cluster-monitoring
         - cluster-logging
+    - name: multi-tenancy role
+      include_role:
+        name: multi-tenancy
+      when: V4MT_ENABLE is defined
+      tags:
+        - multi-tenancy
     - name: vdm role
       include_role:
         name: vdm

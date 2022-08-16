@@ -1,0 +1,153 @@
+---
+- name: create sas-tenant-job folder
+  file:
+    state: directory
+    dest: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job"
+    mode: "0770"
+  when: V4MT_ENABLE
+  tags:
+    - onboard
+
+- name: copy - sas-tenant-job
+  copy:
+    src: "{{ DEPLOY_DIR }}/sas-bases/examples/sas-tenant-job/"
+    dest: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job"
+    mode: "0770"
+  when: V4MT_ENABLE
+  tags:
+    - onboard
+
+- name: update namespace
+  replace:
+    path: "{{ item }}"
+    regexp: "{% raw %}{{ VIYA-DEPLOYMENT-NAMESPACE }}{% endraw %}"
+    replace: "{{ NAMESPACE }}"
+  with_items:
+    - "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-job-service-account-role.yaml"
+    - "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/kustomization-onboard.yaml"
+    - "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/kustomization-offboard.yaml"
+  when: V4MT_ENABLE
+  tags:
+    - onboard
+    - offboard
+
+
+- name: sas-tenant-job - update sas-tenant-ids
+  replace:
+    path: "{{ item.path }}"
+    regexp: "{{ item.regexp }}"
+    replace: "{{ item.replace }}"
+  with_items:
+    - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-onboard-job.yaml', regexp: '- name: SAS_TENANT_IDS\n[^\n]+', replace: '- name: SAS_TENANT_IDS\n            value: "{{ V4MT_TENANT_IDS }}"' }
+    - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-offboard-job.yaml', regexp: '- name: SAS_TENANT_IDS\n[^\n]+', replace: '- name: SAS_TENANT_IDS\n            value: "{{ V4MT_TENANT_IDS }}"' }
+  when: V4MT_ENABLE
+  tags:
+    - onboard
+    - offboard
+
+- name: sas-tenant-job - update sas-provider-password
+  replace:
+    path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-onboard-job.yaml'
+    regexp: '{% raw %}{{ SAS-PROVIDER-PASSWORD }}{% endraw %}'
+    replace: '{{ V4MT_PROVIDER_PASSWORD }}'
+  when: V4MT_PROVIDER_PASSWORD
+  tags:
+    - onboard
+
+- name: Create tenant password list
+  set_fact:
+    tenant_password_list: "{{ tenant_password_list }} + [ 'V4MT_PROVIDER_PASSWORD_{{ item }}' ]"
+  with_items: '{{ V4MT_TENANT_IDS.split(",") | replace(" ", "") | upper }}'
+  vars:
+    tenant_password_list: []
+  when: not V4MT_PROVIDER_PASSWORD
+  tags:
+    - onboard
+
+- name: sas-tenant-job - add sas-provider-password-TENANT-ID if provided
+  lineinfile:
+    path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-onboard-job.yaml'
+    insertafter: "{% raw %}value: {{ SAS-PROVIDER-PASSWORD }}{% endraw %}"
+    line: "          - name: SAS_PROVIDER_PASSWORD_{{ item.split('_')[-1] }}\n            value: {% raw %}{{{% endraw %} {{ item }} {% raw %}}}{% endraw %}"
+  with_items: "{{ tenant_password_list }}"
+  when: 
+    - not V4MT_PROVIDER_PASSWORD
+    - ({{ item }} is defined)
+  tags:
+    - onboard
+        
+- name: sas-tenant-job - update sas-provider-password-TENANT-ID
+  replace:
+    path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-onboard-job.yaml'
+    regexp: '{% raw %}{{{% endraw %} {{ item }} {% raw %}}}{% endraw %}'
+    replace: '{{ vars[item] }}'
+  when: 
+    - not V4MT_PROVIDER_PASSWORD
+    - ({{ item }} is defined)
+  with_items: "{{ tenant_password_list }}"
+  tags:
+    - onboard
+
+- name: Remove SAS_PROVIDER_PASSWORD
+  lineinfile:
+    path: "{{ item.path }}"
+    state: absent
+    line: "{{ item.line }}"
+  with_items:
+    - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-onboard-job.yaml', line: '          - name: SAS_PROVIDER_PASSWORD'}
+    - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-onboard-job.yaml', line: '            value: {% raw %}{{ SAS-PROVIDER-PASSWORD }}{% endraw %}'}
+  when: not V4MT_PROVIDER_PASSWORD
+  tags:
+    - onboard
+
+- name: Check if create-cas-server script exists
+  stat:
+    path: "{{ DEPLOY_DIR }}/site-config/create-cas-server.sh"
+  register: result
+  tags:
+    - onboard
+
+- name: copy - create-cas-server script
+  copy:
+    src: "{{ DEPLOY_DIR }}/sas-bases/examples/cas/create/create-cas-server.sh"
+    dest: "{{ DEPLOY_DIR }}/site-config"
+    mode: "0770"
+  when:
+    - not result.stat.exists 
+    - V4MT_ENABLE
+  tags:
+    - onboard
+
+# Delete the cas tenant directories if present to recreate new directories for re-onboarding
+- name: delete cas tenant directory
+  file:
+    state: absent
+    path: "{{ DEPLOY_DIR }}/site-config/cas-{{ item | trim }}-default"
+  with_items: '{{ V4MT_TENANT_IDS.split(",") | replace(" ", "") }}'
+  when: V4MT_ENABLE
+  tags:
+    - onboard
+
+# Make tenant CAS customizations if user has specified values
+- name: tenant cas customizations
+  include_tasks: tenant-cas-customizations.yaml
+  vars:
+    tenant: "{{ item.key | lower }}"
+    settings: "{{ item.value }}"
+  with_dict: "{{ V4MT_TENANT_CAS_CUSTOMIZATION }}"
+  when: 
+    - V4MT_ENABLE
+    - V4MT_TENANT_CAS_CUSTOMIZATION is not none
+  tags:
+    - onboard
+
+# If customizations not specified, create cas servers with default values
+- name: create cas servers for tenants
+  command:
+  # Example cmd: $deploy/sas-bases/examples/cas/create/create-cas-server.sh --tenant acme --output ../site-config/ --workers 2 --backup 1
+    cmd: "{{ DEPLOY_DIR }}/site-config/create-cas-server.sh --tenant {{ item }} \
+         --output {{ DEPLOY_DIR }}/site-config --workers 0 --backup 0"
+  with_items: '{{ V4MT_TENANT_IDS.split(",") | replace(" ", "") | lower }}'
+  when: item not in (V4MT_TENANT_CAS_CUSTOMIZATION.keys()| lower)
+  tags:
+    - onboard
