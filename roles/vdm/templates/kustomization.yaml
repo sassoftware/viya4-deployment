@@ -25,4 +25,12 @@ namespace: {{ NAMESPACE }}
 {% endif %}
 
 {% endfor %}
-
+{% if "components" not in ordered_overlays.result %}
+{% if "components" in user_customizations.overlays %}
+components:
+## user defined components
+{% for item in user_customizations.overlays['components']|sort %}
+  - {{ item }}
+{% endfor %}
+{% endif %}
+{% endif %}
