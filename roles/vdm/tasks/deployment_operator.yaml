@@ -88,9 +88,21 @@
     - install
     - update
 
-- name: deployment-operator - determine if required/transformers.yaml overlay
-  set_fact:
-    required_transformers: true
+- name: deployment-operator - determine if required/transformers.yaml overlay required
+  block:
+    - name: deployment-operator - Set required_transformers
+      set_fact:
+        required_transformers: true
+    - name: deployment-operator - Create required directory
+      file:
+        state: directory
+        dest: "{{ OPERATOR_DEPLOY_DIRECTORY }}/site-config/required"
+        mode: "0770"
+    - name: deployment-operator - Copy required/transformers.yaml
+      copy:
+        src: "{{ DEPLOY_DIR }}/sas-bases/overlays/required/transformers.yaml"
+        dest: "{{ OPERATOR_DEPLOY_DIRECTORY }}/site-config/required/transformers.yaml"
+        mode: "0660"
   when:
     - V4_CFG_CADENCE_VERSION is version('2021.1.6', "<")
     - V4_CFG_CADENCE_NAME|lower != "fast"

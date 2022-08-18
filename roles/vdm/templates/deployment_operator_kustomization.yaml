@@ -2,7 +2,7 @@ resources:
 - operator-base
 transformers:
 {% if required_transformers is defined %}
-- {{ DEPLOY_DIR }}/sas-bases/overlays/required/transformers.yaml
+- site-config/required/transformers.yaml
 {% if V4_CFG_CR_HOST != "cr.sas.com" %}
 - site-config/mirror.yaml
 {% endif %}
