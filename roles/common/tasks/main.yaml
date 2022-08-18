@@ -256,6 +256,9 @@
     - install
     - uninstall
     - update
+    - onboard
+    - cas-onboard
+    - offboard
 
 - name: migrations
   include_tasks: 

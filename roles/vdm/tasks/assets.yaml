@@ -8,6 +8,8 @@
     - install
     - uninstall
     - update
+    - cas-onboard
+    - offboard
 
 - name: assets - Get License
   command:
@@ -32,6 +34,8 @@
     - install
     - uninstall
     - update
+    - cas-onboard
+    - offboard
 
 - name: assets - Download
   command:
