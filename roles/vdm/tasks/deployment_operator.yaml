@@ -47,8 +47,6 @@
     name: "{{ V4_DEPLOYMENT_OPERATOR_NAMESPACE }}"
     wait: true
     kubeconfig: "{{ KUBECONFIG }}"
-  when:
-    - V4_DEPLOYMENT_OPERATOR_SCOPE|lower == "cluster"
   tags:
     - install
     - update
@@ -138,6 +136,15 @@
                                      if (V4_CFG_CR_USER is not none and
                                      V4_CFG_CADENCE_VERSION is version('2021.1.5', '<') and
                                      V4_CFG_CADENCE_NAME|lower != 'fast') else 'Deployment'}}"
+  tags:
+    - install
+    - update
+
+- name: deployment-operator - copy secrets
+  copy:
+    src: "{{ DEPLOY_DIR }}/sas-bases/base/secrets.yaml"
+    dest: "{{ OPERATOR_DEPLOY_DIRECTORY }}/site-config/secrets.yaml"
+    mode: "0660"
   tags:
     - install
     - update
