@@ -1,5 +1,9 @@
 resources:
 - operator-base
+{% if image_pull_secret_patch_target == "ServiceAccount" %}
+generators:
+- site-config/secrets.yaml
+{% endif %}
 transformers:
 {% if required_transformers is defined %}
 - site-config/required/transformers.yaml
@@ -18,24 +22,12 @@ transformers:
 {% if V4_DEPLOYMENT_OPERATOR_SCOPE|lower == "cluster" %}
 - site-config/cluster-wide-transformer.yaml
 {% endif %}
-
 {% if V4_CFG_CR_USER is not none %}
 secretGenerator:
 - name: site-image-pull-secret
   type: kubernetes.io/dockerconfigjson
   files:
   - .dockerconfigjson=site-config/cr_access.json
-{% if image_pull_secret_patch_target == "ServiceAccount" %}
-patches:
-- patch: |-
-    - op: add
-      path: /imagePullSecrets
-      value:
-      - name: site-image-pull-secret
-  target:
-    kind: ServiceAccount
-    name: sas-deployment-operator
-{% else %}
 patches:
 - patch: |-
     - op: add
@@ -45,5 +37,4 @@ patches:
   target:
     kind: Deployment
     name: sas-deployment-operator
-{% endif %}
 {% endif %}

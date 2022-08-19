@@ -183,14 +183,6 @@
     - uninstall
     - update
 
-- name: Include Orchestration
-  include_tasks: orchestration.yaml
-  tags:
-    - install
-    - uninstall
-    - update
-    - multi-tenancy
-
 - name: Include Deployment Operator - Install
   include_tasks: deployment_operator.yaml
   when:
@@ -198,6 +190,14 @@
   tags:
     - install
     - update
+
+- name: Include Orchestration
+  include_tasks: orchestration.yaml
+  tags:
+    - install
+    - uninstall
+    - update
+    - multi-tenancy
 
 - name: Include Deploy
   include_tasks: deploy.yaml

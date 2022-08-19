@@ -83,12 +83,14 @@
     - cas-onboard
 
 - name: deploy - Remove Viya
-  community.kubernetes.k8s:
-    state: absent
-    src: "{{ ORCHESTRATION_TOOLING_UNINSTALL_MANIFEST }}"
-    wait: true
-    kubeconfig: "{{ KUBECONFIG }}"
-  ignore_errors: yes
+  block:
+    - name: deploy - Remove Viya
+      environment:
+        KUBECONFIG: "{{ KUBECONFIG }}"
+      ansible.builtin.shell: |
+        kubectl -n {{ NAMESPACE }} delete pgclusters.webinfdsvr.sas.com --all || true
+        kubectl -n {{ NAMESPACE }} delete -f {{ ORCHESTRATION_TOOLING_UNINSTALL_MANIFEST }}
+      ignore_errors: yes
   tags:
     - uninstall
 
@@ -102,6 +104,6 @@
     kubeconfig: "{{ KUBECONFIG }}"
     state: absent
   when:
-    - not (V4_DEPLOYMENT_OPERATOR_PRESERVE == True and V4_DEPLOYMENT_OPERATOR_ENABLED == True and V4_DEPLOYMENT_OPERATOR_NAMESPACE|lower == NAMESPACE)
+    - not (V4_DEPLOYMENT_OPERATOR_PRESERVE == True and V4_DEPLOYMENT_OPERATOR_ENABLED == True and V4_DEPLOYMENT_OPERATOR_SCOPE|lower == "namespace")
   tags:
     - uninstall
