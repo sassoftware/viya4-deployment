@@ -1,6 +1,6 @@
 resources:
 - operator-base
-{% if image_pull_secret_patch_target == "ServiceAccount" %}
+{% if secret_generator_required %}
 generators:
 - site-config/secrets.yaml
 {% endif %}

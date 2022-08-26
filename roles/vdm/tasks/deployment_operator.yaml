@@ -130,12 +130,14 @@
     - install
     - update
 
-- name: deployment-operator - determine imagePullSecrets patch target
+- name: deployment-operator - Determine kustomization content
   set_fact:
     image_pull_secret_patch_target: "{{ 'ServiceAccount'
                                      if (V4_CFG_CR_USER is not none and
                                      V4_CFG_CADENCE_VERSION is version('2021.1.5', '<') and
                                      V4_CFG_CADENCE_NAME|lower != 'fast') else 'Deployment'}}"
+    secret_generator_required: "{{ true if (V4_CFG_CADENCE_VERSION is version('2021.1.5', '<') and
+     V4_CFG_CADENCE_NAME|lower != 'fast') else false}}"
   tags:
     - install
     - update
