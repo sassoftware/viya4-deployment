@@ -191,6 +191,26 @@
     - install
     - update
 
+- name: deployment-operator - Get a list of all SASDeployments in cluster
+  community.kubernetes.k8s_info:
+    kubeconfig: "{{ KUBECONFIG }}"
+    api_version: orchestration.sas.com/v1alpha1
+    kind: SASDeployment
+  register: cluster_sasdeployments
+  tags:
+    - uninstall
+
+- name: deployment-operator - Skip deletion if other SASDeployment resources still exist
+  ansible.builtin.debug:
+    msg: > 
+     A SAS Viya deployment that relies on the Deployment Operator still exists in cluster in the following namespaces:
+     {{ cluster_sasdeployments.resources | map(attribute='metadata.namespace') | list | join(', ') }}.
+     Skipping Deployment Operator deletion.
+  when:
+    - cluster_sasdeployments.resources|length != 0
+  tags:
+    - uninstall
+
 - name: deployment-operator - uninstall
   block:
     - name: deployment-operator - Uninstall serviceaccounts, roles, rolebindings, deployments, and secrets
@@ -213,10 +233,11 @@
         kubectl delete clusterrolebindings {{ result.stdout }}
       when:
         - result.stdout|length > 0
+  when:
+    - cluster_sasdeployments.resources|length == 0
   tags:
     - uninstall
 
-# Only delete the namespace in cluster-wide mode since it's separate from the Viya deployment
 - name: deployment-operator - Delete namespace
   community.kubernetes.k8s:
     api_version: v1
@@ -227,6 +248,6 @@
     kubeconfig: "{{ KUBECONFIG }}"
     state: absent
   when:
-    - V4_DEPLOYMENT_OPERATOR_NAMESPACE != NAMESPACE
+    - cluster_sasdeployments.resources|length == 0
   tags:
     - uninstall

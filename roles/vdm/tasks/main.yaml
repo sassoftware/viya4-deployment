@@ -220,6 +220,5 @@
   include_tasks: deployment_operator.yaml
   when:
     - V4_DEPLOYMENT_OPERATOR_ENABLED
-    - V4_DEPLOYMENT_OPERATOR_PRESERVE == False
   tags:
     - uninstall

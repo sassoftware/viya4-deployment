@@ -295,9 +295,9 @@
 - name: orchestration - create sas-orchestration-secret
   environment:
     KUBECONFIG: "{{ KUBECONFIG }}"
-  ansible.builtin.shell: >
-    kubectl -n deploy create secret generic sas-orchestration-secret 
-    --type=kubernetes.io/dockerconfigjson --from-file=.dockerconfigjson={{ DEPLOY_DIR }}/site-config/cr_access.json
+  ansible.builtin.shell: |
+    kubectl -n deploy delete secret sas-orchestration-secret --ignore-not-found=true
+    kubectl -n deploy create secret generic sas-orchestration-secret --type=kubernetes.io/dockerconfigjson --from-file=.dockerconfigjson={{ DEPLOY_DIR }}/site-config/cr_access.json
   when:
     - V4_CFG_CR_USER is not none
   tags:
