@@ -2,9 +2,9 @@
 
 SAS Viya Multi-tenancy enables the onboarding and offboarding of tenants. The tenants share access to licensed SAS Viya applications, but tenants cannot access the data, workflows, users, and resources in other tenants.
 
-The onboarding and offboarding processes described here enable you to deploy tenants with specified users and groups as part of the deployment process. Standardized CAS Servers can be installed with each tenant, or CAS Servers can be installed after tenant onboarding.
+The onboarding and offboarding processes described here enable you to deploy tenants with specified users and groups as part of the deployment process. Standardized CAS Servers can be installed with each tenant, or customized CAS Servers can be installed after tenant onboarding.
 
-The tenant onboarding and offboarding processes can be run as needed after the initial onboarding. Offboarding removes specified tenants and their CAS Servers.
+The tenant onboarding and offboarding processes can be run as needed after a successful provider deployment. Offboarding removes specified tenants and their CAS Servers.
 
 ## Requirements for a Multi-tenant Environment
 
@@ -105,7 +105,7 @@ Step 3. Onboard tenants. Run the following command:
     playbooks/playbook.yaml --tags "multi-tenancy,onboard"
   ```
 
-Step 4. Add any additional CAS customizations for tenants as needed and then run following command to onboard the CAS servers:
+Step 4. For every onboarded tenant, a new manifest directory containing the configuration artifacts for a CAS server is created under the `/site-config` folder. Add or update CAS customizations for tenants as needed and then run following command to onboard the CAS servers:
 
   ```bash
   ansible-playbook \

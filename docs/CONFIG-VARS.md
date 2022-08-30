@@ -30,7 +30,7 @@ Supported configuration variables are listed in the table below.  All variables 
     - [Ingress-nginx](#ingress-nginx)
     - [Metrics Server](#metrics-server)
     - [NFS Client](#nfs-client)
-  - [Multi-Tenancy](#multi-tenancy)
+  - [Multi-tenancy](#multi-tenancy)
 
 ## BASE
 
@@ -336,7 +336,7 @@ The nfs-client is currently supported by the newer nfs-subdir-external-provision
 | NFS_CLIENT_CHART_VERSION | nfs-subdir-external-provisioner helm chart version | string | 4.0.8| false | | baseline |
 | NFS_CLIENT_CONFIG | nfs-subdir-external-provisioner helm values | string | see [here](../roles/baseline/defaults/main.yml) | false | | baseline |
 
-## Multi-Tenancy
+## Multi-tenancy
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
