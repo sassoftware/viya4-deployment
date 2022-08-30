@@ -1,30 +1,35 @@
-# SAS Viya Application Multi-Tenancy
+# SAS Viya Multi-tenancy
 
-SAS Viya supports a multi-tenant environment where multiple tenants can use the applications of a single deployment. Each tenant has access to the licensed software and can manage their own resources but has no visibility into the data and workflows of other tenants. The SAS Viya _IT Operations Guide_ provides detailed information about requirements and onboarding procedures for a multi-tenant deployment of SAS Viya. Access it [here](https://go.documentation.sas.com/doc/en/itopscdc/default/caltenants/titlepage.htm).
+SAS Viya Multi-tenancy enables the onboarding and offboarding of tenants. The tenants share access to licensed SAS Viya applications, but tenants cannot access the data, workflows, users, and resources in other tenants.
 
-## Requirements for a Multi-Tenant Environment
+The onboarding and offboarding processes described here enable you to deploy tenants with specified users and groups as part of the deployment process. Standardized CAS Servers can be installed with each tenant, or CAS Servers can be installed after tenant onboarding.
 
-1. CAS Server Resources Requirement. Each tenant requires a dedicated CAS server. See [CAS Server Resources](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/n0ampbltwqgkjkn1j3qogztsbbu0.htm#p1phbohacgeubcn0zgt2pdlqu0fu) for more details and [plan workload placement](https://go.documentation.sas.com/doc/en/itopscdc/default/dplyml0phy0dkr/p0om33z572ycnan1c1ecfwqntf24.htm#p1ujrdxsdddpdpn1r3xavgwaa0tu) accordingly.
+The tenant onboarding and offboarding processes can be run as needed after the initial onboarding. Offboarding removes specified tenants and their CAS Servers.
 
-2. SAS Infrastructure Data Server. 
+## Requirements for a Multi-tenant Environment
 
-   SAS Viya requires either an internal PostgreSQL instance, which is the default option that is deployed automatically, or an external instance that you configure and maintain. Both the internal and external PostgreSQL options are supported for multi-tenancy. If you deploy with the default option, SAS configures and maintains the deployment for you. If you instead deploy an external PostgreSQL instance, you are responsible for configuring and maintaining it. For external PostgreSQL, see [Requirements for External PostgreSQL](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/p05lfgkwib3zxbn1t6nyihexp12n.htm#p1wq8ouke3c6ixn1la636df9oa1u). Also for details see [PostgreSQL Requirements for a Multi-Tenant Deployment](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/p05lfgkwib3zxbn1t6nyihexp12n.htm#p1r5u2f0yyiql5n11qb61lldcq1j).
+1. CAS Server Resources Requirement.
+   
+   Each tenant requires a dedicated CAS server. See [CAS Server Resources](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/n0ampbltwqgkjkn1j3qogztsbbu0.htm#p1phbohacgeubcn0zgt2pdlqu0fu) for more details and [plan workload placement](https://go.documentation.sas.com/doc/en/itopscdc/default/dplyml0phy0dkr/p0om33z572ycnan1c1ecfwqntf24.htm#p1ujrdxsdddpdpn1r3xavgwaa0tu) accordingly.
 
-   **Note:** You need to size the total number of tenants that will onboarded to calculate max_connections correctly before deployment. This cannot be changed after deployment, cluster rebuild will be required for any post deploy resource changes.
+2. PostgreSQL Requirement.
+
+   SAS Viya Multi-tenancy requires either an internal PostgreSQL instance, which is the default option that is deployed automatically, or an external PostgreSQL instance that you configure and maintain. For external PostgreSQL, see [Requirements for External PostgreSQL](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/p05lfgkwib3zxbn1t6nyihexp12n.htm#p1wq8ouke3c6ixn1la636df9oa1u). Also for details see [PostgreSQL Requirements for a Multi-tenant Deployment](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/p05lfgkwib3zxbn1t6nyihexp12n.htm#p1r5u2f0yyiql5n11qb61lldcq1j).
+
+   **Note:** Before deployment, when using internal PostgreSQL, be sure to size the total number of tenants that will be onboarded. The variable `V4MT_TENANT_IDS` must list all tenants planned to be onboarded. The list of tenants is used to calculate max_connections in PostgreSQL. After deployment, max_connections cannot be changed without redeploying SAS Viya.
 
 3. TLS certificates. See [TLS Requirements](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/n18dxcft030ccfn1ws2mujww1fav.htm#p0bskqphz9np1ln14ejql9ush824).
 
 4. DNS configuration. See [DNS Requirements for Multi-Tenancy](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/n18dxcft030ccfn1ws2mujww1fav.htm#n0mfva3uqvw78nn14s2deu1um3m1).
 
-5. User accounts in your LDAP or SCIM identity provider. To configure LDAP see the steps in [OpenLDAP Customizations](#openldap-customizations).
+5. LDAP or SCIM requirements. 
 
-   For more information on requirements see [Additional LDAP Requirements for Multi-Tenancy](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/n18dxcft030ccfn1ws2mujww1fav.htm#p1dr09lqs9w0w7n1iaklneorpy4r) or [Additional SCIM Requirements for Multi-Tenancy](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/n18dxcft030ccfn1ws2mujww1fav.htm#n0snw477kspeqln1fmoeq3hu6c4m).
+   To configure LDAP see the steps in [OpenLDAP Customizations](#openldap-customizations). For more information on LDAP or SCIM requirements see [Additional LDAP Requirements for Multi-tenancy](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/n18dxcft030ccfn1ws2mujww1fav.htm#p1dr09lqs9w0w7n1iaklneorpy4r) or [Additional SCIM Requirements for Multi-tenancy](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/n18dxcft030ccfn1ws2mujww1fav.htm#n0snw477kspeqln1fmoeq3hu6c4m).
 
-Multi-tenancy is not supported in every customer environment. For more information, see [Limitations to Multi-Tenancy Support](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/n0jq6u1duu7sqnn13cwzecyt475u.htm#p11lcjg42kzdgjn1obgqb9zlaltw).
+## Limitations to Multi-tenancy Support
+Multi-tenancy is not supported in every customer environment. For more information, see [Limitations to Multi-tenancy Support](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/n0jq6u1duu7sqnn13cwzecyt475u.htm#p11lcjg42kzdgjn1obgqb9zlaltw).
 
 ## Actions
-
-Actions to perform onboard, cas-onboard or offboard tenants. 
 
 | Name | Description |
 | :--- | :--- |
@@ -34,21 +39,19 @@ Actions to perform onboard, cas-onboard or offboard tenants.
 
 ## Tasks
 
-Task introduced to facilitate Multi-tenancy actions.
-
 | Name | Description |
 | :--- | :--- |
-| multi-tenancy | Enables to onboard, cas-onboard and offboard on a multi-tenant deployment |
+| multi-tenancy | Enables you to onboard tenants, onboard CAS server for tenants, and offboard tenants. |
 
 ## Preparation
 
 ### Variable Definitions File (ansible-vars.yaml) 
 
-Prepare your `ansible-vars.yaml` file, and set the variables as described in [Multi-Tenancy](../CONFIG-VARS.md#multi-tenancy). The variables `V4MT_ENABLE`, `V4MT_MODE` must be set before you perform the deployment. Other variables can be set before the deployment or during the onboarding or offboarding procedures. See example [ansible-vars-multi-tenancy.yaml](../../examples/multi-tenancy/ansible-vars-multi-tenancy.yaml)
+Prepare your `ansible-vars.yaml` file, and set the variables as described in [Multi-tenancy](../CONFIG-VARS.md#multi-tenancy). The variables `V4MT_ENABLE` and `V4MT_MODE` must be set before deployment. Other variables can be set before the deployment or during the onboarding or offboarding procedures. See example [ansible-vars-multi-tenancy.yaml](../../examples/multi-tenancy/ansible-vars-multi-tenancy.yaml)
 
-**Note:** If your deployment has internal PostgreSQL then you must also set the variable `V4MT_TENANT_IDS` before deployment. You must include all the tenants that you plan to onboard in your deployment to calculate the `max_connections` correctly. You can change V4MT_TENANT_IDS post deployment during `onboard/offboard` step to onboard or offboard specific tenants that you need.
+**Note:** If your deployment has internal PostgreSQL then you must also set the variable `V4MT_TENANT_IDS` before deployment. You must include all the tenants that you plan to onboard in your deployment to calculate the `max_connections` correctly. Post deployment, when onboarding or offboarding, change the value of `V4MT_TENANT_IDS` to list the subset of involved tenants.
 
-For external PostgreSQL, `V4MT_TENANT_IDS` is optional for deployment step. You can set it along with other variable during the onboarding or offboarding procedures.
+For external PostgreSQL, `V4MT_TENANT_IDS` is optional for the deployment step. You can set it along with other variable during the onboarding or offboarding procedures.
 
 ### OpenLDAP Customizations
 
@@ -57,7 +60,7 @@ If the embedded OpenLDAP server is enabled, it is possible to change the users a
 1. Create the folder structure detailed in the [Customize Deployment Overlays](../../README.md#customize-deployment-overlays).
 2. Copy the `./examples/multi-tenancy/openldap` folder into the `/site-config` folder.
 3. Locate the openldap-modify-mt-users-groups.yaml file in the `/openldap` folder.
-4. Modify it to match the desired setup. The file contains example user and groups defined for tenant1 and tenant2, make sure to update them to match your tenant IDs.
+4. Modify the file to match the desired setup. The initial file contains example users and groups defined for tenant1 and tenant2. Make sure that you change the tenant IDs.
 
 **Note:** You must configure all the tenant-specific users and groups during the initial deployment as this method can only be used when you are first deploying the OpenLDAP server. Subsequently, you can either delete and redeploy the OpenLDAP server with a new configuration or add users using `ldapadd`.
 
@@ -77,9 +80,9 @@ For example:
             /openldap-modify-mt-users-groups.yaml  <- openldap overlay
  ```
 
-## Steps to Configure a Multi-Tenant Deployment and Onboard Tenants
+## Configure a Multi-tenant Deployment and Onboard Tenants
 
-Step 1. Have a cluster with sufficient CAS node resources to support the number of tenants being onboarded. Deploy using the ansible-vars.yaml file that you prepared previously. Run the following command to deploy SAS Viya:
+Step 1. Configure a cluster with sufficient CAS node resources to support the number of tenants being onboarded. Deploy using your updated ansible-vars.yaml file. Run the following command to deploy SAS Viya Multi-tenancy:
 
   ```bash
   ansible-playbook \
@@ -136,10 +139,10 @@ Best practice before running offboard command:
     playbooks/playbook.yaml --tags "multi-tenancy,offboard"
   ```
 
-## Uninstall SAS Viya with Multi-Tenancy Enabled Deployment
+## Uninstall SAS Viya Multi-tenant Deployment
 Before you run uninstall command make sure to run offboard command for any onboarded tenants.
 
-### Run the following command to uninstall deployment
+### Run the following command to uninstall
 
   ```bash
   ansible-playbook \
@@ -152,5 +155,5 @@ Before you run uninstall command make sure to run offboard command for any onboa
 
 ## Troubleshooting
 
-1. Verify that all the pods are in Running/Completed state before offboarding the tenants. Otherwise, locks might have been added by SAS Viya services, and the offboarding job will exit without offboarding the tenants. (SAS is working on a fix to remediate this situation.)
-2. Do not attempt to offboard tenants immediately after performing the onboarding steps. Most of the SAS Viya services are restarted during tenant onboarding. The tenant environment might be accessible during the time immediately following tenant onboarding, but there might some services that have not yet stabilized. As a result, they can cause the issue that is described in the previous troubleshooting step.
+1. Verify that all the pods are in `Running` or `Completed` state before offboarding the tenants. Otherwise, locks might have been added by SAS Viya services, and the offboarding job will exit without offboarding the tenants.
+2. Do not attempt to offboard tenants immediately after onboarding. Most of the SAS Viya services are restarted during tenant onboarding. The tenant environment might be accessible during the time immediately following tenant onboarding, but there might be some services that have not yet stabilized. As a result, they can cause the issue that is described in the previous troubleshooting step.
