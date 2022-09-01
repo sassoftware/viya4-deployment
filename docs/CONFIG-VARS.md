@@ -42,14 +42,14 @@ Supported configuration variables are listed in the table below.  All variables 
 | KUBECONFIG | Path to kubeconfig file | string | | true | | viya |
 | V4_CFG_SITEDEFAULT | Path to sitedefault file | string | | false | When not set [sitedefault](../examples/sitedefault.yaml) is used | viya |
 | V4_CFG_SSSD | Path to sssd file | string | | false | | viya |
-| V4_DEPLOYMENT_OPERATOR_ENABLED | Whether to install the Deployment Operator into the cluster and use it to deploy SAS Viya | bool | true | false | If this value is set to false the Lifecycle Operation tools will be used instead to deploy SAS Viya | viya |
+| V4_DEPLOYMENT_OPERATOR_ENABLED | Whether to install the Deployment Operator into the cluster and use it to deploy SAS Viya | bool | true | false | If this value is set to false the Orchestration tooling will be used instead to deploy SAS Viya | viya |
 | V4_DEPLOYMENT_OPERATOR_SCOPE | Where the operator can watch for SASDeployments | string | "cluster" | false | [namespace, cluster] [Additional Documentation](https://go.documentation.sas.com/doc/en/itopscdc/default/dplyml0phy0dkr/n137b56hwogd7in1onzys95awxqe.htm#p16ayulwlsuw8vn10bkpsjtw1ldg) | viya |
 | V4_DEPLOYMENT_OPERATOR_NAMESPACE | Namespace to install the Deployment operator in  | string | "sasoperator" | false | Only applicable when V4_DEPLOYMENT_OPERATOR_SCOPE="cluster" | viya |
 | V4_DEPLOYMENT_OPERATOR_CRB | Name of the ClusterRoleBinding resource that is needed by the operator | string | "sasoperator" | false | [Additional Documentation](https://go.documentation.sas.com/doc/en/itopscdc/default/dplyml0phy0dkr/n137b56hwogd7in1onzys95awxqe.htm#p1arr91os91cg5n1tsmuamj6h10g) | viya |
 
 **Deployment Operator Notes:**
 
-* Currently, the viya4-deployment project does not support using the deployment operator in conjunction with a lts:2021.1 deployment that uses an alternate mirrored repository (`V4_CFG_CR_URL`). If you are planning to deploy SAS Viya in using this specific scenario it is recommended to use the Lifecycle Operator to perform the installation instead.
+* Currently, the viya4-deployment project does not support using the deployment operator in conjunction with a lts:2021.1 deployment that uses an alternate mirrored repository (`V4_CFG_CR_URL`). If you are planning to deploy SAS Viya in using this specific scenario it is recommended to use the Orchestration tooling to perform the installation instead.
   * This can be done by setting `V4_DEPLOYMENT_OPERATOR_ENABLED` to false.
 * In the scenario where you may have multiple SAS Viya deployments managed by a single cluster-wide Deployment Operator, uninstalling one of the SAS Viya deployments will not remove the Deployment Operator from the cluster. It is only during the uninstallation workflow where it is detected that no more SAS Viya deployments exist that are managed by the cluster-wide Deployment Operator will the Deployment Operator be removed as well.
 
