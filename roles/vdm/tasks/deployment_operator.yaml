@@ -1,7 +1,16 @@
 ---
 - name: deployment-operator - Set facts
   set_fact:
-    OPERATOR_DEPLOY_DIRECTORY: "{{ DEPLOY_DIR }}/site-config/operator-deploy"
+    OPERATOR_DEPLOY_DIRECTORY: "{{ BASE_DIR | regex_replace('\\/$', '') }}/{{ CLUSTER_NAME }}/operator-deploy"
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: deployment-operator - Remove old files
+  file:
+    path: "{{ OPERATOR_DEPLOY_DIRECTORY }}"
+    state: absent
   tags:
     - install
     - uninstall
