@@ -182,7 +182,6 @@
     - uninstall
     - update
 
-
 - name: Include Kustomize
   include_tasks: kustomize.yaml
   tags:
