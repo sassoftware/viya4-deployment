@@ -175,6 +175,14 @@
     - uninstall
     - update
 
+- name: Include Start Stop
+  include_tasks: start_stop.yaml
+  tags:
+    - install
+    - uninstall
+    - update
+
+
 - name: Include Kustomize
   include_tasks: kustomize.yaml
   tags:

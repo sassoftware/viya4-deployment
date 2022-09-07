@@ -1,0 +1,42 @@
+- name: start_stop - validate cadence version
+  ansible.builtin.fail:
+    msg: >
+      The schedule-start-stop.yaml transformer is not supported is not supported for cadences 2021.1 and older
+      
+      To continue deploying 2021.1 or older remove 'V4_CFG_VIYA_STOP_SCHEDULE' & 'V4_CFG_VIYA_START_SCHEDULE' from your
+      Ansible vars. Alternatively selected a newer 'V4_CFG_CADENCE_VERSION' if you would like to use the 
+      schedule-start-stop.yaml transformer
+  when:
+    - V4_CFG_VIYA_STOP_SCHEDULE is not none
+    - V4_CFG_VIYA_START_SCHEDULE is not none
+    - V4_CFG_CADENCE_VERSION is version('2021.1', "<=")
+    - V4_CFG_CADENCE_NAME|lower != "fast"
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: start_stop - validate variables
+  ansible.builtin.fail:
+    msg: >
+      If using the schedule-start-stop.yaml transformer you must defined both 'V4_CFG_VIYA_START_SCHEDULE' and 'V4_CFG_VIYA_START_SCHEDULE'
+  when:
+    - (V4_CFG_VIYA_STOP_SCHEDULE is not none and V4_CFG_VIYA_START_SCHEDULE is none) or (V4_CFG_VIYA_STOP_SCHEDULE is none and V4_CFG_VIYA_START_SCHEDULE is not none)
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: start_stop - add transformer
+  overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { transformers: "schedule-start-stop.yaml", vdm: true, min: "2021.2", priority: 61 }
+  when:
+    - V4_CFG_VIYA_STOP_SCHEDULE is not none and V4_CFG_VIYA_START_SCHEDULE is not none
+  tags:
+    - install
+    - uninstall
+    - update

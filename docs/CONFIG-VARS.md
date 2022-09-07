@@ -274,6 +274,8 @@ V4_CFG_POSTGRES_SERVERS:
 | V4_CFG_EMBEDDED_LDAP_ENABLE | Deploy openldap in the namespace for authentication | bool | false | false | [Openldap Config](../roles/vdm/templates/generators/openldap-bootstrap-config.yaml) | viya |
 | V4_CFG_CONSUL_ENABLE_LOADBALANCER | Setup LB to access consul ui | bool | false | false | Consul ui port is 8500 | viya |
 | V4_CFG_ELASTICSEARCH_ENABLE | Enable opendistro search | bool | true | false | When deploying LTS less than 2020.1 or Stable less than 2020.1.2 set to false | viya |
+| V4_CFG_VIYA_START_SCHEDULE | Configure your SAS Viya deployment to start on specific schedules | string |  | false | Must be used in conjunction with `V4_CFG_VIYA_STOP_SCHEDULE` | viya |
+| V4_CFG_VIYA_STOP_SCHEDULE | Configure your SAS Viya deployment to stop on specific schedules | string |  | false | Must be used in conjunction with `V4_CFG_VIYA_START_SCHEDULE` | viya |
 
 ## 3rd Party tools
 
