@@ -104,14 +104,18 @@ Step 3. Onboard tenants. Run the following command:
     -e CONFIG=$HOME/deployments/dev-cluster/dev-namespace/ansible-vars.yaml \
     playbooks/playbook.yaml --tags "multi-tenancy,onboard"
   ```
+**Note:** As part of setup in the above `Onboard tenants` step, for every onboarded tenant, a CAS server directory containing the configuration artifacts is created under the `/site-config` folder. 
+Example: For tenant `acme` a CAS server directory named `cas-acme-default` will be created.
 
-Step 4. For every onboarded tenant, a new manifest directory containing the configuration artifacts for a CAS server is created under the `/site-config` folder. Add or update CAS customizations for tenants as needed and then run following command to onboard the CAS servers:
+Step 4. Add or update CAS customizations for tenants as needed and then run following command to onboard the CAS servers:
 
   ```bash
   ansible-playbook \
     -e BASE_DIR=$HOME/deployments \
     -e KUBECONFIG=$HOME/deployments/.kube/config \
     -e CONFIG=$HOME/deployments/dev-cluster/dev-namespace/ansible-vars.yaml \
+    -e TFSTATE=$HOME/deployments/dev-cluster/terraform.tfstate \
+    -e JUMP_SVR_PRIVATE_KEY=$HOME/.ssh/id_rsa \
     playbooks/playbook.yaml --tags "multi-tenancy,cas-onboard"
   ```
 
@@ -136,6 +140,8 @@ Best practice before running offboard command:
     -e BASE_DIR=$HOME/deployments \
     -e KUBECONFIG=$HOME/deployments/.kube/config \
     -e CONFIG=$HOME/deployments/dev-cluster/dev-namespace/ansible-vars.yaml \
+    -e TFSTATE=$HOME/deployments/dev-cluster/terraform.tfstate \
+    -e JUMP_SVR_PRIVATE_KEY=$HOME/.ssh/id_rsa \
     playbooks/playbook.yaml --tags "multi-tenancy,offboard"
   ```
 
@@ -149,6 +155,7 @@ Before you run uninstall command make sure to run offboard command for any onboa
     -e BASE_DIR=$HOME/deployments \
     -e KUBECONFIG=$HOME/deployments/.kube/config \
     -e CONFIG=$HOME/deployments/dev-cluster/dev-namespace/ansible-vars.yaml \
+    -e TFSTATE=$HOME/deployments/dev-cluster/terraform.tfstate \
     -e JUMP_SVR_PRIVATE_KEY=$HOME/.ssh/id_rsa \
     playbooks/playbook.yaml --tags "baseline,viya,uninstall"
   ```
