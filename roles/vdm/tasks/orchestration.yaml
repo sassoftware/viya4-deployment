@@ -227,7 +227,7 @@
   block:
     - name: orchestration - Generate SAS Viya deployment manifest
       community.docker.docker_container:
-        name: orchestration
+        name: "orchestration_{{ lookup('password', '/dev/null chars=ascii_lowercase length=8') }}"
         image: "{{ V4_CFG_CR_HOST }}/{{ ORCHESTRATION_IMAGE }}"
         volumes:
           - "{{ tmpdir.path }}:/tmp"
@@ -337,7 +337,7 @@
   block:
     - name: orchestration - Generate SAS Viya uninstall manifest
       community.docker.docker_container:
-        name: orchestration
+        name: "orchestration_{{ lookup('password', '/dev/null chars=ascii_lowercase length=8') }}"
         image: "{{ V4_CFG_CR_HOST }}/{{ ORCHESTRATION_IMAGE }}"
         volumes:
           - "{{ tmpdir.path }}:/tmp"
@@ -392,7 +392,7 @@
   block:
     - name: orchestration - Generate SAS Viya uninstall manifest
       community.docker.docker_container:
-        name: orchestration
+        name: "orchestration_{{ lookup('password', '/dev/null chars=ascii_lowercase length=8') }}"
         image: "{{ V4_CFG_CR_HOST }}/{{ ORCHESTRATION_IMAGE }}"
         volumes:
           - "{{ DEPLOY_DIR }}:/data"
