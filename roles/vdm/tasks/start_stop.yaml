@@ -1,7 +1,7 @@
 - name: start_stop - validate cadence version
   ansible.builtin.fail:
     msg: >
-      The schedule-start-stop.yaml transformer is not supported is not supported for cadences 2021.1 and older
+      The schedule-start-stop.yaml transformer is not supported for cadences 2021.1 and older
       
       To continue deploying 2021.1 or older remove 'V4_CFG_VIYA_STOP_SCHEDULE' & 'V4_CFG_VIYA_START_SCHEDULE' from your
       Ansible vars. Alternatively select a newer 'V4_CFG_CADENCE_VERSION' if you would like to use the 
