@@ -22,7 +22,7 @@ Complete each step under the **SingleStore Cluster Definition** heading in the `
 
 - Add a new Step 1a after Step 1:
 
->>1a. Copy `$deploy/sas-bases/components/sas-singlestore` into the `$deploy/site-config/sas-singlestore/component` directory.
+>>1a. Copy `$deploy/sas-bases/components/sas-singlestore` into the `$deploy/site-config/sas-singlestore/components` directory.
 
 - Skip Step 3.  
 - Complete the remaining steps from the README.md for SingleStore, and set `DEPLOY=true` in your ansible-vars.yaml file. 
