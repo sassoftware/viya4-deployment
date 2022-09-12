@@ -7,8 +7,7 @@
       Ansible vars. Alternatively select a newer 'V4_CFG_CADENCE_VERSION' if you would like to use the 
       schedule-start-stop.yaml transformer
   when:
-    - V4_CFG_VIYA_STOP_SCHEDULE is not none
-    - V4_CFG_VIYA_START_SCHEDULE is not none
+    - V4_CFG_VIYA_STOP_SCHEDULE is not none or V4_CFG_VIYA_START_SCHEDULE is not none
     - V4_CFG_CADENCE_VERSION is version('2021.1', "<=")
     - V4_CFG_CADENCE_NAME|lower != "fast"
   tags:
@@ -16,16 +15,16 @@
     - uninstall
     - update
 
-- name: start_stop - validate variables
-  ansible.builtin.fail:
-    msg: >
-      If using the schedule-start-stop.yaml transformer you must define both 'V4_CFG_VIYA_START_SCHEDULE' and 'V4_CFG_VIYA_START_SCHEDULE'
-  when:
-    - (V4_CFG_VIYA_STOP_SCHEDULE is not none and V4_CFG_VIYA_START_SCHEDULE is none) or (V4_CFG_VIYA_STOP_SCHEDULE is none and V4_CFG_VIYA_START_SCHEDULE is not none)
-  tags:
-    - install
-    - uninstall
-    - update
+#- name: start_stop - validate variables
+#  ansible.builtin.fail:
+#    msg: >
+#      If using the schedule-start-stop.yaml transformer you must define both 'V4_CFG_VIYA_START_SCHEDULE' and 'V4_CFG_VIYA_START_SCHEDULE'
+#  when:
+#    - (V4_CFG_VIYA_STOP_SCHEDULE is not none and V4_CFG_VIYA_START_SCHEDULE is none) or (V4_CFG_VIYA_STOP_SCHEDULE is none and V4_CFG_VIYA_START_SCHEDULE is not none)
+#  tags:
+#    - install
+#    - uninstall
+#    - update
 
 - name: start_stop - add transformer
   overlay_facts:
@@ -35,7 +34,7 @@
     add:
       - { transformers: "schedule-start-stop.yaml", vdm: true, min: "2021.2", priority: 61 }
   when:
-    - V4_CFG_VIYA_STOP_SCHEDULE is not none and V4_CFG_VIYA_START_SCHEDULE is not none
+    - V4_CFG_VIYA_STOP_SCHEDULE is not none or V4_CFG_VIYA_START_SCHEDULE is not none
   tags:
     - install
     - uninstall
