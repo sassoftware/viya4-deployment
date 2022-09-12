@@ -15,17 +15,6 @@
     - uninstall
     - update
 
-#- name: start_stop - validate variables
-#  ansible.builtin.fail:
-#    msg: >
-#      If using the schedule-start-stop.yaml transformer you must define both 'V4_CFG_VIYA_START_SCHEDULE' and 'V4_CFG_VIYA_START_SCHEDULE'
-#  when:
-#    - (V4_CFG_VIYA_STOP_SCHEDULE is not none and V4_CFG_VIYA_START_SCHEDULE is none) or (V4_CFG_VIYA_STOP_SCHEDULE is none and V4_CFG_VIYA_START_SCHEDULE is not none)
-#  tags:
-#    - install
-#    - uninstall
-#    - update
-
 - name: start_stop - add transformer
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
