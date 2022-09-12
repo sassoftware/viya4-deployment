@@ -20,7 +20,7 @@ patch: |-
 {% if V4_CFG_VIYA_STOP_SCHEDULE is not none %}
     value: false
 {% else %}
-    value: false
+    value: true
 {% endif %}
   - op: replace
     path: /metadata/labels/sas.com~1deployment
