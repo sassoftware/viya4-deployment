@@ -4,7 +4,6 @@ V4_CFG_INGRESS_TYPE: ingress
 V4_CFG_INGRESS_MODE: public
 
 ## Cert-manager
-CERT_MANAGER_ENABLED: false
 CERT_MANAGER_NAME: cert-manager
 CERT_MANAGER_NAMESPACE: cert-manager
 CERT_MANAGER_CHART_NAME: cert-manager

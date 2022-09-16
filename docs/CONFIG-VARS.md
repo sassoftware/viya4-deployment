@@ -185,7 +185,7 @@ Viya 4 supports 2 different types of certificate generators, cert-manager and op
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_TLS_GENERATOR | Which tool to use for certificate generation | string | openssl | false | Supported values: [`cert-manager`,`openssl`]. | viya, cluster-logging, cluster-monitoring |
+| V4_CFG_TLS_GENERATOR | Which tool to use for certificate generation | string | openssl | false | Supported values: [`cert-manager`,`openssl`]. If set to `cert-manager`, `cert-manager` will be installed during the baselining. | viya, cluster-logging, cluster-monitoring |
 | V4_CFG_TLS_MODE | Which TLS mode to configure | string | front-door | false | Supported values: [`full-stack`,`front-door`,`disabled.`] When deploying full-stack you must set V4_CFG_TLS_TRUSTED_CA_CERTS to trust external postgres server ca. | all |
 | V4_CFG_TLS_CERT | Path to ingress certificate file | string | | false | If specified, used instead of cert-manager issued certificates | viya |
 | V4_CFG_TLS_KEY | Path to ingress key file | string | | false | Required when V4_CFG_TLS_CERT is specified | viya |
@@ -288,12 +288,14 @@ Notes:
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| CERT_MANAGER_ENABLED | Whether to deploy cert-manager into the cluster using helm | bool | false | false | Required if V4_CFG_TLS_GENERATOR is set to `cert-manager` and it's not already installed | baseline |
 | CERT_MANAGER_NAMESPACE | cert-manager helm install namespace | string | cert-manager | false | | baseline |
 | CERT_MANAGER_CHART_URL | cert-manager helm chart url | string | https://charts.jetstack.io/ | false | | baseline |
 | CERT_MANAGER_CHART_NAME| cert-manager helm chart name | string | cert-manager| false | | baseline |
 | CERT_MANAGER_CHART_VERSION | cert-manager helm chart version | string | 1.9.1 | false | | baseline |
 | CERT_MANAGER_CONFIG | cert-manager helm values | string | see [here](../roles/baseline/defaults/main.yml) | false | | baseline |
+
+Notes:
+  - cert-manager will only be installed if `V4_CFG_TLS_GENERATOR` is set to "cert-manager"
 
 ### Cluster Autoscaler
 
