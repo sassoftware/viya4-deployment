@@ -52,6 +52,9 @@ V4_CFG_CONNECT_ENABLE_LOADBALANCER: false
 V4_CFG_CONNECT_FQDN: null
 V4_CFG_CLUSTER_NODE_POOL_MODE: "standard"
 
+V4_CFG_VIYA_STOP_SCHEDULE: null
+V4_CFG_VIYA_START_SCHEDULE: null
+
 # In theory the issuer name can be changed; however, there are a few overlays where this value is hard coded. See:
 # - $deploy/sas-bases/overlays/cert-manager-issuer/resources.yaml
 # - $deploy/sas-bases/overlays/network/ingress/security/generators/backend-tls-generators.yaml

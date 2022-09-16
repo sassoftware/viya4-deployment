@@ -39,7 +39,7 @@ alertmanager:
       secretName: alertmanager-ingress-tls-secret
     hosts:
     - {{ V4M_ALERTMANAGER_FQDN  }}
-  alertManagerSpec:
+  alertmanagerSpec:
     externalUrl: "https://{{ V4M_ALERTMANAGER_FQDN }}"
     storage:
       volumeClaimTemplate:

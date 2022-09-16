@@ -1,0 +1,60 @@
+---
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: schedule-stop-all
+patch: |-
+  - op: replace
+    path: /spec/schedule
+    # schedule: MUST BE PROVIDED BY USER.
+    # This is the cron schedule by which the sas-stop-all job is run.
+    # Example:
+    #   value: '0 19 * * 1-5'
+{% if V4_CFG_VIYA_STOP_SCHEDULE is not none %}
+    value: {{ V4_CFG_VIYA_STOP_SCHEDULE }}
+{% else %}
+    value: '0 19 * * 1-5'
+{% endif %}
+  - op: replace
+    path: /spec/suspend
+{% if V4_CFG_VIYA_STOP_SCHEDULE is not none %}
+    value: false
+{% else %}
+    value: true
+{% endif %}
+  - op: replace
+    path: /metadata/labels/sas.com~1deployment
+    value: 'user-specified'
+target:
+  name: sas-stop-all
+  kind: CronJob
+---
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: schedule-start-all
+patch: |-
+  - op: replace
+    path: /spec/schedule
+    # schedule: MUST BE PROVIDED BY USER.
+    # This is the cron schedule by which the sas-start-all job is run
+    # Example:
+    #   value: '0 7 * * 1-5'
+{% if V4_CFG_VIYA_START_SCHEDULE is not none %}
+    value: {{ V4_CFG_VIYA_START_SCHEDULE }}
+{% else %}
+    value: '0 7 * * 1-5'
+{% endif %}
+  - op: replace
+    path: /spec/suspend
+{% if V4_CFG_VIYA_START_SCHEDULE is not none %}
+    value: false
+{% else %}
+    value: true
+{% endif %}
+  - op: replace
+    path: /metadata/labels/sas.com~1deployment
+    value: 'user-specified'
+target:
+  name: sas-start-all
+  kind: CronJob
