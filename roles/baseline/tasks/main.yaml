@@ -50,7 +50,7 @@
     file: ebs-csi-driver.yaml
   when:
     - PROVIDER == "aws"
-    - K8S_SERVER_VERSION|float >= 1.23
+    - K8S_VERSION|float >= 1.23
     - EBS_CSI_DRIVER_ACCOUNT is defined
     - EBS_CSI_DRIVER_ACCOUNT is not none
   tags:
