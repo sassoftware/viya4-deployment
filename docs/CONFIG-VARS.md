@@ -309,6 +309,20 @@ Cluster-autoscaler is currently only used for AWS EKS clusters. GCP GKE and Azur
 | CLUSTER_AUTOSCALER_ACCOUNT | cluster autoscaler aws role arn | string | | false | Required to enable cluster-autoscaler on AWS | baseline |
 | CLUSTER_AUTOSCALER_LOCATION | aws region where kubernetes cluster resides | string | us-east-1 | false | | baseline |
 
+### EBS CSI Driver
+
+The EBS CSI driver is currently only used for kubernetes v1.23 or later AWS EKS clusters. 
+
+| Name | Description | Type | Default | Required | Notes | Tasks |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
+| EBS_CSI_DRIVER_ENABLED | Whether to deploy the aws ebs csi driver into the cluster using helm | bool | true | false | | baseline |
+| EBS_CSI_DRIVER_CHART_URL | aws ebs csi driver helm chart url | string | https://kubernetes-sigs.github.io/aws-ebs-csi-driver | false | | baseline |
+| EBS_CSI_DRIVER_CHART_NAME| aws ebs csi driver helm chart name | string | aws-ebs-csi-driver | false | | baseline |
+| EBS_CSI_DRIVER_CHART_VERSION | aws ebs csi driver helm chart version | string | 2.11.1 | false | | baseline |
+| EBS_CSI_DRIVER_CONFIG | aws ebs csi driver helm values | string | see [here](../roles/baseline/defaults/main.yml) | false | | baseline |
+| EBS_CSI_DRIVER_ACCOUNT | cluster autoscaler aws role arn | string | | false | Required to enable the aws ebs csi driver on AWS | baseline |
+| EBS_CSI_DRIVER_LOCATION | aws region where kubernetes cluster resides | string | us-east-1 | false | | baseline |
+
 ### Ingress-nginx
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
