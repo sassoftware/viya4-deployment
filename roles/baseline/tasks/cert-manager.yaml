@@ -11,7 +11,8 @@
     create_namespace: true
     wait: true
   when:
-    - (V4_CFG_TLS_GENERATOR | default('default_value', 'openssl')) == 'cert-manager'
+    - V4_CFG_TLS_GENERATOR is defined
+    - V4_CFG_TLS_GENERATOR == 'cert-manager'
   tags:
     - install
     - update
