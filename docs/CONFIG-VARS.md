@@ -52,7 +52,12 @@ Supported configuration variables are listed in the table below.  All variables 
 * Currently, the viya4-deployment project does not support using the SAS Viya Deployment Operator in conjunction with a Long-Term Support: 2021.1 deployment that uses an alternate mirror repository (`V4_CFG_CR_URL`). If you are planning to deploy SAS Viya according to this specific scenario, SAS recommends using the orchestration tool to perform the installation instead.
 
    This can be done by setting `V4_DEPLOYMENT_OPERATOR_ENABLED` to false.
+
+
 * In a scenario where you have multiple SAS Viya deployments managed by a single cluster-wide deployment operator, uninstalling one of the SAS Viya deployments does not remove the SAS Viya Deployment Operator from the cluster. However, during the uninstallation workflow, if no SAS Viya deployments that are managed by the cluster-wide deployment operator are detected, the SAS Viya Deployment Operator is also removed.
+
+
+* If you are running this project using Ansible directly on your workstation, we require Docker to be installed and the executing user should be able to access it. This is required to use the Orchestration Tooling CLI see [ansible usage](user/AnsibleUsage.md#Preparation)
 
 ## Cloud
 
