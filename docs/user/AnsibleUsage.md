@@ -24,6 +24,10 @@ pip3 install --user -r requirements.txt
 ansible-galaxy collection install -r requirements.yaml -f
 ```
 
+### Install Docker
+
+See https://docs.docker.com/engine/install/ for steps on how to install Docker for your distro. It's a requirement to use the Orchestration tooling CLI during Viya installation.
+
 ## Running
 
 Declare the Actions and Task to be performed.
