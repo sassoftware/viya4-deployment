@@ -88,6 +88,24 @@
       when:
         - tfstate.postgres_servers is defined
         - tfstate.postgres_servers.value|length > 0
+    - name: tfstate - ebs csi driver account
+      set_fact: 
+        EBS_CSI_DRIVER_ACCOUNT: "{{ tfstate.ebs_csi_account.value }}"
+      when:
+        - tfstate.ebs_csi_account is defined
+        - tfstate.ebs_csi_account.value|length > 0
+    - name: tfstate - ebs csi driver location
+      set_fact: 
+        EBS_CSI_DRIVER_LOCATION: "{{ tfstate.location.value }}"
+      when:
+        - tfstate.location is defined
+        - tfstate.location.value|length > 0
+    - name: tfstate - kubernetes version
+      set_fact: 
+        K8S_VERSION: "{{ tfstate.k8s_version.value }}"
+      when:
+        - tfstate.k8s_version is defined
+        - tfstate.k8s_version.value|length > 0
     - name: tfstate - cluster autoscaler account
       set_fact: 
         CLUSTER_AUTOSCALER_ACCOUNT: "{{ tfstate.autoscaler_account.value }}"

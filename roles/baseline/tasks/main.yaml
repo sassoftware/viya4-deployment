@@ -45,6 +45,17 @@
   tags:
     - baseline
 
+- name: Include ebs-csi-driver
+  include_tasks: 
+    file: ebs-csi-driver.yaml
+  when:
+    - PROVIDER == "aws"
+    - K8S_VERSION|float >= 1.23
+    - EBS_CSI_DRIVER_ACCOUNT is defined
+    - EBS_CSI_DRIVER_ACCOUNT is not none
+  tags:
+    - baseline
+
 - name: Include cert manager
   include_tasks: 
     file: cert-manager.yaml
