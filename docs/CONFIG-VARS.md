@@ -177,7 +177,6 @@ When setting V4_CFG_MANAGE_STORAGE to true, A new storage classes will be create
 | V4M_ELASTICSEARCH_FQDN | FQDN to use for search ingress  | string | search.<V4M_BASE_DOMAIN> | false | | cluster-logging |
 | V4M_ELASTICSEARCH_CERT | Path to tls certificate to use for search ingress | string |<V4M_CERT> | false | If both this and V4M_CERT are not set a self-signed cert will be used | cluster-logging |
 | V4M_ELASTICSEARCH_KEY | Path to tls key to use for search ingress | string | <V4M_KEY> | false | If both this and V4M_KEY are not set a self-signed cert will be used | cluster-logging |
-| V4M_OSD_NODEPORT_ENABLE |  If you want to make OpenSearch Dashboards accessible via NodePort, set the environment variable V4M_OSD_NODEPORT_ENABLE to true. OpenSearch Dashboards will be accessible from port 31034 | bool | false | false | | cluster-logging
 
 ## TLS
 
