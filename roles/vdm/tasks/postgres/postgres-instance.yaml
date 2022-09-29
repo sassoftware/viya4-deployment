@@ -48,6 +48,39 @@
     - uninstall
     - update
 
+- name: postgres instance - external post 2022.10
+  block:
+  - name: postgres instance - external copy postgres-user.env
+    template:
+      src: "postgres-user.env"
+      dest: "{{ DEPLOY_DIR }}/site-config/postgres-{{ role }}-user.env"
+      mode: "0660"
+  - name: postgres instance - external copy secret generator template
+    template:
+      src: "{{ role_path }}/templates/generators/postgres-secrets.yaml"
+      dest: "{{ role_path }}/templates/generators/postgres-{{ role }}-secrets.yaml"
+      mode: "0660"
+  - name: postgres instance - external copy dataserver transformer template
+    template:
+      src: "{{ role_path }}/templates/transformers/dataserver-transformer.yaml"
+      dest: "{{ role_path }}/templates/transformers/{{ role }}-dataserver-transformer.yaml"
+      mode: "0660"
+  - name: postgres instance - external kustomization entries
+    overlay_facts:
+      cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+      cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+      existing: "{{ vdm_overlays }}"
+      add:
+        - { transformers: "{{ role }}-dataserver-transformer.yaml", min: "2022.10", vdm: true}
+        - { generators: "postgres-{{ role }}-secrets.yaml", min: "2022.10", vdm: true}
+  when:
+    - not settings.internal
+    - V4_CFG_CADENCE_VERSION is version('2022.10', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
+  tags:
+    - install
+    - uninstall
+    - update
+
 - block:
   - name: postgres instance - crd
     template:
@@ -62,6 +95,8 @@
         - { resources: "postgres-{{ role }}-instance.yaml", vdm: true }
   when:
     - not settings.internal or ( settings.internal and role != "default" and not result.stat.exists )
+    - V4_CFG_CADENCE_VERSION is version('2022.10', "<")
+    - V4_CFG_CADENCE_NAME|lower != "fast"
   tags:
     - install
     - uninstall
