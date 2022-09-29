@@ -8,6 +8,51 @@
     - uninstall
     - update
 
+- name: postgres - crunchydata folder check
+  stat:
+    path: "{{ DEPLOY_DIR }}/sas-bases/overlays/crunchydata"
+  register: crunchydata_folder
+  when: settings.internal
+  tags:
+    - install
+    - uninstall
+    - update
+
+- set_fact:
+    internal_crunchy: crunchydata_folder.stat.exists
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: postgres - internal-postgres folder check
+  stat:
+    path: "{{ DEPLOY_DIR }}/sas-bases/overlays/internal-postgres"
+  register: internal_pg_folder
+  when: settings.internal
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: postgres - internal crunchydata default
+  overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { resources: "overlays/crunchydata/postgres-operator" }
+      - { resources: "overlays/postgres/platform-postgres" }
+      - { components: "components/crunchydata/internal-platform-postgres" }
+  when: 
+    - settings.internal
+    - role == "default"
+    - crunchydata_folder.stat.exists
+  tags:
+    - install
+    - uninstall
+    - update
+
 - name: postgres - internal default
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
@@ -18,6 +63,7 @@
   when: 
     - settings.internal
     - role == "default"
+    - internal_pg_folder.stat.exists
   tags:
     - install
     - uninstall
@@ -62,6 +108,7 @@
         - { resources: "postgres-{{ role }}-instance.yaml", vdm: true }
   when:
     - not settings.internal or ( settings.internal and role != "default" and not result.stat.exists )
+    - not crunchydata_folder.stat.exists
   tags:
     - install
     - uninstall
