@@ -75,7 +75,6 @@
         cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
         existing: "{{ vdm_overlays }}"
         add:
-          - { resources: "overlays/postgres/platform-postgres", min: "2022.10" }
           - { transformers: "overlays/external-postgres/external-postgres-transformer.yaml", max: "2022.09" }
       when:
         - not internal_postgres
@@ -111,7 +110,7 @@
         cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
         existing: "{{ vdm_overlays }}"
         add:
-          - { transformers: "overlays/external-postgres/external-postgres-transformer.yaml" }
+          - { resources: "overlays/postgres/platform-postgres", min: "2022.10" }
       when: 
         - not internal_postgres
     - name: postgres - instance
