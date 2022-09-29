@@ -82,6 +82,17 @@
     - install
     - update
 
+- name: deploy - Uninstall postgresclusters
+  environment:
+    KUBECONFIG: "{{ KUBECONFIG }}"
+  ansible.builtin.shell: >
+    kubectl -n {{ NAMESPACE }} delete postgresclusters --selector="sas.com/deployment=sas-viya" --ignore-not-found=true
+  ignore_errors: yes
+  when:
+    - V4_CFG_CADENCE_VERSION is version('2022.10', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
+  tags:
+    - uninstall
+
 - name: Remove Viya
   community.kubernetes.k8s:
     state: absent

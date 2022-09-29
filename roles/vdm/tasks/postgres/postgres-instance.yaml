@@ -44,7 +44,7 @@
       - { resources: "overlays/crunchydata/postgres-operator" }
       - { resources: "overlays/postgres/platform-postgres" }
       - { components: "components/crunchydata/internal-platform-postgres" }
-  when: 
+  when:
     - settings.internal
     - role == "default"
     - crunchydata_folder.stat.exists
@@ -94,6 +94,41 @@
     - uninstall
     - update
 
+- name: postgres instance - external post 2022.10
+  block:
+  - name: postgres instance - external copy postgres-user.env
+    template:
+      src: "postgres-user.env"
+      dest: "{{ DEPLOY_DIR }}/site-config/postgres-{{ role }}-user.env"
+      mode: "0660"
+  - name: postgres instance - external copy secret generator template
+    template:
+      src: "{{ role_path }}/templates/generators/postgres-secrets.yaml"
+      dest: "{{ role_path }}/templates/generators/postgres-{{ role }}-secrets.yaml"
+      mode: "0660"
+  - name: postgres instance - external copy dataserver transformer template
+    template:
+      src: "{{ role_path }}/templates/transformers/dataserver-transformer.yaml"
+      dest: "{{ role_path }}/templates/transformers/{{ role }}-dataserver-transformer.yaml"
+      mode: "0660"
+  - name: postgres instance - external kustomization entries
+    overlay_facts:
+      cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+      cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+      existing: "{{ vdm_overlays }}"
+      add:
+        - { transformers: "{{ role }}-dataserver-transformer.yaml", min: "2022.10", vdm: true}
+        - { generators: "postgres-{{ role }}-secrets.yaml", min: "2022.10", vdm: true}
+  when:
+    - not settings.internal
+    - V4_CFG_CADENCE_VERSION is version('2022.10', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
+  tags:
+    - install
+    - uninstall
+    - update
+
+# TODO Fix Logic for tasks below
+
 - block:
   - name: postgres instance - crd
     template:
@@ -107,8 +142,29 @@
       add:
         - { resources: "postgres-{{ role }}-instance.yaml", vdm: true }
   when:
-    - not settings.internal or ( settings.internal and role != "default" and not result.stat.exists )
+    - settings.internal and role != "default" and not result.stat.exists
     - not crunchydata_folder.stat.exists
+  tags:
+    - install
+    - uninstall
+    - update
+
+- block:
+  - name: postgres instance - external crd
+    template:
+      src: "{{ role_path }}/templates/resources/postgres-instance.yaml"
+      dest: "{{ role_path }}/templates/resources/postgres-{{ role }}-instance.yaml"
+      mode: "0660"
+  - overlay_facts:
+      cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+      cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+      existing: "{{ vdm_overlays }}"
+      add:
+        - { resources: "postgres-{{ role }}-instance.yaml", vdm: true }
+  when:
+    - not settings.internal
+    - V4_CFG_CADENCE_VERSION is version('2022.10', "<")
+    - V4_CFG_CADENCE_NAME|lower != "fast"
   tags:
     - install
     - uninstall
