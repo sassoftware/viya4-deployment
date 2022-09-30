@@ -4,7 +4,7 @@ SAS Viya provides an optional integration with SingleStoreDB. SingleStoreDB is a
 
 ## Requirements for SAS Viya with SingleStore
 
-If your SAS software order included SAS Viya with SingleStore, additional requirements apply to your deployment. The SAS Viya _IT Operations Guide_ provides detailed information about requirements for a SingleStore-enabled deployment of SAS Viya. You can access the guide [here](https://documentation.sas.com/doc/en/itopscdc/default/itopssr/n0jq6u1duu7sqnn13cwzecyt475u.htm#n0qs42c42o8jjzn12ib4276fk7pb).
+If your SAS software order included SAS Viya with SingleStore, additional requirements apply to your deployment. The SAS Viya _IT Operations Guide_ provides detailed information about requirements for a SingleStore-enabled deployment of SAS Viya. You can access the guide [here](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=itopssr&docsetTarget=n0jq6u1duu7sqnn13cwzecyt475u.htm#n0qs42c42o8jjzn12ib4276fk7pb).
 
 ## Deploying SAS Viya with SingleStore Using SAS Viya 4 Deployment
 
