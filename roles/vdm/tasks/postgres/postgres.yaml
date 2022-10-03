@@ -101,7 +101,7 @@
         cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
         existing: "{{ vdm_overlays }}"
         add:
-          - { resources: "overlays/crunchydata/postgres-operator" }
+          - { resources: "overlays/crunchydata/postgres-operator", min: "2022.10" }
       when: 
         - internal_postgres
     - name: postgres - external

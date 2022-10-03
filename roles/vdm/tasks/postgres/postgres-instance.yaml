@@ -41,10 +41,10 @@
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { resources: "overlays/crunchydata/postgres-operator" }
-      - { resources: "overlays/postgres/platform-postgres" }
-      - { components: "components/crunchydata/internal-platform-postgres" }
-  when:
+      - { resources: "overlays/crunchydata/postgres-operator", min: "2022.10" }
+      - { resources: "overlays/postgres/platform-postgres", min: "2022.10" }
+      - { components: "components/crunchydata/internal-platform-postgres", min: "2022.10" }
+  when: 
     - settings.internal
     - role == "default"
     - crunchydata_folder.stat.exists
@@ -59,7 +59,7 @@
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { resources: "overlays/internal-postgres" }
+      - { resources: "overlays/internal-postgres", max: "2022.09" }
   when: 
     - settings.internal
     - role == "default"
@@ -85,7 +85,7 @@
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { resources: "overlays/internal-postgres/{{ role }}" }
+      - { resources: "overlays/internal-postgres/{{ role }}", max: "2022.09" }
   when: 
     - settings.internal
     - result.stat.exists
