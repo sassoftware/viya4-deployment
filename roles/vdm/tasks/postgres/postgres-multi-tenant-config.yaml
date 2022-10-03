@@ -76,6 +76,7 @@
     - uninstall
     - update
 
+# Updates to support Crunchy v5 internal PostgreSQL
 - name: postgres crunchy v5 - copy custom config 
   copy:
     src: "{{ DEPLOY_DIR }}/sas-bases/examples/crunchydata/tuning/crunchy-tuning-transformer.yaml"
@@ -99,8 +100,6 @@
   when: 
     - crunchydata_folder.stat.exists
     - settings.internal
-  loop_control:
-    loop_var: outer_item
   tags:
     - install
     - uninstall
