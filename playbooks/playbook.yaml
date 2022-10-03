@@ -39,9 +39,10 @@
         - V4_CFG_MANAGE_STORAGE
       tags:
         - viya
-    - name: baseline role
+    - name: baseline role install
       include_role:
         name: baseline
+      when: ('baseline' in ansible_run_tags) and ('install' in ansible_run_tags)
       tags:
         - baseline
     - name: monitoring role - cluster
@@ -68,6 +69,12 @@
         tasks_from: viya-monitoring
       tags:
         - viya-monitoring
+    - name: baseline role uninstall
+      include_role:
+        name: baseline
+      when: ('baseline' in ansible_run_tags) and ('uninstall' in ansible_run_tags)
+      tags:
+        - baseline
     - name: Delete tmpdir
       file:
         path: "{{ tmpdir.path }}"

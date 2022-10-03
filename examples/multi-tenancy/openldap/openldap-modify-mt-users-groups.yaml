@@ -215,7 +215,7 @@ patch: |-
       
       dn: ou=tenant2,dc=example,dc=com
       changetype: add
-      ou: tenant1
+      ou: tenant2
       objectClass: organizationalUnit
       objectClass: top
       
