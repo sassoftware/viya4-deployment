@@ -1,5 +1,17 @@
 - set_fact:
-    max_connections: '{{ ((((V4MT_TENANT_IDS.split(",") | length) | int ) + 1 ) * 1128) }}'
+    MAX_CONNECTIONS: '{{ ((((V4MT_TENANT_IDS.split(",") | length) | int ) + 1 ) * 1128) }}'
+  tags:
+    - install
+    - uninstall
+    - update
+
+- set_fact:
+    CUSTOM_CONFIGURATION: |-
+      postgresql:
+        parameters:
+          max_connections: {{ MAX_CONNECTIONS }}
+          max_prepared_transactions: {{ MAX_CONNECTIONS }}
+  when: crunchydata_folder.stat.exists
   tags:
     - install
     - uninstall
@@ -16,6 +28,7 @@
   loop_control:
     loop_var: file
   when: 
+    - internal_pg_folder.stat.exists
     - settings.internal
   tags:
     - install
@@ -36,11 +49,12 @@
         insertafter: "data:" 
         line: "{{ outer_item }}"
       with_items:
-        - '  max_prepared_transactions: "{{ max_connections }}"'
-        - '  max_connections: "{{ max_connections }}"'
+        - '  max_prepared_transactions: "{{ MAX_CONNECTIONS }}"'
+        - '  max_connections: "{{ MAX_CONNECTIONS }}"'
       loop_control:
         loop_var: outer_item
   when: 
+    - internal_pg_folder.stat.exists
     - settings.internal
   tags:
     - install
@@ -55,6 +69,70 @@
       - { transformers: "sas-{{ 'postgres' if role == 'default' else role }}-custom-config-transformer.yaml", vdm: true, priority: 65 }
       - { resources: "sas-{{ 'postgres' if role == 'default' else role }}-custom-config.yaml", vdm: true,}
   when: 
+    - internal_pg_folder.stat.exists
+    - settings.internal
+  tags: 
+    - install
+    - uninstall
+    - update
+
+- name: postgres crunchy v5 - copy custom config 
+  copy:
+    src: "{{ DEPLOY_DIR }}/sas-bases/examples/crunchydata/tuning/crunchy-tuning-transformer.yaml"
+    dest: "{{ role_path }}/templates/transformers/{{ 'platform' if role == 'default' else role }}-postgres-crunchy-tuning-transformer.yaml"
+    mode: "0660"
+  loop_control:
+    loop_var: file
+  when: 
+    - crunchydata_folder.stat.exists
+    - settings.internal
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: postgres crunchy v5 - remove commented block
+  lineinfile:
+    path: "{{ role_path }}/templates/transformers/{{ 'platform' if role == 'default' else role }}-postgres-crunchy-tuning-transformer.yaml"
+    regexp: '#.*$'
+    state: absent
+  when: 
+    - crunchydata_folder.stat.exists
+    - settings.internal
+  loop_control:
+    loop_var: outer_item
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: postgres crunchy v5 - update config
+  replace:
+    path: "{{ role_path }}/templates/transformers/{{ 'platform' if role == 'default' else role }}-postgres-crunchy-tuning-transformer.yaml"
+    regexp: "{{ outer_item.regexp }}"
+    replace: "{{ outer_item.replace }}"
+  with_items:
+    - { regexp: "{% raw %}{{ CONFIGURATION }}{% endraw %}", replace: "{{ CUSTOM_CONFIGURATION | indent( width=6, first=False) }}" }
+    - { regexp: "{% raw %}{{ POSTGRESCLUSTER-NAME }}{% endraw %}", replace: "sas-crunchy-{{ 'platform' if role == 'default' else role }}-postgres" }
+  when: 
+    - crunchydata_folder.stat.exists
+    - settings.internal
+  loop_control:
+    loop_var: outer_item
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: postgres crunchy v5 - add custom config transformer to kustomization
+  overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { transformers: "{{ 'platform' if role == 'default' else role }}-postgres-crunchy-tuning-transformer.yaml", vdm: true, priority: 65 }
+  when: 
+    - crunchydata_folder.stat.exists
     - settings.internal
   tags: 
     - install
