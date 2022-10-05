@@ -19,30 +19,14 @@
     - update
 
 - name: mirror - overlay
-  block:
-    - name: v4 crunchy
-      overlay_facts:
-        cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
-        cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
-        existing: "{{ vdm_overlays }}"
-        add:
-          - { transformers: "mirror.yaml", vdm: true, priority: 65 }
-          - { generators: "mirror.yaml", vdm: true }
-      when:
-        - V4_CFG_CADENCE_VERSION is version('2022.10', "<")
-        - not V4_CFG_CADENCE_NAME|lower == "fast"
-    - name: v5 crunchy
-      overlay_facts:
-        cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
-        cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
-        existing: "{{ vdm_overlays }}"
-        add:
-          - { transformers: "mirror.yaml", vdm: true, priority: 65 }
-          - { generators: "mirror_v2.yaml", vdm: true }
-      when:
-        - V4_CFG_CADENCE_VERSION is version('2022.10', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
-  when:
-    - true 
+    overlay_facts:
+      cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+      cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+      existing: "{{ vdm_overlays }}"
+      add:
+        - { transformers: "mirror.yaml", vdm: true, priority: 65, max: "2022.09" }
+        - { generators: "mirror.yaml", vdm: true, max: "2022.09" }
+        - { generators: "mirror.v2.yaml", vdm: true, min: "2022.10" }
   tags: 
     - install
     - uninstall
