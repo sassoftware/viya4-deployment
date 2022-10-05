@@ -24,7 +24,7 @@
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { transformers: "mirror.yaml", vdm: true, priority: 65, max: "2022.09" }
+      - { transformers: "mirror.yaml", vdm: true, priority: 65 }
       - { generators: "mirror.yaml", vdm: true, max: "2022.09" }
       - { generators: "mirror.v2.yaml", vdm: true, min: "2022.10" }
   tags: 
