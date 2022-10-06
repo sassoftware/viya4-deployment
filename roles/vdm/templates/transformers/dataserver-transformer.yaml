@@ -1,0 +1,34 @@
+{%- set db = db_default_name_map[role] if ('database' not in settings and role in db_default_name_map) else settings.database|default(role, true) -%}
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: sas-platform-postgres-dataserver-transformer
+patch: |-
+  - op: replace
+    path: /spec/databases/0/name
+    value: {{ db }}
+
+  - op: replace
+    path: /spec/users/0/credentials/input
+    value:
+      secretRef:
+        name: {{ role }}-platform-postgres-user
+      usernameKey: username # For internal use, do not modify
+      passwordKey: password # For internal use, do not modify
+
+  - op: replace
+    path: /spec/registrations/0/host
+    value: {{ settings.fqdn }}
+
+  - op: replace
+    path: /spec/registrations/0/port
+    value: {{ settings.server_port|default(5432, true) }}
+
+  - op: replace
+    path: /spec/ssl
+    value: true
+target:
+  group: webinfdsvr.sas.com
+  kind: DataServer
+  version: v1beta1
+  name: sas-platform-postgres
