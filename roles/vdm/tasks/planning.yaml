@@ -1,0 +1,24 @@
+---
+- name: planning - folder check
+  stat:
+    path: "{{ DEPLOY_DIR }}/sas-bases/overlays/sas-planning"
+  register: result
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: planning - add overlays
+  overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { resources: "overlays/sas-planning", min: "2022.10" }
+      - { transformers: "overlays/sas-planning/sas-planning-transformer.yaml", min: "2022.10" }
+  when:
+    - result.stat.exists
+  tags:
+    - install
+    - uninstall
+    - update
