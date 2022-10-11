@@ -211,6 +211,18 @@ V4_CFG_POSTGRES_SERVERS:
     ...
   ...
 ```
+Several SAS Viya offerings require a second internal Postgres instance referred to as SAS Common Data Store or CDS PostgreSQL. See details [here](https://pubshelpcenter.unx.sas.com/test/doc/en/itopscdc/v_033/dplyml0phy0dkr/n08u2yg8tdkb4jn18u8zsi6yfv3d.htm#p0wkxxi9s38zbzn19ukjjaxsc0kl). To deploy and configure a CDS PostgreSQL instance in addition to the default internal platform Postgres instance, specify "cds-postgres" for your second Postgres instance as shown in the example below:
+
+```bash
+V4_CFG_POSTGRES_SERVERS:
+  default:
+    internal: true
+    ...
+  cds-postgres:
+    internal: true
+    ...
+  ...
+```
 
 **NOTE**: the `default` elements is always required . This will be the default server. Below is the list of parameters each element can contain.
 
