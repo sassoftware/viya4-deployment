@@ -53,10 +53,7 @@
       register: cluster_info
     - name: Set the K8s server version
       set_fact:
-        K8S_VERSION: "{{ cluster_info.version.server.kubernetes.major + '.' + cluster_info.version.server.kubernetes.minor }}"
-    - name: Output K8S_VERSION
-      debug:
-        msg: "{{ K8S_VERSION }}"
+        K8S_VERSION: "{{ cluster_info.version.server.kubernetes.major + '.' + cluster_info.version.server.kubernetes.minor | regex_replace('\\+$', '') }}"
   tags:
     - baseline
 
