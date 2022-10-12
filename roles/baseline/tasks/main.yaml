@@ -47,7 +47,7 @@
 
 - name: Lookup K8s version info
   block:
-    - name: Retreive K8s cluster information
+    - name: Retrieve K8s cluster information
       community.kubernetes.k8s_cluster_info:
         kubeconfig: "{{ KUBECONFIG }}"
       register: cluster_info
