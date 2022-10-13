@@ -5,6 +5,29 @@
     - uninstall
     - update
 
+- name: both internal
+  block:
+    - set_fact:
+        default_postgres_internal: "{{ V4_CFG_POSTGRES_SERVERS.default.internal }}"
+        cds_postgres_internal: "{{ V4_CFG_POSTGRES_SERVERS['cds-postgres'].internal }}"
+      when:
+        - V4_CFG_POSTGRES_SERVERS.default is defined
+        - V4_CFG_POSTGRES_SERVERS['cds-postgres'] is defined
+        - V4_CFG_POSTGRES_SERVERS.default.internal is defined
+        - V4_CFG_POSTGRES_SERVERS['cds-postgres'].internal is defined
+    - fail:
+        msg: "When using CDS postgres, the default and CDS postgres instances must be internal servers"
+      when:
+        - default_postgres_internal is defined
+        - cds_postgres_internal is defined
+        - default_postgres_internal == false or cds_postgres_internal == false
+  when:
+    - V4_CFG_CADENCE_VERSION is version('2022.10', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
+  tags:
+    - install
+    - uninstall
+    - update
+
 - name: postgres - gcp cloud-sql-proxy
   include_tasks: gcp-cloud-sql-proxy.yaml
   vars:
