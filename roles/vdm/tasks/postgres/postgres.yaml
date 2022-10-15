@@ -5,7 +5,7 @@
     - uninstall
     - update
 
-- name: check cds-postgres is internal
+- name: fail - if cds-postgres is external
   ansible.builtin.fail:
     msg: "CDS postgres instance must be internal server. To use CDS postgres, please reconfigure your infrastructure to set all your postgres servers internal"
   when:
