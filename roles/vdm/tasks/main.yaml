@@ -161,8 +161,8 @@
     - uninstall
     - update
 
-- name: Include Planning
-  include_tasks: planning.yaml
+- name: Include CDS
+  include_tasks: cds.yaml
   tags:
     - install
     - uninstall

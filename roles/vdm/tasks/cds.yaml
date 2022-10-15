@@ -1,5 +1,5 @@
 ---
-- name: planning - folder check
+- name: cds - folder check 
   stat:
     path: "{{ DEPLOY_DIR }}/sas-bases/overlays/sas-planning"
   register: result
@@ -8,7 +8,7 @@
     - uninstall
     - update
 
-- name: planning - add overlays
+- name: cds - add overlays
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
