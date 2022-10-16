@@ -26,7 +26,7 @@ patch: |-
 
   - op: replace
     path: /spec/ssl
-    value: true
+    value: {{ (settings.ssl_enforcement_enabled if 'ssl_enforcement_enabled' in settings else True)|bool|lower }}
 target:
   group: webinfdsvr.sas.com
   kind: DataServer

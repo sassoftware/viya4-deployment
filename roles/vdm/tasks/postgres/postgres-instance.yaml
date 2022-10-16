@@ -121,6 +121,30 @@
         - { generators: "postgres-{{ role }}-secrets.yaml", min: "2022.10", vdm: true}
   when:
     - not settings.internal
+    - role == "default"
+    - V4_CFG_CADENCE_VERSION is version('2022.10', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: postgres instance - external post 2022.10 - additional servers
+  block:
+  - name: postgres instance - external copy dataserver template
+    template:
+      src: "{{ role_path }}/templates/resources/platform-postgres-dataserver.yaml"
+      dest: "{{ role_path }}/templates/resources/platform-postgres-{{ role }}-dataserver.yaml"
+      mode: "0660"
+  - name: postgres instance - external additional servers kustomization entries
+    overlay_facts:
+      cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+      cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+      existing: "{{ vdm_overlays }}"
+      add:
+        - { resources: "platform-postgres-{{ role }}-dataserver.yaml", min: "2022.10", vdm: true}
+  when:
+    - not settings.internal
+    - role != "default"
     - V4_CFG_CADENCE_VERSION is version('2022.10', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
   tags:
     - install
