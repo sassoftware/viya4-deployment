@@ -94,6 +94,32 @@
     - uninstall
     - update
 
+- name: postgres - cds v5 crunchy folder check
+  stat:
+    path: "{{ DEPLOY_DIR }}/sas-bases/overlays/postgres/{{ role }}"
+  register: result
+  when: settings.internal
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: postgres - internal cds v5 crunchy
+  overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { resources: "overlays/postgres/{{ role }}", min: "2022.10" }
+      - { components: "components/crunchydata/internal-{{ role }}", min: "2022.10" }
+  when: 
+    - settings.internal
+    - result.stat.exists
+  tags:
+    - install
+    - uninstall
+    - update
+
 - name: postgres instance - external post 2022.10
   block:
   - name: postgres instance - external copy postgres-user.env
