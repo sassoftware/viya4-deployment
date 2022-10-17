@@ -85,22 +85,10 @@
     - update
 
 # Updates to support Crunchy v5 internal PostgreSQL
-- set_fact:
-    CUSTOM_CONFIGURATION: |-
-      postgresql:
-        parameters:
-          max_connections: {{ MAX_CONNECTIONS }}
-          max_prepared_transactions: {{ MAX_CONNECTIONS }}
-  when: crunchy_tuning_folder.stat.exists
-  tags:
-    - install
-    - uninstall
-    - update
-
 - name: postgres crunchy v5 - copy custom config 
   copy:
     src: "{{ DEPLOY_DIR }}/sas-bases/examples/crunchydata/tuning/crunchy-tuning-transformer.yaml"
-    dest: "{{ role_path }}/templates/transformers/{{ 'platform' if role == 'default' else role }}-postgres-crunchy-tuning-transformer.yaml"
+    dest: "{{ role_path }}/templates/transformers/{{ 'platform-postgres' if role == 'default' else role }}-crunchy-tuning-transformer.yaml"
     mode: "0660"
   loop_control:
     loop_var: file
@@ -114,7 +102,7 @@
 
 - name: postgres crunchy v5 - remove commented block
   lineinfile:
-    path: "{{ role_path }}/templates/transformers/{{ 'platform' if role == 'default' else role }}-postgres-crunchy-tuning-transformer.yaml"
+    path: "{{ role_path }}/templates/transformers/{{ 'platform-postgres' if role == 'default' else role }}-crunchy-tuning-transformer.yaml"
     regexp: '#.*$'
     state: absent
   when: 
@@ -127,12 +115,15 @@
 
 - name: postgres crunchy v5 - update config
   replace:
-    path: "{{ role_path }}/templates/transformers/{{ 'platform' if role == 'default' else role }}-postgres-crunchy-tuning-transformer.yaml"
+    path: "{{ role_path }}/templates/transformers/{{ 'platform-postgres' if role == 'default' else role }}-crunchy-tuning-transformer.yaml"
     regexp: "{{ outer_item.regexp }}"
     replace: "{{ outer_item.replace }}"
   with_items:
-    - { regexp: "{% raw %}{{ CONFIGURATION }}{% endraw %}", replace: "{{ CUSTOM_CONFIGURATION | indent( width=6, first=False) }}" }
-    - { regexp: "{% raw %}{{ POSTGRESCLUSTER-NAME }}{% endraw %}", replace: "sas-crunchy-{{ 'platform' if role == 'default' else role }}-postgres" }
+    - { regexp: "(^\n)", replace: "" }
+    - { regexp: "max_connections.*", replace: "max_connections: {{ MAX_CONNECTIONS | indent( width=6, first=False)}}" }
+    - { regexp: "max_prepared_transactions.*", replace: "max_prepared_transactions: {{ MAX_CONNECTIONS | indent( width=6, first=False)}}" }
+    - { regexp: "{% raw %}{{ TRANSFORMER-NAME }}{% endraw %}", replace: "{{ 'platform-postgres' if role == 'default' else role }}" }
+    - { regexp: "{% raw %}{{ CLUSTER-NAME }}{% endraw %}", replace: "sas-crunchy-{{ 'platform-postgres' if role == 'default' else role }}" }
   when: 
     - crunchy_tuning_folder.stat.exists
     - settings.internal
@@ -149,7 +140,7 @@
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { transformers: "{{ 'platform' if role == 'default' else role }}-postgres-crunchy-tuning-transformer.yaml", vdm: true, priority: 65 }
+      - { transformers: "{{ 'platform-postgres' if role == 'default' else role }}-crunchy-tuning-transformer.yaml", vdm: true, priority: 65 }
   when: 
     - crunchy_tuning_folder.stat.exists
     - settings.internal
