@@ -5,6 +5,7 @@ config:
             host: ldap-svc
             password: Password123
             port: 389
+            url: ldap://${sas.identities.providers.ldap.connection.host}:${sas.identities.providers.ldap.connection.port}
             userDN: cn=admin,dc=example,dc=com
         sas.identities.providers.ldap.group:
             baseDN: ou=groups,dc=example,dc=com
@@ -22,5 +23,4 @@ config:
             objectFilter: (objectClass=inetOrgPerson)
             searchFilter: uid={0}
         sas.logon.initial.password: Password123
-        sas.identities:
-            administrator: viya_admin
+config/identities/sas.identities/administrator: viya_admin
