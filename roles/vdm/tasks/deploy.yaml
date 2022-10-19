@@ -90,6 +90,7 @@
   ignore_errors: yes
   when:
     - V4_CFG_CADENCE_VERSION is version('2022.10', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
+    - internal_postgres
   tags:
     - uninstall
 
