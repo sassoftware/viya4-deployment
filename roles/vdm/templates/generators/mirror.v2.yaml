@@ -1,0 +1,8 @@
+---
+apiVersion: builtin
+kind: ConfigMapGenerator
+metadata:
+  name: input
+behavior: merge
+literals:
+  - IMAGE_REGISTRY={{ V4_CFG_CR_HOST }}
