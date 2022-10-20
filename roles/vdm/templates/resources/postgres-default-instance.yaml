@@ -1,0 +1,24 @@
+apiVersion: webinfdsvr.sas.com/v1
+kind: Pgcluster
+metadata:
+  name: postgres
+  annotations:
+    sas.com/default-database: "true"
+spec:
+  internal: false
+  database: SharedServices
+  connection:
+    ssl: false
+    host: 10.12.50.11
+    port: 5432
+  rolesecret: postgres-default-user
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgres-default-user
+  labels:
+    pg-cluster: "postgres"
+stringData:
+  username: postgres
+  password: f250-bba6-4e35-897

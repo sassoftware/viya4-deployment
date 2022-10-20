@@ -1,0 +1,35 @@
+{%- set db = db_default_name_map[role] if ('database' not in settings and role in db_default_name_map) else settings.database|default(role, true) -%}
+{%- set server_name = role -%}
+apiVersion: webinfdsvr.sas.com/v1beta1
+kind: DataServer
+metadata:
+  name: {{ role }}-platform-postgres
+  annotations:
+    sas.com/default-database: "false"
+spec:
+  ssl: {{ (settings.ssl_enforcement_enabled if 'ssl_enforcement_enabled' in settings else True)|bool|lower }}
+  registrations:
+    - serviceName: {{ role }}-sas-postgres
+      dataServiceName: {{ role }}-postgres
+      host: {{ settings.fqdn }}
+      port: {{ settings.server_port|default(5432, true) }}
+  users:
+    - name: dbmsowner
+      credentials:
+        input:
+          secretRef:
+            name: {{ role }}-platform-postgres-user
+          usernameKey: username
+          passwordKey: password
+  databases:
+    - name: {{ db }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ role }}-platform-postgres-user
+  labels:
+    pg-cluster: {{ db }}
+stringData:
+  username: {{ settings.admin }}
+  password: {{ settings.password }}
