@@ -224,6 +224,8 @@ V4_CFG_POSTGRES_SERVERS:
   ...
 ```
 
+Prior to the SAS Viya 2022.10 stable release, select SAS Planning and Retail offerings required adding the sas-planning overlay content to the base kustomization.yaml file by following the instructions in [Customize Deployment Overlays](../README.md) and the README file located at `$deploy/sas-bases/overlays/sas-planning/README.md`. Beginning with the SAS Viya 2022.10 stable release, viya4-deployment will automatically include the sas-planning overlay content in kustomization.yaml for the SAS Planning and Retail offerings that require it.
+
 **NOTE**: the `default` elements is always required . This will be the default server. Below is the list of parameters each element can contain.
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
