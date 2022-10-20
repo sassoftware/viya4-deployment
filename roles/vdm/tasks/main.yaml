@@ -161,13 +161,6 @@
     - uninstall
     - update
 
-- name: Include CDS
-  include_tasks: cds.yaml
-  tags:
-    - install
-    - uninstall
-    - update
-
 - name: Include Storage
   include_tasks: storage.yaml
   tags:

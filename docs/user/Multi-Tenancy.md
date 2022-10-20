@@ -102,8 +102,6 @@ Step 3. Onboard tenants. Run the following command:
     -e BASE_DIR=$HOME/deployments \
     -e KUBECONFIG=$HOME/deployments/.kube/config \
     -e CONFIG=$HOME/deployments/dev-cluster/dev-namespace/ansible-vars.yaml \
-    -e TFSTATE=$HOME/deployments/dev-cluster/terraform.tfstate \
-    -e JUMP_SVR_PRIVATE_KEY=$HOME/.ssh/id_rsa \
     playbooks/playbook.yaml --tags "multi-tenancy,onboard"
   ```
 **Note:** As part of setup in the above `Onboard tenants` step, for every onboarded tenant, a CAS server directory containing the configuration artifacts is created under the `/site-config` folder. 
