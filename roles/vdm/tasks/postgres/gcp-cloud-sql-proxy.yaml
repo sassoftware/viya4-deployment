@@ -33,8 +33,7 @@
         existing: "{{ vdm_overlays }}"
         add:
           - { resources: "cloud-sql-proxy-{{ role }}-instance.yaml", vdm: true }
-          - { transformers: "overlays/external-postgres/googlecloud-full-stack-tls-transformer.yaml", priority: 55, max: "2022.09" }
-          - { transformers: "overlays/postgres/external-postgres/gcp-tls-transformer.yaml", priority: 55, min: "2022.10" }
+          - { transformers: "overlays/external-postgres/googlecloud-full-stack-tls-transformer.yaml", priority: 55 }
   tags:
     - install
     - uninstall
