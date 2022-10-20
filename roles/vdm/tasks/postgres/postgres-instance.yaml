@@ -8,62 +8,16 @@
     - uninstall
     - update
 
-- name: postgres - crunchydata folder check
-  stat:
-    path: "{{ DEPLOY_DIR }}/sas-bases/overlays/crunchydata"
-  register: crunchydata_folder
-  when: settings.internal
-  tags:
-    - install
-    - uninstall
-    - update
-
-- set_fact:
-    internal_crunchy: crunchydata_folder.stat.exists
-  tags:
-    - install
-    - uninstall
-    - update
-
-- name: postgres - internal-postgres folder check
-  stat:
-    path: "{{ DEPLOY_DIR }}/sas-bases/overlays/internal-postgres"
-  register: internal_pg_folder
-  when: settings.internal
-  tags:
-    - install
-    - uninstall
-    - update
-
-- name: postgres - internal crunchydata default
-  overlay_facts:
-    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
-    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
-    existing: "{{ vdm_overlays }}"
-    add:
-      - { resources: "overlays/crunchydata/postgres-operator", min: "2022.10" }
-      - { resources: "overlays/postgres/platform-postgres", min: "2022.10" }
-      - { components: "components/crunchydata/internal-platform-postgres", min: "2022.10" }
-  when: 
-    - settings.internal
-    - role == "default"
-    - crunchydata_folder.stat.exists
-  tags:
-    - install
-    - uninstall
-    - update
-
 - name: postgres - internal default
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { resources: "overlays/internal-postgres", max: "2022.09" }
+      - { resources: "overlays/internal-postgres" }
   when: 
     - settings.internal
     - role == "default"
-    - internal_pg_folder.stat.exists
   tags:
     - install
     - uninstall
@@ -85,7 +39,7 @@
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { resources: "overlays/internal-postgres/{{ role }}", max: "2022.09" }
+      - { resources: "overlays/internal-postgres/{{ role }}" }
   when: 
     - settings.internal
     - result.stat.exists
@@ -93,91 +47,6 @@
     - install
     - uninstall
     - update
-
-- name: postgres - cds v5 crunchy folder check
-  stat:
-    path: "{{ DEPLOY_DIR }}/sas-bases/overlays/postgres/{{ role }}"
-  register: result
-  when: settings.internal
-  tags:
-    - install
-    - uninstall
-    - update
-
-- name: postgres - internal cds v5 crunchy
-  overlay_facts:
-    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
-    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
-    existing: "{{ vdm_overlays }}"
-    add:
-      - { resources: "overlays/postgres/{{ role }}", min: "2022.10" }
-      - { components: "components/crunchydata/internal-{{ role }}", min: "2022.10" }
-  when: 
-    - settings.internal
-    - result.stat.exists
-  tags:
-    - install
-    - uninstall
-    - update
-
-- name: postgres instance - external post 2022.10
-  block:
-  - name: postgres instance - external copy postgres-user.env
-    template:
-      src: "postgres-user.env"
-      dest: "{{ DEPLOY_DIR }}/site-config/postgres-{{ role }}-user.env"
-      mode: "0660"
-  - name: postgres instance - external copy secret generator template
-    template:
-      src: "{{ role_path }}/templates/generators/postgres-secrets.yaml"
-      dest: "{{ role_path }}/templates/generators/postgres-{{ role }}-secrets.yaml"
-      mode: "0660"
-  - name: postgres instance - external copy dataserver transformer template
-    template:
-      src: "{{ role_path }}/templates/transformers/dataserver-transformer.yaml"
-      dest: "{{ role_path }}/templates/transformers/{{ role }}-dataserver-transformer.yaml"
-      mode: "0660"
-  - name: postgres instance - external kustomization entries
-    overlay_facts:
-      cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
-      cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
-      existing: "{{ vdm_overlays }}"
-      add:
-        - { transformers: "{{ role }}-dataserver-transformer.yaml", min: "2022.10", vdm: true}
-        - { generators: "postgres-{{ role }}-secrets.yaml", min: "2022.10", vdm: true}
-  when:
-    - not settings.internal
-    - role == "default"
-    - V4_CFG_CADENCE_VERSION is version('2022.10', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
-  tags:
-    - install
-    - uninstall
-    - update
-
-- name: postgres instance - external post 2022.10 - additional servers
-  block:
-  - name: postgres instance - external copy dataserver template
-    template:
-      src: "{{ role_path }}/templates/resources/platform-postgres-dataserver.yaml"
-      dest: "{{ role_path }}/templates/resources/platform-postgres-{{ role }}-dataserver.yaml"
-      mode: "0660"
-  - name: postgres instance - external additional servers kustomization entries
-    overlay_facts:
-      cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
-      cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
-      existing: "{{ vdm_overlays }}"
-      add:
-        - { resources: "platform-postgres-{{ role }}-dataserver.yaml", min: "2022.10", vdm: true}
-  when:
-    - not settings.internal
-    - role != "default"
-    - V4_CFG_CADENCE_VERSION is version('2022.10', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
-  tags:
-    - install
-    - uninstall
-    - update
-
-# TODO Fix Logic for tasks below
 
 - block:
   - name: postgres instance - crd
@@ -192,29 +61,7 @@
       add:
         - { resources: "postgres-{{ role }}-instance.yaml", vdm: true }
   when:
-    - settings.internal and role != "default" and not result.stat.exists
-    - not crunchydata_folder.stat.exists
-  tags:
-    - install
-    - uninstall
-    - update
-
-- block:
-  - name: postgres instance - external crd
-    template:
-      src: "{{ role_path }}/templates/resources/postgres-instance.yaml"
-      dest: "{{ role_path }}/templates/resources/postgres-{{ role }}-instance.yaml"
-      mode: "0660"
-  - overlay_facts:
-      cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
-      cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
-      existing: "{{ vdm_overlays }}"
-      add:
-        - { resources: "postgres-{{ role }}-instance.yaml", vdm: true }
-  when:
-    - not settings.internal
-    - V4_CFG_CADENCE_VERSION is version('2022.10', "<")
-    - V4_CFG_CADENCE_NAME|lower != "fast"
+    - not settings.internal or ( settings.internal and role != "default" and not result.stat.exists )
   tags:
     - install
     - uninstall
