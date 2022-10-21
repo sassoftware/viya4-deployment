@@ -43,7 +43,7 @@ As described in the [Docker Installation](./DockerUsage.md) section add addition
 
 ```bash
 docker build \
-	--build-arg kubectl_version=1.23.9 \
+	--build-arg kubectl_version=1.23.8 \
 	-t viya4-deployment .
 ```
 
