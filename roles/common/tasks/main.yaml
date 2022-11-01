@@ -110,12 +110,6 @@
       when:
         - tfstate.location is defined
         - tfstate.location.value|length > 0
-    - name: tfstate - kubernetes version
-      set_fact: 
-        K8S_VERSION: "{{ tfstate.k8s_version.value }}"
-      when:
-        - tfstate.k8s_version is defined
-        - tfstate.k8s_version.value|length > 0
     - name: tfstate - cluster autoscaler account
       set_fact: 
         CLUSTER_AUTOSCALER_ACCOUNT: "{{ tfstate.autoscaler_account.value }}"
