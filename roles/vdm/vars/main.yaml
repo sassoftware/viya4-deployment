@@ -8,7 +8,7 @@ db_default_name_map: {
 
 pg_cluster_name_map: {
   default: "sas-crunchy-platform-postgres",
-  cds_postgres: "sas-crunchy-cds-postgres"
+  cds-postgres: "sas-crunchy-cds-postgres"
 }
 
 # TODO - Fix once 2021.1.6 is ready and the kustomization files have been updated
