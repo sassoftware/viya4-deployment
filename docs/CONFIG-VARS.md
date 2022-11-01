@@ -317,7 +317,6 @@ Notes:
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| CERT_MANAGER_ENABLED | Whether to deploy cert-manager into the cluster using Helm | bool | false | false | Required if V4_CFG_TLS_GENERATOR is set to `cert-manager` and it is not already installed. | baseline |
 | CERT_MANAGER_NAMESPACE | cert-manager Helm installation namespace | string | cert-manager | false | | baseline |
 | CERT_MANAGER_CHART_URL | cert-manager Helm chart URL | string | https://charts.jetstack.io/ | false | | baseline |
 | CERT_MANAGER_CHART_NAME| cert-manager Helm chart name | string | cert-manager| false | | baseline |
