@@ -6,6 +6,11 @@ db_default_name_map: {
   default: "SharedServices"
 }
 
+pg_cluster_name_map: {
+  default: "sas-crunchy-platform-postgres",
+  cds_postgres: "sas-crunchy-cds-postgres"
+}
+
 # TODO - Fix once 2021.1.6 is ready and the kustomization files have been updated
 network_name_map: {
   ingress: "networking.k8s.io",

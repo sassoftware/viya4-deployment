@@ -238,9 +238,26 @@ V4_CFG_POSTGRES_SERVERS:
 | connection_name | External postgres database connection name | string | | false | Required for using cloud-sql-proxy on gcp. See [ansible cloud authentication](user/AnsibleCloudAuthentication.md) | viya |
 | service_account | External service account for postgres connectivity | string | | false | Required for using cloud-sql-proxy on gcp. See [ansible cloud authentication](user/AnsibleCloudAuthentication.md) | viya |
 
-Example:
+| postgres_storage_size | The size of the postgreSQL PVCs | string | 128Gi | false | | viya |
+| backrest_storage_size | The size of pgBackrest PVCs | string | 128Gi | false | | viya |
+| postgres_access_mode | The access mode to use for the PostgreSQL and pgBackrest PVCs | string | ReadWriteOnce | false |  | viya |
+| backrest_access_mode | The access mode to use for the PostgreSQL and pgBackrest PVCs | string | ReadWriteOnce | false | | viya |
+| postgres_storage_class | The storage class to use for the PostgreSQL and pgBackrest PVCs | string | default | false | | viya |
+| backrest_storage_class | The storage class to use for the PostgreSQL and pgBackrest PVCs | string | default | false | | viya |
+
+Examples:
 
 ```bash
+# Internal server
+V4_CFG_POSTGRES_SERVERS:
+  default:
+    internal: false
+    postgres_storage_size: 10Gi
+    postgres_access_mode: ReadWriteMany
+    postgres_storage_class: default
+
+
+# External servers
 V4_CFG_POSTGRES_SERVERS:
   default:
     internal: false
