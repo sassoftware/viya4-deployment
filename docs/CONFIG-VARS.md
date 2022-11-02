@@ -237,12 +237,12 @@ V4_CFG_POSTGRES_SERVERS:
 | ssl_enforcement_enabled | Require ssl connection to external postgres | bool | | false | Required for external postgres servers. Ignored on GCP when using cloud sql | viya |
 | connection_name | External postgres database connection name | string | | false | Required for using cloud-sql-proxy on gcp. See [ansible cloud authentication](user/AnsibleCloudAuthentication.md) | viya |
 | service_account | External service account for postgres connectivity | string | | false | Required for using cloud-sql-proxy on gcp. See [ansible cloud authentication](user/AnsibleCloudAuthentication.md) | viya |
-| postgres_storage_size | Size of the internal postgreSQL PVCs | string | 128Gi | false |This value can be changed but not decreased after the initial deployment | viya |
-| backrest_storage_size | Size of the internal pgBackrest PVCs | string | 128Gi | false | This value can be changed but not decreased after the initial deployment| viya |
-| postgres_access_mode | Access mode for the PostgreSQL PVCs | string | ReadWriteOnce | false |This value cannot be changed after the initial deployment | viya |
-| backrest_access_mode | Access mode for the pgBackrest PVCs | string | ReadWriteOnce | false |This value cannot be changed after the initial deployment | viya |
-| postgres_storage_class | Storage class for the PostgreSQL PVCs | string | default | false |This value cannot be changed after the initial deployment | viya |
-| backrest_storage_class | Storage class for the pgBackrest PVCs | string | default | false |This value cannot be changed after the initial deployment | viya |
+| postgres_storage_size | Size of the internal postgreSQL PVCs | string | 128Gi | false |This value can be changed but not decreased after the initial deployment. Supported for cadence versions 2022.10 and later | viya |
+| backrest_storage_size | Size of the internal pgBackrest PVCs | string | 128Gi | false | This value can be changed but not decreased after the initial deployment. Supported for cadence versions 2022.10 and later| viya |
+| postgres_access_mode | Access mode for the PostgreSQL PVCs | string | ReadWriteOnce | false |This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later.| viya |
+| backrest_access_mode | Access mode for the pgBackrest PVCs | string | ReadWriteOnce | false |This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. | viya |
+| postgres_storage_class | Storage class for the PostgreSQL PVCs | string | default | false |This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. | viya |
+| backrest_storage_class | Storage class for the pgBackrest PVCs | string | default | false |This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. | viya |
 
 Examples:
 
