@@ -72,7 +72,7 @@ Tool uses the jump server to interact with rwx filestore, that needs to be pre-m
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_MANAGE_STORAGE | Should the tool manage the storageclass | bool | true | false | Set to false if you wish to manage the storage class | all |
+| V4_CFG_MANAGE_STORAGE | Should the tool manage the storageclass | bool | false | false | Set to false if you wish to manage the storage class | all |
 | V4_CFG_STORAGECLASS | Storageclass name | string | "sas" | false | When V4_CFG_MANAGE_STORAGE is false, set to the name of your preexisting storage class that supports ReadWriteMany | baseline, viya |
 
 ### RWX Filestore
@@ -224,7 +224,7 @@ V4_CFG_POSTGRES_SERVERS:
   ...
 ```
 
-**NOTE**: the `default` elements is always required . This will be the default server. Below is the list of parameters each element can contain.
+**NOTE**: Below is the list of parameters each database element can contain.
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -239,10 +239,12 @@ V4_CFG_POSTGRES_SERVERS:
 | service_account | External service account for postgres connectivity | string | | false | Required for using cloud-sql-proxy on gcp. See [ansible cloud authentication](user/AnsibleCloudAuthentication.md) | viya |
 | postgres_storage_size | Size of the internal postgreSQL PVCs | string | 128Gi | false |This value can be changed but not decreased after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
 | backrest_storage_size | Size of the internal pgBackrest PVCs | string | 128Gi | false | This value can be changed but not decreased after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
-| postgres_access_mode | Access mode for the PostgreSQL PVCs | string | ReadWriteOnce | false |This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
-| backrest_access_mode | Access mode for the pgBackrest PVCs | string | ReadWriteOnce | false |This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
+| postgres_access_mode | Access mode for the PostgreSQL PVCs | string | ReadWriteOnce | false | Supported values: [`ReadWriteOnce`,`ReadWriteMany`]. This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
+| backrest_access_mode | Access mode for the pgBackrest PVCs | string | ReadWriteOnce | false | Supported values: [`ReadWriteOnce`,`ReadWriteMany`]. This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
 | postgres_storage_class | Storage class for the PostgreSQL PVCs | string | sas | false |This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
 | backrest_storage_class | Storage class for the pgBackrest PVCs | string | sas | false |This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
+
+**NOTE**: the `default` element is always required. This will be the default server.
 
 Examples:
 
@@ -253,7 +255,8 @@ V4_CFG_POSTGRES_SERVERS:
     internal: true
     postgres_storage_size: 10Gi
     postgres_access_mode: ReadWriteOnce
-    postgres_storage_class: default
+    postgres_storage_class: sas
+    backrest_storage_class: sas
 
 
 # External servers
