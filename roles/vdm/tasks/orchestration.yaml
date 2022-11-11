@@ -3,7 +3,7 @@
   set_fact:
     ORCHESTRATION_TOOLING_DIRECTORY: "{{ tmpdir.path }}/orchestration"
     ORCHESTRATION_TOOLING_ARCHIVE: "{{ tmpdir.path}}/orchestration.tar"
-    ORCHESTRATION_TOOLING_INSTALL_MANIFEST: "{{ DEPLOY_DIR }}/SASDeployment.yaml"
+    ORCHESTRATION_TOOLING_INSTALL_MANIFEST: "{{ DEPLOY_DIR }}/{{ NAMESPACE }}-sasdeployment.yaml"
     ORCHESTRATION_TOOLING_INSTALL_MANIFESTS_DIRECTORY: "{{ tmpdir.path }}/orchestration/manifests"
     ORCHESTRATION_TOOLING_UNINSTALL_MANIFEST: "{{ DEPLOY_DIR }}/uninstall.yaml"
     ORCHESTRATION_CR_USER: "{{ V4_CFG_CR_USER }}"
@@ -175,6 +175,11 @@
         path: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/data/"
         state: directory
         mode: "0700"
+    - name: orchestration - Make work directory in orchestration tooling directory
+      file:
+        path: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/work/"
+        state: directory
+        mode: "0700"
     - name: orchestration - Copy site-config into orchestration tooling directory
       synchronize:
         src: "{{ DEPLOY_DIR }}/site-config"
@@ -198,6 +203,7 @@
     - name: orchestration - Generate SAS Viya deployment manifest
       environment:
         PATH: "{{ ORCHESTRATION_TOOLING_PATH }}"
+        WORK_DIRECTORY: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/work"
       command:
         cmd: |
           orchestration create sas-deployment-cr
@@ -232,6 +238,7 @@
         volumes:
           - "{{ tmpdir.path }}:/tmp"
           - "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/data:/data"
+          - "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/work:/work"
         detach: false
         cleanup: yes
         user: "{{ UID_GID }}"
@@ -257,6 +264,21 @@
     - cas-onboard
     - offboard
 
+# At the moment there is no way to split the stderr from the container output
+# so regex is used to remove the extra lines
+- name: Clean up ORCHESTRATION_TOOLING_INSTALL_MANIFEST
+  lineinfile:
+    path: "{{ ORCHESTRATION_TOOLING_INSTALL_MANIFEST }}"
+    state: absent
+    regexp: '^The create sas-deployment-cr command.*$'
+  when:
+    - deployment_tooling == "ansible"
+  tags:
+    - install
+    - update
+    - cas-onboard
+    - offboard
+
 - name: orchestration - Write SAS Viya deployment manifests into orchestration tooling directory
   block:
     - name: orchestration - Create manifests directory in orchestration tooling directory
@@ -269,7 +291,7 @@
         chdir: "{{ ORCHESTRATION_TOOLING_INSTALL_MANIFESTS_DIRECTORY }}"
         cmd: |
           csplit "{{ ORCHESTRATION_TOOLING_INSTALL_MANIFEST }}"
-              --prefix='SASDeployment.'
+              --prefix='{{ NAMESPACE }}-sasdeployment.'
               --suffix-format='%03d.yaml'
               --elide-empty-files
               '/^----*$/' '{*}'
@@ -309,6 +331,7 @@
     - name: orchestration - Generate SAS Viya uninstall manifest
       environment:
         PATH: "{{ ORCHESTRATION_TOOLING_PATH }}"
+        WORK_DIRECTORY: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/work"
       command:
         cmd: |
           orchestration create sas-deployment-cr
@@ -342,6 +365,7 @@
         volumes:
           - "{{ tmpdir.path }}:/tmp"
           - "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/data:/data"
+          - "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/work:/work"
         detach: false
         cleanup: yes
         user: "{{ UID_GID }}"
@@ -371,6 +395,7 @@
     - name: orchestration - Generate SAS Viya uninstall manifest
       environment:
         PATH: "{{ ORCHESTRATION_TOOLING_PATH }}"
+        WORK_DIRECTORY: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/work"
       command:
         cmd: |
           kustomize build {{ DEPLOY_DIR }}
@@ -396,6 +421,7 @@
         image: "{{ V4_CFG_CR_HOST }}/{{ ORCHESTRATION_IMAGE }}"
         volumes:
           - "{{ DEPLOY_DIR }}:/data"
+          - "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/work:/work"
         detach: false
         cleanup: yes
         user: "{{ UID_GID }}"
@@ -411,6 +437,18 @@
         mode: "0660"
   when:
     - V4_DEPLOYMENT_OPERATOR_ENABLED == False
+    - deployment_tooling == "ansible"
+  tags:
+    - uninstall
+
+# At the moment there is no way to split the stderr from the container output
+# so regex is used to remove the extra lines
+- name: Clean up ORCHESTRATION_TOOLING_UNINSTALL_MANIFEST
+  lineinfile:
+    path: "{{ ORCHESTRATION_TOOLING_UNINSTALL_MANIFEST }}"
+    state: absent
+    regexp: '^The create sas-deployment-cr command.*$'
+  when:
     - deployment_tooling == "ansible"
   tags:
     - uninstall
