@@ -100,6 +100,25 @@
     - uninstall
     - update
 
+- name: postgres crunchy v5 - uncomment config for front-door or tls disabled 
+  replace:
+    path: "{{ role_path }}/templates/transformers/{{ 'platform-postgres' if role == 'default' else role }}-crunchy-tuning-transformer.yaml"
+    regexp: "{{ outer_item.regexp }}"
+    replace: "{{ outer_item.replace }}"
+  with_items:
+    - { regexp: "#pg_hba:", replace: "pg_hba:" }
+    - { regexp: '#  - "hostnossl all all all md5"', replace: ' - "hostnossl all all all md5"' }
+  when: 
+    - crunchy_tuning_folder.stat.exists
+    - settings.internal
+    - V4_CFG_TLS_MODE in ["front-door", "disabled"]
+  loop_control:
+    loop_var: outer_item
+  tags:
+    - install
+    - uninstall
+    - update
+
 - name: postgres crunchy v5 - remove commented block
   lineinfile:
     path: "{{ role_path }}/templates/transformers/{{ 'platform-postgres' if role == 'default' else role }}-crunchy-tuning-transformer.yaml"
