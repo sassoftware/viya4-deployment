@@ -30,6 +30,7 @@ Supported configuration variables are listed in the table below.  All variables 
     - [Ingress-nginx](#ingress-nginx)
     - [Metrics Server](#metrics-server)
     - [NFS Client](#nfs-client)
+    - [Postgres NFS Client](#postgres-nfs-client)
   - [Multi-tenancy](#multi-tenancy)
 
 ## BASE
@@ -42,22 +43,20 @@ Supported configuration variables are listed in the table below.  All variables 
 | KUBECONFIG | Path to kubeconfig file | string | | true | | viya |
 | V4_CFG_SITEDEFAULT | Path to sitedefault file | string | | false | When not set, [sitedefault](../examples/sitedefault.yaml) is used. | viya |
 | V4_CFG_SSSD | Path to sssd file | string | | false | | viya |
-| V4_DEPLOYMENT_OPERATOR_ENABLED | Whether to install the SAS Viya Deployment Operator in the cluster and use it to deploy SAS Viya | bool | true | false | If this value is set to false, the orchestration tool is instead used to deploy SAS Viya. | viya |
-| V4_DEPLOYMENT_OPERATOR_SCOPE | Where the SAS Viya Deployment Operator should watch for SASDeployments | string | "cluster" | false | [namespace, cluster] [Additional documentation](https://go.documentation.sas.com/doc/en/itopscdc/default/dplyml0phy0dkr/n137b56hwogd7in1onzys95awxqe.htm#p16ayulwlsuw8vn10bkpsjtw1ldg) is available. | viya |
+| V4_DEPLOYMENT_OPERATOR_ENABLED | Whether to install the [SAS Viya Deployment Operator](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=itopscon&docsetTarget=p0839p972nrx25n1dq264egtgrcq.htm) in the cluster and use it to deploy SAS Viya | bool | true | false | If this value is set to false, the [sas-orchestration command](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=itopscon&docsetTarget=p0839p972nrx25n1dq264egtgrcq.htm) is instead used to deploy SAS Viya. | viya |
+| V4_DEPLOYMENT_OPERATOR_SCOPE | Where the SAS Viya Deployment Operator should watch for SASDeployments | string | "cluster" | false | [namespace, cluster] [Additional documentation](https://go.documentation.sas.com/doc/en/itopscdc/default/dplyml0phy0dkr/n137b56hwogd7in1onzys95awxqe.htm#p16ayulwlsuw8vn10bkpsjtw1ldg) describing these options is available. | viya |
 | V4_DEPLOYMENT_OPERATOR_NAMESPACE | Namespace where the SAS Viya Deployment Operator should be installed  | string | "sasoperator" | false | Only applicable when V4_DEPLOYMENT_OPERATOR_SCOPE="cluster". | viya |
-| V4_DEPLOYMENT_OPERATOR_CRB | Name of the ClusterRoleBinding resource that is needed by the SAS Viya Deployment Operator | string | "sasoperator" | false | [Additional documentation](https://go.documentation.sas.com/doc/en/itopscdc/default/dplyml0phy0dkr/n137b56hwogd7in1onzys95awxqe.htm#p1arr91os91cg5n1tsmuamj6h10g) is available. | viya |
+| V4_DEPLOYMENT_OPERATOR_CRB | Name of the ClusterRoleBinding resource that is needed by the SAS Viya Deployment Operator | string | "sasoperator" | false | [Additional documentation](https://go.documentation.sas.com/doc/en/itopscdc/default/dplyml0phy0dkr/n137b56hwogd7in1onzys95awxqe.htm#p1arr91os91cg5n1tsmuamj6h10g) describing the resource is available. | viya |
 
 **Deployment Operator Notes:**
 
-* Currently, the viya4-deployment project does not support using the SAS Viya Deployment Operator in conjunction with a Long-Term Support: 2021.1 deployment that uses an alternate mirror repository (`V4_CFG_CR_URL`). If you are planning to deploy SAS Viya according to this specific scenario, SAS recommends using the orchestration tool to perform the installation instead.
-
-   This can be done by setting `V4_DEPLOYMENT_OPERATOR_ENABLED` to false.
-
+* Currently, the viya4-deployment project does not support using the SAS Viya Deployment Operator in conjunction with a Long-Term Support: 2021.1 deployment that uses an alternate mirror repository (`V4_CFG_CR_URL`). 
 
 * In a scenario where you have multiple SAS Viya deployments managed by a single cluster-wide deployment operator, uninstalling one of the SAS Viya deployments does not remove the SAS Viya Deployment Operator from the cluster. However, during the uninstallation workflow, if no SAS Viya deployments that are managed by the cluster-wide deployment operator are detected, the SAS Viya Deployment Operator is also removed.
 
+* If you are running this project using Ansible directly on your workstation, we require Docker to be installed and the executing user should be able to access it. This is required to use the sas-orchestration command. See [ansible usage](user/AnsibleUsage.md#Preparation).
 
-* If you are running this project using Ansible directly on your workstation, we require Docker to be installed and the executing user should be able to access it. This is required to use the Orchestration Tooling CLI see [ansible usage](user/AnsibleUsage.md#Preparation)
+* Using the sas-orchestration deploy command to perform a Viya deployment is only applicable for SAS Viya 2022.12 and later. For previous releases, use the SAS Viya Deployment Operator to perform your deployments.
 
 ## Cloud
 
@@ -120,9 +119,7 @@ When V4_CFG_MANAGE_STORAGE is set to `true`, a new storage class is created: sas
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_ORDER_NUMBER | SAS software order ID | string | | true | | viya |
 | V4_CFG_CADENCE_NAME | Cadence name | string | lts | false | [stable,lts] | viya |
-| V4_CFG_CADENCE_VERSION | Cadence version | string | 2020.1 | true | | viya |
-| V4_CFG_DEPLOYMENT_ASSETS | Path to pre-downloaded deployment assets | string | | false | Leave blank to download deployment assets. | viya |
-| V4_CFG_CADENCE_VERSION | Cadence version | string | "2020.1" | true | This value must be surrounded by quotation marks to accommodate the updated SAS Cadence Version format. If the value is not quoted the deployment will fail. | viya |
+| V4_CFG_CADENCE_VERSION | Cadence version | string | "2022.09" | true | This value must be surrounded by quotation marks to accommodate the updated SAS Cadence Version format. If the value is not quoted the deployment will fail. | viya |
 | V4_CFG_DEPLOYMENT_ASSETS | Path to pre-downloaded deployment assets | string | | false | Leave blank to download deployment assets | viya |
 | V4_CFG_LICENSE | Path to pre-downloaded license file | string | | false| Leave blank to download license file | viya |
 
@@ -259,8 +256,8 @@ V4_CFG_POSTGRES_SERVERS:
 | backrest_pvc_storage_size | Size of the internal pgBackrest PVCs | string | 128Gi | false | This value can be changed but not decreased after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
 | postgres_pvc_access_mode | Access mode for the PostgreSQL PVCs | string | ReadWriteOnce | false | Supported values: [`ReadWriteOnce`,`ReadWriteMany`]. This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
 | backrest_pvc_access_mode | Access mode for the pgBackrest PVCs | string | ReadWriteOnce | false | Supported values: [`ReadWriteOnce`,`ReadWriteMany`]. This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
-| postgres_storage_class | Storage class for the PostgreSQL PVCs | string | sas | false |This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
-| backrest_storage_class | Storage class for the pgBackrest PVCs | string | sas | false |This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
+| postgres_storage_class | Storage class for the PostgreSQL PVCs | string | pg-storage | false |This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
+| backrest_storage_class | Storage class for the pgBackrest PVCs | string | pg-storage | false |This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
 
 **NOTE**: the `default` element is always required. This will be the default server.
 
@@ -273,8 +270,8 @@ V4_CFG_POSTGRES_SERVERS:
     internal: true
     postgres_pvc_storage_size: 10Gi
     postgres_pvc_access_mode: ReadWriteOnce
-    postgres_storage_class: sas
-    backrest_storage_class: sas
+    postgres_storage_class: pg-storage
+    backrest_storage_class: pg-storage
 
 
 # External servers
@@ -405,6 +402,19 @@ The NFS client is currently supported by the newer nfs-subdir-external-provision
 | NFS_CLIENT_CHART_NAME | nfs-subdir-external-provisioner Helm chart name | string | nfs-subdir-external-provisioner | false | | baseline |
 | NFS_CLIENT_CHART_VERSION | nfs-subdir-external-provisioner Helm chart version | string | 4.0.8| false | | baseline |
 | NFS_CLIENT_CONFIG | nfs-subdir-external-provisioner Helm values | string | See [this file](../roles/baseline/defaults/main.yml) for more information. | false | | baseline |
+
+### Postgres NFS Client
+
+The Postgres NFS client is currently supported by the nfs-subdir-external-provisioner. It creates the storage class used by 2022.10 and later internal postgres instances.
+
+| Name | Description | Type | Default | Required | Notes | Tasks |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
+| PG_NFS_CLIENT_NAMESPACE | nfs-subdir-external-provisioner Helm installation namespace | string | nfs-client | false | | baseline |
+| PG_NFS_CLIENT_CHART_URL | nfs-subdir-external-provisioner Helm chart URL | string | Go [here](https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/) for more information. | false | | baseline |
+| PG_NFS_CLIENT_CHART_NAME | nfs-subdir-external-provisioner Helm chart name | string | nfs-subdir-external-provisioner | false | | baseline |
+| PG_NFS_CLIENT_CHART_VERSION | nfs-subdir-external-provisioner Helm chart version | string | 4.0.8| false | | baseline |
+| PG_NFS_CLIENT_CONFIG | nfs-subdir-external-provisioner Helm values | string | See [this file](../roles/baseline/defaults/main.yml) for more information. | false | | baseline |
+
 
 ## Multi-tenancy
 
