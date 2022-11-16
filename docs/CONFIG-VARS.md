@@ -30,6 +30,7 @@ Supported configuration variables are listed in the table below.  All variables 
     - [Ingress-nginx](#ingress-nginx)
     - [Metrics Server](#metrics-server)
     - [NFS Client](#nfs-client)
+    - [Postgres NFS Client](#postgres-nfs-client)
   - [Multi-tenancy](#multi-tenancy)
 
 ## BASE
@@ -259,8 +260,8 @@ V4_CFG_POSTGRES_SERVERS:
 | backrest_pvc_storage_size | Size of the internal pgBackrest PVCs | string | 128Gi | false | This value can be changed but not decreased after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
 | postgres_pvc_access_mode | Access mode for the PostgreSQL PVCs | string | ReadWriteOnce | false | Supported values: [`ReadWriteOnce`,`ReadWriteMany`]. This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
 | backrest_pvc_access_mode | Access mode for the pgBackrest PVCs | string | ReadWriteOnce | false | Supported values: [`ReadWriteOnce`,`ReadWriteMany`]. This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
-| postgres_storage_class | Storage class for the PostgreSQL PVCs | string | sas | false |This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
-| backrest_storage_class | Storage class for the pgBackrest PVCs | string | sas | false |This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
+| postgres_storage_class | Storage class for the PostgreSQL PVCs | string | pg-storage | false |This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
+| backrest_storage_class | Storage class for the pgBackrest PVCs | string | pg-storage | false |This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
 
 **NOTE**: the `default` element is always required. This will be the default server.
 
@@ -273,8 +274,8 @@ V4_CFG_POSTGRES_SERVERS:
     internal: true
     postgres_pvc_storage_size: 10Gi
     postgres_pvc_access_mode: ReadWriteOnce
-    postgres_storage_class: sas
-    backrest_storage_class: sas
+    postgres_storage_class: pg-storage
+    backrest_storage_class: pg-storage
 
 
 # External servers
@@ -405,6 +406,19 @@ The NFS client is currently supported by the newer nfs-subdir-external-provision
 | NFS_CLIENT_CHART_NAME | nfs-subdir-external-provisioner Helm chart name | string | nfs-subdir-external-provisioner | false | | baseline |
 | NFS_CLIENT_CHART_VERSION | nfs-subdir-external-provisioner Helm chart version | string | 4.0.8| false | | baseline |
 | NFS_CLIENT_CONFIG | nfs-subdir-external-provisioner Helm values | string | See [this file](../roles/baseline/defaults/main.yml) for more information. | false | | baseline |
+
+### Postgres NFS Client
+
+The Postgres NFS client is currently supported by the nfs-subdir-external-provisioner. It creates the storage class used by 2022.10 and later internal postgres instances.
+
+| Name | Description | Type | Default | Required | Notes | Tasks |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
+| PG_NFS_CLIENT_NAMESPACE | nfs-subdir-external-provisioner Helm installation namespace | string | nfs-client | false | | baseline |
+| PG_NFS_CLIENT_CHART_URL | nfs-subdir-external-provisioner Helm chart URL | string | Go [here](https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/) for more information. | false | | baseline |
+| PG_NFS_CLIENT_CHART_NAME | nfs-subdir-external-provisioner Helm chart name | string | nfs-subdir-external-provisioner | false | | baseline |
+| PG_NFS_CLIENT_CHART_VERSION | nfs-subdir-external-provisioner Helm chart version | string | 4.0.8| false | | baseline |
+| PG_NFS_CLIENT_CONFIG | nfs-subdir-external-provisioner Helm values | string | See [this file](../roles/baseline/defaults/main.yml) for more information. | false | | baseline |
+
 
 ## Multi-tenancy
 

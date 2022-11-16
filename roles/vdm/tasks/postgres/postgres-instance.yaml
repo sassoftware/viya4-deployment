@@ -122,6 +122,35 @@
 
 - name: postgres instance - internal post 2022.10
   block:
+  - name: postgres instance - Get stored ConfigMap values
+    block:
+    - name: postgres instance - Access ConfigMap values
+      kubernetes.core.k8s_info:
+        kubeconfig: "{{ KUBECONFIG }}"
+        api_version: v1
+        kind: ConfigMap
+        name: dac-crunchy-storage-info
+        namespace: "{{ NAMESPACE }}"
+      register: cm_info
+    - name: postgres instance - set facts for either role from configMap keys
+      block:
+      - name: postgres instance - set facts for default role
+        set_fact:
+          default_postgres_storage_class: "{{ cm_info.resources[0].data['default-postgres-storage-class'] }}"
+          default_postgres_pvc_access_mode: "{{ cm_info.resources[0].data['default-postgres-access-mode'] }}"
+          default_backrest_storage_class: "{{ cm_info.resources[0].data['default-backrest-storage-class'] }}"
+          default_backrest_pvc_access_mode: "{{ cm_info.resources[0].data['default-backrest-access-mode'] }}"
+        when: role == 'default'
+      - name: postgres instance - set facts for cds-postgres role
+        set_fact:
+          cds_postgres_storage_class: "{{ cm_info.resources[0].data['cds-postgres-storage-class'] }}"
+          cds_postgres_pvc_access_mode: "{{ cm_info.resources[0].data['cds-postgres-access-mode'] }}"
+          cds_backrest_storage_class: "{{ cm_info.resources[0].data['cds-backrest-storage-class'] }}"
+          cds_backrest_pvc_access_mode: "{{ cm_info.resources[0].data['cds-backrest-access-mode'] }}"
+        when: role == 'cds-postgres'
+      when: 
+        - dac_crunchy_storage_cm_found
+        - "cm_info.resources"
   - name: postgres instance - internal copy crunchy transformer template
     template:
       src: "{{ role_path }}/templates/transformers/crunchy-storage-transformer.yaml"
@@ -134,6 +163,69 @@
       existing: "{{ vdm_overlays }}"
       add:
         - { transformers: "{{ role }}-crunchy-storage-transformer.yaml", min: "2022.10", vdm: true}
+  - name: postgres instance - set immutable storage transformer values
+    block: 
+    - name: postgres instance - save role storage map values
+      block:
+      - name: postgres instance - save default role map values
+        set_fact:
+          default_postgres_storage_class: "{{ settings.postgres_storage_class|default('pg-storage', true) }}"
+          default_postgres_pvc_access_mode: "{{ settings.postgres_pvc_access_mode|default('ReadWriteOnce', true) }}"
+          default_backrest_storage_class: "{{ settings.backrest_storage_class|default('pg-storage', true) }}"
+          default_backrest_pvc_access_mode: "{{ settings.backrest_pvc_access_mode|default('ReadWriteOnce', true) }}"
+      - name: postgres instance - Create deployment namespace
+        kubernetes.core.k8s:
+          kubeconfig: "{{ KUBECONFIG }}"
+          name: "{{ NAMESPACE }}"
+          api_version: v1
+          kind: Namespace
+          state: present
+      - name: postgres instance - Update ConfigMap
+        kubernetes.core.k8s:
+          kubeconfig: "{{ KUBECONFIG }}"
+          state: present
+          definition:
+            apiVersion: v1
+            kind: ConfigMap
+            metadata:
+              name: dac-crunchy-storage-info
+              namespace: "{{ NAMESPACE }}"
+            data:
+              default-postgres-storage-class: "{{ default_postgres_storage_class | string }}"
+              default-postgres-access-mode: "{{ default_postgres_pvc_access_mode | string }}"
+              default-backrest-storage-class: "{{ default_backrest_storage_class | string }}"
+              default-backrest-access-mode: "{{ default_backrest_pvc_access_mode | string }}"
+      when: 
+        - not dac_crunchy_storage_cm_found
+        - DEPLOY
+        - role == "default"
+    - name: postgres instance - save role storage map values
+      block:
+      - name: postgres instance - save cds role map values
+        set_fact:
+          cds_postgres_storage_class: "{{ settings.postgres_storage_class|default('pg-storage', true) }}"
+          cds_postgres_pvc_access_mode: "{{ settings.postgres_pvc_access_mode|default('ReadWriteOnce', true) }}"
+          cds_backrest_storage_class: "{{ settings.backrest_storage_class|default('pg-storage', true) }}"
+          cds_backrest_pvc_access_mode: "{{ settings.backrest_pvc_access_mode|default('ReadWriteOnce', true) }}"
+      - name: postgres instance - Update ConfigMap
+        kubernetes.core.k8s:
+          kubeconfig: "{{ KUBECONFIG }}"
+          state: present
+          definition:
+            apiVersion: v1
+            kind: ConfigMap
+            metadata:
+              name: dac-crunchy-storage-info
+              namespace: "{{ NAMESPACE }}"
+            data:
+              cds-postgres-storage-class: "{{ cds_postgres_storage_class | string }}"
+              cds-postgres-access-mode: "{{ cds_postgres_pvc_access_mode | string }}"
+              cds-backrest-storage-class: "{{ cds_backrest_storage_class | string }}"
+              cds-backrest-access-mode: "{{ cds_backrest_pvc_access_mode | string }}"
+      when: 
+        - not dac_crunchy_storage_cm_found
+        - DEPLOY
+        - role == "cds-postgres"
   when:
     - settings.internal
     - role == "default" or role == "cds-postgres"
