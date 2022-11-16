@@ -1,8 +1,8 @@
-# List of valid configuration variables
+# List of Valid Configuration Variables
 
 Supported configuration variables are listed in the table below.  All variables can also be specified on the command line.  Values specified on the command line will override all values in configuration defaults files.
 
-- [List of valid configuration variables](#list-of-valid-configuration-variables)
+- [List of Valid Configuration Variables](#list-of-valid-configuration-variables)
   - [BASE](#base)
   - [Cloud](#cloud)
     - [Authentication](#authentication)
@@ -12,7 +12,7 @@ Supported configuration variables are listed in the table below.  All variables 
     - [Azure](#azure)
     - [AWS](#aws)
     - [GCP](#gcp)
-  - [Order](#order)
+  - [SAS Software Order](#sas-software-order)
   - [SAS API Access](#sas-api-access)
   - [Container Registry Access](#container-registry-access)
   - [Ingress](#ingress)
@@ -20,11 +20,11 @@ Supported configuration variables are listed in the table below.  All variables 
     - [Monitoring](#monitoring)
     - [Logging](#logging)
   - [TLS](#tls)
-  - [Postgres](#postgres)
+  - [PostgreSQL](#postgresql)
   - [CAS](#cas)
   - [CONNECT](#connect)
   - [Miscellaneous](#miscellaneous)
-  - [3rd Party tools](#3rd-party-tools)
+  - [Third-Party Tools](#third-party-tools)
     - [Cert-manager](#cert-manager)
     - [Cluster Autoscaler](#cluster-autoscaler)
     - [Ingress-nginx](#ingress-nginx)
@@ -36,74 +36,92 @@ Supported configuration variables are listed in the table below.  All variables 
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| DEPLOY | Whether to deploy or stop at generating kustomize and manifest | bool | true | false | | viya |
-| LOADBALANCER_SOURCE_RANGES | IPs to allow to ingress | [string] | | true | When deploying in the cloud, be sure to add the cloud nat ip | baseline, viya |
+| DEPLOY | Whether to deploy SAS Viya or stop at generating kustomization.yaml and manifest | bool | true | false | | viya |
+| LOADBALANCER_SOURCE_RANGES | IP addresses to allow to reach the ingress | [string] | | true | When deploying in a cloud environment, be sure to add the cloud NAT IP address. | baseline, viya |
 | BASE_DIR | Path to store persistent files | string | $HOME | false | | all |
 | KUBECONFIG | Path to kubeconfig file | string | | true | | viya |
-| V4_CFG_SITEDEFAULT | Path to sitedefault file | string | | false | When not set [sitedefault](../examples/sitedefault.yaml) is used | viya |
+| V4_CFG_SITEDEFAULT | Path to sitedefault file | string | | false | When not set, [sitedefault](../examples/sitedefault.yaml) is used. | viya |
 | V4_CFG_SSSD | Path to sssd file | string | | false | | viya |
+| V4_DEPLOYMENT_OPERATOR_ENABLED | Whether to install the SAS Viya Deployment Operator in the cluster and use it to deploy SAS Viya | bool | true | false | If this value is set to false, the orchestration tool is instead used to deploy SAS Viya. | viya |
+| V4_DEPLOYMENT_OPERATOR_SCOPE | Where the SAS Viya Deployment Operator should watch for SASDeployments | string | "cluster" | false | [namespace, cluster] [Additional documentation](https://go.documentation.sas.com/doc/en/itopscdc/default/dplyml0phy0dkr/n137b56hwogd7in1onzys95awxqe.htm#p16ayulwlsuw8vn10bkpsjtw1ldg) is available. | viya |
+| V4_DEPLOYMENT_OPERATOR_NAMESPACE | Namespace where the SAS Viya Deployment Operator should be installed  | string | "sasoperator" | false | Only applicable when V4_DEPLOYMENT_OPERATOR_SCOPE="cluster". | viya |
+| V4_DEPLOYMENT_OPERATOR_CRB | Name of the ClusterRoleBinding resource that is needed by the SAS Viya Deployment Operator | string | "sasoperator" | false | [Additional documentation](https://go.documentation.sas.com/doc/en/itopscdc/default/dplyml0phy0dkr/n137b56hwogd7in1onzys95awxqe.htm#p1arr91os91cg5n1tsmuamj6h10g) is available. | viya |
+
+**Deployment Operator Notes:**
+
+* Currently, the viya4-deployment project does not support using the SAS Viya Deployment Operator in conjunction with a Long-Term Support: 2021.1 deployment that uses an alternate mirror repository (`V4_CFG_CR_URL`). If you are planning to deploy SAS Viya according to this specific scenario, SAS recommends using the orchestration tool to perform the installation instead.
+
+   This can be done by setting `V4_DEPLOYMENT_OPERATOR_ENABLED` to false.
+
+
+* In a scenario where you have multiple SAS Viya deployments managed by a single cluster-wide deployment operator, uninstalling one of the SAS Viya deployments does not remove the SAS Viya Deployment Operator from the cluster. However, during the uninstallation workflow, if no SAS Viya deployments that are managed by the cluster-wide deployment operator are detected, the SAS Viya Deployment Operator is also removed.
+
+
+* If you are running this project using Ansible directly on your workstation, we require Docker to be installed and the executing user should be able to access it. This is required to use the Orchestration Tooling CLI see [ansible usage](user/AnsibleUsage.md#Preparation)
 
 ## Cloud
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | PROVIDER | Cloud provider | string | | true | [aws,azure,gcp,custom] | baseline, viya |
-| CLUSTER_NAME | Name of the k8s cluster | string | | true | | baseline, viya |
-| NAMESPACE | K8s namespace in which to deploy | string | | true | | baseline, viya, viya-monitoring |
+| CLUSTER_NAME | Name of the Kubernetes cluster | string | | true | | baseline, viya |
+| NAMESPACE | Kubernetes namespace in which to deploy | string | | true | | baseline, viya, viya-monitoring |
 
 ### Authentication
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_CLOUD_SERVICE_ACCOUNT_NAME | Cloud service account | string | | false | See [ansible cloud authentication](user/AnsibleCloudAuthentication.md) | viya |
-| V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH | Full path to service account credentials file | string | | false | See [ansible cloud authentication](user/AnsibleCloudAuthentication.md) | viya |
+| V4_CFG_CLOUD_SERVICE_ACCOUNT_NAME | Cloud service account | string | | false | See [Ansible Cloud Authentication](user/AnsibleCloudAuthentication.md) for more information. | viya |
+| V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH | Full path to service account credentials file | string | | false | See [Ansible Cloud Authentication](user/AnsibleCloudAuthentication.md) for more information. | viya |
 
 ## Jump Server
-Tool uses the jump server to interact with rwx filestore, that needs to be pre-mounted to JUMP_SVR_RWX_FILESTORE_PATH, when V4_CFG_MANAGE_STORAGE is set true.
+Viya4-deploy uses the jump server to interact with the RWX filestore, which must be pre-mounted to JUMP_SVR_RWX_FILESTORE_PATH when V4_CFG_MANAGE_STORAGE is set to `true`.
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| JUMP_SVR_HOST | ip/fqn to the jump host | string | | true | | baseline, viya |
-| JUMP_SVR_USER | ssh user to access the jump host | string | | true | | baseline, viya |
-| JUMP_SVR_PRIVATE_KEY | Path to ssh user private key to access the jump host | string |  | true | | baseline, viya |
-| JUMP_SVR_RWX_FILESTORE_PATH | Path on jump server to nfs mount | string | /viya-share | false | | viya |
+| JUMP_SVR_HOST | IP address or FQDN for the jump server host | string | | true | | baseline, viya |
+| JUMP_SVR_USER | SSH user to access the jump server host | string | | true | | baseline, viya |
+| JUMP_SVR_PRIVATE_KEY | Path to the SSH user's private key to access the jump server host | string |  | true | | baseline, viya |
+| JUMP_SVR_RWX_FILESTORE_PATH | Path on the jump server to the NFS mount | string | /viya-share | false | | viya |
 
 ## Storage
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_MANAGE_STORAGE | Should the tool manage the storageclass | bool | true | false | Set to false if you wish to manage the storage class | all |
-| V4_CFG_STORAGECLASS | Storageclass name | string | "sas" | false | When V4_CFG_MANAGE_STORAGE is false, set to the name of your preexisting storage class that supports ReadWriteMany | baseline, viya |
+| V4_CFG_MANAGE_STORAGE | Whether viya4-deploy should manage the StorageClass | bool | true | false | Set to false if you want to manage the StorageClass yourself. | all |
+| V4_CFG_STORAGECLASS | StorageClass name | string | "sas" | false | When V4_CFG_MANAGE_STORAGE is false, set to the name of your preexisting StorageClass that supports ReadWriteMany. | baseline, viya |
 
 ### RWX Filestore
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_RWX_FILESTORE_ENDPOINT | NFS ip/host | string | | false | | baseline, viya |
+| V4_CFG_RWX_FILESTORE_ENDPOINT | NFS IP address or host name | string | | false | | baseline, viya |
 | V4_CFG_RWX_FILESTORE_PATH | NFS export path | string | /export | false | | baseline, viya |
-| V4_CFG_RWX_FILESTORE_ASTORES_PATH | NFS path to astores dir | string | <V4_CFG_RWX_FILESTORE_PATH>/\<NAMESPACE>/astores | false | | viya |
-| V4_CFG_RWX_FILESTORE_BIN_PATH | NFS path to bin dir | string | <V4_CFG_RWX_FILESTORE_PATH>/\<NAMESPACE>/bin | false | | viya |
-| V4_CFG_RWX_FILESTORE_DATA_PATH | NFS path to data dir | string | <V4_CFG_RWX_FILESTORE_PATH>/\<NAMESPACE>/data | false | | viya |
-| V4_CFG_RWX_FILESTORE_HOMES_PATH | NFS path to homes dir | string | <V4_CFG_RWX_FILESTORE_PATH>/\<NAMESPACE>/homes | false | | viya |
+| V4_CFG_RWX_FILESTORE_ASTORES_PATH | NFS path to astores directory | string | <V4_CFG_RWX_FILESTORE_PATH>/\<NAMESPACE>/astores | false | | viya |
+| V4_CFG_RWX_FILESTORE_BIN_PATH | NFS path to bin directory | string | <V4_CFG_RWX_FILESTORE_PATH>/\<NAMESPACE>/bin | false | | viya |
+| V4_CFG_RWX_FILESTORE_DATA_PATH | NFS path to data directory | string | <V4_CFG_RWX_FILESTORE_PATH>/\<NAMESPACE>/data | false | | viya |
+| V4_CFG_RWX_FILESTORE_HOMES_PATH | NFS path to homes directory | string | <V4_CFG_RWX_FILESTORE_PATH>/\<NAMESPACE>/homes | false | | viya |
 
 ### Azure
 
-When setting V4_CFG_MANAGE_STORAGE to true, A new storage classes will be created: sas (Azure Netapp or NFS)
+When V4_CFG_MANAGE_STORAGE is set to `true`, a new storage class is created: sas (Azure NetApp or NFS).
 
 ### AWS
 
-When setting V4_CFG_MANAGE_STORAGE to true, the efs-provisioner will be deployed. A new storage classes will be created: sas (EFS or NFS)
+When V4_CFG_MANAGE_STORAGE is set to `true`, the efs-provisioner is deployed. A new storage classes is created: sas (EFS or NFS).
 
 ### GCP
 
-When setting V4_CFG_MANAGE_STORAGE to true, A new storage classes will be created: sas (Google Filestore or NFS)
+When V4_CFG_MANAGE_STORAGE is set to `true`, a new storage class is created: sas (Google Filestore or NFS).
 
-## Order
+## SAS Software Order
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_ORDER_NUMBER | SAS order number | string | | true | | viya |
+| V4_CFG_ORDER_NUMBER | SAS software order ID | string | | true | | viya |
 | V4_CFG_CADENCE_NAME | Cadence name | string | lts | false | [stable,lts] | viya |
+| V4_CFG_CADENCE_VERSION | Cadence version | string | 2020.1 | true | | viya |
+| V4_CFG_DEPLOYMENT_ASSETS | Path to pre-downloaded deployment assets | string | | false | Leave blank to download deployment assets. | viya |
 | V4_CFG_CADENCE_VERSION | Cadence version | string | "2020.1" | true | This value must be surrounded by quotation marks to accommodate the updated SAS Cadence Version format. If the value is not quoted the deployment will fail. | viya |
 | V4_CFG_DEPLOYMENT_ASSETS | Path to pre-downloaded deployment assets | string | | false | Leave blank to download deployment assets | viya |
 | V4_CFG_LICENSE | Path to pre-downloaded license file | string | | false| Leave blank to download license file | viya |
@@ -119,89 +137,89 @@ When setting V4_CFG_MANAGE_STORAGE to true, A new storage classes will be create
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_CR_USER | Container registry username | string | | false | By default, credentials are already included in the downloaded deploymentAssets | viya |
-| V4_CFG_CR_PASSWORD | Container registry password | string | | false | By default, credentials are already included in the downloaded deploymentAssets | viya |
+| V4_CFG_CR_USER | Container registry username | string | | false | By default, credentials are included in the downloaded deployment assets. | viya |
+| V4_CFG_CR_PASSWORD | Container registry password | string | | false | By default, credentials are included in the downloaded deployment assets. | viya |
 | V4_CFG_CR_URL | Container registry server | string | https://cr.sas.com | false | | viya |
 
 ## Ingress
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_INGRESS_TYPE | Which ingress controller to deploy | string | "ingress" | true | Possible values: "ingress" | baseline, viya |
-| V4_CFG_INGRESS_FQDN | FQDN to for viya installation | string | | true | | viya |
-| V4_CFG_INGRESS_MODE | Public vs. Private Loadbalancer endpoint | string | "public" | false | Possible values: "public", "private". Setting this option to "private" adds options to the Ingress Controller that create a LoadBalancer with private IP(s) only. | baseline |
+| V4_CFG_INGRESS_TYPE | The ingress controller to deploy | string | "ingress" | true | Possible values: "ingress" | baseline, viya |
+| V4_CFG_INGRESS_FQDN | FQDN to the ingress for SAS Vya installation | string | | true | | viya |
+| V4_CFG_INGRESS_MODE | Whether to create a public or private Loadbalancer endpoint | string | "public" | false | Possible values: "public", "private". Setting this option to "private" adds options to the ingress controller that create a LoadBalancer with private IP address(es) only. | baseline |
 
 ## Monitoring and Logging
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4M_VERSION | Branch or tag of [viya4-monitoring-kubernetes](https://github.com/sassoftware/viya4-monitoring-kubernetes) | string | stable | false | | cluster-logging, cluster-monitoring, viya-monitoring |
-| V4M_BASE_DOMAIN | Base domain in which subdomains for search, dashboards, grafana, prometheus and alertmanager will be created | string | | false | This or the per service fqdn's must be set | cluster-logging, cluster-monitoring, viya-monitoring |
-| V4M_CERT | Path to tls certificate to use for all monitoring/logging services | string | | false | Alternately you can set the per service cert | cluster-logging, cluster-monitoring, viya-monitoring |
-| V4M_KEY | Path to tls key to use for all monitoring/logging services | string | | false | Alternately you can set the per service cert | cluster-logging, cluster-monitoring, viya-monitoring |
-| V4M_NODE_PLACEMENT_ENABLE | Enable workload node placement for viya4-monitoring-kubernetes stack | bool | false | false | | cluster-logging, cluster-monitoring, viya-monitoring |
-| V4M_STORAGECLASS | Storageclass name | string | v4m | false | When V4_CFG_MANAGE_STORAGE is false, set to the name of your pre-existing storage class that supports ReadWriteOnce | cluster-logging, cluster-monitoring, viya-monitoring |
+| V4M_BASE_DOMAIN | Base domain in which subdomains for search, dashboards, Grafana, Prometheus, and Alertmanager are created | string | | false | This parameter or the per-service FQDNs must be set. | cluster-logging, cluster-monitoring, viya-monitoring |
+| V4M_CERT | Path to TLS certificate to use for all monitoring/logging services | string | | false | As an alternative, you can set the per-service certificate. | cluster-logging, cluster-monitoring, viya-monitoring |
+| V4M_KEY | Path to TLS key to use for all monitoring/logging services | string | | false | As an alternative, you can set the per-service certificate. | cluster-logging, cluster-monitoring, viya-monitoring |
+| V4M_NODE_PLACEMENT_ENABLE | Whether to enable workload node placement for viya4-monitoring-kubernetes stack | bool | false | false | | cluster-logging, cluster-monitoring, viya-monitoring |
+| V4M_STORAGECLASS | StorageClass name | string | v4m | false | When V4_CFG_MANAGE_STORAGE is false, set to the name of your pre-existing StorageClass that supports ReadWriteOnce. | cluster-logging, cluster-monitoring, viya-monitoring |
 
 ### Monitoring
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4M_MONITORING_NAMESPACE | Namespace for the monitoring resources | string | monitoring | false | | cluster-monitoring |
-| V4M_PROMETHEUS_FQDN | FQDN to use for prometheus ingress | string | prometheus.<V4M_BASE_DOMAIN> | false | | cluster-monitoring |
-| V4M_PROMETHEUS_CERT | Path to tls certificate to use for prometheus ingress | string |<V4M_CERT> | false | If both this and V4M_CERT are not set a self-signed cert will be used | cluster-monitoring |
-| V4M_PROMETHEUS_KEY | Path to tls key to use for prometheus ingress | string | <V4M_KEY> | false | If both this and V4M_KEY are not set a self-signed cert will be used | cluster-monitoring |
+| V4M_PROMETHEUS_FQDN | FQDN to use for Prometheus ingress | string | prometheus.<V4M_BASE_DOMAIN> | false | | cluster-monitoring |
+| V4M_PROMETHEUS_CERT | Path to TLS certificate to use for Prometheus ingress | string |<V4M_CERT> | false | If neither this variable nor V4M_CERT is set, a self-signed certificate is used. | cluster-monitoring |
+| V4M_PROMETHEUS_KEY | Path to TLS key to use for Prometheus ingress | string | <V4M_KEY> | false | If neither this variable nor V4M_KEY is set, a self-signed certificate is used. | cluster-monitoring |
 | | | | | | | |
-| V4M_GRAFANA_FQDN | FQDN to use for grafana ingress | string | grafana.<V4M_BASE_DOMAIN> | false | | cluster-monitoring |
-| V4M_GRAFANA_CERT | Path to tls certificate to use for grafana ingress | string |<V4M_CERT> | false | If both this and V4M_CERT are not set a self-signed cert will be used | cluster-monitoring |
-| V4M_GRAFANA_KEY | Path to tls key to use for grafana ingress | string | <V4M_KEY> | false | If both this and V4M_KEY are not set a self-signed cert will be used | cluster-monitoring |
-| V4M_GRAFANA_PASSWORD | Grafana admin password | string | randomly generated | false | If not provided, a random password will be generated and written to the log output | cluster-monitoring |
+| V4M_GRAFANA_FQDN | FQDN to use for Grafana ingress | string | grafana.<V4M_BASE_DOMAIN> | false | | cluster-monitoring |
+| V4M_GRAFANA_CERT | Path to TLS certificate to use for Grafana ingress | string |<V4M_CERT> | false | If neither this variable nor V4M_CERT is set, a self-signed certificate is used. | cluster-monitoring |
+| V4M_GRAFANA_KEY | Path to TLS key to use for Grafana ingress | string | <V4M_KEY> | false | If neither this variable nor V4M_KEY is set, a self-signed certificate is used. | cluster-monitoring |
+| V4M_GRAFANA_PASSWORD | Grafana administrator password | string | randomly generated | false | If not provided, a random password is generated and written to the log output. | cluster-monitoring |
 | | | | | | | |
-| V4M_ALERTMANAGER_FQDN | FQDN to use for alertmanager ingress | string | alertmanager.<V4M_BASE_DOMAIN> | false | | cluster-monitoring |
-| V4M_ALERTMANAGER_CERT | Path to tls certificate to use for alertmanager ingress | string |<V4M_CERT> | false | If both this and V4M_CERT are not set a self-signed cert will be used | cluster-monitoring |
-| V4M_ALERTMANAGER_KEY | Path to tls key to use for alertmanager ingress | string | <V4M_KEY> | false | If both this and V4M_KEY are not set a self-signed cert will be used | cluster-monitoring |
+| V4M_ALERTMANAGER_FQDN | FQDN to use for Alertmanager ingress | string | alertmanager.<V4M_BASE_DOMAIN> | false | | cluster-monitoring |
+| V4M_ALERTMANAGER_CERT | Path to TLS certificate to use for Alertmanager ingress | string |<V4M_CERT> | false | If neither this variable nor V4M_CERT is set, a self-signed certificate is used. | cluster-monitoring |
+| V4M_ALERTMANAGER_KEY | Path to TLS key to use for Alertmanager ingress | string | <V4M_KEY> | false | If neither this variable nor V4M_KEY is set, a self-signed certificate is used. | cluster-monitoring |
 
 ### Logging
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4M_LOGGING_NAMESPACE | Namespace for the logging resources | string | logging | false | | cluster-logging |
-| V4M_KIBANA_FQDN | FQDN to use for dashboards ingress | string | dashboards.<V4M_BASE_DOMAIN> | false | | cluster-logging |
-| V4M_KIBANA_CERT | Path to tls certificate to use for dashboards ingress | string |<V4M_CERT> | false | If both this and V4M_CERT are not set a self-signed cert will be used | cluster-logging |
-| V4M_KIBANA_KEY | Path to tls key to use for dashboards ingress | string | <V4M_KEY> | false | If both this and V4M_KEY are not set a self-signed cert will be used | cluster-logging |
-| V4M_KIBANA_PASSWORD | Dashboards admin password | string | randomly generated | false | If not provided, a random password will be generated and written to the log output | cluster-logging |
-| V4M_KIBANA_LOGADM_PASSWORD | Dashboards logadm user's password | string | randomly generated | false | If not provided and V4M_KIBANA_PASSWORD is not set, a random password will be generated and written to the log output | cluster-logging |
-| V4M_KIBANASERVER_PASSWORD | Dashboards server password | string | randomly generated | false | If not provided, a random password will be generated and written to the log output | cluster-logging |
-| V4M_LOGCOLLECTOR_PASSWORD | Logcollector password | string | randomly generated | false | If not provided, a random password will be generated and written to the log output | cluster-logging |
-| V4M_METRICGETTER_PASSWORD | Metricgetter password | string | randomly generated | false | If not provided, a random password will be generated and written to the log output | cluster-logging |
+| V4M_KIBANA_FQDN | FQDN to use for OpenSearch Dashboards ingress | string | dashboards.<V4M_BASE_DOMAIN> | false | | cluster-logging |
+| V4M_KIBANA_CERT | Path to TLS certificate to use for OpenSearch Dashboards ingress | string |<V4M_CERT> | false | If neither this variable nor V4M_CERT is set, a self-signed certificate is used. | cluster-logging |
+| V4M_KIBANA_KEY | Path to TLS key to use for OpenSearch Dashboards ingress | string | <V4M_KEY> | false | If neither this variable nor V4M_KEY is set, a self-signed certificate is used. | cluster-logging |
+| V4M_KIBANA_PASSWORD | OpenSearch Dashboards administrator password | string | randomly generated | false | If not provided, a random password is generated and written to the log output. | cluster-logging |
+| V4M_KIBANA_LOGADM_PASSWORD | OpenSearch Dashboards logadm user's password | string | randomly generated | false | If not provided, and if V4M_KIBANA_PASSWORD is not set, a random password is generated and written to the log output. | cluster-logging |
+| V4M_KIBANASERVER_PASSWORD | OpenSearch Dashboards server password | string | randomly generated | false | If not provided, a random password is generated and written to the log output | cluster-logging |
+| V4M_LOGCOLLECTOR_PASSWORD | Logcollector password | string | randomly generated | false | If not provided, a random password is generated and written to the log output | cluster-logging |
+| V4M_METRICGETTER_PASSWORD | Metricgetter password | string | randomly generated | false | If not provided, a random password is generated and written to the log output | cluster-logging |
 | | | | | | | |
-| V4M_ELASTICSEARCH_FQDN | FQDN to use for search ingress  | string | search.<V4M_BASE_DOMAIN> | false | | cluster-logging |
-| V4M_ELASTICSEARCH_CERT | Path to tls certificate to use for search ingress | string |<V4M_CERT> | false | If both this and V4M_CERT are not set a self-signed cert will be used | cluster-logging |
-| V4M_ELASTICSEARCH_KEY | Path to tls key to use for search ingress | string | <V4M_KEY> | false | If both this and V4M_KEY are not set a self-signed cert will be used | cluster-logging |
+| V4M_ELASTICSEARCH_FQDN | FQDN to use for OpenSearch ingress  | string | search.<V4M_BASE_DOMAIN> | false | | cluster-logging |
+| V4M_ELASTICSEARCH_CERT | Path to TLS certificate to use for OpenSearch ingress | string |<V4M_CERT> | false | If both this and V4M_CERT are not set a self-signed certificate is used. | cluster-logging |
+| V4M_ELASTICSEARCH_KEY | Path to TLS key to use for OpenSearch ingress | string | <V4M_KEY> | false | If neither this variable nor V4M_KEY is set, a self-signed certificate is used. | cluster-logging |
 
 ## TLS
 
-Viya 4 supports 2 different types of certificate generators, cert-manager and openssl.
+SAS Viya 4 supports two certificate generators: cert-manager and openssl.
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_TLS_GENERATOR | Which tool to use for certificate generation | string | openssl | false | Supported values: [`cert-manager`,`openssl`]. If set to `cert-manager`, `cert-manager` will be installed during baselining. | baseline, viya, cluster-logging, cluster-monitoring |
+| V4_CFG_TLS_GENERATOR | Which SAS-provided tool to use for certificate generation | string | openssl | false | Supported values: [`cert-manager`,`openssl`]. If set to `cert-manager`, `cert-manager` will be installed during baselining. | baseline, viya, cluster-logging, cluster-monitoring |
 | V4_CFG_TLS_MODE | Which TLS mode to configure | string | front-door | false | Supported values: [`full-stack`,`front-door`,`disabled.`] When deploying full-stack you must set V4_CFG_TLS_TRUSTED_CA_CERTS to trust external postgres server ca. | all |
 | V4_CFG_TLS_CERT | Path to ingress certificate file | string | | false | If specified, used instead of cert-manager issued certificates | viya |
 | V4_CFG_TLS_KEY | Path to ingress key file | string | | false | Required when V4_CFG_TLS_CERT is specified | viya |
-| V4_CFG_TLS_TRUSTED_CA_CERTS | Path to directory containing only PEM encoded trusted CA certificates files | string | | false | Required when using an external database and TLS is enabled and the deployment target is an IAC created AWS or Open Source Kubernetes cluster. See the [Trusted CA Certs](user/TrustedCACerts.md) for AWS and Open Source Kubernetes cert information. Required when V4_CFG_TLS_CERT is specified. Must include all the CAs in the trust chain for V4_CFG_TLS_CERT. Can be used with or without V4_CFG_TLS_CERT to specify any additionally trusted CAs  | viya |
-| V4_CFG_TLS_DURATION | Certificate time to expiry in hours | int | 17531 | false | See note below | viya |
-| V4_CFG_TLS_ADDITIONAL_SAN_DNS | A space separated list of additional SAN DNS entries that you want added to generated certificates. | string | | false | See note below  | viya |
-| V4_CFG_TLS_ADDITIONAL_SAN_IP | A space separated list of additional SAN IP addresses that you want added to generated certificates. | string | | false | See note below  | viya |
+| V4_CFG_TLS_TRUSTED_CA_CERTS | Path to directory containing only PEM-encoded trusted CA certificate files | string | | false | Required when using an external database if TLS is enabled and the deployment target is an IaC-created AWS or open source Kubernetes cluster. See the [Trusted CA Certs](user/TrustedCACerts.md) document for information about AWS and open source Kubernetes certificates. Required when V4_CFG_TLS_CERT is specified. Must include all the CAs in the trust chain for V4_CFG_TLS_CERT. Can be used with or without V4_CFG_TLS_CERT to specify any additional trusted CAs.  | viya |
+| V4_CFG_TLS_DURATION | Certificate time to expiry in hours | int | 17531 | false | See the note below. | viya |
+| V4_CFG_TLS_ADDITIONAL_SAN_DNS | A space-separated list of additional SAN DNS entries to add to generated certificates. | string | | false | See the note below.  | viya |
+| V4_CFG_TLS_ADDITIONAL_SAN_IP | A space-separated list of additional SAN IP addresses to add to generated certificates. | string | | false | See the note below.  | viya |
 
-Notes:
+**Notes:**
 
-*Values can be used to configure the tls generator when V4_CFG_TLS_MODE is not set to `disabled` and one of the following conditions is met.*
+*Values can be used to configure the TLS certificate generator when V4_CFG_TLS_MODE is not set to `disabled` and one of the following conditions is met:*
   - V4_CFG_TLS_GENERATOR is set to `cert-manager` and no V4_CFG_TLS_CERT/V4_CFG_TLS_KEY are defined
   - V4_CFG_TLS_GENERATOR is set to `openssl` and no V4_CFG_TLS_CERT/V4_CFG_TLS_KEY are defined
 
-## Postgres
+## PostgreSQL
 
-Postgres servers can be defined with the postgres_servers variable which is a map of objects. The variable has the following format:
+PostgreSQL servers can be defined using the POSTGRES_SERVERS variable, which is a map of objects. The variable has the following format:
 
 ```bash
 V4_CFG_POSTGRES_SERVERS:
@@ -283,27 +301,27 @@ V4_CFG_POSTGRES_SERVERS:
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_CAS_RAM | Amount of ram to allocate to per CAS node | string | | false | Numeric value followed by the units, such as 32Gi for 32 gigabytes. In Kubernetes, the units for gigabytes is Gi. Leave empty to enable auto-resource assignment | viya |
-| V4_CFG_CAS_CORES | Amount of cpu cores to allocate per CAS node | string | | false | Either a whole number, representing that number of cores, or a number followed by m, indicating that number of milli-cores. Leave empty to enable auto-resource assignment | viya |
-| V4_CFG_CAS_WORKER_COUNT | Number of CAS workers | int | 1 | false | Setting to more than one triggers MPP deployment | viya |
-| V4_CFG_CAS_ENABLE_BACKUP_CONTROLLER | Enable backup cas controller | bool | false | false | | viya |
-| V4_CFG_CAS_ENABLE_LOADBALANCER | Setup LB to access CAS binary ports | bool | false | false | | viya |
+| V4_CFG_CAS_RAM | Amount of RAM to allocate to per CAS node | string | | false | Numeric value followed by the units, such as 32Gi for 32 gibibytes. In Kubernetes, the unit is Gi. Leave empty to enable auto-resource assignment. | viya |
+| V4_CFG_CAS_CORES | Amount of CPU cores to allocate per CAS node | string | | false | Either a whole number, representing that number of cores, or a number followed by m, indicating that number of milli-cores. Leave empty to enable auto-resource assignment. | viya |
+| V4_CFG_CAS_WORKER_COUNT | Number of CAS workers | int | 1 | false | Setting to more than one triggers MPP CAS deployment. | viya |
+| V4_CFG_CAS_ENABLE_BACKUP_CONTROLLER | Enable backup CAS controller | bool | false | false | | viya |
+| V4_CFG_CAS_ENABLE_LOADBALANCER | Set up LoadBalancer to access CAS binary ports | bool | false | false | | viya |
 
 ## CONNECT
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_CONNECT_ENABLE_LOADBALANCER | Setup LB to access SAS/CONNECT | bool | false | false | | viya |
-| V4_CFG_CONNECT_FQDN | FQDN that will be assigned to access SAS/CONNECT | string | | false | Required when V4_CFG_TLS_MODE is not disabled and cert-manager is used to issue TLS certificates. This FQDN will be added to the SAN DNS list of the issued certificates. | viya |
+| V4_CFG_CONNECT_ENABLE_LOADBALANCER | Set up LoadBalancer to access SAS/CONNECT | bool | false | false | | viya |
+| V4_CFG_CONNECT_FQDN | FQDN that is assigned to access SAS/CONNECT | string | | false | Required when V4_CFG_TLS_MODE is not disabled and cert-manager is used to issue TLS certificates. This FQDN is added to the SAN DNS list of the issued certificates. | viya |
 
 ## Miscellaneous
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_CLUSTER_NODE_POOL_MODE | What mode of cluster node pool to use | string | "standard" | false | [standard, minimal] | viya |
-| V4_CFG_EMBEDDED_LDAP_ENABLE | Deploy openldap in the namespace for authentication | bool | false | false | [Openldap Config](../roles/vdm/templates/generators/openldap-bootstrap-config.yaml) | viya |
-| V4_CFG_CONSUL_ENABLE_LOADBALANCER | Setup LB to access consul ui | bool | false | false | Consul ui port is 8500 | viya |
-| V4_CFG_ELASTICSEARCH_ENABLE | Enable opendistro search | bool | true | false | When deploying LTS less than 2020.1 or Stable less than 2020.1.2 set to false | viya |
+| V4_CFG_CLUSTER_NODE_POOL_MODE | The mode of cluster node pool to use | string | "standard" | false | [standard, minimal] | viya |
+| V4_CFG_EMBEDDED_LDAP_ENABLE | Deploy OpenLDAP in the namespace for authentication | bool | false | false | [Openldap Config](../roles/vdm/templates/generators/openldap-bootstrap-config.yaml) | viya |
+| V4_CFG_CONSUL_ENABLE_LOADBALANCER | Set up LoadBalancer to access the Consul user interface | bool | false | false | Consul UI port is 8500. | viya |
+| V4_CFG_ELASTICSEARCH_ENABLE | Enable search with Open Distro for ElasticSearch | bool | true | false | When deploying LTS earlier than 2020.1 or Stable earlier than 2020.1.2, set to false. | viya |
 | V4_CFG_VIYA_START_SCHEDULE | Configure your SAS Viya deployment to start on specific schedules | string |  | false | This variable accepts [CronJob schedule expressions](https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/#cron-schedule-syntax) to create your Viya start job schedule. See note below. | viya |
 | V4_CFG_VIYA_STOP_SCHEDULE | Configure your SAS Viya deployment to stop on specific schedules | string |  | false | This variable accepts [CronJob schedule expressions](https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/#cron-schedule-syntax) to create your Viya stop job schedule. See note below. | viya |
 
@@ -312,17 +330,17 @@ Notes:
     - For example, defining `V4_CFG_VIYA_STOP_SCHEDULE` and not `V4_CFG_VIYA_START_SCHEDULE` will result in a Viya stop job that runs on a schedule and a suspended Viya start job that you will be able to manually trigger.
   - Defining both `V4_CFG_VIYA_START_SCHEDULE` and `V4_CFG_VIYA_STOP_SCHEDULE` will result in a non-suspended Viya start and stop job that runs on the schedule you defined.
 
-## 3rd Party tools
+## Third-Party Tools
 
 ### Cert-manager
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| CERT_MANAGER_NAMESPACE | cert-manager helm install namespace | string | cert-manager | false | | baseline |
-| CERT_MANAGER_CHART_URL | cert-manager helm chart url | string | https://charts.jetstack.io/ | false | | baseline |
-| CERT_MANAGER_CHART_NAME| cert-manager helm chart name | string | cert-manager| false | | baseline |
-| CERT_MANAGER_CHART_VERSION | cert-manager helm chart version | string | 1.9.1 | false | | baseline |
-| CERT_MANAGER_CONFIG | cert-manager helm values | string | see [here](../roles/baseline/defaults/main.yml) | false | | baseline |
+| CERT_MANAGER_NAMESPACE | cert-manager Helm installation namespace | string | cert-manager | false | | baseline |
+| CERT_MANAGER_CHART_URL | cert-manager Helm chart URL | string | https://charts.jetstack.io/ | false | | baseline |
+| CERT_MANAGER_CHART_NAME| cert-manager Helm chart name | string | cert-manager| false | | baseline |
+| CERT_MANAGER_CHART_VERSION | cert-manager Helm chart version | string | 1.9.1 | false | | baseline |
+| CERT_MANAGER_CONFIG | cert-manager Helm values | string | See [this file](../roles/baseline/defaults/main.yml) for more information. | false | | baseline |
 
 Notes:
   - cert-manager will only be installed if `V4_CFG_TLS_GENERATOR` is set to "cert-manager"
@@ -333,13 +351,13 @@ Cluster-autoscaler is currently only used for AWS EKS clusters. GCP GKE and Azur
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| CLUSTER_AUTOSCALER_ENABLED | Whether to deploy tool | bool | true | false | | baseline |
-| CLUSTER_AUTOSCALER_CHART_URL | cluster-autoscaler helm chart url | string | https://kubernetes.github.io/autoscaler | false | | baseline |
-| CLUSTER_AUTOSCALER_CHART_NAME| cluster-autoscaler helm chart name | string | cluster-autoscaler | false | | baseline |
-| CLUSTER_AUTOSCALER_CHART_VERSION | cluster-autoscaler helm chart version | string | 9.9.2 | false | | baseline |
-| CLUSTER_AUTOSCALER_CONFIG | cluster-autoscaler helm values | string | see [here](../roles/baseline/defaults/main.yml) | false | | baseline |
-| CLUSTER_AUTOSCALER_ACCOUNT | cluster autoscaler aws role arn | string | | false | Required to enable cluster-autoscaler on AWS | baseline |
-| CLUSTER_AUTOSCALER_LOCATION | aws region where kubernetes cluster resides | string | us-east-1 | false | | baseline |
+| CLUSTER_AUTOSCALER_ENABLED | Whether to deploy cluster-autoscaler | bool | true | false | | baseline |
+| CLUSTER_AUTOSCALER_CHART_URL | Cluster-autoscaler Helm chart URL | string | See [this document](https://kubernetes.github.io/autoscaler) for more information. | false | | baseline |
+| CLUSTER_AUTOSCALER_CHART_NAME| Cluster-autoscaler Helm chart name | string | cluster-autoscaler | false | | baseline |
+| CLUSTER_AUTOSCALER_CHART_VERSION | Cluster-autoscaler Helm chart version | string | 9.9.2 | false | | baseline |
+| CLUSTER_AUTOSCALER_CONFIG | Cluster-autoscaler Helm values | string | See [this file](../roles/baseline/defaults/main.yml) for more information. | false | | baseline |
+| CLUSTER_AUTOSCALER_ACCOUNT | Cluster autoscaler AWS role ARN | string | | false | Required to enable cluster-autoscaler on AWS | baseline |
+| CLUSTER_AUTOSCALER_LOCATION |AWS region where Kubernetes cluster is running | string | us-east-1 | false | | baseline |
 
 ### EBS CSI Driver
 
@@ -358,50 +376,50 @@ The EBS CSI driver is currently only used for kubernetes v1.23 or later AWS EKS 
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| INGRESS_NGINX_NAMESPACE | ingress-nginx helm install namespace | string | ingress-nginx | false | | baseline |
-| INGRESS_NGINX_CHART_URL | ingress-nginx helm chart url | string | https://kubernetes.github.io/ingress-nginx | false | | baseline |
-| INGRESS_NGINX_CHART_NAME | ingress-nginx helm chart name | string | ingress-nginx | false | | baseline |
-| INGRESS_NGINX_CHART_VERSION | ingress-nginx helm chart version | string | "" | false | If left as "" (empty string), version 3.40.0 will be used for K8s clusters whose version is <= 1.21.X and version 4.2.3 will be used for K8s clusters whose version is >= 1.22.X| baseline |
-| INGRESS_NGINX_CONFIG | ingress-nginx helm values | string | see [here](../roles/baseline/defaults/main.yml) Altering this value will affect the cluster | false | | baseline |
+| INGRESS_NGINX_NAMESPACE | NGINX Ingress Helm installation namespace | string | ingress-nginx | false | | baseline |
+| INGRESS_NGINX_CHART_URL | NGINX Ingress Helm chart URL | string | See [this document](https://kubernetes.github.io/ingress-nginx) for more information. | false | | baseline |
+| INGRESS_NGINX_CHART_NAME | NGINX Ingress Helm chart name | string | ingress-nginx | false | | baseline |
+| INGRESS_NGINX_CHART_VERSION | NGINX Ingress Helm chart version | string | "" | false | If left as "" (empty string), version 3.40.0 is used for Kubernetes clusters whose version is <= 1.21.X, and version 4.2.3 is used for Kubernetes clusters whose version is >= 1.22.X. | baseline |
+| INGRESS_NGINX_CONFIG | NGINX Ingress Helm values | string | See [this file](../roles/baseline/defaults/main.yml) for more information. Altering this value will affect the cluster. | false | | baseline |
 
 ### Metrics Server
 
-Metric server is currently only used for AWS EKS clusters. GCP GKE and Azure AKS already have a metric server provided by default.
+Kubernetes Metrics Server installation is currently only applicable for AWS EKS clusters. GCP GKE and Azure AKS already have a metric server provided by default.
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| METRICS_SERVER_ENABLED | Whether to deploy tool | bool | true | false | | baseline |
-| METRICS_SERVER_CHART_URL | metrics-server helm chart url | string | https://charts.bitnami.com/bitnami/ | false | If an existing metric-server is installed, these options will be ignored | baseline |
-| METRICS_SERVER_CHART_NAME | metrics-server helm chart name | string | metrics-server | false | If an existing metric-server is installed, these options will be ignored | baseline |
-| METRICS_SERVER_CHART_VERSION | metrics-server helm chart version | string | 5.11.7 | false | If an existing metric-server is installed, these options will be ignored | baseline |
-| METRICS_SERVER_CONFIG | metrics-server helm values | string | see [here](../roles/baseline/defaults/main.yml) | false | If an existing metric-server is installed, these options will be ignored | baseline |
+| METRICS_SERVER_ENABLED | Whether to deploy Metrics Server | bool | true | false | | baseline |
+| METRICS_SERVER_CHART_URL | Metrics Server Helm chart url | string | Go [here](https://charts.bitnami.com/bitnami/) for more information. | false | If an existing Metrics Server is installed, these options are ignored. | baseline |
+| METRICS_SERVER_CHART_NAME | Metrics Server Helm chart name | string | metrics-server | false | If an existing Metrics Server is installed, these options are ignored. | baseline |
+| METRICS_SERVER_CHART_VERSION | Metrics Server Helm chart version | string | 5.11.7 | false | If an existing Metrics Server is installed, these options are ignored. | baseline |
+| METRICS_SERVER_CONFIG | Metrics Server Helm values | string | See [this file](../roles/baseline/defaults/main.yml) for more information. | false | If an existing Metrics Server is installed, these options are ignored. | baseline |
 
 ### NFS Client
 
-The nfs-client is currently supported by the newer nfs-subdir-external-provisioner.
+The NFS client is currently supported by the newer nfs-subdir-external-provisioner.
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| NFS_CLIENT_NAMESPACE | nfs-subdir-external-provisioner helm install namespace | string | nfs-client | false | | baseline |
-| NFS_CLIENT_CHART_URL | nfs-subdir-external-provisioner helm chart url | string | https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/ | false | | baseline |
-| NFS_CLIENT_CHART_NAME | nfs-subdir-external-provisioner helm chart name | string | nfs-subdir-external-provisioner | false | | baseline |
-| NFS_CLIENT_CHART_VERSION | nfs-subdir-external-provisioner helm chart version | string | 4.0.8| false | | baseline |
-| NFS_CLIENT_CONFIG | nfs-subdir-external-provisioner helm values | string | see [here](../roles/baseline/defaults/main.yml) | false | | baseline |
+| NFS_CLIENT_NAMESPACE | nfs-subdir-external-provisioner Helm installation namespace | string | nfs-client | false | | baseline |
+| NFS_CLIENT_CHART_URL | nfs-subdir-external-provisioner Helm chart URL | string | Go [here](https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/) for more information. | false | | baseline |
+| NFS_CLIENT_CHART_NAME | nfs-subdir-external-provisioner Helm chart name | string | nfs-subdir-external-provisioner | false | | baseline |
+| NFS_CLIENT_CHART_VERSION | nfs-subdir-external-provisioner Helm chart version | string | 4.0.8| false | | baseline |
+| NFS_CLIENT_CONFIG | nfs-subdir-external-provisioner Helm values | string | See [this file](../roles/baseline/defaults/main.yml) for more information. | false | | baseline |
 
 ## Multi-tenancy
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4MT_ENABLE | Enables Multi-tenancy in the SAS Viya deployment | bool | false | false || viya, multi-tenancy |
-| V4MT_MODE | Set V4MT_MODE to either schema or database | string | schema | false | Two modes of data isolation (schemaPerApplicationTenant, databasePerTenant) for tenant data. schemaPerApplicationTenant is default.  | viya, multi-tenancy |
+| V4MT_ENABLE | Enables multi-tenancy in the SAS Viya deployment | bool | false | false || viya, multi-tenancy |
+| V4MT_MODE | Set V4MT_MODE to either schema or database | string | schema | false | Two modes of data isolation (schemaPerApplicationTenant, databasePerTenant) are supported for tenant data. The default is schemaPerApplicationTenant.  | viya, multi-tenancy |
 | V4MT_TENANT_IDS | Maps to SAS_TENANT_IDS. One or more tenant IDs to onboard or offboard | string | | false | Example: Single tenant ID: "acme" or Multiple tenant IDs: "acme, cyberdyne, intech". Tenant IDs have a few naming restrictions, See the details [here](https://go.documentation.sas.com/doc/en/itopscdc/default/caltenants/p0emzq13c0zbhxn1hktsdlmig934.htm#n1fptbibrh96r8n1jy317onpjd8r) | viya, multi-tenancy |
-| V4MT_PROVIDER_PASSWORD | Optional: The password that is applied to the tenant administrator on each onboarded tenant | string | | false | Maps to SAS_PROVIDER_PASSWORD. When V4MT_PROVIDER_PASSWORD is specified V4MT_PROVIDER_PASSWORD_{{TENANT-ID}} can not be used. See details [here](https://go.documentation.sas.com/doc/en/itopscdc/default/caltenants/p0emzq13c0zbhxn1hktsdlmig934.htm#p1ghvmezrb3cvxn1h7vg4uguqct6) | multi-tenancy |
-| V4MT_PROVIDER_PASSWORD_{{TENANT-ID}} | Optional: Unique sasprovider password for each tenant being onboarded. {{TENANT-ID}} must be in uppercase | string | | false | Maps to SAS_PROVIDER_PASSWORD_{{TENANT-ID}}. When V4MT_PROVIDER_PASSWORD_{{TENANT-ID}} is specified V4MT_PROVIDER_PASSWORD can not be used. See details [here](https://go.documentation.sas.com/doc/en/itopscdc/default/caltenants/p0emzq13c0zbhxn1hktsdlmig934.htm#p1ghvmezrb3cvxn1h7vg4uguqct6) | multi-tenancy |
-| V4MT_TENANT_CAS_CUSTOMIZATION | Map of objects with all tenant CAS customization variables. See the format below | | | false | | multi-tenancy |
+| V4MT_PROVIDER_PASSWORD | Optional: The password that is applied to the tenant administrator on each onboarded tenant | string | | false | Maps to SAS_PROVIDER_PASSWORD. When V4MT_PROVIDER_PASSWORD is specified, V4MT_PROVIDER_PASSWORD_{{TENANT-ID}} cannot be used. See details [here](https://go.documentation.sas.com/doc/en/itopscdc/default/caltenants/p0emzq13c0zbhxn1hktsdlmig934.htm#p1ghvmezrb3cvxn1h7vg4uguqct6). | multi-tenancy |
+| V4MT_PROVIDER_PASSWORD_{{TENANT-ID}} | Optional: Unique sasprovider password for each tenant being onboarded. {{TENANT-ID}} must be in uppercase. | string | | false | Maps to SAS_PROVIDER_PASSWORD_{{TENANT-ID}}. When V4MT_PROVIDER_PASSWORD_{{TENANT-ID}} is specified, V4MT_PROVIDER_PASSWORD cannot be used. See details [here](https://go.documentation.sas.com/doc/en/itopscdc/default/caltenants/p0emzq13c0zbhxn1hktsdlmig934.htm#p1ghvmezrb3cvxn1h7vg4uguqct6). | multi-tenancy |
+| V4MT_TENANT_CAS_CUSTOMIZATION | Map of objects with all tenant CAS customization variables. See the format below. | | | false | | multi-tenancy |
 
 ### Tenant CAS Customization
 
-Some of the tenant CAS customizations can be defined with the V4MT_TENANT_CAS_CUSTOMIZATION variable which is a map of objects. The variable has the following format:
+Some of the tenant CAS customizations can be defined with the V4MT_TENANT_CAS_CUSTOMIZATION variable, which is a map of objects. The variable has the following format:
 
 ```bash
 V4MT_TENANT_CAS_CUSTOMIZATION:
@@ -415,12 +433,12 @@ Below is the list of parameters each element can contain.
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| memory | Amount of ram to allocate to per CAS node | string | | false | Numeric value followed by the units, such as 32Gi for 32 gigabytes. In Kubernetes, the units for gigabytes is Gi. | multi-tenancy |
-| cpus | Amount of cpu cores to allocate per CAS node | string | | false | Either a whole number, representing that number of cores, or a number followed by m, indicating that number of milli-cores. | multi-tenancy |
-| loadbalancer_enabled | Setup LB to access CAS binary ports | bool | false | false | | multi-tenancy |
-| loadbalancer_source_ranges | Loadbalancer source ranges specific to the tenant | list | false | false | | multi-tenancy |
+| memory | Amount of RAM to allocate to per CAS node | string | | false | Numeric value followed by the units, such as 32Gi for 32 gibibytes. In Kubernetes, the unit  is Gi. | multi-tenancy |
+| cpus | Number of CPU cores to allocate per CAS node | string | | false | Either a whole number, representing that number of cores, or a number followed by m, indicating that number of milli-cores. | multi-tenancy |
+| loadbalancer_enabled | Set up LoadBalancer to access CAS binary ports | bool | false | false | | multi-tenancy |
+| loadbalancer_source_ranges | LoadBalancer source ranges specific to the tenant | list | false | false | | multi-tenancy |
 | worker_count | The number of CAS worker nodes for tenants. Default is 0 (SMP) | int | 0 | false | | multi-tenancy |
-| backup_controller_enabled | Enable backup cas controller | bool | false | false | | multi-tenancy |
+| backup_controller_enabled | Enable backup CAS controller | bool | false | false | | multi-tenancy |
 
 Example:
 

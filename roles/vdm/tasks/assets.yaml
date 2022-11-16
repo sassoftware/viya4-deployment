@@ -8,6 +8,8 @@
     - install
     - uninstall
     - update
+    - cas-onboard
+    - offboard
 
 - name: assets - Get License
   command:
@@ -21,6 +23,19 @@
     - install
     - uninstall
     - update
+
+- name: assets - Get Certificates
+  command:
+    cmd: "{{ tmpdir.path }}/viya4-orders-cli certificates --file-path {{ tmpdir.path }}/ --file-name certs {{ V4_CFG_ORDER_NUMBER }}"
+  environment:
+    CLIENTCREDENTIALSID: "{{ V4_CFG_SAS_API_KEY | string | b64encode }}"
+    CLIENTCREDENTIALSSECRET: "{{ V4_CFG_SAS_API_SECRET | string | b64encode }}"
+  tags:
+    - install
+    - uninstall
+    - update
+    - cas-onboard
+    - offboard
 
 - name: assets - Download
   command:
@@ -36,7 +51,8 @@
     - update
   register: res
 
-- set_fact:
+- name: assets - Set assets location
+  set_fact:
     order_output: "{{ res.stdout|from_json }}"
   when:
     - V4_CFG_DEPLOYMENT_ASSETS is none
@@ -52,6 +68,7 @@
   with_items:
     - "{{ DEPLOY_DIR }}/sas-bases"
     - "{{ DEPLOY_DIR }}/site-config/vdm"
+    - "{{ DEPLOY_DIR }}/site-config/operator-deploy"
   tags:
     - install
     - uninstall
