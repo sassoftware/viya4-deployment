@@ -224,7 +224,7 @@ V4_CFG_POSTGRES_SERVERS:
   ...
 ```
 
-**NOTE**: the `default` elements is always required . This will be the default server. Below is the list of parameters each element can contain.
+**NOTE**: Below is the list of parameters each database element can contain.
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -237,12 +237,14 @@ V4_CFG_POSTGRES_SERVERS:
 | ssl_enforcement_enabled | Require ssl connection to external postgres | bool | | false | Required for external postgres servers. Ignored on GCP when using cloud sql | viya |
 | connection_name | External postgres database connection name | string | | false | Required for using cloud-sql-proxy on gcp. See [ansible cloud authentication](user/AnsibleCloudAuthentication.md) | viya |
 | service_account | External service account for postgres connectivity | string | | false | Required for using cloud-sql-proxy on gcp. See [ansible cloud authentication](user/AnsibleCloudAuthentication.md) | viya |
-| postgres_storage_size | Size of the internal postgreSQL PVCs | string | 128Gi | false |This value can be changed but not decreased after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
-| backrest_storage_size | Size of the internal pgBackrest PVCs | string | 128Gi | false | This value can be changed but not decreased after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
-| postgres_access_mode | Access mode for the PostgreSQL PVCs | string | ReadWriteOnce | false |This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
-| backrest_access_mode | Access mode for the pgBackrest PVCs | string | ReadWriteOnce | false |This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
+| postgres_pvc_storage_size | Size of the internal postgreSQL PVCs | string | 128Gi | false |This value can be changed but not decreased after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
+| backrest_pvc_storage_size | Size of the internal pgBackrest PVCs | string | 128Gi | false | This value can be changed but not decreased after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
+| postgres_pvc_access_mode | Access mode for the PostgreSQL PVCs | string | ReadWriteOnce | false | Supported values: [`ReadWriteOnce`,`ReadWriteMany`]. This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
+| backrest_pvc_access_mode | Access mode for the pgBackrest PVCs | string | ReadWriteOnce | false | Supported values: [`ReadWriteOnce`,`ReadWriteMany`]. This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
 | postgres_storage_class | Storage class for the PostgreSQL PVCs | string | sas | false |This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
 | backrest_storage_class | Storage class for the pgBackrest PVCs | string | sas | false |This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
+
+**NOTE**: the `default` element is always required. This will be the default server.
 
 Examples:
 
@@ -251,9 +253,10 @@ Examples:
 V4_CFG_POSTGRES_SERVERS:
   default:
     internal: true
-    postgres_storage_size: 10Gi
-    postgres_access_mode: ReadWriteOnce
-    postgres_storage_class: default
+    postgres_pvc_storage_size: 10Gi
+    postgres_pvc_access_mode: ReadWriteOnce
+    postgres_storage_class: sas
+    backrest_storage_class: sas
 
 
 # External servers

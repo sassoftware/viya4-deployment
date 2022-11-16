@@ -8,25 +8,25 @@ patch: |-
   - op: replace
     path: /spec/instances/0/dataVolumeClaimSpec/resources/requests
     value:
-      storage: {{ settings.postgres_storage_size|default('128Gi', true) }}
+      storage: {{ settings.postgres_pvc_storage_size|default('128Gi', true) }}
 
   # This value can be changed but not decreased after the initial deployment
   - op: replace
     path: /spec/backups/pgbackrest/repos/0/volume/volumeClaimSpec/resources/requests
     value:
-      storage: {{ settings.backrest_storage_size|default('128Gi', true) }}
+      storage: {{ settings.backrest_pvc_storage_size|default('128Gi', true) }}
 
   # This value cannot be changed after the initial deployment
   - op: replace
     path: /spec/instances/0/dataVolumeClaimSpec/accessModes
     value:
-      - {{ settings.postgres_access_mode|default('ReadWriteOnce', true) }}
+      - {{ settings.postgres_pvc_access_mode|default('ReadWriteOnce', true) }}
 
   # This value cannot be changed after the initial deployment
   - op: replace
     path: /spec/backups/pgbackrest/repos/0/volume/volumeClaimSpec/accessModes
     value:
-      - {{ settings.backrest_access_mode|default('ReadWriteOnce', true) }}
+      - {{ settings.backrest_pvc_access_mode|default('ReadWriteOnce', true) }}
 
   # This value cannot be changed after the initial deployment
   - op: replace
