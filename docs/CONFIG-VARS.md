@@ -343,8 +343,16 @@ The EBS CSI driver is currently only used for kubernetes v1.23 or later AWS EKS 
 | INGRESS_NGINX_CHART_URL | ingress-nginx helm chart url | string | https://kubernetes.github.io/ingress-nginx | false | | baseline |
 | INGRESS_NGINX_CHART_NAME | ingress-nginx helm chart name | string | ingress-nginx | false | | baseline |
 | INGRESS_NGINX_CHART_VERSION | ingress-nginx helm chart version | string | "" | false | If left as "" (empty string), version 3.40.0 will be used for K8s clusters whose version is <= 1.21.X and version 4.2.3 will be used for K8s clusters whose version is >= 1.22.X| baseline |
-| INGRESS_NGINX_CONFIG | ingress-nginx helm values | string | see [here](../roles/baseline/defaults/main.yml) Altering this value will affect the cluster | false | | baseline |
+| INGRESS_NGINX_CONFIG | ingress-nginx helm values | string | see [here](../roles/baseline/defaults/main.yml#L46) Altering this value will affect the cluster | false | With the retiring of the Classic Load Balancer in AWS, all future load balancers would be using Network Load Balancer. Please see the example below that needs to included if your cloud provider is AWS | baseline |
 
+**Note:** This example is only applicable for AWS
+```bash
+INGRESS_NGINX_CONFIG:
+  controller:
+    service:
+      annotations:
+        service.beta.kubernetes.io/aws-load-balancer-type: nlb
+```
 ### Metrics Server
 
 Metric server is currently only used for AWS EKS clusters. GCP GKE and Azure AKS already have a metric server provided by default.
