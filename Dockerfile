@@ -1,6 +1,5 @@
 # syntax=docker/dockerfile:experimental
 FROM ubuntu:22.04 as baseline
-ENV DEBIAN_FRONTEND=noninteractive
 RUN apt update && apt upgrade -y \
   && apt install -y python3 python3-dev python3-pip curl unzip \
   && update-alternatives --install /usr/bin/python python /usr/bin/python3 1 \

@@ -3,7 +3,7 @@
   set_fact:
     ORCHESTRATION_TOOLING_DIRECTORY: "{{ tmpdir.path }}/orchestration"
     ORCHESTRATION_TOOLING_ARCHIVE: "{{ tmpdir.path}}/orchestration.tar"
-    ORCHESTRATION_TOOLING_INSTALL_MANIFEST: "{{ DEPLOY_DIR }}/{{ NAMESPACE }}-sasdeployment.yaml"
+    ORCHESTRATION_TOOLING_INSTALL_MANIFEST: "{{ DEPLOY_DIR }}/sasdeployment.yaml"
     ORCHESTRATION_TOOLING_INSTALL_MANIFESTS_DIRECTORY: "{{ tmpdir.path }}/orchestration/manifests"
     ORCHESTRATION_TOOLING_UNINSTALL_MANIFEST: "{{ DEPLOY_DIR }}/uninstall.yaml"
     ORCHESTRATION_CR_USER: "{{ V4_CFG_CR_USER }}"

@@ -56,7 +56,7 @@
 - name: delete sasdeployment.yaml
   file:
     state: absent
-    path: "{{ DEPLOY_DIR }}/{{ NAMESPACE }}-sasdeployment.yaml"
+    path: "{{ DEPLOY_DIR }}/sasdeployment.yaml"
   tags:
     - cas-onboard
     - offboard

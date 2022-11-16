@@ -1,7 +1,7 @@
 ---
 - name: deploy - Apply SAS Viya deployment
   community.kubernetes.k8s:
-    src: "{{ DEPLOY_DIR }}/{{ NAMESPACE }}-sasdeployment.yaml"
+    src: "{{ DEPLOY_DIR }}/sasdeployment.yaml"
     state: present
     namespace: "{{ NAMESPACE }}"
     kubeconfig: "{{ KUBECONFIG }}"
