@@ -242,23 +242,42 @@ V4_CFG_POSTGRES_SERVERS:
   ...
 ```
 
-**NOTE**: The `default` element is always required. It represents the default server. Below is the list of parameters that each element can contain.
+**NOTE**: Below is the list of parameters each database element can contain.
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| internal | Whether the database is internal or external | bool | | true | All servers must either be internal or external (no combinations of internal and external PostgreSQL). | viya |
-| database | Database name | string | Database server role | false | Default database name for default server is SharedServices. | viya |
-| admin | External PostgreSQL username | string | | false | Required for external PostgreSQL servers. | viya |
-| password | External PostgreSQL password | string | | false | Required for external PostgreSQL servers. | viya |
-| fqdn | External PostgreSQL IP address or FQDN | string | | false | Required for external PostgreSQL servers. | viya |
-| server_port | External PostgreSQL port | string | 5432 | false | | viya |
-| ssl_enforcement_enabled | Require SSL connection to external PostgreSQL | bool | | false | Required for external PostgreSQL servers. Ignored on GCP when using Cloud SQL. | viya |
-| connection_name | External PostgreSQL database connection name | string | | false | Required for using cloud-sql-proxy on GCP. See [Ansible Cloud Authentication](user/AnsibleCloudAuthentication.md) for more information. | viya |
-| service_account | External service account for PostgreSQL connectivity | string | | false | Required for using cloud-sql-proxy on GCP. See [Ansible Cloud Authentication](user/AnsibleCloudAuthentication.md) for more information. | viya |
+| internal | Whether the database is internal or external | bool | | true | All servers must either be internal or all must be external | viya |
+| database | Database name | string | Database server role | false | Default database name for default server is SharedServices | viya |
+| admin | External postgres username | string | | false | Required for external postgres servers | viya |
+| password | External postgres password | string | | false | Required for external postgres servers | viya |
+| fqdn | External postgres ip/fqdn | string | | false | Required for external postgres servers | viya |
+| server_port | External postgres port | string | 5432 | false | | viya |
+| ssl_enforcement_enabled | Require ssl connection to external postgres | bool | | false | Required for external postgres servers. Ignored on GCP when using cloud sql | viya |
+| connection_name | External postgres database connection name | string | | false | Required for using cloud-sql-proxy on gcp. See [ansible cloud authentication](user/AnsibleCloudAuthentication.md) | viya |
+| service_account | External service account for postgres connectivity | string | | false | Required for using cloud-sql-proxy on gcp. See [ansible cloud authentication](user/AnsibleCloudAuthentication.md) | viya |
+| postgres_pvc_storage_size | Size of the internal postgreSQL PVCs | string | 128Gi | false |This value can be changed but not decreased after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
+| backrest_pvc_storage_size | Size of the internal pgBackrest PVCs | string | 128Gi | false | This value can be changed but not decreased after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
+| postgres_pvc_access_mode | Access mode for the PostgreSQL PVCs | string | ReadWriteOnce | false | Supported values: [`ReadWriteOnce`,`ReadWriteMany`]. This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
+| backrest_pvc_access_mode | Access mode for the pgBackrest PVCs | string | ReadWriteOnce | false | Supported values: [`ReadWriteOnce`,`ReadWriteMany`]. This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
+| postgres_storage_class | Storage class for the PostgreSQL PVCs | string | sas | false |This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
+| backrest_storage_class | Storage class for the pgBackrest PVCs | string | sas | false |This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
 
-Example:
+**NOTE**: the `default` element is always required. This will be the default server.
+
+Examples:
 
 ```bash
+# Internal server
+V4_CFG_POSTGRES_SERVERS:
+  default:
+    internal: true
+    postgres_pvc_storage_size: 10Gi
+    postgres_pvc_access_mode: ReadWriteOnce
+    postgres_storage_class: sas
+    backrest_storage_class: sas
+
+
+# External servers
 V4_CFG_POSTGRES_SERVERS:
   default:
     internal: false

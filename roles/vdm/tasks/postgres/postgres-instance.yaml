@@ -120,6 +120,29 @@
     - uninstall
     - update
 
+- name: postgres instance - internal post 2022.10
+  block:
+  - name: postgres instance - internal copy crunchy transformer template
+    template:
+      src: "{{ role_path }}/templates/transformers/crunchy-storage-transformer.yaml"
+      dest: "{{ role_path }}/templates/transformers/{{ role }}-crunchy-storage-transformer.yaml"
+      mode: "0660"
+  - name: postgres instance - internal kustomization entries
+    overlay_facts:
+      cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+      cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+      existing: "{{ vdm_overlays }}"
+      add:
+        - { transformers: "{{ role }}-crunchy-storage-transformer.yaml", min: "2022.10", vdm: true}
+  when:
+    - settings.internal
+    - role == "default" or role == "cds-postgres"
+    - V4_CFG_CADENCE_VERSION is version('2022.10', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
+  tags:
+    - install
+    - uninstall
+    - update
+
 - name: postgres instance - external post 2022.10
   block:
   - name: postgres instance - external copy postgres-user.env
