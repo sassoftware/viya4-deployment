@@ -68,7 +68,7 @@
     - update
 
 - name: deployment-operator - create namespace
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     api_version: v1
     kind: Namespace
     name: "{{ V4_DEPLOYMENT_OPERATOR_NAMESPACE }}"
@@ -211,7 +211,7 @@
         dest: "{{ OPERATOR_DEPLOY_DIRECTORY }}/SASDeploymentOperator.yaml"
         mode: "0660"
     - name: deployment-operator - Apply deployment-operator manifest
-      community.kubernetes.k8s:
+      kubernetes.core.k8s:
         src: "{{ OPERATOR_DEPLOY_DIRECTORY }}/SASDeploymentOperator.yaml"
         state: present
         namespace: "{{ V4_DEPLOYMENT_OPERATOR_NAMESPACE }}"
@@ -232,7 +232,7 @@
     - update
 
 - name: deployment-operator - Get a list of all SASDeployments in cluster
-  community.kubernetes.k8s_info:
+  kubernetes.core.k8s_info:
     kubeconfig: "{{ KUBECONFIG }}"
     api_version: orchestration.sas.com/v1alpha1
     kind: SASDeployment
@@ -279,7 +279,7 @@
     - uninstall
 
 - name: deployment-operator - Delete namespace
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     api_version: v1
     kind: Namespace
     name: "{{ V4_DEPLOYMENT_OPERATOR_NAMESPACE }}"

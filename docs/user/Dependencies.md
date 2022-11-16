@@ -21,9 +21,9 @@ The following list details our dependencies and versions (~ indicates multiple p
 | pip3 | kubernetes | 12.0.1 |
 | pip3 | dnspython | 2.1.0 |
 | pip3 | docker | 5.0.3 |
-| ansible-galaxy | community.kubernetes | 1.2.1 |
 | ansible-galaxy | community.docker | 2.7.0 |
 | ansible-galaxy | ansible.utils | 2.3.0 |
+| ansible-galaxy | kubernetes.core | 2.3.2 |
 
 Required project dependencies are generally pinned to known working or stable versions to ensure users have a smooth initial experience. In some cases it may be required to change the default version of a dependency. In such cases users are welcome to experiment with alternate versions, however compatibility may not be guaranteed.
 

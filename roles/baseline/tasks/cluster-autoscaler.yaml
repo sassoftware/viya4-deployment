@@ -1,6 +1,6 @@
 ---
 - name: Deploy cluster-autoscaler
-  community.kubernetes.helm:
+  kubernetes.core.helm:
     name: "{{ CLUSTER_AUTOSCALER_NAME }}"
     namespace: "{{ CLUSTER_AUTOSCALER_NAMESPACE }}"
     chart_repo_url: "{{ CLUSTER_AUTOSCALER_CHART_URL }}"
@@ -16,7 +16,7 @@
     - update
 
 - name: Remove cluster-autoscaler
-  community.kubernetes.helm:
+  kubernetes.core.helm:
     name: "{{ CLUSTER_AUTOSCALER_NAME }}"
     namespace: "{{ CLUSTER_AUTOSCALER_NAMESPACE }}"
     kubeconfig: "{{ KUBECONFIG }}"
