@@ -10,7 +10,7 @@ The following list details our dependencies and versions (~ indicates multiple p
 | ~ | pip | 3.x |
 | ~ | unzip | any |
 | ~ | tar | any |
-| ~ | docker | any |
+| ~ | docker | >=20.10.10 |
 | ~ | git | any |
 | ~ | rsync | any |
 | ~ | kustomize | 3.7.0 |
