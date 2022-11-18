@@ -42,3 +42,10 @@ Release 5.0.0 (and later) of sassoftware/viya4-deployment is only compatible wit
 
 ### Solution:
 When using sassoftware/viya4-deployment releases 5.0.0 or later, specify either the stable branch or a valid sassoftware/viya4-monitoring-kubernetes release tag of 1.2.0 or later for the value of the V4M_VERSION sassoftware/viya4-deployment variable, For more details on supported variables, refer to [CONFIG-VARS.md](./CONFIG-VARS.md)
+
+## SAS Viya Deployment Operator
+
+### Symptom:
+When the SAS Viya Deployment Operator is not working as expected, three different sources can be used to diagnose problems. Follow the commands from the [SAS Viya deployment guide](https://go.documentation.sas.com/doc/en/sasadmincdc/default/dplyml0phy0dkr/p127f6y30iimr6n17x2xe9vlt54q.htm#p11o2ghzdkqm6kn1qkxqr2wr3nkh) to check out the SAS Viya Deployment Operator Pod, the SASDeployment Custom Resource, and the Reconcile Job. Remediation steps are also present on that page.
+
+
