@@ -11,9 +11,19 @@
     - cas-onboard
     - offboard
 
+- name: assets - create license directory
+  file:
+    path: "{{ DEPLOY_DIR }}/license"
+    state: directory
+    mode: "0770"
+  tags:
+    - install
+    - uninstall
+    - update
+
 - name: assets - Get License
   command:
-    cmd: "{{ tmpdir.path }}/viya4-orders-cli license --file-path {{ DEPLOY_DIR }}/site-config --file-name license {{ V4_CFG_ORDER_NUMBER }} {{ V4_CFG_CADENCE_NAME }} {{ V4_CFG_CADENCE_VERSION }}"
+    cmd: "{{ tmpdir.path }}/viya4-orders-cli license --file-path {{ DEPLOY_DIR }}/license --file-name license {{ V4_CFG_ORDER_NUMBER }} {{ V4_CFG_CADENCE_NAME }} {{ V4_CFG_CADENCE_VERSION }}"
   environment:
     CLIENTCREDENTIALSID: "{{ V4_CFG_SAS_API_KEY | string | b64encode }}"
     CLIENTCREDENTIALSSECRET: "{{ V4_CFG_SAS_API_SECRET | string | b64encode }}"
@@ -26,7 +36,7 @@
 
 - name: assets - Get Certificates
   command:
-    cmd: "{{ tmpdir.path }}/viya4-orders-cli certificates --file-path {{ tmpdir.path }}/ --file-name certs {{ V4_CFG_ORDER_NUMBER }}"
+    cmd: "{{ tmpdir.path }}/viya4-orders-cli certificates --file-path {{ DEPLOY_DIR }}/license/ --file-name certs {{ V4_CFG_ORDER_NUMBER }}"
   environment:
     CLIENTCREDENTIALSID: "{{ V4_CFG_SAS_API_KEY | string | b64encode }}"
     CLIENTCREDENTIALSSECRET: "{{ V4_CFG_SAS_API_SECRET | string | b64encode }}"
@@ -99,7 +109,7 @@
 - name: assets - Copy user-provided license file
   copy:
     src: "{{ V4_CFG_LICENSE}}"
-    dest: "{{ DEPLOY_DIR }}/site-config/license.jwt"
+    dest: "{{ DEPLOY_DIR }}/license/license.jwt"
   when:
     - V4_CFG_LICENSE is not none
   tags:

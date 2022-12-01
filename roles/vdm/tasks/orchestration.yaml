@@ -180,6 +180,10 @@
         path: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/work/"
         state: directory
         mode: "0700"
+    - name: orchestration - Copy licenses into orchestration tooling directory
+      copy:
+        src: "{{ DEPLOY_DIR }}/license"
+        dest: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/data"
     - name: orchestration - Copy site-config into orchestration tooling directory
       synchronize:
         src: "{{ DEPLOY_DIR }}/site-config"
@@ -211,7 +215,7 @@
             --cadence-version "{{ V4_CFG_CADENCE_VERSION }}"
             --cadence-release "{{ V4_CFG_CADENCE_RELEASE }}"
             --image-registry "{{ V4_CFG_CR_HOST }}"
-            --deployment-data "{{ tmpdir.path }}/certs.zip"
+            --deployment-data "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/data/license/certs.zip"
             --user-content "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/data/"
       args:
         chdir: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}"
@@ -231,46 +235,28 @@
 
 - name: orchestration - SAS Viya deployment manifest - Ansible
   block:
-    - name: orchestration - Generate SAS Viya deployment manifest
-      community.docker.docker_container:
-        name: "orchestration_{{ lookup('password', '/dev/null chars=ascii_lowercase length=8') }}"
-        image: "{{ V4_CFG_CR_HOST }}/{{ ORCHESTRATION_IMAGE }}"
-        volumes:
-          - "{{ tmpdir.path }}:/tmp"
-          - "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/data:/data"
-          - "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/work:/work"
-        detach: false
-        cleanup: yes
-        user: "{{ UID_GID }}"
-        command:
-          - "create sas-deployment-cr"
-          - "--cadence-name {{ V4_CFG_CADENCE_NAME }}"
-          - "--cadence-version {{ V4_CFG_CADENCE_VERSION }}"
-          - "--cadence-release {{ V4_CFG_CADENCE_RELEASE }}"
-          - "--image-registry {{ V4_CFG_CR_HOST }}"
-          - "--deployment-data /tmp/certs.zip"
-          - "--user-content /data"
+    - name: orchestration - Generate SAS Viya deployment manifest NEW
+      ansible.builtin.shell: >
+        docker run --rm
+        --user="{{ UID_GID }}"
+        --name "orchestration_{{ lookup('password', '/dev/null chars=ascii_lowercase length=8') }}"
+        --volume "{{ tmpdir.path }}:/tmp"
+        --volume "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/data:/data"
+        --volume "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/work:/work"
+        "{{ V4_CFG_CR_HOST }}/{{ ORCHESTRATION_IMAGE }}"
+        create sas-deployment-cr
+        --cadence-name {{ V4_CFG_CADENCE_NAME }}
+        --cadence-version {{ V4_CFG_CADENCE_VERSION }}
+        --cadence-release {{ V4_CFG_CADENCE_RELEASE }}
+        --image-registry {{ V4_CFG_CR_HOST }}
+        --deployment-data /data/license/certs.zip
+        --user-content /data
       register: sasdeployment
     - name: orchestration - Write SAS Viya deployment manifest
       copy:
-        content: "{{ sasdeployment.container.Output }}"
+        content: "{{ sasdeployment.stdout }}"
         dest: "{{ ORCHESTRATION_TOOLING_INSTALL_MANIFEST }}"
         mode: "0660"
-  when:
-    - deployment_tooling == "ansible"
-  tags:
-    - install
-    - update
-    - cas-onboard
-    - offboard
-
-# At the moment there is no way to split the stderr from the container output
-# so regex is used to remove the extra lines
-- name: Clean up ORCHESTRATION_TOOLING_INSTALL_MANIFEST
-  lineinfile:
-    path: "{{ ORCHESTRATION_TOOLING_INSTALL_MANIFEST }}"
-    state: absent
-    regexp: '^The create sas-deployment-cr command.*$'
   when:
     - deployment_tooling == "ansible"
   tags:
@@ -339,7 +325,7 @@
             --cadence-version "{{ V4_CFG_CADENCE_VERSION }}"
             --cadence-release "{{ V4_CFG_CADENCE_RELEASE }}"
             --image-registry "{{ V4_CFG_CR_HOST }}"
-            --deployment-data "{{ tmpdir.path }}/certs.zip"
+            --deployment-data "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/data/license/certs.zip"
             --user-content "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/data/"
       args:
         chdir: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}"
@@ -359,28 +345,25 @@
 - name: orchestration - Create SAS Viya uninstall manifest V4_DEPLOYMENT_OPERATOR_ENABLED - Ansible
   block:
     - name: orchestration - Generate SAS Viya uninstall manifest
-      community.docker.docker_container:
-        name: "orchestration_{{ lookup('password', '/dev/null chars=ascii_lowercase length=8') }}"
-        image: "{{ V4_CFG_CR_HOST }}/{{ ORCHESTRATION_IMAGE }}"
-        volumes:
-          - "{{ tmpdir.path }}:/tmp"
-          - "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/data:/data"
-          - "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/work:/work"
-        detach: false
-        cleanup: yes
-        user: "{{ UID_GID }}"
-        command:
-          - "create sas-deployment-cr"
-          - "--cadence-name {{ V4_CFG_CADENCE_NAME }}"
-          - "--cadence-version {{ V4_CFG_CADENCE_VERSION }}"
-          - "--cadence-release {{ V4_CFG_CADENCE_RELEASE }}"
-          - "--image-registry {{ V4_CFG_CR_HOST }}"
-          - "--deployment-data /tmp/certs.zip"
-          - "--user-content /data"
+      ansible.builtin.shell: >
+        docker run --rm
+        --user="{{ UID_GID }}"
+        --name "orchestration_{{ lookup('password', '/dev/null chars=ascii_lowercase length=8') }}"
+        --volume "{{ tmpdir.path }}:/tmp"
+        --volume "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/data:/data"
+        --volume "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/work:/work"
+        "{{ V4_CFG_CR_HOST }}/{{ ORCHESTRATION_IMAGE }}"
+        create sas-deployment-cr
+        --cadence-name {{ V4_CFG_CADENCE_NAME }}
+        --cadence-version {{ V4_CFG_CADENCE_VERSION }}
+        --cadence-release {{ V4_CFG_CADENCE_RELEASE }}
+        --image-registry {{ V4_CFG_CR_HOST }}
+        --deployment-data /data/license/certs.zip
+        --user-content /data
       register: sasdeployment
     - name: orchestration - Write SAS Viya uninstall manifest
       copy:
-        content: "{{ sasdeployment.container.Output }}"
+        content: "{{ sasdeployment.stdout }}"
         dest: "{{ ORCHESTRATION_TOOLING_UNINSTALL_MANIFEST }}"
         mode: "0660"
   when:
@@ -416,39 +399,23 @@
 - name: orchestration - Create SAS Viya uninstall manifest - Ansible
   block:
     - name: orchestration - Generate SAS Viya uninstall manifest
-      community.docker.docker_container:
-        name: "orchestration_{{ lookup('password', '/dev/null chars=ascii_lowercase length=8') }}"
-        image: "{{ V4_CFG_CR_HOST }}/{{ ORCHESTRATION_IMAGE }}"
-        volumes:
-          - "{{ DEPLOY_DIR }}:/data"
-          - "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/work:/work"
-        detach: false
-        cleanup: yes
-        user: "{{ UID_GID }}"
-        entrypoint:
-          - "kustomize"
-        command:
-          - "build /data"
+      ansible.builtin.shell: >
+        docker run --rm
+        --user="{{ UID_GID }}"
+        --name "orchestration_{{ lookup('password', '/dev/null chars=ascii_lowercase length=8') }}"
+        --volume "{{ DEPLOY_DIR }}:/data"
+        --volume "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/work:/work"
+        "{{ V4_CFG_CR_HOST }}/{{ ORCHESTRATION_IMAGE }}"
+        --entrypoint kustomize
+        build /data
       register: uninstall
     - name: orchestration - Write SAS Viya uninstall manifest
       copy:
-        content: "{{ uninstall.container.Output }}"
+        content: "{{ uninstall.stdout }}"
         dest: "{{ ORCHESTRATION_TOOLING_UNINSTALL_MANIFEST }}"
         mode: "0660"
   when:
     - V4_DEPLOYMENT_OPERATOR_ENABLED == False
-    - deployment_tooling == "ansible"
-  tags:
-    - uninstall
-
-# At the moment there is no way to split the stderr from the container output
-# so regex is used to remove the extra lines
-- name: Clean up ORCHESTRATION_TOOLING_UNINSTALL_MANIFEST
-  lineinfile:
-    path: "{{ ORCHESTRATION_TOOLING_UNINSTALL_MANIFEST }}"
-    state: absent
-    regexp: '^The create sas-deployment-cr command.*$'
-  when:
     - deployment_tooling == "ansible"
   tags:
     - uninstall
