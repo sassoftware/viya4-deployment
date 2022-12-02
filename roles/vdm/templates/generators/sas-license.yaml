@@ -4,5 +4,5 @@ metadata:
   name: sas-license
 behavior: merge
 type: sas.com/license
-files:
-  - SAS_LICENSE=license/license.jwt
+literals:
+  - SAS_LICENSE={{ LICENSE_CONTENT }}

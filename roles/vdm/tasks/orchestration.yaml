@@ -182,7 +182,7 @@
         mode: "0700"
     - name: orchestration - Copy licenses into orchestration tooling directory
       copy:
-        src: "{{ DEPLOY_DIR }}/license"
+        src: "{{ LICENSE_DIRECTORY }}"
         dest: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/data"
     - name: orchestration - Copy site-config into orchestration tooling directory
       synchronize:
@@ -235,7 +235,7 @@
 
 - name: orchestration - SAS Viya deployment manifest - Ansible
   block:
-    - name: orchestration - Generate SAS Viya deployment manifest NEW
+    - name: orchestration - Generate SAS Viya deployment manifest
       ansible.builtin.shell: >
         docker run --rm
         --user="{{ UID_GID }}"
@@ -405,8 +405,8 @@
         --name "orchestration_{{ lookup('password', '/dev/null chars=ascii_lowercase length=8') }}"
         --volume "{{ DEPLOY_DIR }}:/data"
         --volume "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/work:/work"
-        "{{ V4_CFG_CR_HOST }}/{{ ORCHESTRATION_IMAGE }}"
         --entrypoint kustomize
+        "{{ V4_CFG_CR_HOST }}/{{ ORCHESTRATION_IMAGE }}"
         build /data
       register: uninstall
     - name: orchestration - Write SAS Viya uninstall manifest
