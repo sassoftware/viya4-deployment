@@ -121,9 +121,7 @@ When V4_CFG_MANAGE_STORAGE is set to `true`, a new storage class is created: sas
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_ORDER_NUMBER | SAS software order ID | string | | true | | viya |
 | V4_CFG_CADENCE_NAME | Cadence name | string | lts | false | [stable,lts] | viya |
-| V4_CFG_CADENCE_VERSION | Cadence version | string | 2020.1 | true | | viya |
-| V4_CFG_DEPLOYMENT_ASSETS | Path to pre-downloaded deployment assets | string | | false | Leave blank to download deployment assets. | viya |
-| V4_CFG_CADENCE_VERSION | Cadence version | string | "2020.1" | true | This value must be surrounded by quotation marks to accommodate the updated SAS Cadence Version format. If the value is not quoted the deployment will fail. | viya |
+| V4_CFG_CADENCE_VERSION | Cadence version | string | "2022.09" | true | This value must be surrounded by quotation marks to accommodate the updated SAS Cadence Version format. If the value is not quoted the deployment will fail. | viya |
 | V4_CFG_DEPLOYMENT_ASSETS | Path to pre-downloaded deployment assets | string | | false | Leave blank to download deployment assets | viya |
 | V4_CFG_LICENSE | Path to pre-downloaded license file | string | | false| Leave blank to download license file | viya |
 
