@@ -31,18 +31,24 @@
 - name: pg_config - v4 crunchy operator check
   block:
   - name: pg_config - Find v4 crunchy deployment
-    ansible.builtin.shell: |
-      kubectl --kubeconfig {{ KUBECONFIG }} get deployment -n {{ NAMESPACE }} |grep sas-crunchy-data-postgres-operator
-    register: find_op
-    ignore_errors: true
+    kubernetes.core.k8s_info:
+      kubeconfig: "{{ KUBECONFIG }}"
+      kind: Deployment
+      name: sas-crunchy-data-postgres-operator
+      namespace: "{{ NAMESPACE }}"
+    register: deploy
   - name: pg_config - v4 crunchy operator found
     set_fact:
       v4_crunchy_present: true
-    when: "find_op.rc == 0"
+    when: 
+      - deploy.resources is defined
+      - deploy.resources | length != 0
   - name: pg_config - v4 crunchy operator not found
     set_fact:
       v4_crunchy_present: false
-    when: "find_op.rc != 0"
+    when: 
+      - deploy.resources is defined
+      - deploy.resources | length == 0
   when:
     - not dac_crunchy_storage_cm_found
   tags:
