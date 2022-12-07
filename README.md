@@ -259,9 +259,6 @@ If you are using SAS Viya 4 Deployment in order to update SAS Viya, take the fol
 
 - You are expected to modify the steps that are described in the Operations Guide to accommodate the directory structure that is required for the tools in the viya4-deployment project.
 
-
-
-
 ### Troubleshooting
 
 See the [Troubleshooting](./docs/Troubleshooting.md) page.
