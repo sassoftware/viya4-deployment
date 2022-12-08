@@ -56,7 +56,7 @@ Supported configuration variables are listed in the table below.  All variables 
 
 * If you are running this project using Ansible directly on your workstation, we require Docker to be installed and the executing user should be able to access it. This is required to use the sas-orchestration command. See [ansible usage](user/AnsibleUsage.md#Preparation).
 
-* Using the sas-orchestration command to perform a Viya deployment is only applicable for cadences 2022.12 and beyond. For previous cadences please use the Deployment Operator to perform your deployments. 
+* Using the sas-orchestration deploy command to perform a Viya deployment is only applicable for SAS Viya 2022.12 and later. For previous releases, use the SAS Viya Deployment Operator to perform your deployments.
 
 ## Cloud
 
