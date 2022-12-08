@@ -43,22 +43,20 @@ Supported configuration variables are listed in the table below.  All variables 
 | KUBECONFIG | Path to kubeconfig file | string | | true | | viya |
 | V4_CFG_SITEDEFAULT | Path to sitedefault file | string | | false | When not set, [sitedefault](../examples/sitedefault.yaml) is used. | viya |
 | V4_CFG_SSSD | Path to sssd file | string | | false | | viya |
-| V4_DEPLOYMENT_OPERATOR_ENABLED | Whether to install the SAS Viya Deployment Operator in the cluster and use it to deploy SAS Viya | bool | true | false | If this value is set to false, the orchestration tool is instead used to deploy SAS Viya. | viya |
-| V4_DEPLOYMENT_OPERATOR_SCOPE | Where the SAS Viya Deployment Operator should watch for SASDeployments | string | "cluster" | false | [namespace, cluster] [Additional documentation](https://go.documentation.sas.com/doc/en/itopscdc/default/dplyml0phy0dkr/n137b56hwogd7in1onzys95awxqe.htm#p16ayulwlsuw8vn10bkpsjtw1ldg) is available. | viya |
+| V4_DEPLOYMENT_OPERATOR_ENABLED | Whether to install the [SAS Viya Deployment Operator](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=itopscon&docsetTarget=p0839p972nrx25n1dq264egtgrcq.htm in the cluster and use it to deploy SAS Viya | bool | true | false | If this value is set to false, the [sas-orchestration command](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=itopscon&docsetTarget=p0839p972nrx25n1dq264egtgrcq.htm) is instead used to deploy SAS Viya. | viya |
+| V4_DEPLOYMENT_OPERATOR_SCOPE | Where the SAS Viya Deployment Operator should watch for SASDeployments | string | "cluster" | false | [namespace, cluster] [Additional documentation](https://go.documentation.sas.com/doc/en/itopscdc/default/dplyml0phy0dkr/n137b56hwogd7in1onzys95awxqe.htm#p16ayulwlsuw8vn10bkpsjtw1ldg) describing these options is available. | viya |
 | V4_DEPLOYMENT_OPERATOR_NAMESPACE | Namespace where the SAS Viya Deployment Operator should be installed  | string | "sasoperator" | false | Only applicable when V4_DEPLOYMENT_OPERATOR_SCOPE="cluster". | viya |
-| V4_DEPLOYMENT_OPERATOR_CRB | Name of the ClusterRoleBinding resource that is needed by the SAS Viya Deployment Operator | string | "sasoperator" | false | [Additional documentation](https://go.documentation.sas.com/doc/en/itopscdc/default/dplyml0phy0dkr/n137b56hwogd7in1onzys95awxqe.htm#p1arr91os91cg5n1tsmuamj6h10g) is available. | viya |
+| V4_DEPLOYMENT_OPERATOR_CRB | Name of the ClusterRoleBinding resource that is needed by the SAS Viya Deployment Operator | string | "sasoperator" | false | [Additional documentation](https://go.documentation.sas.com/doc/en/itopscdc/default/dplyml0phy0dkr/n137b56hwogd7in1onzys95awxqe.htm#p1arr91os91cg5n1tsmuamj6h10g) describing the resource is available. | viya |
 
 **Deployment Operator Notes:**
 
-* Currently, the viya4-deployment project does not support using the SAS Viya Deployment Operator in conjunction with a Long-Term Support: 2021.1 deployment that uses an alternate mirror repository (`V4_CFG_CR_URL`). If you are planning to deploy SAS Viya according to this specific scenario, SAS recommends using the orchestration tool to perform the installation instead.
-
-   This can be done by setting `V4_DEPLOYMENT_OPERATOR_ENABLED` to false.
-
+* Currently, the viya4-deployment project does not support using the SAS Viya Deployment Operator in conjunction with a Long-Term Support: 2021.1 deployment that uses an alternate mirror repository (`V4_CFG_CR_URL`). 
 
 * In a scenario where you have multiple SAS Viya deployments managed by a single cluster-wide deployment operator, uninstalling one of the SAS Viya deployments does not remove the SAS Viya Deployment Operator from the cluster. However, during the uninstallation workflow, if no SAS Viya deployments that are managed by the cluster-wide deployment operator are detected, the SAS Viya Deployment Operator is also removed.
 
+* If you are running this project using Ansible directly on your workstation, we require Docker to be installed and the executing user should be able to access it. This is required to use the sas-orchestration command. See [ansible usage](user/AnsibleUsage.md#Preparation).
 
-* If you are running this project using Ansible directly on your workstation, we require Docker to be installed and the executing user should be able to access it. This is required to use the Orchestration Tooling CLI see [ansible usage](user/AnsibleUsage.md#Preparation)
+* Using the sas-orchestration command to perform a Viya deployment is only applicable for cadences 2022.12 and beyond. For previous cadences please use the Deployment Operator to perform your deployments. 
 
 ## Cloud
 
