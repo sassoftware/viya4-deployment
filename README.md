@@ -186,6 +186,8 @@ The SAS Viya Customizations that are managed by viya4-deployment are located und
 
 #### OpenLDAP Customizations
 
+The OpenLDAP setup provided here is a temporary solution to add users and groups and start using SAS Viya application. The OpenLDAP server created here does not persist. It gets created and destroyed within the SAS Viya name space it is created in. To add users or groups that persist please follow the SAS documentation on how to [Configure an LDAP Identity Provider](https://go.documentation.sas.com/doc/en/sasadmincdc/default/calids/n1aw4xnkvwcddnn1mv8lxr2e4tu7.htm#p0spae4p1qoto3n1qpuzafcecxhh).
+
 If the embedded OpenLDAP server is enabled, it is possible to change the users and groups that will be created. The required steps are similar to other customizations:
 1. Create the folder structure detailed in the [Customize Deployment Overlays](#customize-deployment-overlays). 
 2. Copy the `./examples/openldap` folder into the `/site-config` folder. 
