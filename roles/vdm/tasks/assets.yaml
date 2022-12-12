@@ -8,8 +8,6 @@
     - install
     - uninstall
     - update
-    - cas-onboard
-    - offboard
 
 - name: assets - Set facts
   set_fact:
@@ -18,6 +16,8 @@
     - install
     - uninstall
     - update
+    - cas-onboard
+    - offboard
 
 - name: assets - create license directory
   file:
@@ -52,8 +52,6 @@
     - install
     - uninstall
     - update
-    - cas-onboard
-    - offboard
 
 - name: assets - Download
   command:
