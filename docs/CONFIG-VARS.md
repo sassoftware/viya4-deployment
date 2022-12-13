@@ -84,6 +84,10 @@ Viya4-deploy uses the jump server to interact with the RWX filestore, which must
 | JUMP_SVR_RWX_FILESTORE_PATH | Path on the jump server to the NFS mount | string | /viya-share | false | | viya |
 
 ## Storage
+When V4_CFG_MANAGE_STORAGE is set to true, Viya4-deploy will create the "sas" and "pg-storage" storage classes using the nfs-subdir-external-provisioner helm chart for the Viya deployment to use. If a jump server is present, Viya4-deploy will use that server to create the folders for the ASTORES, BIN, DATA and HOMES RWX Filestore NFS paths outlined in the RWX Filestore section below. 
+
+When V4_CFG_MANAGE_STORAGE is set to false, Viya4-deploy will not create the "sas" or "pg-storage" storage classes. Viya4-deploy will also not create or manage the RWX Filestore NFS paths for you. If V4_CFG_MANAGE_STORAGE is set to false, the values for V4_CFG_RWX_FILESTORE_ASTORES_PATH,
+V4_CFG_RWX_FILESTORE_BIN_PATH, V4_CFG_RWX_FILESTORE_DATA_PATH and V4_CFG_RWX_FILESTORE_HOMES_PATH must be set to existing NFS folder locations prior to running a Viya deployment. The required NFS folders can be created from the jump server by the Viya4-deploy user prior to running a Viya4 deployment. Recommended attribute settings for each folder are as follows: set the filemode to 0777, group to 'nogroup' and owner to 'nobody'.
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -256,8 +260,8 @@ V4_CFG_POSTGRES_SERVERS:
 | backrest_pvc_storage_size | Size of the internal pgBackrest PVCs | string | 128Gi | false | This value can be changed but not decreased after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
 | postgres_pvc_access_mode | Access mode for the PostgreSQL PVCs | string | ReadWriteOnce | false | Supported values: [`ReadWriteOnce`,`ReadWriteMany`]. This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
 | backrest_pvc_access_mode | Access mode for the pgBackrest PVCs | string | ReadWriteOnce | false | Supported values: [`ReadWriteOnce`,`ReadWriteMany`]. This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
-| postgres_storage_class | Storage class for the PostgreSQL PVCs | string | pg-storage | false |This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
-| backrest_storage_class | Storage class for the pgBackrest PVCs | string | pg-storage | false |This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
+| postgres_storage_class | Storage class for the PostgreSQL PVCs | string | pg-storage | false |This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases. Set to the name of your pre-existing StorageClass or set V4_CFG_MANAGE_STORAGE to true to have Viya4-deploy create the pg-storage StorageClass. | viya |
+| backrest_storage_class | Storage class for the pgBackrest PVCs | string | pg-storage | false |This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases. Set to the name of your pre-existing StorageClass or set V4_CFG_MANAGE_STORAGE to true to have Viya4-deploy create the pg-storage StorageClass. | viya |
 
 **NOTE**: the `default` element is always required. This will be the default server.
 
