@@ -265,7 +265,7 @@ V4_CFG_POSTGRES_SERVERS:
 | postgres_storage_class | Storage class for the PostgreSQL PVCs | string | pg-storage | false |This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases. The default value is only used if `V4_CFG_MANAGE_STORAGE` is set to `true`. If `V4_CFG_MANAGE_STORAGE` is set to false, set the value to your pre-existing StorageClass name. | viya |
 | backrest_storage_class | Storage class for the pgBackrest PVCs | string | pg-storage | false |This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases. The default value is only used if `V4_CFG_MANAGE_STORAGE` is set to `true`. If `V4_CFG_MANAGE_STORAGE` is set to false, set the value to your pre-existing StorageClass name. | viya |
 
-**NOTE**: the `default` element is always required. This will be the default server.
+**NOTE**: The `default` element is always required. This will be the default server.
 
 Examples:
 
