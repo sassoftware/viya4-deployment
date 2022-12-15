@@ -254,6 +254,8 @@ When running the `viya` action with `V4_CFG_CONNECT_ENABLE_LOADBALANCER=true`, a
 
 ### Updating SAS Viya Manually
 
+Do not use viya4-deployment project to do update.
+
 If you have an existing deployment performed with the viya4-deployment project, in order to update SAS Viya, take the following steps:
 
 - Follow the instructions in ["Updating Software"](https://documentation.sas.com/?cdcId=sasadmincdc&cdcVersion=default&docsetId=k8sag&docsetTarget=titlepage.htm) in the SAS Viya Operations Guide.
