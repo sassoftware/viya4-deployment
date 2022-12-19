@@ -252,14 +252,14 @@ In the above example, the ingress controller's LoadBalancer endpoint is 52.52.52
 When running the `viya` action with `V4_CFG_CONNECT_ENABLE_LOADBALANCER=true`, a separate loadbalancer service is created to allow external SAS/CONNECT clients to connect to SAS Viya. You will need to register this LoadBalancer endpoint with your DNS provider such that the desired host name (for example, connect.example.com) points to the LoadBalancer endpoint.
 
 
-### Updating SAS Viya
+### Updating SAS Viya Manually
 
-If you are using SAS Viya 4 Deployment in order to update SAS Viya, take the following steps:
+Manual steps are required by the SAS software to update a SAS deployment in an existing cluster. As a result, viya4-deployment does not perform updates. The viya4-deployment tools can perform subsequent `viya,install` tasks if you are simply reapplying the same software order into the cluster.
 
-- Obtain the latest version of SAS Viya 4 Deployment before proceeding.
-- Follow the instructions in ["Updating Software"](https://documentation.sas.com/?cdcId=sasadmincdc&cdcVersion=default&docsetId=k8sag&docsetTarget=titlepage.htm) in the SAS Viya Operations Guide.
+If you have an existing deployment that you performed with the viya4-deployment project, take the following steps in order to update SAS Viya:
 
-- You are expected to modify the steps that are described in the Operations Guide to accommodate the directory structure that is required for the tools in the viya4-deployment project.
+- Follow the instructions in [Updating Software](https://go.documentation.sas.com/doc/en/sasadmincdc/default/k8sag/titlepage.htm?fromDefault=) in the SAS Viya Operations Guide.
+- You are expected to modify the steps that are described in the SAS Viya Operations Guide to accommodate the slightly different directory structure 
 
 ### Troubleshooting
 
