@@ -254,12 +254,12 @@ When running the `viya` action with `V4_CFG_CONNECT_ENABLE_LOADBALANCER=true`, a
 
 ### Updating SAS Viya Manually
 
-Do not use viya4-deployment project to do the update.
+Manual steps are required by the SAS software to update a SAS deployment in an existing cluster. As a result, viya4-deployment does not perform updates. The viya4-deployment tools can perform subsequent `viya,install` tasks if you are simply reapplying the same software order into the cluster.
 
-If you have an existing deployment performed with the viya4-deployment project, in order to update SAS Viya, take the following steps:
+If you have an existing deployment that you performed with the viya4-deployment project, take the following steps in order to update SAS Viya:
 
-- Follow the instructions in ["Updating Software"](https://documentation.sas.com/?cdcId=sasadmincdc&cdcVersion=default&docsetId=k8sag&docsetTarget=titlepage.htm) in the SAS Viya Operations Guide.
-- You are expected to modify the steps that are described in the Operations Guide to accommodate the directory structure that is required for the tools in the viya4-deployment project.
+- Follow the instructions in [Updating Software](https://documentation.sas.com/?cdcId=sasadmincdc&cdcVersion=default&docsetId=k8sag&docsetTarget=titlepage.htm) in the SAS Viya Operations Guide.
+- You are expected to modify the steps that are described in the SAS Viya Operations Guide to accommodate the slightly different directory structure 
 
 ### Troubleshooting
 
