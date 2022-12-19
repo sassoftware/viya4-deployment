@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:experimental
-FROM ubuntu:20.04 as baseline
+FROM ubuntu:22.04 as baseline
 RUN apt update && apt upgrade -y \
   && apt install -y python3 python3-dev python3-pip curl unzip \
   && update-alternatives --install /usr/bin/python python /usr/bin/python3 1 \
@@ -16,14 +16,14 @@ RUN curl -sLO https://storage.googleapis.com/kubernetes-release/release/v{$kubec
 
 # Installation
 FROM baseline
-ARG HELM_VERSION=3.8.1
-ARG aws_cli_version=2.1.20
-ARG gcp_cli_version=334.0.0
+ARG helm_version=3.8.1
+ARG aws_cli_version=2.7.22
+ARG gcp_cli_version=409.0.0
 
 # Add extra packages
-RUN apt install -y gzip wget git git-lfs jq sshpass \
+RUN apt install -y gzip wget git git-lfs jq sshpass skopeo rsync \
   && curl -ksLO https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 && chmod 755 get-helm-3 \
-  && ./get-helm-3 --version v$HELM_VERSION --no-sudo \
+  && ./get-helm-3 --version v$helm_version --no-sudo \
   && helm plugin install https://github.com/databus23/helm-diff \
   # AWS
   && curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-${aws_cli_version}.zip" -o "awscliv2.zip" \

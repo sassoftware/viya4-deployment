@@ -6,6 +6,9 @@ patch: |-
   - op: replace
     path: /spec/storage/storageclass
     value: {{ V4_CFG_STORAGECLASS }}
+  - op: add
+    path: /metadata/annotations/sas.com~1crunchy-storage-type
+    value: dynamic
 target:
   group: webinfdsvr.sas.com
   kind: Pgcluster

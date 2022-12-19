@@ -45,6 +45,18 @@
   tags:
     - baseline
 
+- name: Lookup K8s version info
+  block:
+    - name: Retrieve K8s cluster information
+      community.kubernetes.k8s_cluster_info:
+        kubeconfig: "{{ KUBECONFIG }}"
+      register: cluster_info
+    - name: Set the K8s server version
+      set_fact:
+        K8S_VERSION: "{{ cluster_info.version.server.kubernetes.major + '.' + cluster_info.version.server.kubernetes.minor | regex_replace('\\+$', '') }}"
+  tags:
+    - baseline
+
 - name: Include ebs-csi-driver
   include_tasks: 
     file: ebs-csi-driver.yaml

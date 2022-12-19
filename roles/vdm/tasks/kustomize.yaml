@@ -1,3 +1,4 @@
+---
 - command: |
     git log -1 --format=format:"%H"
   failed_when:
@@ -12,7 +13,6 @@
 - set_fact:
     timestamp: "{{ ansible_date_time.iso8601 }}"
     git_hash: "{{ githash.stdout |default('unknown', -1) }}"
-    deployment_tooling: "{{ lookup('env', 'VIYA4_DEPLOYMENT_TOOLING') |default('ansible', -1) }}"
   tags:
     - install
     - uninstall
@@ -37,6 +37,7 @@
       - vdm
       - multi-tenant
       - sas-tenant-job
+      - operator-deploy
   register: user_customizations
   tags:
     - install
@@ -73,10 +74,3 @@
     - uninstall
     - update
 
-- name: kustomize - Generate deployment manifest
-  command: |
-    kustomize build {{ DEPLOY_DIR }} --load_restrictor='none' -o {{ DEPLOY_DIR }}/site.yaml
-  tags:
-    - install
-    - uninstall
-    - update

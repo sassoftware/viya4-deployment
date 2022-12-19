@@ -52,8 +52,8 @@ Actions are used to install or uninstall software. One must be set when running 
 
 | Name | Description |
 | :--- | ---: |
-| Install | Installs the stack required for the specified tasks |
-| Uninstall | Uninstalls the stack required for the specified tasks |
+| install | Installs the stack required for the specified tasks |
+| uninstall | Uninstalls the stack required for the specified tasks |
 
 ### Tasks
 

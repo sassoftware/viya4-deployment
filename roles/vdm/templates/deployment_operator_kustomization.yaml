@@ -1,0 +1,50 @@
+resources:
+- operator-base
+{% if secret_generator_required %}
+generators:
+- site-config/secrets.yaml
+{% endif %}
+transformers:
+{% if required_transformers is defined %}
+- site-config/required/transformers.yaml
+{% if V4_CFG_CR_HOST != "cr.sas.com" %}
+- site-config/mirror.yaml
+{% endif %}
+- site-config/transformer.yaml
+{% else %}
+- site-config/transformer.yaml
+{% if V4_CFG_CR_HOST != "cr.sas.com" %}
+- site-config/mirror.yaml
+{% endif %}
+{% endif %}
+## Uncomment the following inclusion if you are deploying the
+## operator in clusterwide mode.
+{% if V4_DEPLOYMENT_OPERATOR_SCOPE|lower == "cluster" %}
+- site-config/cluster-wide-transformer.yaml
+{% endif %}
+{% if V4_CFG_CR_USER is not none %}
+secretGenerator:
+- name: site-image-pull-secret
+  type: kubernetes.io/dockerconfigjson
+  files:
+    - .dockerconfigjson=site-config/cr_access.json
+patches:
+- patch: |-
+    - op: add
+      path: /spec/template/spec/imagePullSecrets
+      value:
+        - name: site-image-pull-secret
+  target:
+    kind: Deployment
+    name: sas-deployment-operator
+{% if image_pull_secret_patch_target == "ServiceAccount" %}
+- patch: |-
+    - op: add
+      path: /imagePullSecrets
+      value:
+        - name: site-image-pull-secret
+  target:
+    kind: ServiceAccount
+    name: sas-deployment-operator
+{% endif %}
+{% endif %}

@@ -24,6 +24,10 @@ pip3 install --user -r requirements.txt
 ansible-galaxy collection install -r requirements.yaml -f
 ```
 
+### Install Docker
+
+See https://docs.docker.com/engine/install/ for steps on how to install Docker for your distro. It's a requirement to use the Orchestration tooling CLI during Viya installation.
+
 ## Running
 
 Declare the Actions and Task to be performed.
@@ -34,8 +38,8 @@ Actions are used to install or uninstall software. One must be set when running 
 
 | Name | Description |
 | :--- | ---: |
-| Install | Installs the stack required for the specified tasks |
-| Uninstall | Uninstalls the stack required for the specified tasks |
+| install | Installs the stack required for the specified tasks |
+| uninstall | Uninstalls the stack required for the specified tasks |
 
 ### Tasks
 

@@ -11,6 +11,12 @@
         - onboard
         - cas-onboard
         - offboard
+    - name: common role - task validations
+      include_role:
+        name: common
+        tasks_from: task-validations
+      tags:
+        - always
     - name: common role
       include_role: 
         name: common
@@ -56,6 +62,7 @@
         name: vdm
       tags:
         - viya
+        - multi-tenancy
     - name: monitoring role - namespace
       include_role:
         name: monitoring

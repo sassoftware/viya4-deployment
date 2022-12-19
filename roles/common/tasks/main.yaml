@@ -37,6 +37,16 @@
         - tfstate.nat_ip is defined
         - tfstate.nat_ip.value|length > 0
         - (tfstate.nat_ip.value+'/32') not in LOADBALANCER_SOURCE_RANGES
+    - name: tfstate - Add GKE pod subnet cidr to LOADBALANCER_SOURCE_RANGES
+      set_fact:
+        LOADBALANCER_SOURCE_RANGES: "{{ LOADBALANCER_SOURCE_RANGES + [tfstate.gke_pod_subnet_cidr.value] }}"
+      when:
+        - tfstate.provider is defined
+        - tfstate.provider.value|length > 0
+        - tfstate.provider.value == "gcp"
+        - tfstate.gke_pod_subnet_cidr is defined
+        - tfstate.gke_pod_subnet_cidr.value|length > 0
+        - (tfstate.gke_pod_subnet_cidr.value) not in LOADBALANCER_SOURCE_RANGES
     - name: tfstate - nfs endpoint
       set_fact:
         V4_CFG_RWX_FILESTORE_ENDPOINT: "{{ tfstate.rwx_filestore_endpoint.value }}"
@@ -100,12 +110,6 @@
       when:
         - tfstate.location is defined
         - tfstate.location.value|length > 0
-    - name: tfstate - kubernetes version
-      set_fact: 
-        K8S_VERSION: "{{ tfstate.k8s_version.value }}"
-      when:
-        - tfstate.k8s_version is defined
-        - tfstate.k8s_version.value|length > 0
     - name: tfstate - cluster autoscaler account
       set_fact: 
         CLUSTER_AUTOSCALER_ACCOUNT: "{{ tfstate.autoscaler_account.value }}"
@@ -237,6 +241,17 @@
   set_fact:
     DEPLOY_DIR="{{ BASE_DIR | regex_replace('\\/$', '') }}/{{ CLUSTER_NAME }}/{{ NAMESPACE }}"
   when: DEPLOY_DIR is not defined
+  tags:
+    - install
+    - uninstall
+    - update
+    - onboard
+    - cas-onboard
+    - offboard
+
+- name: Set deployment_tooling
+  set_fact:
+    deployment_tooling: "{{ lookup('env', 'VIYA4_DEPLOYMENT_TOOLING') |default('ansible', -1) }}"
   tags:
     - install
     - uninstall
