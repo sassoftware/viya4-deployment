@@ -258,7 +258,7 @@ Manual steps are required by the SAS software to update a SAS deployment in an e
 
 If you have an existing deployment that you performed with the viya4-deployment project, take the following steps in order to update SAS Viya:
 
-- Follow the instructions in [Updating Software](https://documentation.sas.com/?cdcId=sasadmincdc&cdcVersion=default&docsetId=k8sag&docsetTarget=titlepage.htm) in the SAS Viya Operations Guide.
+- Follow the instructions in [Updating Software](https://go.documentation.sas.com/doc/en/sasadmincdc/default/k8sag/titlepage.htm?fromDefault=) in the SAS Viya Operations Guide.
 - You are expected to modify the steps that are described in the SAS Viya Operations Guide to accommodate the slightly different directory structure 
 
 ### Troubleshooting
