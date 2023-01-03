@@ -3,7 +3,7 @@
 - name: check if cas resources present
   lineinfile:
     path: "{{ DEPLOY_DIR }}/kustomization.yaml"
-    line: "  - site-config/cas-{{ item | trim }}-default"
+    line: "- site-config/cas-{{ item | trim }}-default"
     state: present
   check_mode: yes
   register: out
@@ -15,7 +15,7 @@
   lineinfile:
     path: "{{ DEPLOY_DIR }}/kustomization.yaml"
     insertafter: "resources:" 
-    line: "  - site-config/cas-{{ item | trim }}-default"
+    line: "- site-config/cas-{{ item | trim }}-default"
     state: present
   with_items: "{{ V4MT_TENANT_IDS.split(',') }}"
   when: out.changed
