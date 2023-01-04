@@ -52,16 +52,38 @@
   tags:
     - offboard
 
+- name: kustomize - check version
+  command:
+    cmd: kustomize version --short | awk -F "/v" '{print $2}' | awk '{print $1}'
+  register: kustomize_version
+  tags:
+    - onboard
+    - offboard
+
 # Build the manifest file
 - name: kustomize - generate onboard manifest
-  ansible.builtin.shell: |
-    kustomize build {{ DEPLOY_DIR }}/site-config/sas-tenant-job/ --load_restrictor='none' -o {{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-onboard.yaml
+  block:
+    - name: kustomize - generate onboard manifest
+      ansible.builtin.shell: |
+        kustomize build {{ DEPLOY_DIR }}/site-config/sas-tenant-job/ --load-restrictor LoadRestrictionsNone -o {{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-onboard.yaml
+      when: kustomize_version|float >= 4.0.1
+    - name: kustomize - generate onboard manifest - legacy flags
+      ansible.builtin.shell: |
+        kustomize build {{ DEPLOY_DIR }}/site-config/sas-tenant-job/ --load_restrictor='none' -o {{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-onboard.yaml
+      when: kustomize_version|float < 4.0.1
   tags:
     - onboard
 
 - name: kustomize - generate offboard manifest
-  ansible.builtin.shell: |
-    kustomize build {{ DEPLOY_DIR }}/site-config/sas-tenant-job/ --load_restrictor='none' -o {{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-offboard.yaml
+  block:
+    - name: kustomize - generate offboard manifest
+      ansible.builtin.shell: |
+        kustomize build {{ DEPLOY_DIR }}/site-config/sas-tenant-job/ --load-restrictor LoadRestrictionsNone -o {{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-offboard.yaml
+      when: kustomize_version|float >= 4.0.1
+    - name: kustomize - generate offboard manifest - legacy flags
+      ansible.builtin.shell: |
+        kustomize build {{ DEPLOY_DIR }}/site-config/sas-tenant-job/ --load_restrictor='none' -o {{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-offboard.yaml
+      when: kustomize_version|float < 4.0.1
   tags:
     - offboard
 

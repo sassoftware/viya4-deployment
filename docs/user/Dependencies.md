@@ -13,7 +13,7 @@ The following list details our dependencies and versions (~ indicates multiple p
 | ~ | docker | >=20.10.10 |
 | ~ | git | any |
 | ~ | rsync | any |
-| ~ | kustomize | 3.7.0 |
+| ~ | kustomize | 4.5.7 |
 | ~ | kubectl | 1.22 - 1.24 |
 | ~ | Helm | 3 |
 | pip3 | ansible | 2.10.7 |
