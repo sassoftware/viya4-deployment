@@ -62,13 +62,6 @@ INGRESS_NGINX_CONFIG:
           command: ["/bin/sh", "-c", "sleep 5; /usr/local/nginx/sbin/nginx -c /etc/nginx/nginx.conf -s quit; while pgrep -x nginx; do sleep 1; done"]
     terminationGracePeriodSeconds: 600
 
-# Update default load-balancer for AWS to be NLB
-INGRESS_NGINX_AWS_NLB_CONFIG:
-  controller:
-    service:
-      annotations:
-        service.beta.kubernetes.io/aws-load-balancer-type: nlb
-
 # Ingress-nginx - CVE-2021-25742 Mitigation
 INGRESS_NGINX_CVE_2021_25742_PATCH:
   controller:
