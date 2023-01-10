@@ -5,7 +5,7 @@
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { transformers: "sas-storageclass.yaml", vdm: true, priority: 99 }
+      - { transformers: "sas-storageclass.yaml", vdm: true, priority: 49 }
   tags:
     - install
     - uninstall

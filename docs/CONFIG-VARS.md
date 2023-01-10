@@ -118,9 +118,7 @@ When V4_CFG_MANAGE_STORAGE is set to `true`, a new storage class is created: sas
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_ORDER_NUMBER | SAS software order ID | string | | true | | viya |
 | V4_CFG_CADENCE_NAME | Cadence name | string | lts | false | [stable,lts] | viya |
-| V4_CFG_CADENCE_VERSION | Cadence version | string | 2020.1 | true | | viya |
-| V4_CFG_DEPLOYMENT_ASSETS | Path to pre-downloaded deployment assets | string | | false | Leave blank to download deployment assets. | viya |
-| V4_CFG_CADENCE_VERSION | Cadence version | string | "2020.1" | true | This value must be surrounded by quotation marks to accommodate the updated SAS Cadence Version format. If the value is not quoted the deployment will fail. | viya |
+| V4_CFG_CADENCE_VERSION | Cadence version | string | "2022.09" | true | This value must be surrounded by quotation marks to accommodate the updated SAS Cadence Version format. If the value is not quoted the deployment will fail. | viya |
 | V4_CFG_DEPLOYMENT_ASSETS | Path to pre-downloaded deployment assets | string | | false | Leave blank to download deployment assets | viya |
 | V4_CFG_LICENSE | Path to pre-downloaded license file | string | | false| Leave blank to download license file | viya |
 
@@ -389,7 +387,7 @@ Kubernetes Metrics Server installation is currently only applicable for AWS EKS 
 | METRICS_SERVER_ENABLED | Whether to deploy Metrics Server | bool | true | false | | baseline |
 | METRICS_SERVER_CHART_URL | Metrics Server Helm chart url | string | Go [here](https://charts.bitnami.com/bitnami/) for more information. | false | If an existing Metrics Server is installed, these options are ignored. | baseline |
 | METRICS_SERVER_CHART_NAME | Metrics Server Helm chart name | string | metrics-server | false | If an existing Metrics Server is installed, these options are ignored. | baseline |
-| METRICS_SERVER_CHART_VERSION | Metrics Server Helm chart version | string | 5.11.7 | false | If an existing Metrics Server is installed, these options are ignored. | baseline |
+| METRICS_SERVER_CHART_VERSION | Metrics Server Helm chart version | string | 6.2.4 | false | If an existing Metrics Server is installed, these options are ignored. | baseline |
 | METRICS_SERVER_CONFIG | Metrics Server Helm values | string | See [this file](../roles/baseline/defaults/main.yml) for more information. | false | If an existing Metrics Server is installed, these options are ignored. | baseline |
 
 ### NFS Client
