@@ -28,15 +28,6 @@
     - install
     - update
 
-- name: Update INGRESS_NGINX_CONFIG to use NLB for AWS
-  set_fact:
-    INGRESS_NGINX_CONFIG: "{{ INGRESS_NGINX_CONFIG|combine(INGRESS_NGINX_AWS_NLB_CONFIG, recursive=True)}}"
-  when:
-    - PROVIDER == "aws"
-  tags:
-    - install
-    - update
-
 - name: Apply Mitigation for CVE-2021-25742
   block:
     - name: Retreive K8s cluster information
