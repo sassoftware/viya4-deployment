@@ -1,6 +1,6 @@
 # Ansible Cloud Provider Authentication
 
-The docker container contains cloud clis needed for interacting with the various clouds.
+The docker container contains cloud CLIs needed for interacting with the various clouds.
 
 ## GCP
 
@@ -8,15 +8,15 @@ When using external postgres in GCP, we default to using [Google Cloud SQL proxy
 
 ### V4_CFG_POSTGRES_CONNECTION_NAME
 
-Name of the sql cluster connection as listed in the gcp portal
+Name of the sql cluster connection as listed in the GCP console
 
 ### V4_CFG_POSTGRES_SERVICE_ACCOUNT
 
-Name of service account in GCP that has the cloudsql.admin role. This account will be mapped to a kuberenetes service account thus granting the sql proxy access, via workload identity, to the sql server
+Name of service account in GCP that has the cloudsql.admin role. This account will be mapped to a kubernetes service account thus granting the sql proxy access, via workload identity, to the sql server
 
 ### V4_CFG_CLOUD_SERVICE_ACCOUNT_NAME 
 
-Name of service account in GCP that has the iam.serviceAccountAdmin role. This account will be used to setting up the sql proxy's google service account mapping to the kubernetes service account
+Name of service account in GCP that has the iam.serviceAccountAdmin role. This account will be used to setting up the sql proxy's Google service account mapping to the kubernetes service account
 
 ### V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH 
 

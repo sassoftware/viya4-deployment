@@ -16,7 +16,7 @@ The tenant onboarding and offboarding processes can be run as needed after a suc
 
    SAS Viya Multi-tenancy requires either an internal PostgreSQL instance, which is the default option that is deployed automatically, or an external PostgreSQL instance that you configure and maintain. For external PostgreSQL, see [Requirements for External PostgreSQL](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/p05lfgkwib3zxbn1t6nyihexp12n.htm#p1wq8ouke3c6ixn1la636df9oa1u). Also for details see [PostgreSQL Requirements for a Multi-tenant Deployment](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/p05lfgkwib3zxbn1t6nyihexp12n.htm#p1r5u2f0yyiql5n11qb61lldcq1j).
 
-   **Note:** Before deployment, when using internal PostgreSQL, be sure to size the total number of tenants that will be onboarded. The variable `V4MT_TENANT_IDS` must list all tenants planned to be onboarded. The list of tenants is used to calculate max_connections in PostgreSQL. After deployment, max_connections cannot be changed without redeploying SAS Viya.
+   **Note:** Before deployment, when using internal PostgreSQL, be sure to size the total number of tenants that will be onboarded. The variable `V4MT_TENANT_IDS` must list all tenants planned to be onboarded. The list of tenants is used to calculate max_connections in PostgreSQL. After deployment, max_connections cannot be changed without redeploying the SAS Viya platform.
 
 3. TLS certificates. See [TLS Requirements](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/n18dxcft030ccfn1ws2mujww1fav.htm#p0bskqphz9np1ln14ejql9ush824).
 
@@ -93,7 +93,7 @@ Step 1. Configure a cluster with sufficient CAS node resources to support the nu
     playbooks/playbook.yaml --tags "baseline,viya,install"
   ```
 
-Step 2. Make sure that the SAS Viya deployment is stable. Verify that you can log in to the provider tenant successfully.
+Step 2. Make sure that the SAS Viya platform deployment is stable. Verify that you can log in to the provider tenant successfully.
 
 Step 3. Onboard tenants. Run the following command:
 
@@ -164,5 +164,5 @@ Before you run uninstall command make sure to run offboard command for any onboa
 
 ## Troubleshooting
 
-1. Verify that all the pods are in `Running` or `Completed` state before offboarding the tenants. Otherwise, locks might have been added by SAS Viya services, and the offboarding job will exit without offboarding the tenants.
-2. Do not attempt to offboard tenants immediately after onboarding. Most of the SAS Viya services are restarted during tenant onboarding. The tenant environment might be accessible during the time immediately following tenant onboarding, but there might be some services that have not yet stabilized. As a result, they can cause the issue that is described in the previous troubleshooting step.
+1. Verify that all the pods are in `Running` or `Completed` state before offboarding the tenants. Otherwise, locks might have been added by SAS Viya platform services, and the offboarding job will exit without offboarding the tenants.
+2. Do not attempt to offboard tenants immediately after onboarding. Most of the SAS Viya platform services are restarted during tenant onboarding. The tenant environment might be accessible during the time immediately following tenant onboarding, but there might be some services that have not yet stabilized. As a result, they can cause the issue that is described in the previous troubleshooting step.
