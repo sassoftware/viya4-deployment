@@ -8,12 +8,30 @@
     - install
     - uninstall
     - update
+
+- name: assets - Set facts
+  set_fact:
+    LICENSE_DIRECTORY: "{{ BASE_DIR | regex_replace('\\/$', '') }}/{{ CLUSTER_NAME }}/license"
+  tags:
+    - install
+    - uninstall
+    - update
     - cas-onboard
     - offboard
 
+- name: assets - create license directory
+  file:
+    path: "{{ LICENSE_DIRECTORY }}"
+    state: directory
+    mode: "0770"
+  tags:
+    - install
+    - uninstall
+    - update
+
 - name: assets - Get License
   command:
-    cmd: "{{ tmpdir.path }}/viya4-orders-cli license --file-path {{ DEPLOY_DIR }}/site-config --file-name license {{ V4_CFG_ORDER_NUMBER }} {{ V4_CFG_CADENCE_NAME }} {{ V4_CFG_CADENCE_VERSION }}"
+    cmd: "{{ tmpdir.path }}/viya4-orders-cli license --file-path {{ LICENSE_DIRECTORY }} --file-name license {{ V4_CFG_ORDER_NUMBER }} {{ V4_CFG_CADENCE_NAME }} {{ V4_CFG_CADENCE_VERSION }}"
   environment:
     CLIENTCREDENTIALSID: "{{ V4_CFG_SAS_API_KEY | string | b64encode }}"
     CLIENTCREDENTIALSSECRET: "{{ V4_CFG_SAS_API_SECRET | string | b64encode }}"
@@ -26,7 +44,7 @@
 
 - name: assets - Get Certificates
   command:
-    cmd: "{{ tmpdir.path }}/viya4-orders-cli certificates --file-path {{ tmpdir.path }}/ --file-name certs {{ V4_CFG_ORDER_NUMBER }}"
+    cmd: "{{ tmpdir.path }}/viya4-orders-cli certificates --file-path {{ LICENSE_DIRECTORY }} --file-name certs {{ V4_CFG_ORDER_NUMBER }}"
   environment:
     CLIENTCREDENTIALSID: "{{ V4_CFG_SAS_API_KEY | string | b64encode }}"
     CLIENTCREDENTIALSSECRET: "{{ V4_CFG_SAS_API_SECRET | string | b64encode }}"
@@ -34,8 +52,6 @@
     - install
     - uninstall
     - update
-    - cas-onboard
-    - offboard
 
 - name: assets - Download
   command:
@@ -98,10 +114,18 @@
 
 - name: assets - Copy user-provided license file
   copy:
-    src: "{{ V4_CFG_LICENSE}}"
-    dest: "{{ DEPLOY_DIR }}/site-config/license.jwt"
+    src: "{{ V4_CFG_LICENSE }}"
+    dest: "{{ LICENSE_DIRECTORY }}/license.jwt"
   when:
     - V4_CFG_LICENSE is not none
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: assets - Set LICENSE_CONTENT
+  set_fact:
+    LICENSE_CONTENT: "{{ lookup('file', '{{ LICENSE_DIRECTORY }}/license.jwt') }}"
   tags:
     - install
     - uninstall

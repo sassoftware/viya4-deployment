@@ -55,22 +55,18 @@
       when:
         - deployment_tooling == "docker"
     - name: deploy - Deploy SAS Viya
-      community.docker.docker_container:
-        name: "orchestration_{{ lookup('password', '/dev/null chars=ascii_lowercase length=8') }}"
-        image: "{{ V4_CFG_CR_HOST }}/{{ ORCHESTRATION_IMAGE }}"
-        volumes:
-          - "{{ ORCHESTRATION_TOOLING_INSTALL_MANIFESTS_DIRECTORY }}:/manifests"
-          - "{{ KUBECONFIG }}:/config/kubeconfig"
-        detach: false
-        cleanup: yes
-        user: "{{ UID_GID }}"
-        env:
-          KUBECONFIG: "/config/kubeconfig"
-          WORK_DIRECTORY: "/tmp/work"
-        command:
-          - "deploy"
-          - "--namespace {{ NAMESPACE }}"
-          - "--sas-deployment-cr {{ item.path | replace(ORCHESTRATION_TOOLING_DIRECTORY, '/') }}"
+      ansible.builtin.shell: >
+        docker run --rm
+        --user="{{ UID_GID }}"
+        --name "orchestration_{{ lookup('password', '/dev/null chars=ascii_lowercase length=8') }}"
+        --env KUBECONFIG="/config/kubeconfig"
+        --env WORK_DIRECTORY="/tmp/work"
+        --volume "{{ ORCHESTRATION_TOOLING_INSTALL_MANIFESTS_DIRECTORY }}:/manifests"
+        --volume "{{ KUBECONFIG }}:/config/kubeconfig"
+        "{{ V4_CFG_CR_HOST }}/{{ ORCHESTRATION_IMAGE }}"
+        deploy
+        --namespace {{ NAMESPACE }}
+        --sas-deployment-cr {{ item.path | replace(ORCHESTRATION_TOOLING_DIRECTORY, '/') }}
       with_items:
         - "{{ deployment_manifests.files }}"
       when:

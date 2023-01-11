@@ -186,6 +186,8 @@ The SAS Viya Customizations that are managed by viya4-deployment are located und
 
 #### OpenLDAP Customizations
 
+The OpenLDAP setup that is described here is a temporary solution that enables you to add users and groups and to start using SAS Viya applications. The OpenLDAP server that is created using these instructions does not persist. It is created and destroyed within the SAS Viya namespace where it is created. To add users or groups that persist, please follow the SAS documentation that describes how to [Configure an LDAP Identity Provider](https://go.documentation.sas.com/doc/en/sasadmincdc/default/calids/n1aw4xnkvwcddnn1mv8lxr2e4tu7.htm#p0spae4p1qoto3n1qpuzafcecxhh).
+
 If the embedded OpenLDAP server is enabled, it is possible to change the users and groups that will be created. The required steps are similar to other customizations:
 1. Create the folder structure detailed in the [Customize Deployment Overlays](#customize-deployment-overlays). 
 2. Copy the `./examples/openldap` folder into the `/site-config` folder. 
@@ -249,6 +251,15 @@ In the above example, the ingress controller's LoadBalancer endpoint is 52.52.52
 
 When running the `viya` action with `V4_CFG_CONNECT_ENABLE_LOADBALANCER=true`, a separate loadbalancer service is created to allow external SAS/CONNECT clients to connect to SAS Viya. You will need to register this LoadBalancer endpoint with your DNS provider such that the desired host name (for example, connect.example.com) points to the LoadBalancer endpoint.
 
+
+### Updating SAS Viya Manually
+
+Manual steps are required by the SAS software to update a SAS deployment in an existing cluster. As a result, viya4-deployment does not perform updates. The viya4-deployment tools can perform subsequent `viya,install` tasks if you are simply reapplying the same software order into the cluster.
+
+If you have an existing deployment that you performed with the viya4-deployment project, take the following steps in order to update SAS Viya:
+
+- Follow the instructions in [Updating Software](https://go.documentation.sas.com/doc/en/sasadmincdc/default/k8sag/titlepage.htm?fromDefault=) in the SAS Viya Operations Guide.
+- You are expected to modify the steps that are described in the SAS Viya Operations Guide to accommodate the slightly different directory structure 
 
 ### Troubleshooting
 

@@ -8,19 +8,19 @@ namespace: {{ NAMESPACE }}
 {% if 'pre' in ordered_overlays.result[resource] and ordered_overlays.result[resource]['pre']|length > 0 %}
 ## vdm defined {{ resource }} (pre)
 {% for overlay in ordered_overlays.result[resource]['pre'] %}
-  - {{ overlay |dirname }}/{{ overlay | basename | regex_replace('\\..*\\.yaml$', '.yaml') }}
+- {{ overlay |dirname }}/{{ overlay | basename | regex_replace('\\..*\\.yaml$', '.yaml') }}
 {% endfor %}
 {% endif %}
 {% if resource in user_customizations.overlays %}
 ## user defined {{ resource }}
 {% for item in user_customizations.overlays[resource]|sort %}
-  - {{ item }}
+- {{ item }}
 {% endfor %}
 {% endif %}
 {% if 'post' in ordered_overlays.result[resource] and ordered_overlays.result[resource]['post']|length > 0 %}
 ## vdm defined {{ resource }} (post)
 {% for overlay in ordered_overlays.result[resource]['post'] %}
-  - {{ overlay |dirname }}/{{ overlay | basename | regex_replace('\\..*\\.yaml$', '.yaml') }}
+- {{ overlay |dirname }}/{{ overlay | basename | regex_replace('\\..*\\.yaml$', '.yaml') }}
 {% endfor %}
 {% endif %}
 
@@ -30,7 +30,7 @@ namespace: {{ NAMESPACE }}
 components:
 ## user defined components
 {% for item in user_customizations.overlays['components']|sort %}
-  - {{ item }}
+- {{ item }}
 {% endfor %}
 {% endif %}
 {% endif %}
