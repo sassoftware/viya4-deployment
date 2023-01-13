@@ -122,6 +122,12 @@
 
 - name: postgres instance - internal post 2022.10
   block:
+  - name: Pause here
+    pause:
+      prompt: Please confirm that you want to abort, unsupported crunchy v4 to v5 update
+    when:
+      - v4_crunchy_present
+  
   - name: postgres instance - Get stored ConfigMap values
     block:
     - name: postgres instance - Access ConfigMap values
@@ -134,6 +140,7 @@
       register: cm_info
     - name: postgres instance - set facts for either role from configMap keys
       block:
+
       - name: postgres instance - set facts for default role
         set_fact:
           default_postgres_storage_class: "{{ cm_info.resources[0].data['default-postgres-storage-class'] }}"
@@ -141,6 +148,15 @@
           default_backrest_storage_class: "{{ cm_info.resources[0].data['default-backrest-storage-class'] }}"
           default_backrest_pvc_access_mode: "{{ cm_info.resources[0].data['default-backrest-access-mode'] }}"
         when: role == 'default'
+
+      - name: postgres instance - set facts if v4_crunchy_present
+        set_fact:
+          default_postgres_pvc_storage_size: "{{ cm_info.resources[0].data['default-postgres-storage-size'] }}"
+          default_backrest_pvc_storage_size: "{{ cm_info.resources[0].data['default-backrest-storage-size'] }}"
+        when: 
+          - role == 'default'
+          - v4_crunchy_present
+
       - name: postgres instance - set facts for cds-postgres role
         set_fact:
           cds_postgres_storage_class: "{{ cm_info.resources[0].data['cds-postgres-storage-class'] }}"
@@ -148,9 +164,27 @@
           cds_backrest_storage_class: "{{ cm_info.resources[0].data['cds-backrest-storage-class'] }}"
           cds_backrest_pvc_access_mode: "{{ cm_info.resources[0].data['cds-backrest-access-mode'] }}"
         when: role == 'cds-postgres'
+
+      - name: postgres instance - set facts if v4_crunchy_present
+        set_fact:
+          cds_postgres_pvc_storage_size: "{{ cm_info.resources[0].data['cds-postgres-storage-size'] }}"
+          cds_backrest_pvc_storage_size: "{{ cm_info.resources[0].data['cds-backrest-storage-size'] }}"
+        when: 
+          - role == 'cds-postgres'
+          - v4_crunchy_present
+
+      - name: Pause here
+        pause:
+          prompt: Please confirm you want to continue
+        tags:
+          - install
+          - uninstall
+          - update
+
       when: 
         - dac_crunchy_storage_cm_found
         - "cm_info.resources"
+
   - name: postgres instance - internal copy crunchy transformer template
     template:
       src: "{{ role_path }}/templates/transformers/crunchy-storage-transformer.yaml"
