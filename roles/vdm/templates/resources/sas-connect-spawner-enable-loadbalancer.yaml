@@ -1,10 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  annotations: {% if PROVIDER != "aws" %}{}
-{% elif PROVIDER == "aws" %}
+  annotations: {
+{% if PROVIDER == "aws" %}
     service.beta.kubernetes.io/aws-load-balancer-type: nlb
 {% endif %}
+  }
   name: sas-connect-spawner-loadbalancer
 spec:
   ports:
