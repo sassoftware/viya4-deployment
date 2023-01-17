@@ -122,9 +122,9 @@
 
 - name: postgres instance - internal post 2022.10
   block:
-  - name: Pause here
-    pause:
-      prompt: Please confirm that you want to abort, unsupported crunchy v4 to v5 update
+  - name: postgres instance - crunchy v4 to crunchy v5 update is required
+    fail:
+      msg: "A manual update from crunchy v4 to v5 is required, follow these steps https://pubshelpcenter.unx.sas.com/test/doc/en/itopscdc/v_033/dplynotes/p1bpcvd3sr8au8n1w9ypcvu31taj.htm"
     when:
       - v4_crunchy_present
   
@@ -149,14 +149,6 @@
           default_backrest_pvc_access_mode: "{{ cm_info.resources[0].data['default-backrest-access-mode'] }}"
         when: role == 'default'
 
-      - name: postgres instance - set facts if v4_crunchy_present
-        set_fact:
-          default_postgres_pvc_storage_size: "{{ cm_info.resources[0].data['default-postgres-storage-size'] }}"
-          default_backrest_pvc_storage_size: "{{ cm_info.resources[0].data['default-backrest-storage-size'] }}"
-        when: 
-          - role == 'default'
-          - v4_crunchy_present
-
       - name: postgres instance - set facts for cds-postgres role
         set_fact:
           cds_postgres_storage_class: "{{ cm_info.resources[0].data['cds-postgres-storage-class'] }}"
@@ -164,22 +156,6 @@
           cds_backrest_storage_class: "{{ cm_info.resources[0].data['cds-backrest-storage-class'] }}"
           cds_backrest_pvc_access_mode: "{{ cm_info.resources[0].data['cds-backrest-access-mode'] }}"
         when: role == 'cds-postgres'
-
-      - name: postgres instance - set facts if v4_crunchy_present
-        set_fact:
-          cds_postgres_pvc_storage_size: "{{ cm_info.resources[0].data['cds-postgres-storage-size'] }}"
-          cds_backrest_pvc_storage_size: "{{ cm_info.resources[0].data['cds-backrest-storage-size'] }}"
-        when: 
-          - role == 'cds-postgres'
-          - v4_crunchy_present
-
-      - name: Pause here
-        pause:
-          prompt: Please confirm you want to continue
-        tags:
-          - install
-          - uninstall
-          - update
 
       when: 
         - dac_crunchy_storage_cm_found
