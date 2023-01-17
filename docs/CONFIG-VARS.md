@@ -194,7 +194,7 @@ When V4_CFG_MANAGE_STORAGE is set to `true`, a new storage class is created: sas
 
 ## TLS
 
-The SAS Viya 4 platform supports two certificate generators: cert-manager and openssl.
+The SAS Viya platform supports two certificate generators: cert-manager and openssl.
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
