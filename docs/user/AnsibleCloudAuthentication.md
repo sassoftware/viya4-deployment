@@ -8,11 +8,11 @@ When using external postgres in GCP, we default to using [Google Cloud SQL proxy
 
 ### V4_CFG_POSTGRES_CONNECTION_NAME
 
-Name of the sql cluster connection as listed in the GCP console
+Name of the SQL cluster connection, as listed in the GCP console.
 
 ### V4_CFG_POSTGRES_SERVICE_ACCOUNT
 
-Name of service account in GCP that has the cloudsql.admin role. This account will be mapped to a kubernetes service account thus granting the sql proxy access, via workload identity, to the sql server
+Name of service account in GCP that has the cloudsql.admin role. This account will be mapped to a Kubernetes service account, thus granting the SQL proxy access, via workload identity, to the SQL server.
 
 ### V4_CFG_CLOUD_SERVICE_ACCOUNT_NAME 
 

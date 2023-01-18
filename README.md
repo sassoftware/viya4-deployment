@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project contains Ansible code that creates a baseline cluster in an existing Kubernetes environment for use with the SAS Viya 4 platform, generates the manifest for a SAS Viya platform software order, and then deploys that order into the specified Kubernetes environment. Here is a list of tasks that this tool can perform: 
+This project contains Ansible code that creates a baseline cluster in an existing Kubernetes environment for use with the SAS Viya platform, generates the manifest for a SAS Viya platform software order, and then deploys that order into the specified Kubernetes environment. Here is a list of tasks that this tool can perform: 
 
 - Prepare Kubernetes cluster
   - Deploy [ingress-nginx](https://kubernetes.github.io/ingress-nginx)
@@ -22,7 +22,7 @@ This project contains Ansible code that creates a baseline cluster in an existin
   - Deploy MPP or SMP CAS servers
 
 - Manage SAS Viya Platform Deployments
-  - Organize and persist configuration for any number SAS Viya platform deployments across namespaces, clusters, or cloud providers.
+  - Organize and persist configuration for any number of SAS Viya platform deployments across namespaces, clusters, or cloud providers.
 
 - SAS Viya Multi-tenant Deployment
   - Multi-tenancy in the SAS Viya platform creates and manages separate and secure cloud-computing units. See [SAS Viya Multi-Tenancy Documentation](./docs/user/Multi-Tenancy.md) for details.
@@ -160,7 +160,7 @@ The Ansible playbook in viya4-deployment fully manages the kustomization.yaml fi
         ...           <- folders containing user defined customizations
 ```
 
-#### SAS Viya platform Customizations
+#### SAS Viya Platform Customizations
 
 SAS Viya platform deployment customizations are automatically read in from folders under `/site-config`. To provide customizations, first create the folder structure detailed in the [Customize Deployment Overlays](#customize-deployment-overlays) section above. Then copy the desired overlays into a subfolder under `/site-config`. When you have completed these steps, you can run the viya4-deployment playbook. It will detect and add the overlays to the proper section of the kustomization.yaml file for the SAS Viya platform deployment.
 
@@ -182,11 +182,11 @@ For example:
             /my_custom_overlay.yaml   <- my custom overlay
  ```
 
-The SAS Viya platform Customizations that are managed by viya4-deployment are located under the [templates](https://github.com/sassoftware/viya4-deployment/tree/main/roles/vdm/templates) directory. These are purposely templatized and included there since they contain a set of customizations that are common or required for a functioning Viya deployment. These particular files are configured via exposed variables that are documented within [CONFIG-VARS.md](docs/CONFIG-VARS.md) and do not need to be manually placed under `/site-config`.
+The SAS Viya platform customizations that are managed by viya4-deployment are located under the [templates](https://github.com/sassoftware/viya4-deployment/tree/main/roles/vdm/templates) directory. These are purposely templatized and included there since they contain a set of customizations that are common or required for a functioning SAS Viya platform deployment. These particular files are configured via exposed variables that are documented within [CONFIG-VARS.md](docs/CONFIG-VARS.md) and do not need to be manually placed under `/site-config`.
 
 #### OpenLDAP Customizations
 
-The OpenLDAP setup that is described here is a temporary solution that enables you to add users and groups and to start using SAS Viya platform applications. The OpenLDAP server that is created using these instructions does not persist. It is created and destroyed within the SAS Viya platform namespace where it is created. To add users or groups that persist, please follow the SAS documentation that describes how to [Configure an LDAP Identity Provider](https://go.documentation.sas.com/doc/en/sasadmincdc/default/calids/n1aw4xnkvwcddnn1mv8lxr2e4tu7.htm#p0spae4p1qoto3n1qpuzafcecxhh).
+The OpenLDAP setup that is described here is a temporary solution that enables you to add users and groups and to start using SAS Viya platform applications. The OpenLDAP server that is created using these instructions does not persist. It is created and destroyed within the SAS Viya platform namespace where it is created. To add users or groups that persist, follow the SAS documentation that describes how to [Configure an LDAP Identity Provider](https://go.documentation.sas.com/doc/en/sasadmincdc/default/calids/n1aw4xnkvwcddnn1mv8lxr2e4tu7.htm#p0spae4p1qoto3n1qpuzafcecxhh).
 
 If the embedded OpenLDAP server is enabled, it is possible to change the users and groups that will be created. The required steps are similar to other customizations:
 1. Create the folder structure detailed in the [Customize Deployment Overlays](#customize-deployment-overlays). 
@@ -258,7 +258,7 @@ Manual steps are required by the SAS software to update a SAS deployment in an e
 
 If you have an existing deployment that you performed with the viya4-deployment project, take the following steps in order to update the SAS Viya platform:
 
-- Follow the instructions in [Updating Software](https://go.documentation.sas.com/doc/en/sasadmincdc/default/k8sag/titlepage.htm?fromDefault=) in the SAS Viya platform Operations Guide.
+- Follow the instructions in [Updating Software](https://go.documentation.sas.com/doc/en/sasadmincdc/default/k8sag/titlepage.htm?fromDefault=) in the SAS Viya Platform Operations Guide.
 - You are expected to modify the steps that are described in the SAS Viya platform Operations Guide to accommodate the slightly different directory structure 
 
 ### Troubleshooting
