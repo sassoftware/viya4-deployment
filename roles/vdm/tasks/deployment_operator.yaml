@@ -4,7 +4,7 @@
     that: V4_DEPLOYMENT_OPERATOR_SCOPE is match ('^(cluster|namespace)$')
     msg: >
       V4_DEPLOYMENT_OPERATOR_SCOPE must set to either 'cluster' or 'namespace'.
-      See usage documentation at CONFIG-VARS.md
+      See usage documentation at docs/CONFIG-VARS.md
 
 - name: deployment-operator - Set base OPERATOR_DEPLOY_DIRECTORY
   set_fact:
