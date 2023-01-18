@@ -11,7 +11,7 @@
 
 - name: assets - Set facts
   set_fact:
-    LICENSE_DIRECTORY: "{{ BASE_DIR | regex_replace('\\/$', '') }}/{{ CLUSTER_NAME }}/license"
+    LICENSE_DIRECTORY: "{{ BASE_DIR | regex_replace('\\/$', '') }}/{{ CLUSTER_NAME }}/{{ NAMESPACE }}/license"
   tags:
     - install
     - uninstall

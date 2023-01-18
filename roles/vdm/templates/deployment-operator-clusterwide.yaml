@@ -1,0 +1,7 @@
+# Information about the active clusterwide SAS Viya Platform Deployment Operator
+---
+deployment_operator:
+    mode: clusterwide
+    namespace: {{ V4_DEPLOYMENT_OPERATOR_NAMESPACE }}
+    crb: {{ V4_DEPLOYMENT_OPERATOR_CRB }}
+    resources: {{ OPERATOR_DEPLOY_DIRECTORY }}
