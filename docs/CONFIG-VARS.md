@@ -108,15 +108,15 @@ When `V4_CFG_MANAGE_STORAGE` is set to `false`, viya4-deployment does not create
 
 ### Azure
 
-When V4_CFG_MANAGE_STORAGE is set to `true`, a new storage class is created: sas (Azure NetApp or NFS).
+When V4_CFG_MANAGE_STORAGE is set to `true`, the `sas` and `pg-storage` storage classes are created (Azure NetApp or NFS).
 
 ### AWS
 
-When V4_CFG_MANAGE_STORAGE is set to `true`, the efs-provisioner is deployed. A new storage classes is created: sas (EFS or NFS).
+When V4_CFG_MANAGE_STORAGE is set to `true`, the efs-provisioner is deployed, the `sas` and `pg-storage` storage classes are created (EFS or NFS).
 
 ### GCP
 
-When V4_CFG_MANAGE_STORAGE is set to `true`, a new storage class is created: sas (Google Filestore or NFS).
+When V4_CFG_MANAGE_STORAGE is set to `true`, the `sas` and `pg-storage` storage classes are created (Google Filestore or NFS).
 
 ## SAS Software Order
 
