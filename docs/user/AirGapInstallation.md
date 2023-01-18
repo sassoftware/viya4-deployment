@@ -139,6 +139,13 @@ docker run --rm --network host --name repos-sas ${1:--d} \
     python -m http.server 80
 ```
 
+Ensure the web server can be reached from any kube node, as deployement will be executed in kubernetes:
+- use a HOST that can be resolved on all nodes
+- open the required flows in the firewall if needed
+- test access to, `shipped.mc`, using url like http://HOST/cadences/shipped.mc
+
+Once working, update `V4_CFG_URL` accordingly (`http://HOST`) in `ansible-vars.yaml` file.
+
 ### Docker Volume Mounts
 
 All configs needed by ansible are also needed to be mounted into the docker container. In general any file/folder path set via an ansible flag are equivalent to the file/folder being mounted to the docker container at `/config/<lower_case_variable_name>`. 

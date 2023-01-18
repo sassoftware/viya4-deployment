@@ -122,6 +122,7 @@ When V4_CFG_MANAGE_STORAGE is set to `true`, a new storage class is created: sas
 | V4_CFG_CERTS | Path to pre-downloaded certificates | string | | false | Leave blank to download certificates | viya |
 | V4_CFG_DEPLOYMENT_ASSETS | Path to pre-downloaded deployment assets | string | | false | Leave blank to download deployment assets | viya |
 | V4_CFG_LICENSE | Path to pre-downloaded license file | string | | false| Leave blank to download license file | viya |
+| V4_CFG_URL | Software order server | string | https://ses.sas.download/ses | false | viya |
 
 ## SAS API Access
 
