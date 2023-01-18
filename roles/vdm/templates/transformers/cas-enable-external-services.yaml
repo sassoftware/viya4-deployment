@@ -13,6 +13,11 @@ patch: |-
       spec:
         type: LoadBalancer
         loadBalancerSourceRanges: {{ LOADBALANCER_SOURCE_RANGES }}
+{% if PROVIDER == "aws" %}
+      metadata:
+        annotations:
+          service.beta.kubernetes.io/aws-load-balancer-type: nlb
+{% endif %}
 target:
   group: viya.sas.com
   kind: CASDeployment
