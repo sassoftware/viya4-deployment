@@ -8,7 +8,7 @@
 
 - name: deployment-operator - Set base OPERATOR_DEPLOY_DIRECTORY
   set_fact:
-    OPERATOR_DEPLOY_DIRECTORY: "{{ BASE_DIR | regex_replace('\\/$', '') }}/{{ CLUSTER_NAME }}/operator-deploy"
+    OPERATOR_DEPLOY_DIRECTORY: "{{ BASE_DIR | regex_replace('\\/$', '') }}/{{ CLUSTER_NAME }}/{{ NAMESPACE }}/operator-deploy"
   tags:
     - install
     - uninstall
