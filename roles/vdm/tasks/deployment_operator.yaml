@@ -300,5 +300,4 @@
     - V4_DEPLOYMENT_OPERATOR_SCOPE|lower == "cluster"
     - cluster_sasdeployments.resources|length == 0
   tags:
-    - install
-    - update
+    - uninstall
