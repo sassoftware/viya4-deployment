@@ -28,7 +28,7 @@ This project contains Ansible code that creates a baseline cluster in an existin
   - Multi-tenancy in the SAS Viya platform creates and manages separate and secure cloud-computing units. See [SAS Viya Multi-Tenancy Documentation](./docs/user/Multi-Tenancy.md) for details.
 
 - SAS Viya with SingleStore Deployment
-  - SingleStore is a cloud-native database designed for data-intensive applications. See [SAS Viya SingleStore Documentation](./docs/user/SingleStore.md) for details.
+  - SingleStore is a cloud-native database designed for data-intensive applications. See the [SAS Viya with SingleStore Documentation](./docs/user/SingleStore.md) for details.
 
 ## Prerequisites
 
@@ -259,7 +259,7 @@ Manual steps are required by the SAS software to update a SAS deployment in an e
 If you have an existing deployment that you performed with the viya4-deployment project, take the following steps in order to update the SAS Viya platform:
 
 - Follow the instructions in [Updating Software](https://go.documentation.sas.com/doc/en/sasadmincdc/default/k8sag/titlepage.htm?fromDefault=) in the SAS Viya Platform Operations Guide.
-- You are expected to modify the steps that are described in the SAS Viya platform Operations Guide to accommodate the slightly different directory structure 
+- You are expected to modify the steps that are described in the SAS Viya Platform Operations Guide to accommodate the slightly different directory structure 
 
 ### Troubleshooting
 
