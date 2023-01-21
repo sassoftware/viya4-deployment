@@ -31,6 +31,21 @@
     - onboard
     - offboard
 
+# Update the job names to unique identifier - required for Kustomize v4.5.7+
+- name: sas-tenant-job - update job-name
+  replace:
+    path: "{{ item.path }}"
+    regexp: "{{ item.regexp }}"
+    replace: "{{ item.replace }}"
+  with_items:
+    - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-onboard-job.yaml', regexp: '{% raw %}{{ JOB-TAG }}{% endraw %}', replace: "{{ lookup('password', '/dev/null chars=ascii_letters,digit length=8') | lower }}" }
+    - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-offboard-job.yaml', regexp: '{% raw %}{{ JOB-TAG }}{% endraw %}', replace: "{{ lookup('password', '/dev/null chars=ascii_letters,digit length=8') | lower }}" }
+  when: 
+    - V4MT_ENABLE
+    - V4_CFG_CADENCE_VERSION is version('2023.02', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
+  tags:
+    - onboard
+    - offboard
 
 - name: sas-tenant-job - update sas-tenant-ids
   replace:
