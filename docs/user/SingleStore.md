@@ -1,6 +1,6 @@
 # SAS Viya Support for SingleStore
 
-SAS Viya provides an optional integration with SingleStoreDB. SingleStoreDB is a cloud-native database that is designed for data-intensive applications. A distributed, relational SQL database management system that features ANSI SQL support, SingleStoreDB is known for speed in data ingest, transaction processing, and query processing. 
+The SAS Viya platform provides an optional integration with SingleStoreDB. SingleStoreDB is a cloud-native database that is designed for data-intensive applications. A distributed, relational SQL database management system that features ANSI SQL support, SingleStoreDB is known for speed in data ingest, transaction processing, and query processing. 
 
 ## Requirements for SAS Viya with SingleStore
 

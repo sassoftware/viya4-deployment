@@ -36,26 +36,26 @@ Supported configuration variables are listed in the table below.  All variables 
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| DEPLOY | Whether to deploy SAS Viya or stop at generating kustomization.yaml and manifest | bool | true | false | | viya |
+| DEPLOY | Whether to deploy the SAS Viya platform or stop at generating kustomization.yaml and manifest | bool | true | false | | viya |
 | LOADBALANCER_SOURCE_RANGES | IP addresses to allow to reach the ingress | [string] | | true | When deploying in a cloud environment, be sure to add the cloud NAT IP address. | baseline, viya |
 | BASE_DIR | Path to store persistent files | string | $HOME | false | | all |
 | KUBECONFIG | Path to kubeconfig file | string | | true | | viya |
 | V4_CFG_SITEDEFAULT | Path to sitedefault file | string | | false | When not set, [sitedefault](../examples/sitedefault.yaml) is used. | viya |
 | V4_CFG_SSSD | Path to sssd file | string | | false | | viya |
-| V4_DEPLOYMENT_OPERATOR_ENABLED | Whether to install the [SAS Viya Deployment Operator](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=itopscon&docsetTarget=p0839p972nrx25n1dq264egtgrcq.htm) in the cluster and use it to deploy SAS Viya | bool | true | false | If this value is set to false, the [sas-orchestration command](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=itopscon&docsetTarget=p0839p972nrx25n1dq264egtgrcq.htm) is instead used to deploy SAS Viya. | viya |
-| V4_DEPLOYMENT_OPERATOR_SCOPE | Where the SAS Viya Deployment Operator should watch for SASDeployments | string | "cluster" | false | [namespace, cluster] [Additional documentation](https://go.documentation.sas.com/doc/en/itopscdc/default/dplyml0phy0dkr/n137b56hwogd7in1onzys95awxqe.htm#p16ayulwlsuw8vn10bkpsjtw1ldg) describing these options is available. | viya |
-| V4_DEPLOYMENT_OPERATOR_NAMESPACE | Namespace where the SAS Viya Deployment Operator should be installed  | string | "sasoperator" | false | Only applicable when V4_DEPLOYMENT_OPERATOR_SCOPE="cluster". | viya |
-| V4_DEPLOYMENT_OPERATOR_CRB | Name of the ClusterRoleBinding resource that is needed by the SAS Viya Deployment Operator | string | "sasoperator" | false | [Additional documentation](https://go.documentation.sas.com/doc/en/itopscdc/default/dplyml0phy0dkr/n137b56hwogd7in1onzys95awxqe.htm#p1arr91os91cg5n1tsmuamj6h10g) describing the resource is available. | viya |
+| V4_DEPLOYMENT_OPERATOR_ENABLED | Whether to install the [SAS Viya Platform Deployment Operator](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=itopscon&docsetTarget=p0839p972nrx25n1dq264egtgrcq.htm) in the cluster and use it to deploy the SAS Viya platform | bool | true | false | If this value is set to false, the [sas-orchestration command](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=itopscon&docsetTarget=p0839p972nrx25n1dq264egtgrcq.htm) is instead used to deploy SAS Viya. | viya |
+| V4_DEPLOYMENT_OPERATOR_SCOPE | Where the SAS Viya Platform Deployment Operator should watch for SASDeployments | string | "cluster" | false | [namespace, cluster] [Additional documentation](https://go.documentation.sas.com/doc/en/itopscdc/default/dplyml0phy0dkr/n137b56hwogd7in1onzys95awxqe.htm#p16ayulwlsuw8vn10bkpsjtw1ldg) describing these options is available. | viya |
+| V4_DEPLOYMENT_OPERATOR_NAMESPACE | Namespace where the SAS Viya Platform Deployment Operator should be installed  | string | "sasoperator" | false | Only applicable when V4_DEPLOYMENT_OPERATOR_SCOPE="cluster". | viya |
+| V4_DEPLOYMENT_OPERATOR_CRB | Name of the ClusterRoleBinding resource that is needed by the SAS Viya Platform Deployment Operator | string | "sasoperator" | false | [Additional documentation](https://go.documentation.sas.com/doc/en/itopscdc/default/dplyml0phy0dkr/n137b56hwogd7in1onzys95awxqe.htm#p1arr91os91cg5n1tsmuamj6h10g) describing the resource is available. | viya |
 
-**Deployment Operator Notes:**
+**SAS Viya Platform Deployment Operator Notes:**
 
-* Currently, the viya4-deployment project does not support using the SAS Viya Deployment Operator in conjunction with a Long-Term Support: 2021.1 deployment that uses an alternate mirror repository (`V4_CFG_CR_URL`). 
+* Currently, the viya4-deployment project does not support using the SAS Viya Platform Deployment Operator in conjunction with a Long-Term Support: 2021.1 deployment that uses an alternate mirror repository (`V4_CFG_CR_URL`). 
 
-* In a scenario where you have multiple SAS Viya deployments managed by a single cluster-wide deployment operator, uninstalling one of the SAS Viya deployments does not remove the SAS Viya Deployment Operator from the cluster. However, during the uninstallation workflow, if no SAS Viya deployments that are managed by the cluster-wide deployment operator are detected, the SAS Viya Deployment Operator is also removed.
+* In a scenario where you have multiple SAS Viya platform deployments managed by a single cluster-wide deployment operator, uninstalling one of the SAS Viya platform deployments does not remove the SAS Viya Deployment Operator from the cluster. However, during the uninstallation workflow, if no SAS Viya platform deployments that are managed by the cluster-wide deployment operator are detected, the SAS Viya Deployment Operator is also removed.
 
 * If you are running this project using Ansible directly on your workstation, we require Docker to be installed and the executing user should be able to access it. This is required to use the sas-orchestration command. See [ansible usage](user/AnsibleUsage.md#Preparation).
 
-* Using the sas-orchestration deploy command to perform a Viya deployment is only applicable for SAS Viya 2022.12 and later. For previous releases, use the SAS Viya Deployment Operator to perform your deployments.
+* Using the sas-orchestration deploy command to perform a SAS Viya platform deployment is only applicable for SAS Viya 2022.12 and later. For previous releases, use the SAS Viya Platform Deployment Operator to perform your deployments.
 
 ## Cloud
 
@@ -194,7 +194,7 @@ When V4_CFG_MANAGE_STORAGE is set to `true`, a new storage class is created: sas
 
 ## TLS
 
-SAS Viya 4 supports two certificate generators: cert-manager and openssl.
+The SAS Viya platform supports two certificate generators: cert-manager and openssl.
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -225,7 +225,7 @@ V4_CFG_POSTGRES_SERVERS:
     ...
   ...
 ```
-Several SAS Viya offerings require a second internal Postgres instance referred to as SAS Common Data Store or CDS PostgreSQL. See details [here](https://go.documentation.sas.com/doc/en/itopscdc/default/dplyml0phy0dkr/n08u2yg8tdkb4jn18u8zsi6yfv3d.htm#p0wkxxi9s38zbzn19ukjjaxsc0kl). The list of software offerings that include CDS PostgreSQL is located at [SAS Common Data Store Requirements (for SAS Planning and Retail Offerings)](https://go.documentation.sas.com/doc/en/sasadmincdc/default/itopssr/p05lfgkwib3zxbn1t6nyihexp12n.htm#n03wzanutmc6gon1val5fykas9aa) in System Requirements for SAS Viya. To deploy and configure a CDS PostgreSQL instance in addition to the default internal platform Postgres instance, specify "cds-postgres" for your second Postgres instance as shown in the example below:
+Several SAS Viya platform offerings require a second internal Postgres instance referred to as SAS Common Data Store or CDS PostgreSQL. See details [here](https://go.documentation.sas.com/doc/en/itopscdc/default/dplyml0phy0dkr/n08u2yg8tdkb4jn18u8zsi6yfv3d.htm#p0wkxxi9s38zbzn19ukjjaxsc0kl). The list of software offerings that include CDS PostgreSQL is located at [SAS Common Data Store Requirements (for SAS Planning and Retail Offerings)](https://go.documentation.sas.com/doc/en/sasadmincdc/default/itopssr/p05lfgkwib3zxbn1t6nyihexp12n.htm#n03wzanutmc6gon1val5fykas9aa) in System Requirements for the SAS Viya platform. To deploy and configure a CDS PostgreSQL instance in addition to the default internal platform Postgres instance, specify "cds-postgres" for your second Postgres instance as shown in the example below:
 
 ```bash
 V4_CFG_POSTGRES_SERVERS:
@@ -318,8 +318,8 @@ V4_CFG_POSTGRES_SERVERS:
 | V4_CFG_EMBEDDED_LDAP_ENABLE | Deploy OpenLDAP in the namespace for authentication | bool | false | false | [Openldap Config](../roles/vdm/templates/generators/openldap-bootstrap-config.yaml) | viya |
 | V4_CFG_CONSUL_ENABLE_LOADBALANCER | Set up LoadBalancer to access the Consul user interface | bool | false | false | Consul UI port is 8500. | viya |
 | V4_CFG_ELASTICSEARCH_ENABLE | Enable search with Open Distro for ElasticSearch | bool | true | false | When deploying LTS earlier than 2020.1 or Stable earlier than 2020.1.2, set to false. | viya |
-| V4_CFG_VIYA_START_SCHEDULE | Configure your SAS Viya deployment to start on specific schedules | string |  | false | This variable accepts [CronJob schedule expressions](https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/#cron-schedule-syntax) to create your Viya start job schedule. See note below. | viya |
-| V4_CFG_VIYA_STOP_SCHEDULE | Configure your SAS Viya deployment to stop on specific schedules | string |  | false | This variable accepts [CronJob schedule expressions](https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/#cron-schedule-syntax) to create your Viya stop job schedule. See note below. | viya |
+| V4_CFG_VIYA_START_SCHEDULE | Configure your SAS Viya platform deployment to start on specific schedules | string |  | false | This variable accepts [CronJob schedule expressions](https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/#cron-schedule-syntax) to create your Viya start job schedule. See note below. | viya |
+| V4_CFG_VIYA_STOP_SCHEDULE | Configure your SAS Viya platform deployment to stop on specific schedules | string |  | false | This variable accepts [CronJob schedule expressions](https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/#cron-schedule-syntax) to create your Viya stop job schedule. See note below. | viya |
 
 Notes:
   - With the two Viya scheduling variables, `V4_CFG_VIYA_START_SCHEDULE` and `V4_CFG_VIYA_STOP_SCHEDULE`. If you define one and not the other, it will result in a suspended cronjob for the variable that was not defined.
@@ -406,7 +406,7 @@ The NFS client is currently supported by the newer nfs-subdir-external-provision
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4MT_ENABLE | Enables multi-tenancy in the SAS Viya deployment | bool | false | false || viya, multi-tenancy |
+| V4MT_ENABLE | Enables multi-tenancy in the SAS Viya platform deployment | bool | false | false || viya, multi-tenancy |
 | V4MT_MODE | Set V4MT_MODE to either schema or database | string | schema | false | Two modes of data isolation (schemaPerApplicationTenant, databasePerTenant) are supported for tenant data. The default is schemaPerApplicationTenant.  | viya, multi-tenancy |
 | V4MT_TENANT_IDS | Maps to SAS_TENANT_IDS. One or more tenant IDs to onboard or offboard | string | | false | Example: Single tenant ID: "acme" or Multiple tenant IDs: "acme, cyberdyne, intech". Tenant IDs have a few naming restrictions, See the details [here](https://go.documentation.sas.com/doc/en/itopscdc/default/caltenants/p0emzq13c0zbhxn1hktsdlmig934.htm#n1fptbibrh96r8n1jy317onpjd8r) | viya, multi-tenancy |
 | V4MT_PROVIDER_PASSWORD | Optional: The password that is applied to the tenant administrator on each onboarded tenant | string | | false | Maps to SAS_PROVIDER_PASSWORD. When V4MT_PROVIDER_PASSWORD is specified, V4MT_PROVIDER_PASSWORD_{{TENANT-ID}} cannot be used. See details [here](https://go.documentation.sas.com/doc/en/itopscdc/default/caltenants/p0emzq13c0zbhxn1hktsdlmig934.htm#p1ghvmezrb3cvxn1h7vg4uguqct6). | multi-tenancy |

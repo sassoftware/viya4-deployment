@@ -47,8 +47,8 @@ Any number of tasks can be run at the same time. An action can run against a sin
 
 | Name | Description |
 | :--- | :--- |
-| baseline | Installs cluster level tooling needed for all viya deployments. These may include, cert-manager, ingress-nginx, nfs-client-provisioners and more. |
-| viya | Deploys viya |
+| baseline | Installs cluster level tooling needed for all SAS Viya platform deployments. These may include, cert-manager, ingress-nginx, nfs-client-provisioners and more. |
+| viya | Deploys the SAS Viya platform |
 | cluster-logging | Installs cluster-wide logging using the [viya4-monitoring-kubernetes](https://github.com/sassoftware/viya4-monitoring-kubernetes) project. |
 | cluster-monitoring | Installs cluster-wide monitoring using the [viya4-monitoring-kubernetes](https://github.com/sassoftware/viya4-monitoring-kubernetes) project. |
 | viya-monitoring | Installs viya namespace level monitoring using the [viya4-monitoring-kubernetes](https://github.com/sassoftware/viya4-monitoring-kubernetes) project. |
