@@ -3,7 +3,13 @@ PROXY_SQL_IMAGE: gcr.io/cloudsql-docker/gce-proxy:1.20.2
 vdm_overlays: {}
 
 db_default_name_map: {
-  default: "SharedServices"
+  default: "SharedServices",
+  cds-postgres: "SharedServices"
+}
+
+pg_dataserver_name_map: {
+  default: "sas-platform-postgres",
+  cds-postgres: "sas-cds-postgres"
 }
 
 pg_cluster_name_map: {
