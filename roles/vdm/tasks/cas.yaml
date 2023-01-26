@@ -108,27 +108,16 @@
     - uninstall
     - update
 
-- block:
-  - name: cas - Copy Auto-Restart example
-    copy:
-      src: "{{ DEPLOY_DIR }}/sas-bases/examples/cas/configure/cas-auto-restart.yaml"
-      dest: "{{ role_path }}/templates/transformers/cas-auto-restart.yaml"
-      mode: "0660"
-    tags:
-      - install
-      - uninstall
-      - update
-  - name: cas - Enable CAS Auto-Restart After Updates
-    overlay_facts:
-      cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
-      cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
-      existing: "{{ vdm_overlays }}"
-      add:
-        - { transformers: "cas-auto-restart.yaml", vdm: true, min: "2021.2" }
+- name: cas - Enable CAS Auto-Restart After Updates
+  overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { transformers: "cas-auto-restart.yaml", vdm: true, min: "2021.2" }
   when:
     - V4_DEPLOYMENT_OPERATOR_ENABLED
     - V4_CFG_CAS_ENABLE_AUTO_RESTART
-    - V4_CFG_CADENCE_VERSION is version('2021.2', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
   tags:
     - install
     - uninstall
