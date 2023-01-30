@@ -1,4 +1,12 @@
 ---
+- name: Run Validations
+  include_tasks: validations.yaml
+  tags:
+    - install
+    - uninstall
+    - update
+    - multi-tenancy
+
 - file:
     state: directory
     dest: '{{ DEPLOY_DIR }}/site-config/'
