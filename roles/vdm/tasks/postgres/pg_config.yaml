@@ -3,7 +3,6 @@
   - name: set facts 
     set_fact:
       dac_crunchy_storage_cm_found: false
-      v4_crunchy_present: false
   - name: pg_config - Look for ConfigMap
     kubernetes.core.k8s_info:
       kubeconfig: "{{ KUBECONFIG }}"
@@ -40,13 +39,13 @@
     register: deploy
   - name: pg_config - v4 crunchy operator found
     set_fact:
-      v4_crunchy_present: true
+      v4_crunchy_found: true
     when: 
       - deploy.resources is defined
       - deploy.resources | length != 0
   - name: pg_config - v4 crunchy operator not found
     set_fact:
-      v4_crunchy_present: false
+      v4_crunchy_found: false
     when: 
       - deploy.resources is defined
       - deploy.resources | length == 0
