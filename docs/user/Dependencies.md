@@ -13,7 +13,7 @@ The following list details our dependencies and versions (~ indicates multiple p
 | ~ | docker | >=20.10.10 |
 | ~ | git | any |
 | ~ | rsync | any |
-| ~ | kustomize | 4.5.7 for SAS Viya Platform cadence versions <= 2023.01 <br><br> 3.7.0 for SAS Viya Platform cadence versions >= 2023.02 |
+| ~ | kustomize | 4.5.7 for SAS Viya Platform cadence versions >= 2023.02 <br><br> 3.7.0 for SAS Viya Platform cadence versions <= 2023.01 |
 | ~ | kubectl | 1.22 - 1.24 |
 | ~ | Helm | 3 |
 | pip3 | ansible | 2.10.7 |
