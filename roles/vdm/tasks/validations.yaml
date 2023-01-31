@@ -1,11 +1,11 @@
 ---
 - name: kustomize validation
   block:
-    - name: kustomize - check version
+    - name: validations - kustomize get version
       ansible.builtin.shell: |
         kustomize version --short | awk -F "/v" '{print $2}' | awk '{print $1}'
       register: kustomize_version
-    - name: kustomize - check version >= 2023.02
+    - name: validations - kustomize check version >= 2023.02
       ansible.builtin.assert:
         that: '{{ kustomize_version.stdout is version("4.5.7", "==") }}'
         msg: >
@@ -17,7 +17,7 @@
           
           If you are running viya4-deployment directly on your host please install the correct kustomize binary
       when: V4_CFG_CADENCE_VERSION is version('2023.02', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
-    - name: kustomize - check version <= 2023.01
+    - name: validations - kustomize check version <= 2023.01
       ansible.builtin.assert:
         that: '{{ kustomize_version.stdout is version("3.7.0", "==") }}'
         msg: >
