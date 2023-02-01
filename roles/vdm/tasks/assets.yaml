@@ -5,9 +5,7 @@
     dest: "{{ tmpdir.path }}/viya4-orders-cli"
     mode: "0755"
   when:
-    - V4_CFG_LICENSE is not none
-    - V4_CFG_CERTS is not none
-    - V4_CFG_DEPLOYMENT_ASSETS is not none
+    - (V4_CFG_LICENSE is none) or (V4_CFG_CERTS is none) or (V4_CFG_DEPLOYMENT_ASSETS is none)
   tags:
     - install
     - uninstall
