@@ -120,8 +120,8 @@ When V4_CFG_MANAGE_STORAGE is set to `true`, a new storage class is created: sas
 | V4_CFG_CADENCE_NAME | Cadence name | string | lts | false | [stable,lts] | viya |
 | V4_CFG_CADENCE_VERSION | Cadence version | string | "2022.09" | true | This value must be surrounded by quotation marks to accommodate the updated SAS Cadence Version format. If the value is not quoted the deployment will fail. | viya |
 | V4_CFG_DEPLOYMENT_ASSETS | Path to pre-downloaded deployment assets | string | | false | Leave blank to download [deployment assets](https://go.documentation.sas.com/doc/en/sasadmincdc/default/itopscon/n08bpieatgmfd8n192cnnbqc7m5c.htm#n1x7yoeafv23xan1gew0gfipt9e9) | viya |
-| V4_CFG_LICENSE | Path to pre-downloaded license file | string | | false| Leave blank to download the [license file](https://go.documentation.sas.com/doc/en/sasadmincdc/v_036/itopscon/n08bpieatgmfd8n192cnnbqc7m5c.htm#p1odbfo85cz4r5n1j2tzx9zz9sbi) | viya |
-| V4_CFG_CERTS | Path to pre-downloaded certificates file | string | | false| Leave blank to download the [certificates file](https://go.documentation.sas.com/doc/en/sasadmincdc/v_036/itopscon/n08bpieatgmfd8n192cnnbqc7m5c.htm#n0pj0ewyle0gfkn1psri3kw5ghha) | viya |
+| V4_CFG_LICENSE | Path to pre-downloaded license file | string | | false| Leave blank to download the [license file](https://go.documentation.sas.com/doc/en/sasadmincdc/default/itopscon/n08bpieatgmfd8n192cnnbqc7m5c.htm#p1odbfo85cz4r5n1j2tzx9zz9sbi) | viya |
+| V4_CFG_CERTS | Path to pre-downloaded certificates file | string | | false| Leave blank to download the [certificates file](https://go.documentation.sas.com/doc/en/sasadmincdc/default/itopscon/n08bpieatgmfd8n192cnnbqc7m5c.htm#n0pj0ewyle0gfkn1psri3kw5ghha) | viya |
 
 ## SAS API Access
 
