@@ -130,7 +130,7 @@
 - name: assets - Copy user-provided certs file
   copy:
     src: "{{ V4_CFG_CERTS }}"
-    dest: "{{ V4_CFG_CERTS }}/certs.zip"
+    dest: "{{ LICENSE_DIRECTORY }}/certs.zip"
   when:
     - V4_CFG_CERTS is not none
   tags:
