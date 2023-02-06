@@ -35,6 +35,10 @@ ingress:
     - host: {{ V4M_BASE_DOMAIN }}
       paths:
         - path: /dashboards
+          backend:
+            serviceName: v4m-osd
+            servicePort: 5601
+
   tls:
     - secretName: kibana-ingress-tls-secret
       hosts:
