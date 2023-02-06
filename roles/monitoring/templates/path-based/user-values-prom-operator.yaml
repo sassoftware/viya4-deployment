@@ -71,3 +71,4 @@ alertmanager:
   alertmanagerSpec:
     routePrefix: /alertmanager
     externalUrl: "https://{{ V4M_BASE_DOMAIN }}/alertmanager"
+    

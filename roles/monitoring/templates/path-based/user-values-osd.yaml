@@ -43,3 +43,4 @@ ingress:
     - secretName: kibana-ingress-tls-secret
       hosts:
         - {{ V4M_BASE_DOMAIN }}
+        
