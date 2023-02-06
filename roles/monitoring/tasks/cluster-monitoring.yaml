@@ -43,11 +43,25 @@
   tags:
     - install
 
-- name: cluster-monitoring - user values
+- name: cluster-monitoring - host-based user values
   template:
-    src: "user-values-prom-operator.yaml"
+    src: "host-based/user-values-prom-operator.yaml"
     dest: "{{ tmpdir.path }}/monitoring/user-values-prom-operator.yaml"
     mode: "0660"
+  when:
+    - V4M_ROUTING|lower == 'host-based'
+  tags:
+    - install
+    - update
+    - uninstall
+
+- name: cluster-monitoring - path-based user values
+  template:
+    src: "path-based/user-values-prom-operator.yaml"
+    dest: "{{ tmpdir.path }}/monitoring/user-values-prom-operator.yaml"
+    mode: "0660"
+  when:
+    - V4M_ROUTING|lower == 'path-based'
   tags:
     - install
     - update

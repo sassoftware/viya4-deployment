@@ -155,6 +155,7 @@ When V4_CFG_MANAGE_STORAGE is set to `true`, a new storage class is created: sas
 | V4M_KEY | Path to TLS key to use for all monitoring/logging services | string | | false | As an alternative, you can set the per-service certificate. | cluster-logging, cluster-monitoring, viya-monitoring |
 | V4M_NODE_PLACEMENT_ENABLE | Whether to enable workload node placement for viya4-monitoring-kubernetes stack | bool | false | false | | cluster-logging, cluster-monitoring, viya-monitoring |
 | V4M_STORAGECLASS | StorageClass name | string | v4m | false | When V4_CFG_MANAGE_STORAGE is false, set to the name of your pre-existing StorageClass that supports ReadWriteOnce. | cluster-logging, cluster-monitoring, viya-monitoring |
+| V4M_ROUTING | Which routing type to use for viya4-monitoring-kubernetes applications | string | host-based | false | Supported values: [`host-based`, `path-based`] For host-based routing, the application name is part of the host name itself `https://dashboards.host.cluster.example.com/` For path-based routing, the host name is fixed and the application name is appended as a path on the URL `https://host.cluster.example.com/dashboards` | cluster-logging, cluster-monitoring |
 
 ### Monitoring
 
