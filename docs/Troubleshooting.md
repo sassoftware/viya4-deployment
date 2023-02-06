@@ -44,6 +44,7 @@ Release 5.0.0 (and later) of sassoftware/viya4-deployment is only compatible wit
 When using sassoftware/viya4-deployment releases 5.0.0 or later, specify either the stable branch or a valid sassoftware/viya4-monitoring-kubernetes release tag of 1.2.0 or later for the value of the V4M_VERSION sassoftware/viya4-deployment variable, For more details on supported variables, refer to [CONFIG-VARS.md](./CONFIG-VARS.md)
 
 ## SAS Viya Orchestration Tool
+
 ### Symptom:
 While deploying the SAS Viya platform to a cluster by running the viya4-deployment project directly on your host with the "viya" and "install" Ansible task tags specified (see [AnsibleUsage.md](./user/AnsibleUsage.md)), the following error message is encountered when the "vdm - orchestration" task executes:
 
@@ -53,7 +54,7 @@ fatal: [localhost]: FAILED! => {"changed": false, "msg": "Error connecting: Erro
 ```
 
 ### Diagnosis:
-The orchestration task attempted to log into the container registry defined `V4_CFG_CR_URL` using the Python Docker client and failed to do so since it could not communicate with the local Docker Engine API.
+The orchestration task attempted to log into the container registry defined by `V4_CFG_CR_URL` using the Python Docker client and failed to do so since it could not communicate with the local Docker Engine API.
 
 ### Solution:
 
@@ -61,7 +62,7 @@ As of [release 6.0.0](https://github.com/sassoftware/viya4-deployment/releases/t
 
 On your host:
 * Ensure that Docker is installed on your machine, the [Dependency Versions documentation](./user/Dependencies.md) states that you need at least version 20.10.10.
-* If Docker is already installed on you machine ensure that the deamon is running, see [offical Docker documentation](https://docs.docker.com/config/daemon/start/).
+* If Docker is already installed on you machine ensure that the deamon is running, see the [offical Docker documentation](https://docs.docker.com/config/daemon/start/).
 
 ## SAS Viya Deployment Operator
 
