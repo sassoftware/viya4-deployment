@@ -11,7 +11,7 @@
 - name: Set the default INGRESS_NGINX_CHART_VERSION if not specified
   block:
     - name: Retreive K8s cluster information
-      community.kubernetes.k8s_cluster_info:
+      kubernetes.core.k8s_cluster_info:
         kubeconfig: "{{ KUBECONFIG }}"
       register: cluster_info
     - name: Set the default INGRESS_NGINX_CHART_VERSION based on K8s server minor version
@@ -40,7 +40,7 @@
 - name: Apply Mitigation for CVE-2021-25742
   block:
     - name: Retreive K8s cluster information
-      community.kubernetes.k8s_cluster_info:
+      kubernetes.core.k8s_cluster_info:
         kubeconfig: "{{ KUBECONFIG }}"
       register: cluster_info
     - name: Update INGRESS_NGINX_CONFIG
@@ -55,7 +55,7 @@
     - update
 
 - name: Deploy ingress-nginx
-  community.kubernetes.helm:
+  kubernetes.core.helm:
     name: "{{ INGRESS_NGINX_NAME }}"
     namespace: "{{ INGRESS_NGINX_NAMESPACE }}"
     chart_repo_url: "{{ INGRESS_NGINX_CHART_URL }}"
@@ -70,7 +70,7 @@
     - update
 
 - name: Remove ingress-nginx
-  community.kubernetes.helm:
+  kubernetes.core.helm:
     name: "{{ INGRESS_NGINX_NAME }}"
     namespace: "{{ INGRESS_NGINX_NAMESPACE }}"
     kubeconfig: "{{ KUBECONFIG }}"
@@ -81,7 +81,7 @@
     - uninstall
 
 - name: Remove {{ INGRESS_NGINX_NAMESPACE }} namespace
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     api_version: v1
     kind: Namespace
     name: "{{ INGRESS_NGINX_NAMESPACE }}"

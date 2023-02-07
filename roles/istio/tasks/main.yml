@@ -9,7 +9,7 @@
     - update
 
 - name: Create namespace
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     kubeconfig: "{{ KUBECONFIG }}"
     api_version: v1
     kind: Namespace
@@ -20,7 +20,7 @@
     - update
 
 - name: Set kiali secret
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     kubeconfig: "{{ KUBECONFIG }}"
     state: present
     definition: "{{ lookup('template', 'kiali-secret.yaml') }}"
@@ -29,7 +29,7 @@
     - update
 
 - name: Set grafana secret
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     kubeconfig: "{{ KUBECONFIG }}"
     state: present
     definition: "{{ lookup('template', 'grafana-secret.yaml') }}"
@@ -44,7 +44,7 @@
     - update
 
 - name: Lockdown ingress
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     kubeconfig: "{{ KUBECONFIG }}"
     state: present
     definition:
@@ -67,7 +67,7 @@
     - update
 
 - name: Grafana ingress
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     kubeconfig: "{{ KUBECONFIG }}"
     state: present
     definition:
@@ -93,7 +93,7 @@
     - update
 
 - name: Prometheus ingress
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     kubeconfig: "{{ KUBECONFIG }}"
     state: present
     definition:
@@ -119,7 +119,7 @@
     - update
 
 - name: Kiali ingress
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     kubeconfig: "{{ KUBECONFIG }}"
     state: present
     definition:
@@ -145,7 +145,7 @@
     - update
 
 - name: Tracing ingress
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     kubeconfig: "{{ KUBECONFIG }}"
     state: present
     definition:
@@ -171,7 +171,7 @@
     - update
 
 - name: Lookup ingress
-  community.kubernetes.k8s_info:
+  kubernetes.core.k8s_info:
     api_version: v1
     kind: Service
     name: istio-ingressgateway
@@ -203,7 +203,7 @@
     - uninstall
 
 - name: Delete namespace
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     kubeconfig: "{{ KUBECONFIG }}"
     api_version: v1
     kind: Namespace

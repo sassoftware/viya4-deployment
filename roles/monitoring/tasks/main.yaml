@@ -10,7 +10,7 @@
     - update
 
 - name: v4m - add storageclass
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     kubeconfig: "{{ KUBECONFIG }}"
     state: present
     src: "{{ role_path }}/files/{{ PROVIDER }}-storageclass.yaml"
@@ -34,7 +34,7 @@
     - cluster-logging
 
 - name: v4m - remove storageclass
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     kubeconfig: "{{ KUBECONFIG }}"
     state: absent
     src: "{{ role_path }}/files/{{ PROVIDER }}-storageclass.yaml"
