@@ -1,0 +1,22 @@
+---
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: compute-server-add-nfs-mount
+patch: |-
+  - op: add
+    path: /template/spec/volumes/-
+    value:
+      name: nfs-data
+      nfs:
+        path: {{ V4_CFG_RWX_FILESTORE_DATA_PATH  }}
+        server: {{ V4_CFG_RWX_FILESTORE_ENDPOINT }}
+  - op: add
+    path: /template/spec/containers/0/volumeMounts/-
+    value:
+      mountPath: /mnt/viya-share/data
+      name: nfs-data
+target:
+  kind: PodTemplate
+  version: v1
+  labelSelector: sas.com/template-intent=sas-launcher

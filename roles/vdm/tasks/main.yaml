@@ -141,6 +141,13 @@
     - uninstall
     - update
 
+- name: Include Postgres ConfigMap
+  include_tasks: postgres/pg_config.yaml
+  tags:
+    - install
+    - uninstall
+    - update
+
 - name: Include Postgres
   include_tasks: postgres/postgres.yaml
   tags:
