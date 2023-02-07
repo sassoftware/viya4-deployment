@@ -74,7 +74,7 @@ Supported configuration variables are listed in the table below.  All variables 
 | V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH | Full path to service account credentials file | string | | false | See [Ansible Cloud Authentication](user/AnsibleCloudAuthentication.md) for more information. | viya |
 
 ## Jump Server
-Viya4-deploy uses the jump server to interact with the RWX filestore, which must be pre-mounted to JUMP_SVR_RWX_FILESTORE_PATH when V4_CFG_MANAGE_STORAGE is set to `true`.
+Viya4-deployment uses the jump server to interact with the RWX filestore, which must be pre-mounted to `JUMP_SVR_RWX_FILESTORE_PATH` when `V4_CFG_MANAGE_STORAGE` is set to `true`.
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -84,10 +84,16 @@ Viya4-deploy uses the jump server to interact with the RWX filestore, which must
 | JUMP_SVR_RWX_FILESTORE_PATH | Path on the jump server to the NFS mount | string | /viya-share | false | | viya |
 
 ## Storage
+When `V4_CFG_MANAGE_STORAGE` is set to `true`, viya4-deployment creates the `sas` and `pg-storage` storage classes using the nfs-subdir-external-provisioner Helm chart. If a jump server is used, viya4-deployment uses that server to create the folders for the `astores`, `bin`, `data` and `homes` RWX Filestore NFS paths that are outlined below in the [RWX Filestore](#rwx-filestore) section.
+
+When `V4_CFG_MANAGE_STORAGE` is set to `false`, viya4-deployment does not create the `sas` or `pg-storage` storage classes for you. In addition, viya4-deployment does not create or manage the RWX Filestore NFS paths. Before you run the SAS Viya deployment, you must set the values for `V4_CFG_RWX_FILESTORE_ASTORES_PATH`, `V4_CFG_RWX_FILESTORE_BIN_PATH`, `V4_CFG_RWX_FILESTORE_DATA_PATH` and `V4_CFG_RWX_FILESTORE_HOMES_PATH` to specify existing NFS folder locations. The viya4-deployment user can create the required NFS folders from the jump server before starting the deployment. Recommended attribute settings for each folder are as follows: 
+- **filemode**: `0777` 
+- **group**: the equivalent of `nogroup` for your operating system 
+- **owner**: `nobody`
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_MANAGE_STORAGE | Whether viya4-deploy should manage the StorageClass | bool | true | false | Set to false if you want to manage the StorageClass yourself. | all |
+| V4_CFG_MANAGE_STORAGE | Whether viya4-deployment should manage the StorageClass | bool | true | false | Set to false if you want to manage the StorageClass yourself. | all |
 | V4_CFG_STORAGECLASS | StorageClass name | string | "sas" | false | When V4_CFG_MANAGE_STORAGE is false, set to the name of your preexisting StorageClass that supports ReadWriteMany. | baseline, viya |
 
 ### RWX Filestore
@@ -103,15 +109,15 @@ Viya4-deploy uses the jump server to interact with the RWX filestore, which must
 
 ### Azure
 
-When V4_CFG_MANAGE_STORAGE is set to `true`, a new storage class is created: sas (Azure NetApp or NFS).
+When V4_CFG_MANAGE_STORAGE is set to `true`, the `sas` and `pg-storage` storage classes are created (Azure NetApp or NFS).
 
 ### AWS
 
-When V4_CFG_MANAGE_STORAGE is set to `true`, the efs-provisioner is deployed. A new storage classes is created: sas (EFS or NFS).
+When V4_CFG_MANAGE_STORAGE is set to `true`, the efs-provisioner is deployed, the `sas` and `pg-storage` storage classes are created (EFS or NFS).
 
 ### GCP
 
-When V4_CFG_MANAGE_STORAGE is set to `true`, a new storage class is created: sas (Google Filestore or NFS).
+When V4_CFG_MANAGE_STORAGE is set to `true`, the `sas` and `pg-storage` storage classes are created (Google Filestore or NFS).
 
 ## SAS Software Order
 
@@ -256,10 +262,11 @@ V4_CFG_POSTGRES_SERVERS:
 | backrest_pvc_storage_size | Size of the internal pgBackrest PVCs | string | 128Gi | false | This value can be changed but not decreased after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
 | postgres_pvc_access_mode | Access mode for the PostgreSQL PVCs | string | ReadWriteOnce | false | Supported values: [`ReadWriteOnce`,`ReadWriteMany`]. This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
 | backrest_pvc_access_mode | Access mode for the pgBackrest PVCs | string | ReadWriteOnce | false | Supported values: [`ReadWriteOnce`,`ReadWriteMany`]. This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
-| postgres_storage_class | Storage class for the PostgreSQL PVCs | string | pg-storage | false |This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
-| backrest_storage_class | Storage class for the pgBackrest PVCs | string | pg-storage | false |This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
+| postgres_storage_class | Storage class for the PostgreSQL PVCs | string | pg-storage | false |This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases. When `V4_CFG_MANAGE_STORAGE` is set to `true`, a storage class named `pg-storage` is created and is configured as the default storageClass. If `V4_CFG_MANAGE_STORAGE` is set to false, specify the name of an existing storage class for the value. | viya |
+| backrest_storage_class | Storage class for the pgBackrest PVCs | string | pg-storage | false |This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases. When `V4_CFG_MANAGE_STORAGE` is set to `true`, a storage class named `pg-storage` is created and is configured as the default storageClass. If `V4_CFG_MANAGE_STORAGE` is set to false, specify the name of an existing storage class for the value. | viya |
 
-**NOTE**: the `default` element is always required. This will be the default server.
+
+**NOTE**: The `default` element is always required. This will be the default server.
 
 Examples:
 
