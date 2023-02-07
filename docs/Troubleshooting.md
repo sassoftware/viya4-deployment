@@ -62,7 +62,7 @@ As of [release 6.0.0](https://github.com/sassoftware/viya4-deployment/releases/t
 
 On your host:
 * Ensure that Docker is installed on your machine, the [Dependency Versions documentation](./user/Dependencies.md) states that you need at least version 20.10.10.
-* If Docker is already installed on you machine ensure that the deamon is running, see the [offical Docker documentation](https://docs.docker.com/config/daemon/start/).
+* If Docker is already installed on you machine ensure that the deamon is running, see the [Docker documentation](https://docs.docker.com/config/daemon/start/).
 
 ## SAS Viya Deployment Operator
 
