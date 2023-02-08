@@ -310,6 +310,7 @@ V4_CFG_POSTGRES_SERVERS:
 | V4_CFG_CAS_WORKER_COUNT | Number of CAS workers | int | 1 | false | Setting to more than one triggers MPP CAS deployment. | viya |
 | V4_CFG_CAS_ENABLE_BACKUP_CONTROLLER | Enable backup CAS controller | bool | false | false | | viya |
 | V4_CFG_CAS_ENABLE_LOADBALANCER | Set up LoadBalancer to access CAS binary ports | bool | false | false | | viya |
+| V4_CFG_CAS_ENABLE_AUTO_RESTART | Include a transformer so that the CAS servers will automatically restart during version updates performed by the SAS Viya Deployment Operator. | bool | true | false | This variable will not be applicable if you are not using the SAS Viya Deployment Operator by setting `V4_DEPLOYMENT_OPERATOR_ENABLED` to "false". See the [SAS Viya Platform Operations documentation](https://go.documentation.sas.com/doc/en/itopscdc/default/dplyml0phy0dkr/n08u2yg8tdkb4jn18u8zsi6yfv3d.htm#p1mtzb2zsvv581n1gpmwds3urbon) for additional information. | viya |
 
 ## CONNECT
 
