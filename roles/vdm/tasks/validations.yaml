@@ -1,0 +1,41 @@
+---
+- name: kustomize validation
+  block:
+    - name: validations - kustomize get version
+      ansible.builtin.shell: |
+        kustomize version --short | awk -F "/v" '{print $2}' | awk '{print $1}'
+      register: kustomize_version
+    - name: validations - kustomize check version >= 2023.02
+      ansible.builtin.assert:
+        that: '{{ kustomize_version.stdout is version("4.5.7", "==") }}'
+        msg: >
+          When deploying the SAS Viya Platform on cadence versions >= 2023.02 you must have
+          kustomize version 4.5.7 installed.
+          
+          If you are executing viya4-deployment using a docker container, see docs/user/Dependencies.md#docker on how to
+          override the installed kustomize version during the image build process.
+          
+          If you are running viya4-deployment directly on your host please install the correct kustomize binary
+      when: V4_CFG_CADENCE_VERSION is version('2023.02', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
+    - name: validations - kustomize check version <= 2023.01
+      ansible.builtin.assert:
+        that: '{{ kustomize_version.stdout is version("3.7.0", "==") }}'
+        msg: >
+          When deploying the SAS Viya Platform on cadence versions >= 2023.01 you must have
+          kustomize version 3.7.0 installed.
+          
+          If you are executing viya4-deployment using a docker container, see docs/user/Dependencies.md#docker on how to
+          override the installed kustomize version during the image build process.
+          
+          If you are running viya4-deployment directly on your host please install the correct kustomize binary
+      when:
+        - V4_CFG_CADENCE_VERSION is version('2023.01', "<=")
+        - V4_CFG_CADENCE_NAME|lower != "fast"
+  # Only two instances in the code where we use the installed kustomize binary
+  when:
+    - V4MT_ENABLE or V4_DEPLOYMENT_OPERATOR_ENABLED
+  tags:
+    - install
+    - uninstall
+    - update
+    - multi-tenancy

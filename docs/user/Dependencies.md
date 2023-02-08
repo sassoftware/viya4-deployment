@@ -13,7 +13,7 @@ The following list details our dependencies and versions (~ indicates multiple p
 | ~ | docker | >=20.10.10 |
 | ~ | git | any |
 | ~ | rsync | any |
-| ~ | kustomize | 3.7.0 |
+| ~ | kustomize | 4.5.7 for SAS Viya Platform cadence versions >= 2023.02 <br><br> 3.7.0 for SAS Viya Platform cadence versions <= 2023.01 |
 | ~ | kubectl | 1.22 - 1.24 |
 | ~ | Helm | 3 |
 | pip3 | ansible | 2.10.7 |
@@ -42,6 +42,12 @@ If deploying via the [Dockerfile](../../Dockerfile) overriding a dependency vers
 As described in the [Docker Installation](./DockerUsage.md) section add additional build arguments to your docker build command:
 
 ```bash
+# Override kustomize version
+docker build \
+	--build-arg kustomize_version=3.7.0 \
+	-t viya4-deployment .
+	
+# Override kubectl version
 docker build \
 	--build-arg kubectl_version=1.23.8 \
 	-t viya4-deployment .

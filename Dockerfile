@@ -6,7 +6,7 @@ RUN apt update && apt upgrade -y \
   && update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
 
 FROM baseline as tool_builder
-ARG kustomize_version=3.7.0
+ARG kustomize_version=4.5.7
 ARG kubectl_version=1.23.8
 
 WORKDIR /build
