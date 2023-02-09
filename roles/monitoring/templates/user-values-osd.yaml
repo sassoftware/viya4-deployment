@@ -9,7 +9,7 @@ ingress:
         - path: /
           backend:
             serviceName: v4m-osd
-            servicePort: 443
+            servicePort: 5601
   tls:
     - secretName: kibana-ingress-tls-secret
       hosts:

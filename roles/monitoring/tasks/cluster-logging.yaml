@@ -52,7 +52,7 @@
 
 - name: cluster-logging - opensearch user values
   template:
-    src: "user-values-elasticsearch-opensearch.yaml"
+    src: "user-values-opensearch.yaml"
     dest: "{{ tmpdir.path }}/logging/user-values-opensearch.yaml"
     mode: "0660"
   tags:
@@ -62,7 +62,7 @@
 
 - name: cluster-logging - osd user values
   template:
-    src: "user-values-osd-opensearch.yaml"
+    src: "user-values-osd.yaml"
     dest: "{{ tmpdir.path }}/logging/user-values-osd.yaml"
     mode: "0660"
   tags:
