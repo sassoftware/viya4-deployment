@@ -246,8 +246,17 @@
     - uninstall
     - update
 
-- name: postgres instance - external post 2022.10
+- name: postgres instance - external post 2022.10 - external cds post 2022.12
   block:
+  - name: postgres instance - external cds resource
+    overlay_facts:
+      cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+      cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+      existing: "{{ vdm_overlays }}"
+      add:
+        - { resources: "overlays/postgres/cds-postgres", min: "2022.12" }
+    when: 
+      - role == "cds-postgres"
   - name: postgres instance - external copy postgres-user.env
     template:
       src: "postgres-user.env"
@@ -273,7 +282,7 @@
         - { generators: "postgres-{{ role }}-secrets.yaml", min: "2022.10", vdm: true}
   when:
     - not settings.internal
-    - role == "default"
+    - role == "default" or role == "cds-postgres"
     - V4_CFG_CADENCE_VERSION is version('2022.10', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
   tags:
     - install
@@ -297,6 +306,7 @@
   when:
     - not settings.internal
     - role != "default"
+    - role != "cds-postgres"
     - V4_CFG_CADENCE_VERSION is version('2022.10', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
   tags:
     - install
