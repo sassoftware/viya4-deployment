@@ -21,7 +21,7 @@
       ansible.builtin.assert:
         that: '{{ kustomize_version.stdout is version("3.7.0", "==") }}'
         msg: >
-          When deploying the SAS Viya Platform on cadence versions >= 2023.01 you must have
+          When deploying the SAS Viya Platform on cadence versions <= 2023.01 you must have
           kustomize version 3.7.0 installed.
           
           If you are executing viya4-deployment using a docker container, see docs/user/Dependencies.md#docker on how to
