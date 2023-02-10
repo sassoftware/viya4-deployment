@@ -385,7 +385,7 @@ The EBS CSI driver is currently only used for kubernetes v1.23 or later AWS EKS 
 | INGRESS_NGINX_NAMESPACE | NGINX Ingress Helm installation namespace | string | ingress-nginx | false | | baseline |
 | INGRESS_NGINX_CHART_URL | NGINX Ingress Helm chart URL | string | See [this document](https://kubernetes.github.io/ingress-nginx) for more information. | false | | baseline |
 | INGRESS_NGINX_CHART_NAME | NGINX Ingress Helm chart name | string | ingress-nginx | false | | baseline |
-| INGRESS_NGINX_CHART_VERSION | NGINX Ingress Helm chart version | string | "" | false | If left as "" (empty string), version 3.40.0 is used for Kubernetes clusters whose version is <= 1.21.X, and version 4.2.3 is used for Kubernetes clusters whose version is >= 1.22.X. | baseline |
+| INGRESS_NGINX_CHART_VERSION | NGINX Ingress Helm chart version | string | "" | false | If left as "" (empty string), version 3.40.0 is used for Kubernetes clusters whose version is <= 1.21.X, and version 4.4.0 is used for Kubernetes clusters whose version is >= 1.22.X. | baseline |
 | INGRESS_NGINX_CONFIG | NGINX Ingress Helm values | string | See [this file](../roles/baseline/defaults/main.yml) for more information. Altering this value will affect the cluster. | false | | baseline |
 
 ### Metrics Server
