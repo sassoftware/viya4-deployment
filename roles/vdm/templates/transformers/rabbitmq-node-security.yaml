@@ -1,0 +1,18 @@
+# In your site-config directory, set up overlay sub-directory as such -> rabbitmq/configuration/rabbitmq-node-security.yaml.
+
+# The transformer below will resolve the issue of the sas-rabbitmq-server failing when adding and/or removing EKS nodes in AWS.
+---
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: rabbitmq-node-security
+patch: |-
+  - op: add
+    path: /spec/template/spec/containers/0/securityContext
+    value:
+      runAsUser: 1001
+target:
+  group: apps
+  name: sas-rabbitmq-server
+  kind: StatefulSet
+  version: v1
