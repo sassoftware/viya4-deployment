@@ -90,7 +90,7 @@
 
 - name: kustomize - generate onboard manifest
   block:
-    - name: kustomize - generate onboard manifest - Ansible # TODO DETERMININE WHAT GOES IN THE ONBOARD MANIFEST PATH-WISE
+    - name: kustomize - generate onboard manifest - Ansible  # TODO probably need to mount entire DEPLOY_DIR
       ansible.builtin.shell: >
         docker run --rm
         --user="{{ UID_GID }}"
@@ -116,7 +116,7 @@
 
 - name: kustomize - generate offboard manifest
   block:
-    - name: kustomize - generate offboard manifest - Ansible # TODO DETERMININE WHAT GOES IN THE offboard MANIFEST PATHWISE
+    - name: kustomize - generate offboard manifest - Ansible # TODO probably need to mount entire DEPLOY_DIR
       ansible.builtin.shell: >
         docker run --rm
         --user="{{ UID_GID }}"
