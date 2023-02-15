@@ -16,3 +16,4 @@ target:
   name: sas-rabbitmq-server
   kind: StatefulSet
   version: v1
+  
