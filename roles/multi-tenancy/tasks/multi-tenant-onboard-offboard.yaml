@@ -52,36 +52,94 @@
   tags:
     - offboard
 
-# Build the manifest file
+## Build the manifest file
+#- name: kustomize - generate onboard manifest
+#  block:
+#    - name: kustomize - generate onboard manifest
+#      ansible.builtin.shell: |
+#        kustomize build {{ DEPLOY_DIR }}/site-config/sas-tenant-job/ --load-restrictor LoadRestrictionsNone -o {{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-onboard.yaml
+#      when: V4_CFG_CADENCE_VERSION is version('2023.02', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
+#    - name: kustomize - generate onboard manifest - legacy flags
+#      ansible.builtin.shell: |
+#        kustomize build {{ DEPLOY_DIR }}/site-config/sas-tenant-job/ --load_restrictor='none' -o {{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-onboard.yaml
+#      when:
+#        - V4_CFG_CADENCE_VERSION is version('2023.01', "<=")
+#        - V4_CFG_CADENCE_NAME|lower != "fast"
+#  tags:
+#    - onboard
+#
+#- name: kustomize - generate offboard manifest
+#  block:
+#    - name: kustomize - generate offboard manifest
+#      ansible.builtin.shell: |
+#        kustomize build {{ DEPLOY_DIR }}/site-config/sas-tenant-job/ --load-restrictor LoadRestrictionsNone -o {{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-offboard.yaml
+#      when: V4_CFG_CADENCE_VERSION is version('2023.02', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
+#    - name: kustomize - generate offboard manifest - legacy flags
+#      ansible.builtin.shell: |
+#        kustomize build {{ DEPLOY_DIR }}/site-config/sas-tenant-job/ --load_restrictor='none' -o {{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-offboard.yaml
+#      when:
+#        - V4_CFG_CADENCE_VERSION is version('2023.01', "<=")
+#        - V4_CFG_CADENCE_NAME|lower != "fast"
+#  tags:
+#    - offboard
+
+########################################################################################################################################################################################
+- name: kustomize - get load restrictor flag
+  set_fact:
+      LOAD_RESTRICTOR_FLAG: "{{ '--load-restrictor LoadRestrictionsNone' if V4_CFG_CADENCE_VERSION is version('2023.02', '>=') or V4_CFG_CADENCE_NAME|lower == 'fast' else '--load_restrictor=none' }}"
+
 - name: kustomize - generate onboard manifest
   block:
-    - name: kustomize - generate onboard manifest
-      ansible.builtin.shell: |
-        kustomize build {{ DEPLOY_DIR }}/site-config/sas-tenant-job/ --load-restrictor LoadRestrictionsNone -o {{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-onboard.yaml
-      when: V4_CFG_CADENCE_VERSION is version('2023.02', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
-    - name: kustomize - generate onboard manifest - legacy flags
-      ansible.builtin.shell: |
-        kustomize build {{ DEPLOY_DIR }}/site-config/sas-tenant-job/ --load_restrictor='none' -o {{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-onboard.yaml
+    - name: kustomize - generate onboard manifest - Ansible # TODO DETERMININE WHAT GOES IN THE ONBOARD MANIFEST PATH-WISE
+      ansible.builtin.shell: >
+        docker run --rm
+        --user="{{ UID_GID }}"
+        --name "orchestration_{{ lookup('password', '/dev/null chars=ascii_lowercase length=8') }}"
+        --volume "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/:/data"
+        --entrypoint kustomize
+        "{{ V4_CFG_CR_HOST }}/{{ ORCHESTRATION_IMAGE }}"
+        build /data {{ LOAD_RESTRICTOR_FLAG }} -o /data/site-onboard.yaml
       when:
-        - V4_CFG_CADENCE_VERSION is version('2023.01', "<=")
-        - V4_CFG_CADENCE_NAME|lower != "fast"
+        - deployment_tooling == "ansible"
+    - name: kustomize - generate onboard manifest - Docker
+      environment:
+        PATH: "{{ ORCHESTRATION_TOOLING_PATH }}"
+      command:
+        cmd: |
+          kustomize build {{ DEPLOY_DIR }}/site-config/sas-tenant-job/ {{ LOAD_RESTRICTOR_FLAG }} -o {{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-onboard.yaml
+      args:
+        chdir: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}"
+      when:
+        - deployment_tooling == "docker"
   tags:
     - onboard
 
 - name: kustomize - generate offboard manifest
   block:
-    - name: kustomize - generate offboard manifest
-      ansible.builtin.shell: |
-        kustomize build {{ DEPLOY_DIR }}/site-config/sas-tenant-job/ --load-restrictor LoadRestrictionsNone -o {{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-offboard.yaml
-      when: V4_CFG_CADENCE_VERSION is version('2023.02', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
-    - name: kustomize - generate offboard manifest - legacy flags
-      ansible.builtin.shell: |
-        kustomize build {{ DEPLOY_DIR }}/site-config/sas-tenant-job/ --load_restrictor='none' -o {{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-offboard.yaml
+    - name: kustomize - generate offboard manifest - Ansible # TODO DETERMININE WHAT GOES IN THE offboard MANIFEST PATHWISE
+      ansible.builtin.shell: >
+        docker run --rm
+        --user="{{ UID_GID }}"
+        --name "orchestration_{{ lookup('password', '/dev/null chars=ascii_lowercase length=8') }}"
+        --volume "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/:/data"
+        --entrypoint kustomize
+        "{{ V4_CFG_CR_HOST }}/{{ ORCHESTRATION_IMAGE }}"
+        build /data {{ LOAD_RESTRICTOR_FLAG }} -o /data/site-offboard.yaml
       when:
-        - V4_CFG_CADENCE_VERSION is version('2023.01', "<=")
-        - V4_CFG_CADENCE_NAME|lower != "fast"
+        - deployment_tooling == "ansible"
+    - name: kustomize - generate offboard manifest - Docker
+      environment:
+        PATH: "{{ ORCHESTRATION_TOOLING_PATH }}"
+      command:
+        cmd: |
+          kustomize build {{ DEPLOY_DIR }}/site-config/sas-tenant-job/ {{ LOAD_RESTRICTOR_FLAG }} -o {{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-offboard.yaml
+      args:
+        chdir: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}"
+      when:
+        - deployment_tooling == "docker"
   tags:
     - offboard
+########################################################################################################################################################################################
 
 # Get the full name of the sas-image-pull-secrets in current deployment
 - name: get - sas-image-pull-secrets

@@ -205,6 +205,14 @@
     - uninstall
     - update
 
+- name: Include Orchestration Tooling # TODO This pulls down the image or gets the image archive
+  include_tasks: orchestration_tooling.yaml
+  tags:
+    - install
+    - uninstall
+    - update
+    - multi-tenancy
+
 - name: Include Deployment Operator - Install
   include_tasks: deployment_operator.yaml
   when:
@@ -213,8 +221,8 @@
     - install
     - update
 
-- name: Include Orchestration
-  include_tasks: orchestration.yaml
+- name: Include SAS Deployment CR # TODO Generate the SAS Deployment CR
+  include_tasks: sas_deployment_cr.yaml
   tags:
     - install
     - uninstall

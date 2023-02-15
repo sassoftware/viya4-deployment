@@ -5,6 +5,12 @@
     - onboard
     - offboard
 
+- name: Include Orchestration Tooling
+  include_tasks: ../../vdm/tasks/orchestration_tooling.yaml
+  tags:
+    - cas-onboard
+    - offboard
+
 - name: multi-tenant role - onboard offboard
   include_tasks: multi-tenant-onboard-offboard.yaml
   tags:

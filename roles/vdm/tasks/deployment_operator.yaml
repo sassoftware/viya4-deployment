@@ -198,18 +198,53 @@
     - install
     - update
 
+#- name: deployment-operator - deploy
+#  block:
+#    - name: deployment-operator - Generate deployment-operator manifest
+#      command:
+#        cmd: kustomize build .
+#        chdir: "{{ OPERATOR_DEPLOY_DIRECTORY }}"
+#      register: manifest
+#    - name: deployment-operator - Write deployment-operator manifest
+#      copy:
+#        content: "{{ manifest.stdout }}"
+#        dest: "{{ OPERATOR_DEPLOY_DIRECTORY }}/SASDeploymentOperator.yaml"
+#        mode: "0660"
+#    - name: deployment-operator - Apply deployment-operator manifest
+#      kubernetes.core.k8s:
+#        src: "{{ OPERATOR_DEPLOY_DIRECTORY }}/SASDeploymentOperator.yaml"
+#        state: present
+#        namespace: "{{ V4_DEPLOYMENT_OPERATOR_NAMESPACE }}"
+#        kubeconfig: "{{ KUBECONFIG }}"
+#  tags:
+#    - install
+#    - update
+
+########################################################################################################################################################################################
+
 - name: deployment-operator - deploy
   block:
-    - name: deployment-operator - Generate deployment-operator manifest
+    - name: deployment-operator - Generate deployment-operator manifest - Ansible
+      ansible.builtin.shell: >
+        docker run --rm
+        --user="{{ UID_GID }}"
+        --name "orchestration_{{ lookup('password', '/dev/null chars=ascii_lowercase length=8') }}"
+        --volume "{{ OPERATOR_DEPLOY_DIRECTORY }}:/data"
+        --entrypoint kustomize
+        "{{ V4_CFG_CR_HOST }}/{{ ORCHESTRATION_IMAGE }}"
+        build /data {{ LOAD_RESTRICTOR_FLAG }} -o /data/SASDeploymentOperator.yaml
+      when:
+        - deployment_tooling == "ansible"
+    - name: deployment-operator - Generate deployment-operator manifest - Docker
+      environment:
+        PATH: "{{ ORCHESTRATION_TOOLING_PATH }}"
       command:
-        cmd: kustomize build .
-        chdir: "{{ OPERATOR_DEPLOY_DIRECTORY }}"
-      register: manifest
-    - name: deployment-operator - Write deployment-operator manifest
-      copy:
-        content: "{{ manifest.stdout }}"
-        dest: "{{ OPERATOR_DEPLOY_DIRECTORY }}/SASDeploymentOperator.yaml"
-        mode: "0660"
+        cmd: |
+          kustomize build {{ OPERATOR_DEPLOY_DIRECTORY }} -o {{ OPERATOR_DEPLOY_DIRECTORY }}/SASDeploymentOperator.yaml
+      args:
+        chdir: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}"
+      when:
+        - deployment_tooling == "docker"
     - name: deployment-operator - Apply deployment-operator manifest
       kubernetes.core.k8s:
         src: "{{ OPERATOR_DEPLOY_DIRECTORY }}/SASDeploymentOperator.yaml"
@@ -219,6 +254,8 @@
   tags:
     - install
     - update
+
+########################################################################################################################################################################################
 
 - name: deployment-operator - create deployment-operator-clusterwide.yaml
   ansible.builtin.template:
