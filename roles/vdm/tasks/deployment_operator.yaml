@@ -198,30 +198,6 @@
     - install
     - update
 
-#- name: deployment-operator - deploy
-#  block:
-#    - name: deployment-operator - Generate deployment-operator manifest
-#      command:
-#        cmd: kustomize build .
-#        chdir: "{{ OPERATOR_DEPLOY_DIRECTORY }}"
-#      register: manifest
-#    - name: deployment-operator - Write deployment-operator manifest
-#      copy:
-#        content: "{{ manifest.stdout }}"
-#        dest: "{{ OPERATOR_DEPLOY_DIRECTORY }}/SASDeploymentOperator.yaml"
-#        mode: "0660"
-#    - name: deployment-operator - Apply deployment-operator manifest
-#      kubernetes.core.k8s:
-#        src: "{{ OPERATOR_DEPLOY_DIRECTORY }}/SASDeploymentOperator.yaml"
-#        state: present
-#        namespace: "{{ V4_DEPLOYMENT_OPERATOR_NAMESPACE }}"
-#        kubeconfig: "{{ KUBECONFIG }}"
-#  tags:
-#    - install
-#    - update
-
-########################################################################################################################################################################################
-
 - name: deployment-operator - deploy
   block:
     - name: deployment-operator - Generate deployment-operator manifest - Ansible
@@ -254,8 +230,6 @@
   tags:
     - install
     - update
-
-########################################################################################################################################################################################
 
 - name: deployment-operator - create deployment-operator-clusterwide.yaml
   ansible.builtin.template:
