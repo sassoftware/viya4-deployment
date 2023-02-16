@@ -205,8 +205,8 @@
     - uninstall
     - update
 
-- name: Include Orchestration Tooling # TODO This pulls down the image or gets the image archive
-  include_tasks: orchestration_tooling.yaml
+- name: Include Orchestration Tooling
+  include_tasks: ../../orchestration-common/tasks/orchestration_tooling.yaml
   tags:
     - install
     - uninstall
@@ -221,7 +221,7 @@
     - install
     - update
 
-- name: Include SAS Deployment CR # TODO Generate the SAS Deployment CR
+- name: Include SAS Deployment CR
   include_tasks: sas_deployment_cr.yaml
   tags:
     - install

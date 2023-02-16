@@ -1,3 +1,6 @@
+# These tasks are responsible for pulling or downloading the sas-orchestration image
+# so that the tooling it contains may be used during the deployment process.
+
 ---
 - name: orchestration - Set orchestration tooling facts
   set_fact:

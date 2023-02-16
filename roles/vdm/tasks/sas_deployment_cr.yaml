@@ -1,10 +1,9 @@
+# These tasks are responsible for generating the SASDeployment Custom Resource
+
 ---
-
-########################## TODO NEED THIS BLOCK TO BE COMMON
-
 - name: orchestration - Set orchestration tooling facts
   set_fact:
-    ORCHESTRATION_TOOLING_DIRECTORY: "{{ tmpdir.path }}/orchestration" # TODO MAY BE ABLE TO REMOVE
+    ORCHESTRATION_TOOLING_DIRECTORY: "{{ tmpdir.path }}/orchestration"
     ORCHESTRATION_TOOLING_INSTALL_MANIFEST: "{{ DEPLOY_DIR }}/sasdeployment.yaml"
     ORCHESTRATION_TOOLING_INSTALL_MANIFESTS_DIRECTORY: "{{ tmpdir.path }}/orchestration/manifests"
     ORCHESTRATION_TOOLING_UNINSTALL_MANIFEST: "{{ DEPLOY_DIR }}/uninstall.yaml"
@@ -14,8 +13,6 @@
     - update
     - cas-onboard
     - offboard
-
-########################## TODO NEED THIS BLOCK TO BE COMMON
 
 - name: orchestration - Find order cadence release
   block:

@@ -6,7 +6,7 @@
     - offboard
 
 - name: Include Orchestration Tooling
-  include_tasks: ../../vdm/tasks/orchestration_tooling.yaml
+  include_tasks: ../../orchestration-common/tasks/orchestration_tooling.yaml
   tags:
     - cas-onboard
     - offboard
