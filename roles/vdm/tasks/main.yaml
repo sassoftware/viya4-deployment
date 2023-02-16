@@ -203,7 +203,6 @@
     - install
     - uninstall
     - update
-    - multi-tenancy
 
 - name: Include Deployment Operator - Install
   include_tasks: deployment_operator.yaml
