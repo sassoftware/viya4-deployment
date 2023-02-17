@@ -10,7 +10,7 @@
     - update
 
 - name: cluster-logging - lookup existing credentials
-  community.kubernetes.k8s_info:
+  kubernetes.core.k8s_info:
     api_version: v1
     kind: Secret
     namespace: "{{ V4M_LOGGING_NAMESPACE }}"
@@ -52,7 +52,7 @@
 
 - name: cluster-logging - opensearch user values
   template:
-    src: "user-values-elasticsearch-opensearch.yaml"
+    src: "user-values-opensearch.yaml"
     dest: "{{ tmpdir.path }}/logging/user-values-opensearch.yaml"
     mode: "0660"
   tags:
@@ -62,7 +62,7 @@
 
 - name: cluster-logging - osd user values
   template:
-    src: "user-values-osd-opensearch.yaml"
+    src: "user-values-osd.yaml"
     dest: "{{ tmpdir.path }}/logging/user-values-osd.yaml"
     mode: "0660"
   tags:
@@ -79,7 +79,7 @@
     - update
 
 - name: cluster-logging - elasticsearch cert
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     kubeconfig: "{{ KUBECONFIG }}"
     state: present
     definition:
@@ -102,7 +102,7 @@
     - update
 
 - name: cluster-logging - kibana cert
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     kubeconfig: "{{ KUBECONFIG }}"
     state: present
     definition:
@@ -132,7 +132,7 @@
     - uninstall
 
 - name: cluster-logging - delete namespace
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     api_version: v1
     kind: Namespace
     name: "{{ V4M_LOGGING_NAMESPACE }}"

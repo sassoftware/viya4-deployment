@@ -1,0 +1,12 @@
+---
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: sas-launcher-nfs-mount
+patch: |-
+  - op: add
+    path: /metadata/annotations/launcher.sas.com~1nfs-server
+    value: {{ V4_CFG_RWX_FILESTORE_ENDPOINT }}
+target:
+  kind: PodTemplate
+  labelSelector: sas.com/template-intent=sas-launcher

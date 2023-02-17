@@ -1,4 +1,12 @@
 ---
+- name: Run Validations
+  include_tasks: validations.yaml
+  tags:
+    - install
+    - uninstall
+    - update
+    - multi-tenancy
+
 - file:
     state: directory
     dest: '{{ DEPLOY_DIR }}/site-config/'
@@ -136,6 +144,13 @@
   when: 
     - V4MT_ENABLE
     - V4_CFG_EMBEDDED_LDAP_ENABLE 
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: Include Postgres ConfigMap
+  include_tasks: postgres/pg_config.yaml
   tags:
     - install
     - uninstall

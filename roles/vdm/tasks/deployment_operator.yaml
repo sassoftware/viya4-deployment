@@ -1,7 +1,14 @@
 ---
-- name: deployment-operator - Set facts
+- name: deployment-operator - validate V4_DEPLOYMENT_OPERATOR_SCOPE
+  ansible.builtin.assert:
+    that: V4_DEPLOYMENT_OPERATOR_SCOPE is match ('^(cluster|namespace)$')
+    msg: >
+      V4_DEPLOYMENT_OPERATOR_SCOPE must set to either 'cluster' or 'namespace'.
+      See usage documentation at docs/CONFIG-VARS.md
+
+- name: deployment-operator - Set base OPERATOR_DEPLOY_DIRECTORY
   set_fact:
-    OPERATOR_DEPLOY_DIRECTORY: "{{ BASE_DIR | regex_replace('\\/$', '') }}/{{ CLUSTER_NAME }}/operator-deploy"
+    OPERATOR_DEPLOY_DIRECTORY: "{{ BASE_DIR | regex_replace('\\/$', '') }}/{{ CLUSTER_NAME }}/{{ NAMESPACE }}/operator-deploy"
   tags:
     - install
     - uninstall
@@ -9,8 +16,19 @@
 
 - name: deployment-operator - Remove old files
   file:
-    path: "{{ OPERATOR_DEPLOY_DIRECTORY }}"
+    path: "{{ item }}"
     state: absent
+  with_items:
+    - "{{ OPERATOR_DEPLOY_DIRECTORY }}"
+    - "{{ OPERATOR_DEPLOY_DIRECTORY }}-clusterwide"
+    - "{{ OPERATOR_DEPLOY_DIRECTORY }}-namespace"
+  tags:
+    - install
+    - update
+
+- name: deployment-operator - set scoped OPERATOR_DEPLOY_DIRECTORY
+  set_fact:
+    OPERATOR_DEPLOY_DIRECTORY: "{{ OPERATOR_DEPLOY_DIRECTORY + '-clusterwide' if V4_DEPLOYMENT_OPERATOR_SCOPE == 'cluster' else OPERATOR_DEPLOY_DIRECTORY + '-namespace'}}"
   tags:
     - install
     - uninstall
@@ -50,7 +68,7 @@
     - update
 
 - name: deployment-operator - create namespace
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     api_version: v1
     kind: Namespace
     name: "{{ V4_DEPLOYMENT_OPERATOR_NAMESPACE }}"
@@ -193,7 +211,7 @@
         dest: "{{ OPERATOR_DEPLOY_DIRECTORY }}/SASDeploymentOperator.yaml"
         mode: "0660"
     - name: deployment-operator - Apply deployment-operator manifest
-      community.kubernetes.k8s:
+      kubernetes.core.k8s:
         src: "{{ OPERATOR_DEPLOY_DIRECTORY }}/SASDeploymentOperator.yaml"
         state: present
         namespace: "{{ V4_DEPLOYMENT_OPERATOR_NAMESPACE }}"
@@ -202,8 +220,19 @@
     - install
     - update
 
+- name: deployment-operator - create deployment-operator-clusterwide.yaml
+  ansible.builtin.template:
+    src: "deployment-operator-clusterwide.yaml"
+    dest: "{{ BASE_DIR | regex_replace('\\/$', '') }}/{{ CLUSTER_NAME }}/deployment-operator-clusterwide.yaml"
+    mode: "0660"
+  when:
+    - V4_DEPLOYMENT_OPERATOR_SCOPE|lower == "cluster"
+  tags:
+    - install
+    - update
+
 - name: deployment-operator - Get a list of all SASDeployments in cluster
-  community.kubernetes.k8s_info:
+  kubernetes.core.k8s_info:
     kubeconfig: "{{ KUBECONFIG }}"
     api_version: orchestration.sas.com/v1alpha1
     kind: SASDeployment
@@ -213,7 +242,7 @@
 
 - name: deployment-operator - Skip deletion if other SASDeployment resources still exist
   ansible.builtin.debug:
-    msg: > 
+    msg: >
      A SAS Viya deployment that relies on the Deployment Operator still exists in cluster in the following namespaces:
      {{ cluster_sasdeployments.resources | map(attribute='metadata.namespace') | list | join(', ') }}.
      Skipping Deployment Operator deletion.
@@ -250,7 +279,7 @@
     - uninstall
 
 - name: deployment-operator - Delete namespace
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     api_version: v1
     kind: Namespace
     name: "{{ V4_DEPLOYMENT_OPERATOR_NAMESPACE }}"
@@ -259,6 +288,16 @@
     kubeconfig: "{{ KUBECONFIG }}"
     state: absent
   when:
+    - cluster_sasdeployments.resources|length == 0
+  tags:
+    - uninstall
+
+- name: deployment-operator - remove deployment-operator-clusterwide.yaml
+  file:
+    path: "{{ BASE_DIR | regex_replace('\\/$', '') }}/{{ CLUSTER_NAME }}/deployment-operator-clusterwide.yaml"
+    state: absent
+  when:
+    - V4_DEPLOYMENT_OPERATOR_SCOPE|lower == "cluster"
     - cluster_sasdeployments.resources|length == 0
   tags:
     - uninstall

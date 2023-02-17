@@ -1,6 +1,6 @@
 ---
 - name: Remove deprecated nfs-client-provisioner
-  community.kubernetes.helm:
+  kubernetes.core.helm:
     name: "nfs-client"
     namespace: "nfs-client"
     kubeconfig: "{{ KUBECONFIG }}"
@@ -11,7 +11,7 @@
     - update
 
 - name: Remove deprecated efs-provisioner
-  community.kubernetes.helm:
+  kubernetes.core.helm:
     name: "efs-provisioner"
     namespace: "efs-provisioner"
     kubeconfig: "{{ KUBECONFIG }}"
@@ -22,7 +22,7 @@
     - update
 
 - name: Remove deprecated efs-provisioner namespace
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     api_version: v1
     kind: Namespace
     name: "efs-provisioner"
@@ -33,8 +33,8 @@
     - uninstall
     - update
 
-- name: Deploy nfs-subdir-external-provisioner
-  community.kubernetes.helm:
+- name: Deploy nfs-subdir-external-provisioner-sas
+  kubernetes.core.helm:
     name: "{{ NFS_CLIENT_NAME }}"
     namespace: "{{ NFS_CLIENT_NAMESPACE }}"
     chart_repo_url: "{{ NFS_CLIENT_CHART_URL }}"
@@ -48,8 +48,23 @@
     - install
     - update
 
-- name: Remove nfs-subdir-external-provisioner
-  community.kubernetes.helm:
+- name: Deploy nfs-subdir-external-provisioner-pg-storage
+  kubernetes.core.helm:
+    name: "{{ PG_NFS_CLIENT_NAME }}"
+    namespace: "{{ PG_NFS_CLIENT_NAMESPACE }}"
+    chart_repo_url: "{{ PG_NFS_CLIENT_CHART_URL }}"
+    chart_ref: "{{ PG_NFS_CLIENT_CHART_NAME }}"
+    chart_version: "{{ PG_NFS_CLIENT_CHART_VERSION }}"
+    values: "{{ PG_NFS_CLIENT_CONFIG }}"
+    kubeconfig: "{{ KUBECONFIG }}"
+    create_namespace: true
+    wait: true
+  tags:
+    - install
+    - update
+
+- name: Remove nfs-subdir-external-provisioner-sas
+  kubernetes.core.helm:
     name: "{{ NFS_CLIENT_NAME }}"
     namespace: "{{ NFS_CLIENT_NAMESPACE }}"
     kubeconfig: "{{ KUBECONFIG }}"
@@ -58,8 +73,18 @@
   tags:
     - uninstall
 
+- name: Remove nfs-subdir-external-provisioner-pg-storage
+  kubernetes.core.helm:
+    name: "{{ PG_NFS_CLIENT_NAME }}"
+    namespace: "{{ NFS_CLIENT_NAMESPACE }}"
+    kubeconfig: "{{ KUBECONFIG }}"
+    wait: true
+    state: absent
+  tags:
+    - uninstall
+
 - name: Remove {{ NFS_CLIENT_NAMESPACE }} namespace
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     api_version: v1
     kind: Namespace
     name: "{{ NFS_CLIENT_NAMESPACE }}"

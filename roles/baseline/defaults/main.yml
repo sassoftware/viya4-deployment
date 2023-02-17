@@ -2,13 +2,14 @@ V4_CFG_TLS_MODE: "full-stack" # other valid values are front-door, ingress-only,
 V4_CFG_RWX_FILESTORE_PATH: /export
 V4_CFG_INGRESS_TYPE: ingress
 V4_CFG_INGRESS_MODE: public
+V4_CFG_MANAGE_STORAGE: true
 
 ## Cert-manager
 CERT_MANAGER_NAME: cert-manager
 CERT_MANAGER_NAMESPACE: cert-manager
 CERT_MANAGER_CHART_NAME: cert-manager
 CERT_MANAGER_CHART_URL: https://charts.jetstack.io/
-CERT_MANAGER_CHART_VERSION: 1.9.1
+CERT_MANAGER_CHART_VERSION: 1.11.0
 CERT_MANAGER_CONFIG: 
   installCRDs: "true"
   extraArgs:
@@ -62,6 +63,13 @@ INGRESS_NGINX_CONFIG:
           command: ["/bin/sh", "-c", "sleep 5; /usr/local/nginx/sbin/nginx -c /etc/nginx/nginx.conf -s quit; while pgrep -x nginx; do sleep 1; done"]
     terminationGracePeriodSeconds: 600
 
+# Update default load-balancer for AWS to be NLB
+INGRESS_NGINX_AWS_NLB_CONFIG:
+  controller:
+    service:
+      annotations:
+        service.beta.kubernetes.io/aws-load-balancer-type: nlb
+
 # Ingress-nginx - CVE-2021-25742 Mitigation
 INGRESS_NGINX_CVE_2021_25742_PATCH:
   controller:
@@ -72,7 +80,7 @@ INGRESS_NGINX_CVE_2021_25742_PATCH:
       annotation-value-word-blocklist: "load_module,lua_package,_by_lua,location,root,proxy_pass,serviceaccount,{,},\\"
 
 ## Nfs-subdir-external-provisioner
-NFS_CLIENT_NAME: nfs-subdir-external-provisioner
+NFS_CLIENT_NAME: nfs-subdir-external-provisioner-sas
 NFS_CLIENT_NAMESPACE: nfs-client
 NFS_CLIENT_CHART_NAME: nfs-subdir-external-provisioner
 NFS_CLIENT_CHART_URL: https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/
@@ -89,6 +97,26 @@ NFS_CLIENT_CONFIG:
   storageClass:
     archiveOnDelete: "false"
     name: sas
+
+## pg-storage storage class config
+PG_NFS_CLIENT_NAME: nfs-subdir-external-provisioner-pg-storage
+PG_NFS_CLIENT_NAMESPACE: nfs-client
+PG_NFS_CLIENT_CHART_NAME: nfs-subdir-external-provisioner
+PG_NFS_CLIENT_CHART_URL: https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/
+PG_NFS_CLIENT_CHART_VERSION: 4.0.8
+PG_NFS_CLIENT_CONFIG:
+  nfs:
+    server: "{{ V4_CFG_RWX_FILESTORE_ENDPOINT }}"
+    path: "{{ V4_CFG_RWX_FILESTORE_PATH | replace('/$', '') }}/pvs"
+    mountOptions: 
+      - noatime
+      - nodiratime
+      - 'rsize=262144'
+      - 'wsize=262144'
+  storageClass:
+    archiveOnDelete: "false"
+    reclaimPolicy: "Retain"
+    name: pg-storage
 
 ## Contour - Ingress
 CONTOUR_NAME: contour

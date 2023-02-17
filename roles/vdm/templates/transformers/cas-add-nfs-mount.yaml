@@ -33,12 +33,12 @@ patch: |-
     path: /spec/controllerTemplate/spec/containers/0/volumeMounts/-
     value:
       name: nfs-data
-      mountPath: /mnt/viya-share/data
+      mountPath: {{ V4_CFG_RWX_FILESTORE_DATA_PATH }}
   - op: add
     path: /spec/controllerTemplate/spec/containers/0/volumeMounts/-
     value:
       name: nfs-homes
-      mountPath: /mnt/viya-share/homes
+      mountPath: {{ V4_CFG_RWX_FILESTORE_HOMES_PATH }}
 target:
   group: viya.sas.com
   kind: CASDeployment

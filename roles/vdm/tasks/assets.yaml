@@ -1,9 +1,11 @@
 ---
-- name: Download viya4-orders-cli
+- name: assets - Download viya4-orders-cli
   get_url:
     url: "https://github.com/sassoftware/viya4-orders-cli/releases/download/{{ V4_ORDERS_CLI_VERSION }}/viya4-orders-cli_{{ hostvars[inventory_hostname]['ansible_system']|lower }}_amd64"
     dest: "{{ tmpdir.path }}/viya4-orders-cli"
     mode: "0755"
+  when:
+    - (V4_CFG_LICENSE is none) or (V4_CFG_CERTS is none) or (V4_CFG_DEPLOYMENT_ASSETS is none)
   tags:
     - install
     - uninstall
@@ -11,7 +13,7 @@
 
 - name: assets - Set facts
   set_fact:
-    LICENSE_DIRECTORY: "{{ BASE_DIR | regex_replace('\\/$', '') }}/{{ CLUSTER_NAME }}/license"
+    LICENSE_DIRECTORY: "{{ BASE_DIR | regex_replace('\\/$', '') }}/{{ CLUSTER_NAME }}/{{ NAMESPACE }}/license"
   tags:
     - install
     - uninstall
@@ -48,6 +50,8 @@
   environment:
     CLIENTCREDENTIALSID: "{{ V4_CFG_SAS_API_KEY | string | b64encode }}"
     CLIENTCREDENTIALSSECRET: "{{ V4_CFG_SAS_API_SECRET | string | b64encode }}"
+  when:
+    - V4_CFG_CERTS is none
   tags:
     - install
     - uninstall
@@ -118,6 +122,17 @@
     dest: "{{ LICENSE_DIRECTORY }}/license.jwt"
   when:
     - V4_CFG_LICENSE is not none
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: assets - Copy user-provided certs file
+  copy:
+    src: "{{ V4_CFG_CERTS }}"
+    dest: "{{ LICENSE_DIRECTORY }}/certs.zip"
+  when:
+    - V4_CFG_CERTS is not none
   tags:
     - install
     - uninstall

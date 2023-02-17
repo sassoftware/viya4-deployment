@@ -290,7 +290,7 @@
     - offboard
 
 - name: orchestration - Create SAS Viya namespace
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     api_version: v1
     kind: Namespace
     name: "{{ NAMESPACE }}"

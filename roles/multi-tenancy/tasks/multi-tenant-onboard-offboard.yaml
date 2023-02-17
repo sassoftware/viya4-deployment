@@ -54,14 +54,32 @@
 
 # Build the manifest file
 - name: kustomize - generate onboard manifest
-  ansible.builtin.shell: |
-    kustomize build {{ DEPLOY_DIR }}/site-config/sas-tenant-job/ --load_restrictor='none' -o {{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-onboard.yaml
+  block:
+    - name: kustomize - generate onboard manifest
+      ansible.builtin.shell: |
+        kustomize build {{ DEPLOY_DIR }}/site-config/sas-tenant-job/ --load-restrictor LoadRestrictionsNone -o {{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-onboard.yaml
+      when: V4_CFG_CADENCE_VERSION is version('2023.02', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
+    - name: kustomize - generate onboard manifest - legacy flags
+      ansible.builtin.shell: |
+        kustomize build {{ DEPLOY_DIR }}/site-config/sas-tenant-job/ --load_restrictor='none' -o {{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-onboard.yaml
+      when:
+        - V4_CFG_CADENCE_VERSION is version('2023.01', "<=")
+        - V4_CFG_CADENCE_NAME|lower != "fast"
   tags:
     - onboard
 
 - name: kustomize - generate offboard manifest
-  ansible.builtin.shell: |
-    kustomize build {{ DEPLOY_DIR }}/site-config/sas-tenant-job/ --load_restrictor='none' -o {{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-offboard.yaml
+  block:
+    - name: kustomize - generate offboard manifest
+      ansible.builtin.shell: |
+        kustomize build {{ DEPLOY_DIR }}/site-config/sas-tenant-job/ --load-restrictor LoadRestrictionsNone -o {{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-offboard.yaml
+      when: V4_CFG_CADENCE_VERSION is version('2023.02', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
+    - name: kustomize - generate offboard manifest - legacy flags
+      ansible.builtin.shell: |
+        kustomize build {{ DEPLOY_DIR }}/site-config/sas-tenant-job/ --load_restrictor='none' -o {{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-offboard.yaml
+      when:
+        - V4_CFG_CADENCE_VERSION is version('2023.01', "<=")
+        - V4_CFG_CADENCE_NAME|lower != "fast"
   tags:
     - offboard
 
