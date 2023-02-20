@@ -208,7 +208,7 @@
         --volume "{{ OPERATOR_DEPLOY_DIRECTORY }}:/data"
         --entrypoint kustomize
         "{{ V4_CFG_CR_HOST }}/{{ ORCHESTRATION_IMAGE }}"
-        build /data {{ LOAD_RESTRICTOR_FLAG }} -o /data/SASDeploymentOperator.yaml
+        build /data -o /data/SASDeploymentOperator.yaml
       when:
         - deployment_tooling == "ansible"
     - name: deployment-operator - Generate deployment-operator manifest - Docker
