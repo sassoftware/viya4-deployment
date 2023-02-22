@@ -212,8 +212,8 @@
     - install
     - update
 
-- name: Include SAS Deployment CR
-  include_tasks: sas_deployment_cr.yaml
+- name: Include SASDeployment Custom Resource
+  include_tasks: sasdeployment_custom_resource.yaml
   tags:
     - install
     - uninstall
