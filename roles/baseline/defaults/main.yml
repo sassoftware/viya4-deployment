@@ -160,7 +160,6 @@ autoscalerVersions:
       chartVersion: 9.25.0
       appVersion: 1.24.0
 
-
 ## EBS CSI Driver
 EBS_CSI_DRIVER_ENABLED: true
 EBS_CSI_DRIVER_NAME: aws-ebs-csi-driver
