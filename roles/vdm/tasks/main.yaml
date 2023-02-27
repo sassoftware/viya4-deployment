@@ -1,12 +1,4 @@
 ---
-- name: Run Validations
-  include_tasks: validations.yaml
-  tags:
-    - install
-    - uninstall
-    - update
-    - multi-tenancy
-
 - file:
     state: directory
     dest: '{{ DEPLOY_DIR }}/site-config/'
@@ -205,6 +197,13 @@
     - uninstall
     - update
 
+- name: Include Orchestration Tooling
+  include_tasks: ../../orchestration-common/tasks/orchestration_tooling.yaml
+  tags:
+    - install
+    - uninstall
+    - update
+
 - name: Include Deployment Operator - Install
   include_tasks: deployment_operator.yaml
   when:
@@ -213,8 +212,8 @@
     - install
     - update
 
-- name: Include Orchestration
-  include_tasks: orchestration.yaml
+- name: Include SASDeployment Custom Resource
+  include_tasks: sasdeployment_custom_resource.yaml
   tags:
     - install
     - uninstall
