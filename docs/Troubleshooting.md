@@ -1,5 +1,11 @@
 # Troubleshooting
 
+* [Debug Mode](#debug-mode)
+* [Viya4 Monitoring and Logging](#viya4-monitoring-and-logging)
+* [SAS Viya Orchestration Tool](#sas-viya-orchestration-tool)
+* [SAS Viya Deployment Operator](#sas-viya-deployment-operator)
+* [EKS - Cluster Autoscaler Installation](#eks---cluster-autoscaler-installation)
+
 ## Debug Mode
 Debug mode can be enabled by adding "-vvv" to the end of the docker or ansible commands
 
