@@ -69,4 +69,72 @@ On your host:
 ### Symptom:
 When the SAS Viya Platform Deployment Operator is not working as expected, three different sources can be used to diagnose problems. Follow the commands from the [SAS Viya Platform deployment guide](https://go.documentation.sas.com/doc/en/sasadmincdc/default/dplyml0phy0dkr/p127f6y30iimr6n17x2xe9vlt54q.htm#p11o2ghzdkqm6kn1qkxqr2wr3nkh) to check out the SAS Viya Platform Deployment Operator Pod, the SASDeployment Custom Resource, and the Reconcile Job. Remediation steps are also present on that page.
 
+## EKS - Cluster Autoscaler Installation
 
+### Symptom:
+While baselining your 1.25+ EKS cluster using the viya4-deployment project the "Deploy cluster-autoscaler" task failed with a timeout
+
+```bash
+TASK [baseline : Deploy cluster-autoscaler] ************************************
+task path: /viya4-deployment/roles/baseline/tasks/cluster-autoscaler.yaml:15
+fatal: [localhost]: FAILED! => changed=false 
+  command: /usr/local/bin/helm --version=9.25.0 --repo=https://kubernetes.github.io/autoscaler upgrade 
+  -i --reset-values --wait -f=/tmp/tmpzoxsdrsu.yml cluster-autoscaler cluster-autoscaler
+  msg: |-
+    Failure when executing Helm command. Exited 1.
+    stdout: Release "cluster-autoscaler" does not exist. Installing it now.
+  
+    Error: timed out waiting for the condition
+  stderr: |-
+    Error: timed out waiting for the condition
+  stderr_lines: <omitted>
+  stdout: |-
+    Release "cluster-autoscaler" does not exist. Installing it now.
+  stdout_lines: <omitted>
+```
+
+When checking out the `cluster-autoscaler-aws-cluster-autoscaler-xxx-x` in your cluster you see that it's stuck in a CrashLoopBackoff and checking the pods logs you will see the following error (usually near the beginning logs) and a large Stacktrace
+
+```bash
+$ kubectl get pods -n kube-system --selector app.kubernetes.io/instance=cluster-autoscaler
+NAME                                                         READY   STATUS             RESTARTS        AGE
+cluster-autoscaler-aws-cluster-autoscaler-6c496cc6cc-zftxp   0/1     CrashLoopBackOff   7 (4m42s ago)   15m
+$ kubectl logs -n kube-system cluster-autoscaler-aws-cluster-autoscaler-6c496cc6cc-zftxp
+... truncated
+F0227 16:39:34.624005       1 aws_cloud_provider.go:386] Failed to generate AWS EC2 Instance Types: UnauthorizedOperation: You are not authorized to perform this operation.
+        status code: 403, request id: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+... stacktrace truncated
+```
+### Diagnosis:
+
+The "Deploy cluster-autoscaler" task attempted to deploy the 9.25.0 autoscaler helm chart (or newer if you chose to override `CLUSTER_AUTOSCALER_CHART_VERSION`) into your cluster, however the autoscaler deployment failed to start up due to the cluster-autoscaler role having insufficient policies configured.  
+
+As of [release viya4-deployment:6.3.0](https://github.com/sassoftware/viya4-deployment/releases/tag/6.3.0) when installing the cluster-autoscaler on EKS 1.25+ clusters, the [helm chart version 9.25.0](https://github.com/kubernetes/autoscaler/releases/tag/cluster-autoscaler-chart-9.25.0) is used for compatibility reasons. This is because Kubernetes 1.25 has deprecated the `PodDisruptionBudget policy/v1beta1` API version in favor of `policy/v1` and this updated cluster-autoscaler version supports that change. This updated cluster-autoscaler chart requires a modified policy for the cluster-autoscaler role to properly function.
+
+Note: As documented in our [CONFIG-VARS.md](./CONFIG-VARS.md), EKS 1.24 and lower clusters will still default to version 9.9.2 of the cluster-autoscaler helm chart.
+
+### Solution:
+
+Note: If you used viya4-iac-aws:5.6.0 or never to create your infrastructure, these steps are not applicable for you. This role & policy should already be correct. 
+
+1. Scale the `cluster-autoscaler-aws-cluster-autoscaler` deployment down to 0
+      ```bash
+      kubectl scale --replicas=0 deployment/cluster-autoscaler-aws-cluster-autoscaler
+      ```
+   Use one of the two options below: 
+   1. If you created your 1.25 EKS infrastructure prior to version 5.6.0 of the [viya4-iac-aws](https://github.com/sassoftware/viya4-iac-aws) project, after pulling the latest release you can run the following to update the cluster-autoscaler policy:
+       ```bash
+       terraform apply -auto-approve \
+         -target=module.autoscaling["0"].aws_iam_policy.worker_autoscaling \
+         -var-file ${PATH_TO_TFVARS} -state ${PATH_TO_TFSTATE}
+       ```
+      See Docker & Terraform usage in the [viya4-iac-aws documentation](https://github.com/sassoftware/viya4-iac-aws/tree/main/docs/user) for additional usage information
+   2. Alternatively, if you have access to the AWS Console and go into the [IAM Roles](https://us-east-1.console.aws.amazon.com/iamv2/home#/roles) page and update the cluster-autoscaler role yourself.
+      * Once you are on the Roles page search for "cluster-autoscaler" and choose the one for your cluster.
+      * Under the "Permissions" tab expand the "eks-worker-autoscaling" policy
+      * Update the `eksWorkerAutoscalingAll` & `eksWorkerAutoscalingOwn` Sids so that it matches the IAM policy as recommend by the [kubernetes/autoscaler documentation](https://github.com/kubernetes/autoscaler/blob/cluster-autoscaler-chart-9.25.0/cluster-autoscaler/cloudprovider/aws/README.md). Make sure to leave the `Condition` block as is.
+        * Switch the repo to the tag of the version of the cluster-autoscaler you are deploying, so that you are viewing the correct documentation.
+2. Scale the `cluster-autoscaler-aws-cluster-autoscaler` deployment back to 1
+      ```bash
+      kubectl scale --replicas=1 deployment/cluster-autoscaler-aws-cluster-autoscaler
+      ```
