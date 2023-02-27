@@ -168,6 +168,17 @@
     - onboard
 
 ## FileGenerator for tenant-specific resources
+- name: add env variable for pod templates in sas-tenant-job
+  lineinfile:
+    path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-onboard-job.yaml'
+    insertafter: "env:"
+    line: "          - name: SAS_CREATE_TENANT_POD_TEMPLATES\n            value: 'false'"
+  when:
+    - V4MT_ENABLE
+    - V4_CFG_CADENCE_VERSION is version('2023.03', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
+  tags:
+    - onboard
+
 - name: tenant pod templates
   include_tasks: tenant-pod-templates.yaml
   vars:
