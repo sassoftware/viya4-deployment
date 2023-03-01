@@ -19,7 +19,7 @@
       find:
         paths: '{{ DEPLOY_DIR }}/site-config/multi-tenant/{{ item }}'
         recurse: yes
-        excludes: 'kustomization.yaml'
+        # excludes: 'kustomization.yaml'
       register: result
     - name: replace all occurrences of SAS-TENANT-ID with the ID of the tenant
       replace:
