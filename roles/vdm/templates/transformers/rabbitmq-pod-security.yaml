@@ -1,4 +1,4 @@
-# This patch transformer resolves the 'sas-rabbitmq-server' pod failures on Kubernetes with the error, below - when adding or removing StatefulSet nodes on AWS EKS.
+# This patch transformer resolves the 'sas-rabbitmq-server' pod failures on Kubernetes with the error, below - when adding or removing AWS 'connect' node pool.
  
  # " [error] Cookie file /rabbitmq/data/.erlang.cookie must be accessible by owner only " 
 
@@ -8,7 +8,7 @@
 apiVersion: builtin
 kind: PatchTransformer
 metadata:
-  name: rabbitmq-node-security
+  name: rabbitmq-pod-security
 patch: |-
   - op: replace
     path: /spec/template/spec/containers/0/securityContext
