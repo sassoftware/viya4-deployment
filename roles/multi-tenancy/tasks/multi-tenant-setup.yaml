@@ -168,12 +168,23 @@
     - onboard
 
 ## FileGenerator for tenant-specific resources
+- name: Check if sas-programming-environment directory exists
+  stat:
+    path: "{{ DEPLOY_DIR }}/sas-bases/overlays/multi-tenant/sas-programming-environment"
+  register: result
+  when:
+    - V4MT_ENABLE
+    - V4_CFG_CADENCE_VERSION is version('2023.03', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
+  tags:
+    - onboard
+
 - name: add env variable for pod templates in sas-tenant-job
   lineinfile:
     path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-onboard-job.yaml'
     insertafter: "env:"
     line: "          - name: SAS_CREATE_TENANT_POD_TEMPLATES\n            value: 'false'"
   when:
+    - result.stat.exists
     - V4MT_ENABLE
     - V4_CFG_CADENCE_VERSION is version('2023.03', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
   tags:
@@ -185,6 +196,7 @@
     tenant: "{{ item }}"
   with_items: '{{ V4MT_TENANT_IDS.split(",") | replace(" ", "") | lower }}'
   when:
+    - result.stat.exists
     - V4MT_ENABLE
     - V4_CFG_CADENCE_VERSION is version('2023.03', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
   tags:
