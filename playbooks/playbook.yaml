@@ -36,7 +36,7 @@
         - JUMP_SVR_USER is defined
         - JUMP_SVR_PRIVATE_KEY is defined
         - V4_CFG_MANAGE_STORAGE is defined
-        - V4_CFG_MANAGE_STORAGE
+        - V4_CFG_MANAGE_STORAGE|bool
       tags:
         - viya
     - name: baseline role install

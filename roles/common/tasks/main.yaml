@@ -260,6 +260,31 @@
     - cas-onboard
     - offboard
 
+- name: Set V4_CFG_MANAGE_STORAGE default
+  block:
+    - name: Set V4_CFG_MANAGE_STORAGE default
+      set_fact:
+        V4_CFG_MANAGE_STORAGE: True
+      when: V4_CFG_MANAGE_STORAGE is not defined
+      tags:
+        - always
+    - name: Fail empty value
+      fail:
+        msg: "V4_CFG_MANAGE_STORAGE is defined but empty, supported values are true or false."
+      when: 
+        - V4_CFG_MANAGE_STORAGE is defined
+        - V4_CFG_MANAGE_STORAGE == ''
+      tags:
+        - always
+    - name: Fail unsupported values
+      fail:
+        msg: "The value provided for V4_CFG_MANAGE_STORAGE is unsupported, supported values are true or false."
+      when: 
+        - V4_CFG_MANAGE_STORAGE|lower != 'false' 
+        - V4_CFG_MANAGE_STORAGE|lower != 'true'
+      tags:
+        - always
+
 - name: migrations
   include_tasks: 
     file: migrations.yaml
