@@ -18,7 +18,7 @@
     - PROVIDER is not none
     - PROVIDER in ["azure","aws","gcp"]
     - V4_CFG_MANAGE_STORAGE is not none
-    - V4_CFG_MANAGE_STORAGE
+    - V4_CFG_MANAGE_STORAGE|bool
   tags:
     - install
     - update
@@ -42,6 +42,6 @@
     - PROVIDER is not none
     - PROVIDER == "azure"
     - V4_CFG_MANAGE_STORAGE is not none
-    - V4_CFG_MANAGE_STORAGE
+    - V4_CFG_MANAGE_STORAGE|bool
   tags:
     - uninstall
