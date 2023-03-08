@@ -1,3 +1,6 @@
+# Copyright © 2020-2023, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 ---
 - name: deployment-operator - validate V4_DEPLOYMENT_OPERATOR_SCOPE
   ansible.builtin.assert:
