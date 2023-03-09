@@ -5,6 +5,7 @@
   - [SAS Viya Orchestration Tool](#sas-viya-orchestration-tool)
   - [SAS Viya Deployment Operator](#sas-viya-deployment-operator)
   - [EKS - Cluster Autoscaler Installation](#eks---cluster-autoscaler-installation)
+  - [kustomize - Generate deployment manifest](#kustomize---generate-deployment-manifest)
 
 ## Debug Mode
 Debug mode can be enabled by adding "-vvv" to the end of the docker or ansible commands
@@ -144,3 +145,42 @@ Note: If you used viya4-iac-aws:5.6.0 or never to create your infrastructure, th
       ```bash
       kubectl scale --replicas=1 deployment/cluster-autoscaler-aws-cluster-autoscaler
       ```
+
+## kustomize - Generate deployment manifest
+
+### Symptom:
+
+While deploying the SAS Viya platform to a cluster with the "viya" and "install" Ansible task tags specified, the following error message is encountered when the "vdm : kustomize - Generate deployment manifest" task executes:
+
+```bash
+TASK [vdm : kustomize - Generate deployment manifest] ************************
+fatal: [localhost]: FAILED! => changed=true
+  cmd:
+  - kustomize
+  - build
+  - <omitted>
+  - --load_restrictor=none
+  - -o
+  - <omitted>
+  delta: <omitted>
+  end: <omitted>
+  msg: non-zero return code
+  rc: 1
+  start: <omitted>
+  stderr: |-
+    Error: failed to apply json patch '- op: add
+      path: /spwc/volumeClaimTemplates/0/spec/storageClassName
+       value: sas': add operation does not apply: doc is missing path: "/spec/volumeClaimTemplates/0/spec/storageClassName": missing value
+  stderr_lines: <omitted>
+  stdout: ''
+  stdout_lines: <omitted>
+```
+
+### Diagnosis:
+
+The sas-data-agent-server-colocated component was added to the 2022.09 cadence of the SAS Viya Platform. That component contains a StatefulSet object which does not have a "/spec/volumeClaimTemplates/0/spec/storageClassName" path element.  For viya4-deployment releases prior to v5.4.0, a PatchTransformer expects to find that path element in each StatefulSet.
+
+### Solution:
+
+As of [release viya4-deployment:5.4.0](https://github.com/sassoftware/viya4-deployment/releases/tag/5.4.0), the StatefulSet PatchTransformer is intentionally skipped for the sas-data-agent-server-colocated component. Using [release viya4-deployment:5.4.0](https://github.com/sassoftware/viya4-deployment/releases/tag/5.4.0) or later for your SAS Viya Platform deployment will eliminate this error.
+
