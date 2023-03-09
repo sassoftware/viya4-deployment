@@ -12,6 +12,7 @@
     - install
     - uninstall
     - update
+    - onboard
     - cas-onboard
     - offboard
 
@@ -32,6 +33,7 @@
     - install
     - uninstall
     - update
+    - onboard
     - cas-onboard
     - offboard
 
@@ -44,6 +46,7 @@
     - install
     - uninstall
     - update
+    - onboard
     - cas-onboard
     - offboard
 
@@ -57,6 +60,7 @@
     - install
     - uninstall
     - update
+    - onboard
     - cas-onboard
     - offboard
 
@@ -69,6 +73,7 @@
     - install
     - uninstall
     - update
+    - onboard
     - cas-onboard
     - offboard
 
@@ -81,6 +86,7 @@
     - install
     - uninstall
     - update
+    - onboard
     - cas-onboard
     - offboard
 
@@ -117,6 +123,7 @@
     - install
     - uninstall
     - update
+    - onboard
     - cas-onboard
     - offboard
 
@@ -131,6 +138,7 @@
     - install
     - uninstall
     - update
+    - onboard
     - cas-onboard
     - offboard
 
@@ -144,5 +152,6 @@
     - install
     - uninstall
     - update
+    - onboard
     - cas-onboard
     - offboard
