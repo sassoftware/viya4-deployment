@@ -106,8 +106,12 @@ Step 3. Onboard tenants. Run the following command:
     -e JUMP_SVR_PRIVATE_KEY=$HOME/.ssh/id_rsa \
     playbooks/playbook.yaml --tags "multi-tenancy,onboard"
   ```
-**Note:** As part of setup in the above `Onboard tenants` step, for every onboarded tenant, a CAS server directory containing the configuration artifacts is created under the `/site-config` folder. 
-Example: For tenant `acme` a CAS server directory named `cas-acme-default` will be created.
+**Note:** As part of setup in the above `Onboard tenants` step, for every onboarded tenant, 
+
+- A CAS server directory containing the configuration artifacts is created under the `/site-config` folder. 
+For example,if you have tenant with the ID `acme`, then a CAS server directory named `cas-acme-default` will be created.
+
+- Starting with SAS Viya Platform cadence 2023.03, each tenant will require their own copy of certain Kubernetes resources. Hence a new directory for each tenant containing all the `sas-programming-environment` files will be created under `$deploy/site-config/multi-tenant/`. For example, if you have a tenant with the ID `acme`, then a directory named `$deploy/site-config/multi-tenant/acme` will be created.
 
 Step 4. Add or update CAS customizations for tenants as needed and then run following command to onboard the CAS servers:
 
