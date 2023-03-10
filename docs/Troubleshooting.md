@@ -122,7 +122,7 @@ Note: As documented in our [CONFIG-VARS.md](./CONFIG-VARS.md), EKS 1.24 and lowe
 
 ### Solution:
 
-Note: If you used viya4-iac-aws:5.6.0 or never to create your infrastructure, these steps are not applicable for you. This role & policy should already be correct. 
+Note: If you used viya4-iac-aws:5.6.0 or newer to create your infrastructure, these steps are not applicable for you. This role & policy should already be correct. 
 
 1. Scale the `cluster-autoscaler-aws-cluster-autoscaler` deployment down to 0
       ```bash
