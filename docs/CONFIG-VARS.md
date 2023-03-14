@@ -166,7 +166,7 @@ When V4_CFG_MANAGE_STORAGE is set to `true`, the `sas` and `pg-storage` storage 
 
 #### Open Source Kubernetes
 
-When deploying `cluster-logging` or `cluster-monitoring` applications to kubernetes cluster infrastructure provisioned with the [Open Source Kubernetes viya4-iac-k8s](https://github.com/sassoftware/viya4-iac-k8s) project, you must set `V4M_STORAGECLASS` to `local-storage` regardless of the value set for `V4_CFG_MANAGE_STORAGE`.
+When deploying `cluster-logging` or `cluster-monitoring` applications to kubernetes cluster infrastructure provisioned with the [Open Source Kubernetes viya4-iac-k8s](https://github.com/sassoftware/viya4-iac-k8s) project, you must explicitly set the value for `V4M_STORAGECLASS` to a pre-existing Storage Class (for example: `local-storage`)  regardless of the value set for `V4_CFG_MANAGE_STORAGE`. While other storage classes can be used, the `local-storage` class is **recommended** for the Viya Monitoring and Loggging tools.
 
 ### Monitoring
 
