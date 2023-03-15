@@ -13,6 +13,8 @@ You can deploy SAS Viya with SingleStore into a Kubernetes cluster running under
 - Elastic Kubernetes Service (EKS) in Amazon Web Services
 - Open Source Kubernetes on your own machines
 
+## Cluster provisioning for SAS Viya with SingleStore
+
 ### Azure Kubernetes Service Cluster in Microsoft Azure
 
 The [SAS Viya 4 Infrastructure as Code (IaC) for Microsoft Azure](https://github.com/sassoftware/viya4-iac-azure) GitHub project can automatically provision the required infrastructure components that support SAS Viya with SingleStore deployments. 
