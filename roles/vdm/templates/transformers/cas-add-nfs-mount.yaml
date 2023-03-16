@@ -33,7 +33,7 @@ patch: |-
     path: /spec/controllerTemplate/spec/containers/0/volumeMounts/-
     value:
       name: nfs-data
-      mountPath: {{ V4_CFG_RWX_FILESTORE_DATA_PATH }}
+      mountPath: /mnt/viya-share/data
   - op: add
     path: /spec/controllerTemplate/spec/containers/0/volumeMounts/-
     value:

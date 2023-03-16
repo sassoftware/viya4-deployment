@@ -1,5 +1,6 @@
 KUBECONFIG: ~/.kube/config
 NAMESPACE: null
+V4_CFG_MANAGE_STORAGE: true
 
 V4M_STORAGECLASS: v4m
 
