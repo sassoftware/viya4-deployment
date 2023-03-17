@@ -227,6 +227,8 @@
         state: present
         namespace: "{{ V4_DEPLOYMENT_OPERATOR_NAMESPACE }}"
         kubeconfig: "{{ KUBECONFIG }}"
+      when:
+        - DEPLOY
   tags:
     - install
     - update
@@ -286,6 +288,7 @@
         - result.stdout|length > 0
   when:
     - cluster_sasdeployments.resources|length == 0
+    - DEPLOY
   tags:
     - uninstall
 
@@ -300,6 +303,7 @@
     state: absent
   when:
     - cluster_sasdeployments.resources|length == 0
+    - DEPLOY
   tags:
     - uninstall
 
@@ -310,5 +314,6 @@
   when:
     - V4_DEPLOYMENT_OPERATOR_SCOPE|lower == "cluster"
     - cluster_sasdeployments.resources|length == 0
+    - DEPLOY
   tags:
     - uninstall
