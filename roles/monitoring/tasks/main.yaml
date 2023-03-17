@@ -22,7 +22,7 @@
     - update
 
 - name: v4m - add storageclass
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     kubeconfig: "{{ KUBECONFIG }}"
     state: present
     src: "{{ role_path }}/files/{{ PROVIDER }}-storageclass.yaml"
@@ -30,7 +30,7 @@
     - PROVIDER is not none
     - PROVIDER in ["azure","aws","gcp"]
     - V4_CFG_MANAGE_STORAGE is not none
-    - V4_CFG_MANAGE_STORAGE
+    - V4_CFG_MANAGE_STORAGE|bool
   tags:
     - install
     - update
@@ -46,7 +46,7 @@
     - cluster-logging
 
 - name: v4m - remove storageclass
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     kubeconfig: "{{ KUBECONFIG }}"
     state: absent
     src: "{{ role_path }}/files/{{ PROVIDER }}-storageclass.yaml"
@@ -54,6 +54,6 @@
     - PROVIDER is not none
     - PROVIDER == "azure"
     - V4_CFG_MANAGE_STORAGE is not none
-    - V4_CFG_MANAGE_STORAGE
+    - V4_CFG_MANAGE_STORAGE|bool
   tags:
     - uninstall

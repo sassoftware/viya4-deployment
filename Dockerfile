@@ -6,13 +6,11 @@ RUN apt update && apt upgrade -y \
   && update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
 
 FROM baseline as tool_builder
-ARG kustomize_version=3.7.0
-ARG kubectl_version=1.23.8
+ARG kubectl_version=1.24.10
 
 WORKDIR /build
 
-RUN curl -sLO https://storage.googleapis.com/kubernetes-release/release/v{$kubectl_version}/bin/linux/amd64/kubectl && chmod 755 ./kubectl \
-  && curl -sLO https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v${kustomize_version}/kustomize_v${kustomize_version}_linux_amd64.tar.gz && gunzip -c ./kustomize_v${kustomize_version}_linux_amd64.tar.gz | tar xvf - && chmod 755 ./kustomize
+RUN curl -sLO https://storage.googleapis.com/kubernetes-release/release/v{$kubectl_version}/bin/linux/amd64/kubectl && chmod 755 ./kubectl
 
 # Installation
 FROM baseline
@@ -37,7 +35,6 @@ RUN apt install -y gzip wget git git-lfs jq sshpass skopeo rsync \
   && ./google-cloud-sdk/install.sh
 
 COPY --from=tool_builder /build/kubectl /usr/local/bin/kubectl
-COPY --from=tool_builder /build/kustomize /usr/local/bin/kustomize
 
 WORKDIR /viya4-deployment/
 COPY . /viya4-deployment/

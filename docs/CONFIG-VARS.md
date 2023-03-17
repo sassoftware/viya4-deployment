@@ -30,13 +30,14 @@ Supported configuration variables are listed in the table below.  All variables 
     - [Ingress-nginx](#ingress-nginx)
     - [Metrics Server](#metrics-server)
     - [NFS Client](#nfs-client)
+    - [Postgres NFS Client](#postgres-nfs-client)
   - [Multi-tenancy](#multi-tenancy)
 
 ## BASE
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| DEPLOY | Whether to deploy the SAS Viya platform or stop at generating kustomization.yaml and manifest | bool | true | false | | viya |
+| DEPLOY | Whether to deploy the SAS Viya platform and SAS Viya Platform Deployment Operator or stop at generating kustomization.yaml and manifests | bool | true | false | This flag can also prevent the uninstall of both the SAS Viya platform and SAS Viya Platform Deployment Operator | viya |
 | LOADBALANCER_SOURCE_RANGES | IP addresses to allow to reach the ingress | [string] | | true | When deploying in a cloud environment, be sure to add the cloud NAT IP address. | baseline, viya |
 | BASE_DIR | Path to store persistent files | string | $HOME | false | | all |
 | KUBECONFIG | Path to kubeconfig file | string | | true | | viya |
@@ -73,7 +74,7 @@ Supported configuration variables are listed in the table below.  All variables 
 | V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH | Full path to service account credentials file | string | | false | See [Ansible Cloud Authentication](user/AnsibleCloudAuthentication.md) for more information. | viya |
 
 ## Jump Server
-Viya4-deploy uses the jump server to interact with the RWX filestore, which must be pre-mounted to JUMP_SVR_RWX_FILESTORE_PATH when V4_CFG_MANAGE_STORAGE is set to `true`.
+Viya4-deployment uses the jump server to interact with the RWX filestore, which must be pre-mounted to `JUMP_SVR_RWX_FILESTORE_PATH` when `V4_CFG_MANAGE_STORAGE` is set to `true`.
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -83,10 +84,16 @@ Viya4-deploy uses the jump server to interact with the RWX filestore, which must
 | JUMP_SVR_RWX_FILESTORE_PATH | Path on the jump server to the NFS mount | string | /viya-share | false | | viya |
 
 ## Storage
+When `V4_CFG_MANAGE_STORAGE` is set to `true`, viya4-deployment creates the `sas` and `pg-storage` storage classes using the nfs-subdir-external-provisioner Helm chart. If a jump server is used, viya4-deployment uses that server to create the folders for the `astores`, `bin`, `data` and `homes` RWX Filestore NFS paths that are outlined below in the [RWX Filestore](#rwx-filestore) section.
+
+When `V4_CFG_MANAGE_STORAGE` is set to `false`, viya4-deployment does not create the `sas` or `pg-storage` storage classes for you. In addition, viya4-deployment does not create or manage the RWX Filestore NFS paths. Before you run the SAS Viya deployment, you must set the values for `V4_CFG_RWX_FILESTORE_ASTORES_PATH`, `V4_CFG_RWX_FILESTORE_BIN_PATH`, `V4_CFG_RWX_FILESTORE_DATA_PATH` and `V4_CFG_RWX_FILESTORE_HOMES_PATH` to specify existing NFS folder locations. The viya4-deployment user can create the required NFS folders from the jump server before starting the deployment. Recommended attribute settings for each folder are as follows: 
+- **filemode**: `0777` 
+- **group**: the equivalent of `nogroup` for your operating system 
+- **owner**: `nobody`
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_MANAGE_STORAGE | Whether viya4-deploy should manage the StorageClass | bool | true | false | Set to false if you want to manage the StorageClass yourself. | all |
+| V4_CFG_MANAGE_STORAGE | Whether viya4-deployment should manage the StorageClass | bool | true | false | Set to false if you want to manage the StorageClass yourself. | all |
 | V4_CFG_STORAGECLASS | StorageClass name | string | "sas" | false | When V4_CFG_MANAGE_STORAGE is false, set to the name of your preexisting StorageClass that supports ReadWriteMany. | baseline, viya |
 
 ### RWX Filestore
@@ -102,15 +109,15 @@ Viya4-deploy uses the jump server to interact with the RWX filestore, which must
 
 ### Azure
 
-When V4_CFG_MANAGE_STORAGE is set to `true`, a new storage class is created: sas (Azure NetApp or NFS).
+When V4_CFG_MANAGE_STORAGE is set to `true`, the `sas` and `pg-storage` storage classes are created (Azure NetApp or NFS).
 
 ### AWS
 
-When V4_CFG_MANAGE_STORAGE is set to `true`, the efs-provisioner is deployed. A new storage classes is created: sas (EFS or NFS).
+When V4_CFG_MANAGE_STORAGE is set to `true`, the efs-provisioner is deployed, the `sas` and `pg-storage` storage classes are created (EFS or NFS).
 
 ### GCP
 
-When V4_CFG_MANAGE_STORAGE is set to `true`, a new storage class is created: sas (Google Filestore or NFS).
+When V4_CFG_MANAGE_STORAGE is set to `true`, the `sas` and `pg-storage` storage classes are created (Google Filestore or NFS).
 
 ## SAS Software Order
 
@@ -119,8 +126,9 @@ When V4_CFG_MANAGE_STORAGE is set to `true`, a new storage class is created: sas
 | V4_CFG_ORDER_NUMBER | SAS software order ID | string | | true | | viya |
 | V4_CFG_CADENCE_NAME | Cadence name | string | lts | false | [stable,lts] | viya |
 | V4_CFG_CADENCE_VERSION | Cadence version | string | "2022.09" | true | This value must be surrounded by quotation marks to accommodate the updated SAS Cadence Version format. If the value is not quoted the deployment will fail. | viya |
-| V4_CFG_DEPLOYMENT_ASSETS | Path to pre-downloaded deployment assets | string | | false | Leave blank to download deployment assets | viya |
-| V4_CFG_LICENSE | Path to pre-downloaded license file | string | | false| Leave blank to download license file | viya |
+| V4_CFG_DEPLOYMENT_ASSETS | Path to pre-downloaded deployment assets | string | | false | Leave blank to download [deployment assets](https://go.documentation.sas.com/doc/en/sasadmincdc/default/itopscon/n08bpieatgmfd8n192cnnbqc7m5c.htm#n1x7yoeafv23xan1gew0gfipt9e9) | viya |
+| V4_CFG_LICENSE | Path to pre-downloaded license file | string | | false| Leave blank to download the [license file](https://go.documentation.sas.com/doc/en/sasadmincdc/default/itopscon/n08bpieatgmfd8n192cnnbqc7m5c.htm#p1odbfo85cz4r5n1j2tzx9zz9sbi) | viya |
+| V4_CFG_CERTS | Path to pre-downloaded certificates file | string | | false| Leave blank to download the [certificates file](https://go.documentation.sas.com/doc/en/sasadmincdc/default/itopscon/n08bpieatgmfd8n192cnnbqc7m5c.htm#n0pj0ewyle0gfkn1psri3kw5ghha) | viya |
 
 ## SAS API Access
 
@@ -256,10 +264,11 @@ V4_CFG_POSTGRES_SERVERS:
 | backrest_pvc_storage_size | Size of the internal pgBackrest PVCs | string | 128Gi | false | This value can be changed but not decreased after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
 | postgres_pvc_access_mode | Access mode for the PostgreSQL PVCs | string | ReadWriteOnce | false | Supported values: [`ReadWriteOnce`,`ReadWriteMany`]. This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
 | backrest_pvc_access_mode | Access mode for the pgBackrest PVCs | string | ReadWriteOnce | false | Supported values: [`ReadWriteOnce`,`ReadWriteMany`]. This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
-| postgres_storage_class | Storage class for the PostgreSQL PVCs | string | sas | false |This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
-| backrest_storage_class | Storage class for the pgBackrest PVCs | string | sas | false |This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
+| postgres_storage_class | Storage class for the PostgreSQL PVCs | string | pg-storage | false |This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases. When `V4_CFG_MANAGE_STORAGE` is set to `true`, a storage class named `pg-storage` is created and is configured as the default storageClass. If `V4_CFG_MANAGE_STORAGE` is set to false, specify the name of an existing storage class for the value. | viya |
+| backrest_storage_class | Storage class for the pgBackrest PVCs | string | pg-storage | false |This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases. When `V4_CFG_MANAGE_STORAGE` is set to `true`, a storage class named `pg-storage` is created and is configured as the default storageClass. If `V4_CFG_MANAGE_STORAGE` is set to false, specify the name of an existing storage class for the value. | viya |
 
-**NOTE**: the `default` element is always required. This will be the default server.
+
+**NOTE**: The `default` element is always required. This will be the default server.
 
 Examples:
 
@@ -270,8 +279,8 @@ V4_CFG_POSTGRES_SERVERS:
     internal: true
     postgres_pvc_storage_size: 10Gi
     postgres_pvc_access_mode: ReadWriteOnce
-    postgres_storage_class: sas
-    backrest_storage_class: sas
+    postgres_storage_class: pg-storage
+    backrest_storage_class: pg-storage
 
 
 # External servers
@@ -303,6 +312,7 @@ V4_CFG_POSTGRES_SERVERS:
 | V4_CFG_CAS_WORKER_COUNT | Number of CAS workers | int | 1 | false | Setting to more than one triggers MPP CAS deployment. | viya |
 | V4_CFG_CAS_ENABLE_BACKUP_CONTROLLER | Enable backup CAS controller | bool | false | false | | viya |
 | V4_CFG_CAS_ENABLE_LOADBALANCER | Set up LoadBalancer to access CAS binary ports | bool | false | false | | viya |
+| V4_CFG_CAS_ENABLE_AUTO_RESTART | Include a transformer so that the CAS servers will automatically restart during version updates performed by the SAS Viya Deployment Operator. | bool | true | false | This variable will not be applicable if you are not using the SAS Viya Deployment Operator by setting `V4_DEPLOYMENT_OPERATOR_ENABLED` to "false". See the [SAS Viya Platform Operations documentation](https://go.documentation.sas.com/doc/en/itopscdc/default/dplyml0phy0dkr/n08u2yg8tdkb4jn18u8zsi6yfv3d.htm#p1mtzb2zsvv581n1gpmwds3urbon) for additional information. | viya |
 
 ## CONNECT
 
@@ -336,7 +346,7 @@ Notes:
 | CERT_MANAGER_NAMESPACE | cert-manager Helm installation namespace | string | cert-manager | false | | baseline |
 | CERT_MANAGER_CHART_URL | cert-manager Helm chart URL | string | https://charts.jetstack.io/ | false | | baseline |
 | CERT_MANAGER_CHART_NAME| cert-manager Helm chart name | string | cert-manager| false | | baseline |
-| CERT_MANAGER_CHART_VERSION | cert-manager Helm chart version | string | 1.9.1 | false | | baseline |
+| CERT_MANAGER_CHART_VERSION | cert-manager Helm chart version | string | 1.11.0 | false | | baseline |
 | CERT_MANAGER_CONFIG | cert-manager Helm values | string | See [this file](../roles/baseline/defaults/main.yml) for more information. | false | | baseline |
 
 Notes:
@@ -351,10 +361,15 @@ Cluster-autoscaler is currently only used for AWS EKS clusters. GCP GKE and Azur
 | CLUSTER_AUTOSCALER_ENABLED | Whether to deploy cluster-autoscaler | bool | true | false | | baseline |
 | CLUSTER_AUTOSCALER_CHART_URL | Cluster-autoscaler Helm chart URL | string | See [this document](https://kubernetes.github.io/autoscaler) for more information. | false | | baseline |
 | CLUSTER_AUTOSCALER_CHART_NAME| Cluster-autoscaler Helm chart name | string | cluster-autoscaler | false | | baseline |
-| CLUSTER_AUTOSCALER_CHART_VERSION | Cluster-autoscaler Helm chart version | string | 9.9.2 | false | | baseline |
+| CLUSTER_AUTOSCALER_CHART_VERSION | Cluster-autoscaler Helm chart version | string | "" | false | If left as "" (empty string), version 9.9.2 is used for Kubernetes clusters whose version is <= 1.21 <br> and version 9.25.0 is used for Kubernetes clusters whose version is >= 1.25 | baseline |
 | CLUSTER_AUTOSCALER_CONFIG | Cluster-autoscaler Helm values | string | See [this file](../roles/baseline/defaults/main.yml) for more information. | false | | baseline |
 | CLUSTER_AUTOSCALER_ACCOUNT | Cluster autoscaler AWS role ARN | string | | false | Required to enable cluster-autoscaler on AWS | baseline |
 | CLUSTER_AUTOSCALER_LOCATION |AWS region where Kubernetes cluster is running | string | us-east-1 | false | | baseline |
+
+**Cluster Autoscaler Notes:**
+
+If you used [viya4-iac-aws:5.6.0](https://github.com/sassoftware/viya4-iac-aws/releases) or newer to create your infrastructure, a cluster autoscaler account should have been created for you with a policy that is compatible with both our default versions for the `CLUSTER_AUTOSCALER_CHART_VERSION` variable. If you choose an alternative version ensure that your autoscaler account has a policy that matches the recommendation from the [kubernetes/autoscaler documentation](https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/cloudprovider/aws/README.md#iam-policy). This note is only applicable for EKS clusters.
+
 
 ### EBS CSI Driver
 
@@ -376,7 +391,7 @@ The EBS CSI driver is currently only used for kubernetes v1.23 or later AWS EKS 
 | INGRESS_NGINX_NAMESPACE | NGINX Ingress Helm installation namespace | string | ingress-nginx | false | | baseline |
 | INGRESS_NGINX_CHART_URL | NGINX Ingress Helm chart URL | string | See [this document](https://kubernetes.github.io/ingress-nginx) for more information. | false | | baseline |
 | INGRESS_NGINX_CHART_NAME | NGINX Ingress Helm chart name | string | ingress-nginx | false | | baseline |
-| INGRESS_NGINX_CHART_VERSION | NGINX Ingress Helm chart version | string | "" | false | If left as "" (empty string), version 3.40.0 is used for Kubernetes clusters whose version is <= 1.21.X, and version 4.2.3 is used for Kubernetes clusters whose version is >= 1.22.X. | baseline |
+| INGRESS_NGINX_CHART_VERSION | NGINX Ingress Helm chart version | string | "" | false | If left as "" (empty string), version 3.40.0 is used for Kubernetes clusters whose version is <= 1.21.X, and version 4.3.0 is used for Kubernetes clusters whose version is >= 1.22.X. | baseline |
 | INGRESS_NGINX_CONFIG | NGINX Ingress Helm values | string | See [this file](../roles/baseline/defaults/main.yml) for more information. Altering this value will affect the cluster. | false | | baseline |
 
 ### Metrics Server
@@ -402,6 +417,19 @@ The NFS client is currently supported by the newer nfs-subdir-external-provision
 | NFS_CLIENT_CHART_NAME | nfs-subdir-external-provisioner Helm chart name | string | nfs-subdir-external-provisioner | false | | baseline |
 | NFS_CLIENT_CHART_VERSION | nfs-subdir-external-provisioner Helm chart version | string | 4.0.8| false | | baseline |
 | NFS_CLIENT_CONFIG | nfs-subdir-external-provisioner Helm values | string | See [this file](../roles/baseline/defaults/main.yml) for more information. | false | | baseline |
+
+### Postgres NFS Client
+
+The Postgres NFS client is currently supported by the nfs-subdir-external-provisioner. It creates the storage class used by 2022.10 and later internal postgres instances.
+
+| Name | Description | Type | Default | Required | Notes | Tasks |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
+| PG_NFS_CLIENT_NAMESPACE | nfs-subdir-external-provisioner Helm installation namespace | string | nfs-client | false | | baseline |
+| PG_NFS_CLIENT_CHART_URL | nfs-subdir-external-provisioner Helm chart URL | string | Go [here](https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/) for more information. | false | | baseline |
+| PG_NFS_CLIENT_CHART_NAME | nfs-subdir-external-provisioner Helm chart name | string | nfs-subdir-external-provisioner | false | | baseline |
+| PG_NFS_CLIENT_CHART_VERSION | nfs-subdir-external-provisioner Helm chart version | string | 4.0.8| false | | baseline |
+| PG_NFS_CLIENT_CONFIG | nfs-subdir-external-provisioner Helm values | string | See [this file](../roles/baseline/defaults/main.yml) for more information. | false | | baseline |
+
 
 ## Multi-tenancy
 

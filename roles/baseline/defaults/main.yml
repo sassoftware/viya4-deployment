@@ -2,13 +2,14 @@ V4_CFG_TLS_MODE: "full-stack" # other valid values are front-door, ingress-only,
 V4_CFG_RWX_FILESTORE_PATH: /export
 V4_CFG_INGRESS_TYPE: ingress
 V4_CFG_INGRESS_MODE: public
+V4_CFG_MANAGE_STORAGE: true
 
 ## Cert-manager
 CERT_MANAGER_NAME: cert-manager
 CERT_MANAGER_NAMESPACE: cert-manager
 CERT_MANAGER_CHART_NAME: cert-manager
 CERT_MANAGER_CHART_URL: https://charts.jetstack.io/
-CERT_MANAGER_CHART_VERSION: 1.9.1
+CERT_MANAGER_CHART_VERSION: 1.11.0
 CERT_MANAGER_CONFIG: 
   installCRDs: "true"
   extraArgs:
@@ -34,8 +35,8 @@ ingressVersions:
   k8sMinorVersionFloor:
     value: 22
     api:
-      chartVersion: 4.2.3
-      appVersion: 1.3.0
+      chartVersion: 4.3.0
+      appVersion: 1.4.0
 
 ## Ingress-nginx - Ingress
 INGRESS_NGINX_NAME: ingress-nginx
@@ -79,7 +80,7 @@ INGRESS_NGINX_CVE_2021_25742_PATCH:
       annotation-value-word-blocklist: "load_module,lua_package,_by_lua,location,root,proxy_pass,serviceaccount,{,},\\"
 
 ## Nfs-subdir-external-provisioner
-NFS_CLIENT_NAME: nfs-subdir-external-provisioner
+NFS_CLIENT_NAME: nfs-subdir-external-provisioner-sas
 NFS_CLIENT_NAMESPACE: nfs-client
 NFS_CLIENT_CHART_NAME: nfs-subdir-external-provisioner
 NFS_CLIENT_CHART_URL: https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/
@@ -96,6 +97,26 @@ NFS_CLIENT_CONFIG:
   storageClass:
     archiveOnDelete: "false"
     name: sas
+
+## pg-storage storage class config
+PG_NFS_CLIENT_NAME: nfs-subdir-external-provisioner-pg-storage
+PG_NFS_CLIENT_NAMESPACE: nfs-client
+PG_NFS_CLIENT_CHART_NAME: nfs-subdir-external-provisioner
+PG_NFS_CLIENT_CHART_URL: https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/
+PG_NFS_CLIENT_CHART_VERSION: 4.0.8
+PG_NFS_CLIENT_CONFIG:
+  nfs:
+    server: "{{ V4_CFG_RWX_FILESTORE_ENDPOINT }}"
+    path: "{{ V4_CFG_RWX_FILESTORE_PATH | replace('/$', '') }}/pvs"
+    mountOptions: 
+      - noatime
+      - nodiratime
+      - 'rsize=262144'
+      - 'wsize=262144'
+  storageClass:
+    archiveOnDelete: "false"
+    reclaimPolicy: "Retain"
+    name: pg-storage
 
 ## Contour - Ingress
 CONTOUR_NAME: contour
@@ -114,7 +135,7 @@ CLUSTER_AUTOSCALER_NAME: cluster-autoscaler
 CLUSTER_AUTOSCALER_NAMESPACE: kube-system
 CLUSTER_AUTOSCALER_CHART_NAME: cluster-autoscaler
 CLUSTER_AUTOSCALER_CHART_URL: https://kubernetes.github.io/autoscaler
-CLUSTER_AUTOSCALER_CHART_VERSION: 9.9.2
+CLUSTER_AUTOSCALER_CHART_VERSION: ""
 CLUSTER_AUTOSCALER_ACCOUNT: null
 CLUSTER_AUTOSCALER_LOCATION: us-east-1
 CLUSTER_AUTOSCALER_CONFIG:
@@ -126,6 +147,18 @@ CLUSTER_AUTOSCALER_CONFIG:
       name: cluster-autoscaler
       annotations:
         "eks.amazonaws.com/role-arn": "{{ CLUSTER_AUTOSCALER_ACCOUNT }}"
+
+autoscalerVersions:
+  # Supports PodDisruptionBudget policy/v1beta1 default for K8s <=1.24
+  PDBv1beta1Support:
+    api:
+      chartVersion: 9.9.2
+      appVersion: 1.20.0
+  # Supports PodDisruptionBudget policy/v1beta1 default for K8s >=1.25
+  PDBv1Support:
+    api:
+      chartVersion: 9.25.0
+      appVersion: 1.24.0
 
 ## EBS CSI Driver
 EBS_CSI_DRIVER_ENABLED: true

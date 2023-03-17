@@ -141,6 +141,13 @@
     - uninstall
     - update
 
+- name: Include Postgres ConfigMap
+  include_tasks: postgres/pg_config.yaml
+  tags:
+    - install
+    - uninstall
+    - update
+
 - name: Include Postgres
   include_tasks: postgres/postgres.yaml
   tags:
@@ -190,6 +197,13 @@
     - uninstall
     - update
 
+- name: Include Orchestration Tooling
+  include_tasks: ../../orchestration-common/tasks/orchestration_tooling.yaml
+  tags:
+    - install
+    - uninstall
+    - update
+
 - name: Include Deployment Operator - Install
   include_tasks: deployment_operator.yaml
   when:
@@ -198,8 +212,8 @@
     - install
     - update
 
-- name: Include Orchestration
-  include_tasks: orchestration.yaml
+- name: Include SASDeployment Custom Resource
+  include_tasks: sasdeployment_custom_resource.yaml
   tags:
     - install
     - uninstall

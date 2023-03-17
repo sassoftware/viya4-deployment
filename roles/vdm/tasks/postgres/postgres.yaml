@@ -9,7 +9,8 @@
   ansible.builtin.fail:
     msg: "CDS postgres instance must be internal server. To use CDS postgres, please reconfigure your infrastructure to set all your postgres servers internal"
   when:
-    - V4_CFG_CADENCE_VERSION is version('2022.10', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
+    - V4_CFG_CADENCE_VERSION is version('2022.11', "<=") 
+    - V4_CFG_CADENCE_NAME|lower != "fast"
     - V4_CFG_POSTGRES_SERVERS['cds-postgres'] is defined
     - V4_CFG_POSTGRES_SERVERS['cds-postgres'].internal is defined
     - V4_CFG_POSTGRES_SERVERS['cds-postgres'].internal == false
