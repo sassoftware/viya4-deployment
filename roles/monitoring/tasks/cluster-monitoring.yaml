@@ -38,7 +38,7 @@
 
 - name: cluster-monitoring - output credentials
   debug:
-    msg: 
+    msg:
       - "Grafana - username: admin, password: {{ V4M_GRAFANA_PASSWORD }}"
   tags:
     - install
@@ -56,10 +56,17 @@
     - uninstall
 
 - name: cluster-monitoring - path-based user values
-  template:
-    src: "path-based/user-values-prom-operator.yaml"
-    dest: "{{ tmpdir.path }}/monitoring/user-values-prom-operator.yaml"
-    mode: "0660"
+  block:
+    - name: copy operator yaml
+      template:
+        src: "path-based/user-values-prom-operator.yaml"
+        dest: "{{ tmpdir.path }}/monitoring/user-values-prom-operator.yaml"
+        mode: "0660"
+    - name: copy user env
+      template:
+        src: "path-based/user.env"
+        dest: "{{ tmpdir.path }}/monitoring/user.env"
+        mode: "0660"
   when:
     - V4M_ROUTING|lower == 'path-based'
   tags:
@@ -91,7 +98,7 @@
         tls.key: >-
           {{ lookup('file', V4M_GRAFANA_KEY ) |b64encode }}
       type: kubernetes.io/tls
-  when: 
+  when:
     - V4M_GRAFANA_CERT is not none
     - V4M_GRAFANA_KEY is not none
   tags:
@@ -114,7 +121,7 @@
         tls.key: >-
           {{ lookup('file', V4M_PROMETHEUS_KEY ) |b64encode }}
       type: kubernetes.io/tls
-  when: 
+  when:
     - V4M_PROMETHEUS_CERT is not none
     - V4M_PROMETHEUS_KEY is not none
   tags:
@@ -137,7 +144,7 @@
         tls.key: >-
           {{ lookup('file', V4M_ALERTMANAGER_KEY ) |b64encode }}
       type: kubernetes.io/tls
-  when: 
+  when:
     - V4M_ALERTMANAGER_CERT is not none
     - V4M_ALERTMANAGER_KEY is not none
   tags:
