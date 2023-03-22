@@ -5,6 +5,7 @@
   - [SAS Viya Orchestration Tool](#sas-viya-orchestration-tool)
   - [SAS Viya Deployment Operator](#sas-viya-deployment-operator)
   - [EKS - Cluster Autoscaler Installation](#eks---cluster-autoscaler-installation)
+  - [Ingress-Nginx issue - Unable to access SAS Viya Platform Webapps](#ingress-nginx-issue---unable-to-access-sas-viya-platform-webapps)
 
 ## Debug Mode
 Debug mode can be enabled by adding "-vvv" to the end of the docker or ansible commands
@@ -144,3 +145,47 @@ Note: If you used viya4-iac-aws:5.6.0 or never to create your infrastructure, th
       ```bash
       kubectl scale --replicas=1 deployment/cluster-autoscaler-aws-cluster-autoscaler
       ```
+
+## Ingress-Nginx issue - Unable to access SAS Viya Platform WebApps
+### Symptom:
+After upgrading your AKS cluster's Kubernetes version to 1.24 or later, you are unable to access the SAS Viya Platform WebApps. All the pods are running and errors are only seen in ingress-nginx logs:
+
+```bash
+W0320 20:15:25.141987       7 controller.go:1354] Using default certificate
+W0320 20:15:25.141997       7 controller.go:1347] Unexpected error validating SSL certificate "deploy/sas-ingress-certificate-5gc77h2dhg" for server "*.deploy.test.example.com": x509: certificate is valid for test-aks.example.com, not *.deploy.test.example.com
+W0320 20:15:25.142005       7 controller.go:1348] Validating certificate against DNS names. This will be deprecated in a future version
+W0320 20:15:25.142013       7 controller.go:1353] SSL certificate "deploy/sas-ingress-certificate-5gc77h2dhg" does not contain a Common Name or Subject Alternative Name for server "*.deploy.test.example.com": x509: certificate is valid for test-aks.example.com, not *.deploy.test.example.com
+```
+
+### Diagnosis:
+This issue is related to Azure LoadBalancer’s probing. The appProtocol support inside cloud provider has broken ingress-nginx for AKS clusters >=1.22. The issue was caused by two reasons:
+* the new version of nginx ingress controller added appProtocol and its probe path has to be `/healthz`;
+* the new version of cloud-controller-manager added HTTP probing with default path `/` for appProtocol=http services.
+
+The `Custom Load Balancer health probe` section in the [Azure LoadBalancer](https://cloud-provider-azure.sigs.k8s.io/topics/loadbalancer/#custom-load-balancer-health-probe) document states that:
+
+>Tcp, Http and Https are three protocols supported by load balancer service. Currently, the default protocol of the health probe varies among services with different transport protocols, app protocols, annotations and external traffic policies.
+>1. for local services, HTTP and /healthz would be used. The health probe will query NodeHealthPort rather than actual backend service
+>2. for cluster TCP services, TCP would be used.
+>3. for cluster UDP services, no health probes.
+>
+> Since v1.20, service annotation `service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path` is introduced to determine the health probe behavior.
+  >- For clusters <=1.23, spec.ports.appProtocol would only be used as probe protocol when `service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path` is also set.
+  > - For clusters >1.24, spec.ports.appProtocol would be used as probe protocol and `/` would be used as default probe request path (`service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path` could be used to change to a different request path).
+
+To resolve this issue the ingress-nginx version should be 1.3.0 (or later) with the following annotation configured :
+> --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-health-probe-request-path"=/healthz
+
+### Solution:
+For Users upgrading their AKS cluster's Kubernetes version to 1.24 (or later) and used viya4-deployment v6.3.0 (or prior) for the SAS Viya Platform deployment, please use viya4-deployment v6.4.0 (or later) and re-run the baseline install task.
+
+If you prefer to continue using the existing viya4-deployment version then add the following in your ansible-var.yaml and re-run baseline install task :
+
+```bash
+INGRESS_NGINX_CHART_VERSION: 4.3.0
+INGRESS_NGINX_CONFIG:
+  controller:
+    service:
+      annotations:
+        service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: /healthz
+```
