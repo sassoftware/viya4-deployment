@@ -5,7 +5,7 @@
   - [SAS Viya Orchestration Tool](#sas-viya-orchestration-tool)
   - [SAS Viya Deployment Operator](#sas-viya-deployment-operator)
   - [EKS - Cluster Autoscaler Installation](#eks---cluster-autoscaler-installation)
-  - [Ingress-Nginx issue - Unable to access SAS Viya Platform Webapps](#ingress-nginx-issue---unable-to-access-sas-viya-platform-webapps)
+  - [Ingress-Nginx issue - Unable to access SAS Viya Platform web apps](#ingress-nginx-issue---unable-to-access-sas-viya-platform-web-apps)
 
 ## Debug Mode
 Debug mode can be enabled by adding "-vvv" to the end of the docker or ansible commands
@@ -146,9 +146,9 @@ Note: If you used viya4-iac-aws:5.6.0 or never to create your infrastructure, th
       kubectl scale --replicas=1 deployment/cluster-autoscaler-aws-cluster-autoscaler
       ```
 
-## Ingress-Nginx issue - Unable to access SAS Viya Platform WebApps
+## Ingress-Nginx issue - Unable to access SAS Viya Platform web apps
 ### Symptom:
-After upgrading your AKS cluster's Kubernetes version to 1.24 or later, you are unable to access the SAS Viya Platform WebApps. All the pods are running and errors are only seen in ingress-nginx logs:
+After upgrading your AKS cluster's Kubernetes version to 1.24 or later, you are unable to access the SAS Viya Platform web apps. All the pods are running and errors are only seen in ingress-nginx logs:
 
 ```bash
 W0320 20:15:25.141987       7 controller.go:1354] Using default certificate
@@ -177,7 +177,7 @@ To resolve this issue the ingress-nginx version should be 1.3.0 (or later) with 
 > --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-health-probe-request-path"=/healthz
 
 ### Solution:
-For Users upgrading their AKS cluster's Kubernetes version to 1.24 (or later) and used viya4-deployment v6.3.0 (or prior) for the SAS Viya Platform deployment, please use viya4-deployment v6.4.0 (or later) and re-run the baseline install task.
+For Users upgrading their AKS cluster's Kubernetes version to 1.24 (or later) and used viya4-deployment v6.3.0 (or prior) for the SAS Viya Platform deployment, you must use viya4-deployment v6.4.0 (or later) and re-run the baseline install task.
 
 If you prefer to continue using the existing viya4-deployment version then add the following in your ansible-var.yaml and re-run baseline install task :
 
