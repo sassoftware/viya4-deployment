@@ -165,6 +165,10 @@ When V4_CFG_MANAGE_STORAGE is set to `true`, the `sas` and `pg-storage` storage 
 | V4M_STORAGECLASS | StorageClass name | string | v4m | false | When V4_CFG_MANAGE_STORAGE is false, set to the name of your pre-existing StorageClass that supports ReadWriteOnce. | cluster-logging, cluster-monitoring, viya-monitoring |
 | V4M_ROUTING | Which routing type to use for viya4-monitoring-kubernetes applications | string | host-based | false | Supported values: [`host-based`, `path-based`] For host-based routing, the application name is part of the host name itself `https://dashboards.host.cluster.example.com/` For path-based routing, the host name is fixed and the application name is appended as a path on the URL `https://host.cluster.example.com/dashboards` | cluster-logging, cluster-monitoring |
 
+#### Open Source Kubernetes
+
+When deploying `cluster-logging` or `cluster-monitoring` applications to kubernetes cluster infrastructure provisioned with the [Open Source Kubernetes viya4-iac-k8s](https://github.com/sassoftware/viya4-iac-k8s) project, you must explicitly set the value for `V4M_STORAGECLASS` to a pre-existing Storage Class (for example: `local-storage`)  regardless of the value set for `V4_CFG_MANAGE_STORAGE`. While other storage classes can be used, the `local-storage` class is **recommended** for the Viya Monitoring and Loggging tools.
+
 ### Monitoring
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
