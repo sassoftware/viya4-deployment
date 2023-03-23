@@ -1,3 +1,6 @@
+# Copyright © 2020-2023, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 
 ---
 - name: Include nfs-subdir-external-provisioner
@@ -7,7 +10,7 @@
     - V4_CFG_RWX_FILESTORE_ENDPOINT is defined
     - V4_CFG_RWX_FILESTORE_PATH is defined
     - V4_CFG_MANAGE_STORAGE is defined
-    - V4_CFG_MANAGE_STORAGE
+    - V4_CFG_MANAGE_STORAGE|bool
   tags:
     - baseline
 

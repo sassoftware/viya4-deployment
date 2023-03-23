@@ -1,3 +1,6 @@
+# Copyright © 2020-2023, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 ---
 - name: v4m - download 
   git:
@@ -18,7 +21,7 @@
     - PROVIDER is not none
     - PROVIDER in ["azure","aws","gcp"]
     - V4_CFG_MANAGE_STORAGE is not none
-    - V4_CFG_MANAGE_STORAGE
+    - V4_CFG_MANAGE_STORAGE|bool
   tags:
     - install
     - update
@@ -42,6 +45,6 @@
     - PROVIDER is not none
     - PROVIDER == "azure"
     - V4_CFG_MANAGE_STORAGE is not none
-    - V4_CFG_MANAGE_STORAGE
+    - V4_CFG_MANAGE_STORAGE|bool
   tags:
     - uninstall

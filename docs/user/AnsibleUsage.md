@@ -109,3 +109,11 @@ Any number of tasks can be run at the same time. An action can run against a sin
     -e JUMP_SVR_PRIVATE_KEY=$HOME/.ssh/id_rsa \
     playbooks/playbook.yaml --tags "baseline,viya,cluster-logging,cluster-monitoring,viya-monitoring,uninstall"
   ```
+
+### Ansible Config
+
+In the examples above, we are running `ansible-playbook` from within the project directory. This means Ansible will automatically load the project's `ansible.cfg` file which contains configuration settings to properly run this project's playbook. If you are calling the playbook from a directory outside of this project's folder, it is important to set the following Ansible environment variable prior to running the playbook so that the configuration file gets loaded.
+
+```bash
+export ANSIBLE_CONFIG=${WORKSPACE}/viya4-deployment/ansible.cfg
+```

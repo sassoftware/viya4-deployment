@@ -1,3 +1,6 @@
+# Copyright © 2020-2023, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 # These tasks are responsible for pulling or downloading the sas-orchestration image
 # so that the tooling it contains may be used during the deployment process.
 
@@ -12,6 +15,7 @@
     - install
     - uninstall
     - update
+    - onboard
     - cas-onboard
     - offboard
 
@@ -32,6 +36,7 @@
     - install
     - uninstall
     - update
+    - onboard
     - cas-onboard
     - offboard
 
@@ -44,6 +49,7 @@
     - install
     - uninstall
     - update
+    - onboard
     - cas-onboard
     - offboard
 
@@ -57,6 +63,7 @@
     - install
     - uninstall
     - update
+    - onboard
     - cas-onboard
     - offboard
 
@@ -69,6 +76,7 @@
     - install
     - uninstall
     - update
+    - onboard
     - cas-onboard
     - offboard
 
@@ -81,6 +89,7 @@
     - install
     - uninstall
     - update
+    - onboard
     - cas-onboard
     - offboard
 
@@ -117,6 +126,7 @@
     - install
     - uninstall
     - update
+    - onboard
     - cas-onboard
     - offboard
 
@@ -131,6 +141,7 @@
     - install
     - uninstall
     - update
+    - onboard
     - cas-onboard
     - offboard
 
@@ -144,5 +155,6 @@
     - install
     - uninstall
     - update
+    - onboard
     - cas-onboard
     - offboard
