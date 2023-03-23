@@ -2,8 +2,6 @@ prometheus:
   # Disable default configuration of NodePort
   service:
     type: ClusterIP
-    port: 443
-    targetPort: 443
     nodePort: null
   # Define host-based ingress
   ingress:
@@ -31,8 +29,10 @@ alertmanager:
     nodePort: null
   # Define host-based ingress
   ingress:
-    enabled: true
+    annotations:
+      nginx.ingress.kubernetes.io/backend-protocol: HTTPS
     ingressClassName: nginx
+    enabled: true
     tls:
     - hosts:
       - {{ V4M_ALERTMANAGER_FQDN }}
@@ -55,7 +55,6 @@ grafana:
   ingress:
     annotations:
       nginx.ingress.kubernetes.io/backend-protocol: HTTPS
-      # nginx.ingress.kubernetes.io/rewrite-target: "/grafana"
     enabled: true
     ingressClassName: nginx
     tls:
@@ -68,7 +67,7 @@ grafana:
   "grafana.ini":
     server:
       domain: {{ V4M_BASE_DOMAIN }}
-      root_url: https://{{ V4M_GRAFANA_FQDN }}
+      root_url: "https://{{ V4M_GRAFANA_FQDN }}"
       serve_from_sub_path: false
   testFramework:
     enabled: false

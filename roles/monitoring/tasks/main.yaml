@@ -2,6 +2,18 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
+- name: v4m - ensure supported value for V4M_ROUTING
+  ansible.builtin.assert:
+    that: '{{ ["host-based", "path-based"] | intersect(V4M_ROUTING) | count == 1}}'
+    msg: >
+      Invalid V4M_ROUTING value: {{ V4M_ROUTING }}
+
+      Supported values for V4M_ROUTING are `host-based` or `path-based`
+  tags:
+    - install
+    - uninstall
+    - update
+
 - name: v4m - download 
   git:
     repo: https://github.com/sassoftware/viya4-monitoring-kubernetes.git
