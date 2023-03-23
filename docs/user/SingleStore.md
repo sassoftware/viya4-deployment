@@ -10,25 +10,25 @@ If your SAS software order included SAS Viya with SingleStore, additional requir
 
 You can deploy SAS Viya with SingleStore into a Kubernetes cluster running under:
 - Azure Kubernetes Service (AKS) in Microsoft Azure
-- Elastic Kubernetes Service (EKS) in Amazon Web Services
+- Elastic Kubernetes Service (EKS) in Amazon Web Services (AWS)
 - Open Source Kubernetes on your own machines
 
-## Cluster provisioning for SAS Viya with SingleStore
+## Cluster Provisioning for SAS Viya with SingleStore
 
-### Azure Kubernetes Service Cluster in Microsoft Azure
+### Azure Kubernetes Service (AKS) Cluster in Microsoft Azure
 
-The [SAS Viya 4 Infrastructure as Code (IaC) for Microsoft Azure](https://github.com/sassoftware/viya4-iac-azure) GitHub project can automatically provision the required infrastructure components that support SAS Viya with SingleStore deployments. 
-Refer to the [SingleStore sample input file](https://github.com/sassoftware/viya4-iac-azure/blob/main/examples/sample-input-singlestore.tfvars) for Terraform configuration values that create an AKS cluster suitable for deploying SAS Viya and SingleStore.
+The [SAS Viya 4 IaC for Microsoft Azure](https://github.com/sassoftware/viya4-iac-azure) GitHub project can automatically provision the required infrastructure components that support SAS Viya with SingleStore deployments. 
+Refer to the [SingleStore sample input file](https://github.com/sassoftware/viya4-iac-azure/blob/main/examples/sample-input-singlestore.tfvars) for Terraform configuration values that create an AKS cluster that is suitable for deploying SAS Viya and SingleStore.
 
-### Elastic Kubernetes Service Cluster in Amazon Web Services
+### EKS Cluster in AWS
 
-The [SAS Viya 4 Infrastructure as Code (IaC) for Amazon Web Services (AWS)](https://github.com/sassoftware/viya4-iac-aws) GitHub project can automatically provision the required infrastructure components that support SAS Viya with SingleStore deployments. 
-Refer to the [SingleStore sample input file](https://github.com/sassoftware/viya4-iac-aws/blob/main/examples/sample-input-singlestore.tfvars) for Terraform configuration values that create an EKS cluster suitable for deploying SAS Viya and SingleStore.
+The [SAS Viya 4 IaC for AWS](https://github.com/sassoftware/viya4-iac-aws) GitHub project can automatically provision the required infrastructure components that support SAS Viya with SingleStore deployments. 
+Refer to the [SingleStore sample input file](https://github.com/sassoftware/viya4-iac-aws/blob/main/examples/sample-input-singlestore.tfvars) for Terraform configuration values that create an EKS cluster that is suitable for deploying SAS Viya and SingleStore.
 
 ### Open Source Kubernetes Cluster
 
 The [SAS Viya 4 Infrastructure as Code (IaC) for Open Source Kubernetes](https://github.com/sassoftware/viya4-iac-k8s) GitHub project can automatically provision the required infrastructure components that support SAS Viya with SingleStore deployments. 
-Refer to the [SingleStore sample input file](https://github.com/sassoftware/viya4-iac-k8s/blob/main/examples/vsphere/sample-terraform-static-singlestore.tfvars) for Terraform configuration values that create an Open Source Kubernetes cluster suitable for deploying SAS Viya and SingleStore.
+Refer to the [SingleStore sample input file](https://github.com/sassoftware/viya4-iac-k8s/blob/main/examples/vsphere/sample-terraform-static-singlestore.tfvars) for Terraform configuration values that create an Open Source Kubernetes cluster that is suitable for deploying SAS Viya and SingleStore.
 
 ## Customizing SingleStore Deployment Overlays
 
