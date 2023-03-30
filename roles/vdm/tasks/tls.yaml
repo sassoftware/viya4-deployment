@@ -1,3 +1,6 @@
+# Copyright © 2020-2023, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 # There are several TLS ingress scenarios:
 # The mode: full-stack, front-door and disabled
 # Each can have either customer provided certs or cert-manager generated certs

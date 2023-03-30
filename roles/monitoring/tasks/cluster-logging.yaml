@@ -1,3 +1,6 @@
+# Copyright © 2020-2023, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 ---
 - name: cluster-logging - create userdir
   file:
@@ -50,21 +53,49 @@
   tags:
     - install
 
-- name: cluster-logging - opensearch user values
+- name: cluster-logging - host-based opensearch user values
   template:
-    src: "user-values-opensearch.yaml"
+    src: "host-based/user-values-opensearch.yaml"
     dest: "{{ tmpdir.path }}/logging/user-values-opensearch.yaml"
     mode: "0660"
+  when:
+    - V4M_ROUTING|lower == 'host-based'
   tags:
     - install
     - update
     - uninstall
 
-- name: cluster-logging - osd user values
+- name: cluster-logging - host-based osd user values
   template:
-    src: "user-values-osd.yaml"
+    src: "host-based/user-values-osd.yaml"
     dest: "{{ tmpdir.path }}/logging/user-values-osd.yaml"
     mode: "0660"
+  when:
+    - V4M_ROUTING|lower == 'host-based'
+  tags:
+    - install
+    - update
+    - uninstall
+
+- name: cluster-logging - path-based opensearch user values
+  template:
+    src: "path-based/user-values-opensearch.yaml"
+    dest: "{{ tmpdir.path }}/logging/user-values-opensearch.yaml"
+    mode: "0660"
+  when:
+    - V4M_ROUTING|lower == 'path-based'
+  tags:
+    - install
+    - update
+    - uninstall
+
+- name: cluster-logging - path-based osd user values
+  template:
+    src: "path-based/user-values-osd.yaml"
+    dest: "{{ tmpdir.path }}/logging/user-values-osd.yaml"
+    mode: "0660"
+  when:
+    - V4M_ROUTING|lower == 'path-based'
   tags:
     - install
     - update
