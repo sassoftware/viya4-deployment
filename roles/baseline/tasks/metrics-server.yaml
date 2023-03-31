@@ -44,3 +44,5 @@
     wait: true
   tags:
     - uninstall
+  when:
+    - METRICS_SERVER_ENABLED
