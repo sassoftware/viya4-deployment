@@ -145,14 +145,6 @@ When V4_CFG_MANAGE_STORAGE is set to `true`, the `sas` and `pg-storage` storage 
 | V4_CFG_CR_PASSWORD | Container registry password | string | | false | By default, credentials are included in the downloaded deployment assets. See notes below. | viya |
 | V4_CFG_CR_URL | Container registry server | string | https://cr.sas.com | false | | viya |
 
-**Notes:**
-Ansible will attempt templating any string that contains any Jinja2 delimiters. If you container registry credentials contains any of the following [sequence of characters](https://jinja.palletsprojects.com/en/2.11.x/templates/#synopsis) within it, and you are running into templating errors try marking the value as [unsafe](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_advanced_syntax.html#unsafe-or-raw-strings) so that Ansible will not attempt to template the value.
-
-Example:
-```yaml
-V4_CFG_CR_PASSWORD: !unsafe "my{%crpassword"
-```
-
 ## Ingress
 
 | Name | Description | Type | Default | Required | Notes | Tasks |

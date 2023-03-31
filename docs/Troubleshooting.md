@@ -7,6 +7,7 @@
   - [EKS - Cluster Autoscaler Installation](#eks---cluster-autoscaler-installation)
   - [kustomize - Generate deployment manifest](#kustomize---generate-deployment-manifest)
   - [Ingress-Nginx issue - Unable to access SAS Viya Platform web apps](#ingress-nginx-issue---unable-to-access-sas-viya-platform-web-apps)
+  - [Ansible Variables with Special Jinja2 Characters](#ansible-variables-with-special-jinja2-characters)
 
 
 ## Debug Mode
@@ -231,3 +232,31 @@ INGRESS_NGINX_CONFIG:
       annotations:
         service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: /healthz
 ```
+
+## Ansible Variables with Special Jinja2 Characters
+
+### Symptom:
+
+You execute the viya4-deployment project and an Ansible task that uses a variable that you defined in your [ansible-vars.yaml](https://github.com/sassoftware/viya4-deployment/blob/main/examples/ansible-vars.yaml) fails due to a Jinja2 templating error.
+
+Example task below that failed while consuming the `V4_CFG_CR_PASSWORD` variable from my `ansible-vars.yaml`
+```bash
+TASK [echo : orchestration tooling - my example task] ******************************************************************
+fatal: [127.0.0.1]: FAILED! => {"msg": "An unhandled exception occurred while templating 'A1{%a%}{{b}}{#c#}#d##'. Error was a <class 'ansible.errors.AnsibleError'>, original message: template error while templating string: Encountered unknown tag 'a'.. String: A1{%a%}{{b}}{#c#}#d##"}
+```
+
+### Diagnosis:
+
+The variable that you defined in your `ansible-vars.yaml` has a string value that contains a special Jinja2 character sequence that Ansible is attempt to templatize. To see a list of special Jinja2 characters view the list here in the [Jinja2 documentation](https://jinja.palletsprojects.com/en/2.11.x/templates/#synopsis).
+
+### Solution:
+
+Ansible provides the `!unsafe` keyword that you can place in front of your string values to block templating. String values with `!unsafe` in front of them will be read as-is and will not require the user to escape the string themselves. It's important to note that using `!unsafe` does not introduce a security vulnerability like the name may imply, it actually the opposite, marking data as unsafe prevents malicious users from abusing Jinja2 templates to execute arbitrary code on target machines.
+
+Example:
+```yaml
+# ansible-vars.yaml
+V4_CFG_CR_PASSWORD: !unsafe "A1{%a%}{{b}}{#c#}#d##"
+```
+
+For additional information about the `!unsafe` keyword see the [Ansible Advanced playbook syntax documentation](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_advanced_syntax.html#unsafe-or-raw-strings)
