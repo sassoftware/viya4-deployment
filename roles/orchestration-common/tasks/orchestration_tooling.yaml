@@ -53,10 +53,14 @@
     - cas-onboard
     - offboard
 
+# The ansible log output will have escape characters when the fact is set, if the parsed string contains symbols.
+# This is expected and required to avoid Jinja2 templating issues in the tasks that use these two facts.
+# Note we are also escaping '{%' which to resolve templating issues around Jinja statements
+# https://jinja.palletsprojects.com/en/2.11.x/templates/#synopsis
 - name: orchestration tooling - set registry credentials if using defaults
   set_fact:
-    ORCHESTRATION_CR_USER: "{{ lookup('file', '{{DEPLOY_DIR}}/sas-bases/base/secrets.yaml') | regex_search('username=(.+)', '\\1') | first }}"
-    ORCHESTRATION_CR_PASSWORD: "{{ lookup('file', '{{DEPLOY_DIR}}/sas-bases/base/secrets.yaml') | regex_search('password=(.+)', '\\1') | first }}"
+    ORCHESTRATION_CR_USER: "{{ lookup('file', '{{DEPLOY_DIR}}/sas-bases/base/secrets.yaml') | regex_search('username=(.+)', '\\1') | first | regex_escape() | regex_replace('{%','{\\%') }}"
+    ORCHESTRATION_CR_PASSWORD: "{{ lookup('file', '{{DEPLOY_DIR}}/sas-bases/base/secrets.yaml') | regex_search('password=(.+)', '\\1') | first | regex_escape() | regex_replace('{%','{\\%') }}"
   when:
     - ORCHESTRATION_CR_USER is none
   tags:
@@ -67,9 +71,11 @@
     - cas-onboard
     - offboard
 
+# The ansible log output will have escape characters for ORCHESTRATION_CR_USER & ORCHESTRATION_CR_PASSWORD.
+# if the parsed creds contain symbols. This is expected and required to avoid Jinja2 templating issues.
 - name: orchestration tooling - Download orchestration tooling image
   command: |
-    skopeo copy docker://{{ V4_CFG_CR_HOST }}/{{ ORCHESTRATION_IMAGE }} oci-archive:{{ ORCHESTRATION_TOOLING_ARCHIVE }} --src-creds {{ ORCHESTRATION_CR_USER }}:{{ ORCHESTRATION_CR_PASSWORD }}
+    skopeo copy docker://{{ V4_CFG_CR_HOST }}/{{ ORCHESTRATION_IMAGE }} oci-archive:{{ ORCHESTRATION_TOOLING_ARCHIVE }} --src-creds {{ ORCHESTRATION_CR_USER|string }}:{{ ORCHESTRATION_CR_PASSWORD|string }}
   when:
     - deployment_tooling == "docker"
   tags:
@@ -130,11 +136,10 @@
     - cas-onboard
     - offboard
 
+# The ansible log output will have escape characters for ORCHESTRATION_CR_USER & ORCHESTRATION_CR_PASSWORD.
+# if the parsed creds contain symbols. This is expected and required to avoid Jinja2 templating issues.
 - name: orchestration tooling - log into V4_CFG_CR_HOST
-  community.docker.docker_login:
-    registry_url: "{{ V4_CFG_CR_HOST }}"
-    username: "{{ ORCHESTRATION_CR_USER }}"
-    password: "{{ ORCHESTRATION_CR_PASSWORD }}"
+  command: 'docker login -u {{ ORCHESTRATION_CR_USER|string}} -p {{ ORCHESTRATION_CR_PASSWORD|string }} {{ V4_CFG_CR_HOST }}'
   when:
     - deployment_tooling == "ansible"
   tags:
