@@ -56,7 +56,7 @@ INGRESS_NGINX_CONFIG:
       annotations:
 
     config:
-      use-forwarded-headers: "true"
+      use-forwarded-headers: "false"
       hsts-max-age: "63072000"
     tcp: {}
     udp: {}
@@ -86,7 +86,7 @@ INGRESS_NGINX_CVE_2021_25742_PATCH:
     config:
       allow-snippet-annotations: "true"
       large-client-header-buffers: "4 32k"
-      use-forwarded-headers: "true"
+      use-forwarded-headers: "false"
       annotation-value-word-blocklist: "load_module,lua_package,_by_lua,location,root,proxy_pass,serviceaccount,{,},\\"
 
 ## Nfs-subdir-external-provisioner
