@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
-- name: cluster-monitoring - user dir find files to copy
+- name: cluster-monitoring - user dir find files
   find:
     paths: "{{ V4M_CUSTOM_CONFIG_USER_DIR }}"
     file_type: file
@@ -21,7 +21,7 @@
     - install
     - update
   
-- name: cluster-monitoring - find files to copy
+- name: cluster-monitoring - find files
   find:
     paths: "{{ V4M_CUSTOM_CONFIG_USER_DIR }}/monitoring/"
     file_type: file
