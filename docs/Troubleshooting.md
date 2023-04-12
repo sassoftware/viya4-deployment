@@ -274,7 +274,6 @@ The document [NGINX Ingress Controller](https://kubernetes.github.io/ingress-ngi
 >If false, NGINX ignores incoming X-Forwarded-* headers, filling them with the request information it sees. Use this option if NGINX is exposed directly to the internet, or it's behind a L3/packet-based load balancer that doesn't alter the source IP in the packets.
 
 ### Solution:
-
 As NGINX is not behind another L7 proxy / load balancer we are setting the `use-forwarded-headers` to false by default starting viya4-deployment v6.5.0 or later. If you wish to enable the incoming X-Forwarded headers then please add the following in your ansible-vars.yaml file.
 
 ```bash
