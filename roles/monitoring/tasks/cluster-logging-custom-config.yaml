@@ -1,0 +1,103 @@
+# Copyright © 2020-2023, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+---
+- name: cluster-logging - user dir find files to copy
+  find:
+    paths: "{{ V4M_CUSTOM_CONFIG_USER_DIR }}"
+    file_type: file
+  register: user_dir_folder
+  tags:
+    - install
+    - update
+
+- name: cluster-logging - copy user dir files
+  copy:
+    src: "{{ item.path }}"
+    dest: "{{ tmpdir.path }}"
+    mode: "0660"
+  loop: "{{ user_dir_folder.files }}"
+  tags:
+    - install
+    - update
+  
+- name: cluster-logging - find files to copy
+  find:
+    paths: "{{ V4M_CUSTOM_CONFIG_USER_DIR }}/logging/"
+    file_type: file
+  register: logging_folder
+  tags:
+    - install
+    - update
+
+- name: cluster-logging - copy user dir logging files
+  copy:
+    src: "{{ item.path }}"
+    dest: "{{ tmpdir.path }}/logging/"
+    mode: "0660"
+  loop: "{{ logging_folder.files }}"
+  tags:
+    - install
+    - update
+  
+# - name: dbg task
+#   pause:
+#     prompt: "Ctl-C, then A to abort"
+#   tags:
+#     - install
+#     - update
+#     - uninstall
+
+- name: cluster-logging - deploy
+  command:
+    cmd: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/logging/bin/deploy_logging.sh"
+  environment: "{{ logging_map['env'] }}"
+  tags:
+    - install
+    - update
+
+- name: cluster-logging - elasticsearch cert
+  kubernetes.core.k8s:
+    kubeconfig: "{{ KUBECONFIG }}"
+    state: present
+    definition:
+      kind: Secret
+      apiVersion: v1
+      metadata:
+        name: "elasticsearch-ingress-tls-secret"
+        namespace: "{{ V4M_LOGGING_NAMESPACE }}"
+      data:
+        tls.crt: >-
+          {{ lookup('file', V4M_ELASTICSEARCH_CERT ) |b64encode }}
+        tls.key: >-
+          {{ lookup('file', V4M_ELASTICSEARCH_KEY ) |b64encode }}
+      type: kubernetes.io/tls
+  when: 
+    - V4M_ELASTICSEARCH_CERT is not none
+    - V4M_ELASTICSEARCH_KEY is not none
+  tags:
+    - install
+    - update
+
+- name: cluster-logging - kibana cert
+  kubernetes.core.k8s:
+    kubeconfig: "{{ KUBECONFIG }}"
+    state: present
+    definition:
+      kind: Secret
+      apiVersion: v1
+      metadata:
+        name: "kibana-ingress-tls-secret"
+        namespace: "{{ V4M_LOGGING_NAMESPACE }}"
+      data:
+        tls.crt: >-
+          {{ lookup('file', V4M_KIBANA_CERT ) |b64encode }}
+        tls.key: >-
+          {{ lookup('file', V4M_KIBANA_KEY ) |b64encode }}
+      type: kubernetes.io/tls
+  when: 
+    - V4M_KIBANA_CERT is not none
+    - V4M_KIBANA_KEY is not none
+  tags:
+    - install
+    - update

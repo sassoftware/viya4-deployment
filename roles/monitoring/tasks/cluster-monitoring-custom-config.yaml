@@ -2,70 +2,51 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
-- name: cluster-monitoring - lookup existing credentials
-  kubernetes.core.k8s_info:
-    api_version: v1
-    kind: Secret
-    name: v4m-grafana
-    namespace: "{{ V4M_MONITORING_NAMESPACE }}"
-    kubeconfig: "{{ KUBECONFIG }}"
-  register: monitoring_creds
+- name: cluster-monitoring - user dir find files to copy
+  find:
+    paths: "{{ V4M_CUSTOM_CONFIG_USER_DIR }}"
+    file_type: file
+  register: user_dir_folder
   tags:
     - install
     - update
 
-- name: Set password fact
-  set_fact:
-    V4M_GRAFANA_PASSWORD: "{{ V4M_GRAFANA_PASSWORD }}"
-  tags:
-    - install
-
-- name: cluster-monitoring - save credentials
-  set_fact:
-    V4M_GRAFANA_PASSWORD: "{{ monitoring_creds.resources[0].data['admin-password']|b64decode }}"
-  tags:
-    - install
-    - update
-  when:
-    - (monitoring_creds.resources | length) == 1
-
-- name: cluster-monitoring - output credentials
-  debug:
-    msg:
-      - "Grafana - username: admin, password: {{ V4M_GRAFANA_PASSWORD }}"
-  tags:
-    - install
-
-- name: cluster-monitoring - host-based user values
-  template:
-    src: "host-based/user-values-prom-operator.yaml"
-    dest: "{{ tmpdir.path }}/monitoring/user-values-prom-operator.yaml"
+- name: cluster-monitoring - copy user dir files
+  copy:
+    src: "{{ item.path }}"
+    dest: "{{ tmpdir.path }}"
     mode: "0660"
-  when:
-    - V4M_ROUTING|lower == 'host-based'
+  loop: "{{ user_dir_folder.files }}"
   tags:
     - install
     - update
-    - uninstall
+  
+- name: cluster-monitoring - find files to copy
+  find:
+    paths: "{{ V4M_CUSTOM_CONFIG_USER_DIR }}/monitoring/"
+    file_type: file
+  register: monitoring_folder
+  tags:
+    - install
+    - update
 
-- name: cluster-monitoring - path-based user values
-  block:
-    - name: copy operator yaml
-      template:
-        src: "path-based/user-values-prom-operator.yaml"
-        dest: "{{ tmpdir.path }}/monitoring/user-values-prom-operator.yaml"
-        mode: "0660"
-    - name: copy user env
-      template:
-        src: "path-based/user.env"
-        dest: "{{ tmpdir.path }}/monitoring/user.env"
-        mode: "0660"
-  when:
-    - V4M_ROUTING|lower == 'path-based'
+- name: cluster-monitoring - copy user dir monitoring files
+  copy:
+    src: "{{ item.path }}"
+    dest: "{{ tmpdir.path }}/monitoring/"
+    mode: "0660"
+  loop: "{{ monitoring_folder.files }}"
   tags:
     - install
     - update
-    - uninstall
+  
+# - name: dbg task
+#   pause:
+#     prompt: "Ctl-C, then A to abort"
+#   tags:
+#     - install
+#     - update
+#     - uninstall
 
 - name: cluster-monitoring - deploy
   command:
