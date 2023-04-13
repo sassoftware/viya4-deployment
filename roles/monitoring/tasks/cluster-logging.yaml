@@ -19,13 +19,13 @@
     V4M_KIBANA_PASSWORD: "{{ V4M_KIBANA_PASSWORD }}"
     V4M_KIBANA_LOGADM_PASSWORD: "{{ V4M_KIBANA_LOGADM_PASSWORD }}"
     V4M_KIBANASERVER_PASSWORD: "{{ V4M_KIBANASERVER_PASSWORD }}"
-    V4M_LOGCOLLECTOR_PASSWORD: "{{ V4M_LOGCOLLECTOR_PASSWORD }}" 
-    V4M_METRICGETTER_PASSWORD: "{{ V4M_METRICGETTER_PASSWORD }}" 
+    V4M_LOGCOLLECTOR_PASSWORD: "{{ V4M_LOGCOLLECTOR_PASSWORD }}"
+    V4M_METRICGETTER_PASSWORD: "{{ V4M_METRICGETTER_PASSWORD }}"
   tags:
     - install
 
 - name: cluster-logging - save credentials
-  set_fact: 
+  set_fact:
     "{{ logging_map['secret'][item.metadata.name] }}": "{{ item.data.password|b64decode }}"
   with_items: "{{ logging_secrets.resources }}"
   when:
@@ -115,7 +115,7 @@
         tls.key: >-
           {{ lookup('file', V4M_ELASTICSEARCH_KEY ) |b64encode }}
       type: kubernetes.io/tls
-  when: 
+  when:
     - V4M_ELASTICSEARCH_CERT is not none
     - V4M_ELASTICSEARCH_KEY is not none
   tags:
@@ -138,7 +138,7 @@
         tls.key: >-
           {{ lookup('file', V4M_KIBANA_KEY ) |b64encode }}
       type: kubernetes.io/tls
-  when: 
+  when:
     - V4M_KIBANA_CERT is not none
     - V4M_KIBANA_KEY is not none
   tags:

@@ -20,7 +20,7 @@
   tags:
     - install
     - update
-  
+
 - name: cluster-monitoring - find files
   find:
     paths: "{{ V4M_CUSTOM_CONFIG_USER_DIR }}/monitoring/"
@@ -39,14 +39,6 @@
   tags:
     - install
     - update
-  
-# - name: dbg task
-#   pause:
-#     prompt: "Ctl-C, then A to abort"
-#   tags:
-#     - install
-#     - update
-#     - uninstall
 
 - name: cluster-monitoring - deploy
   command:

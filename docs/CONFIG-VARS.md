@@ -50,7 +50,7 @@ Supported configuration variables are listed in the table below.  All variables 
 
 **SAS Viya Platform Deployment Operator Notes:**
 
-* Currently, the viya4-deployment project does not support using the SAS Viya Platform Deployment Operator in conjunction with a Long-Term Support: 2021.1 deployment that uses an alternate mirror repository (`V4_CFG_CR_URL`). 
+* Currently, the viya4-deployment project does not support using the SAS Viya Platform Deployment Operator in conjunction with a Long-Term Support: 2021.1 deployment that uses an alternate mirror repository (`V4_CFG_CR_URL`).
 
 * In a scenario where you have multiple SAS Viya platform deployments managed by a single cluster-wide deployment operator, uninstalling one of the SAS Viya platform deployments does not remove the SAS Viya Deployment Operator from the cluster. However, during the uninstallation workflow, if no SAS Viya platform deployments that are managed by the cluster-wide deployment operator are detected, the SAS Viya Deployment Operator is also removed.
 
@@ -86,9 +86,9 @@ Viya4-deployment uses the jump server to interact with the RWX filestore, which 
 ## Storage
 When `V4_CFG_MANAGE_STORAGE` is set to `true`, viya4-deployment creates the `sas` and `pg-storage` storage classes using the nfs-subdir-external-provisioner Helm chart. If a jump server is used, viya4-deployment uses that server to create the folders for the `astores`, `bin`, `data` and `homes` RWX Filestore NFS paths that are outlined below in the [RWX Filestore](#rwx-filestore) section.
 
-When `V4_CFG_MANAGE_STORAGE` is set to `false`, viya4-deployment does not create the `sas` or `pg-storage` storage classes for you. In addition, viya4-deployment does not create or manage the RWX Filestore NFS paths. Before you run the SAS Viya deployment, you must set the values for `V4_CFG_RWX_FILESTORE_ASTORES_PATH`, `V4_CFG_RWX_FILESTORE_BIN_PATH`, `V4_CFG_RWX_FILESTORE_DATA_PATH` and `V4_CFG_RWX_FILESTORE_HOMES_PATH` to specify existing NFS folder locations. The viya4-deployment user can create the required NFS folders from the jump server before starting the deployment. Recommended attribute settings for each folder are as follows: 
-- **filemode**: `0777` 
-- **group**: the equivalent of `nogroup` for your operating system 
+When `V4_CFG_MANAGE_STORAGE` is set to `false`, viya4-deployment does not create the `sas` or `pg-storage` storage classes for you. In addition, viya4-deployment does not create or manage the RWX Filestore NFS paths. Before you run the SAS Viya deployment, you must set the values for `V4_CFG_RWX_FILESTORE_ASTORES_PATH`, `V4_CFG_RWX_FILESTORE_BIN_PATH`, `V4_CFG_RWX_FILESTORE_DATA_PATH` and `V4_CFG_RWX_FILESTORE_HOMES_PATH` to specify existing NFS folder locations. The viya4-deployment user can create the required NFS folders from the jump server before starting the deployment. Recommended attribute settings for each folder are as follows:
+- **filemode**: `0777`
+- **group**: the equivalent of `nogroup` for your operating system
 - **owner**: `nobody`
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
@@ -164,7 +164,7 @@ When V4_CFG_MANAGE_STORAGE is set to `true`, the `sas` and `pg-storage` storage 
 | V4M_NODE_PLACEMENT_ENABLE | Whether to enable workload node placement for viya4-monitoring-kubernetes stack | bool | false | false | | cluster-logging, cluster-monitoring, viya-monitoring |
 | V4M_STORAGECLASS | StorageClass name | string | v4m | false | When V4_CFG_MANAGE_STORAGE is false, set to the name of your pre-existing StorageClass that supports ReadWriteOnce. | cluster-logging, cluster-monitoring, viya-monitoring |
 | V4M_ROUTING | Which routing type to use for viya4-monitoring-kubernetes applications | string | host-based | false | Supported values: [`host-based`, `path-based`] For host-based routing, the application name is part of the host name itself `https://dashboards.host.cluster.example.com/` For path-based routing, the host name is fixed and the application name is appended as a path on the URL `https://host.cluster.example.com/dashboards` | cluster-logging, cluster-monitoring |
-| V4M_CUSTOM_CONFIG_USER_DIR | Path to the viya4-monitoring-kubernetes top-level `USER_DIR` folder on the local file system. Documented [here](https://go.documentation.sas.com/doc/en/obsrvcdc/v_001/obsrvdply/n0wgd3ju667sa9n1adnxs7hnsqt6.htm), the folder may contain a top-level `user.env` file and `logging` and `monitoring` folders where your logging and monitoring `user.env` and customization yaml files are located. | string | null | false | The following V4M configuration variables are ignored by viya4-monitoring when `V4M_CUSTOM_CONFIG_USER_DIR` is set: [`V4M_ROUTING`, `V4M_BASE_DOMAIN`, all `V4M_*_FQDN` variables,  all `V4M_*_PASSWORD` variables] |
+| V4M_CUSTOM_CONFIG_USER_DIR | Path to the viya4-monitoring-kubernetes top-level `USER_DIR` folder on the local file system. The `USER_DIR` folder can contain a top-level `user.env` file and `logging` and `monitoring` folders where your logging and monitoring `user.env` and customization yaml files are located. **NOTE**: viya4-monitoring does not validate `user.env` or yaml file content pointed to by this variable. It is recommended to use file content that has been verified ahead of time. | string | null | false | The following V4M configuration variables are ignored by viya4-monitoring when `V4M_CUSTOM_CONFIG_USER_DIR` is set: [`V4M_ROUTING`, `V4M_BASE_DOMAIN`, all `V4M_*_FQDN` variables,  all `V4M_*_PASSWORD` variables] [Additional documentation](https://go.documentation.sas.com/doc/en/obsrvcdc/v_001/obsrvdply/n0wgd3ju667sa9n1adnxs7hnsqt6.htm) describing the `USER_DIR` folder is available.| cluster-logging, cluster-monitoring
 
 #### Open Source Kubernetes
 
@@ -378,7 +378,7 @@ If you used [viya4-iac-aws:5.6.0](https://github.com/sassoftware/viya4-iac-aws/r
 
 ### EBS CSI Driver
 
-The EBS CSI driver is currently only used for kubernetes v1.23 or later AWS EKS clusters. 
+The EBS CSI driver is currently only used for kubernetes v1.23 or later AWS EKS clusters.
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |

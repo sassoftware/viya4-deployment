@@ -20,7 +20,7 @@
   tags:
     - install
     - update
-  
+
 - name: cluster-logging - find files
   find:
     paths: "{{ V4M_CUSTOM_CONFIG_USER_DIR }}/logging/"
@@ -39,14 +39,6 @@
   tags:
     - install
     - update
-  
-# - name: dbg task
-#   pause:
-#     prompt: "Ctl-C, then A to abort"
-#   tags:
-#     - install
-#     - update
-#     - uninstall
 
 - name: cluster-logging - deploy
   command:
@@ -72,7 +64,7 @@
         tls.key: >-
           {{ lookup('file', V4M_ELASTICSEARCH_KEY ) |b64encode }}
       type: kubernetes.io/tls
-  when: 
+  when:
     - V4M_ELASTICSEARCH_CERT is not none
     - V4M_ELASTICSEARCH_KEY is not none
   tags:
@@ -95,7 +87,7 @@
         tls.key: >-
           {{ lookup('file', V4M_KIBANA_KEY ) |b64encode }}
       type: kubernetes.io/tls
-  when: 
+  when:
     - V4M_KIBANA_CERT is not none
     - V4M_KIBANA_KEY is not none
   tags:
