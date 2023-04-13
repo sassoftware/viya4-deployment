@@ -2,6 +2,25 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
+- name: v4m - custom config is valid path
+  stat:
+    path: "{{ V4M_CUSTOM_CONFIG_USER_DIR }}"
+  register: folder
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: v4m - custom config user dir check
+  fail:
+    msg: "{{ V4M_CUSTOM_CONFIG_USER_DIR }} does not exist."
+  when:
+    - not folder.stat.exists
+  tags:
+    - install
+    - uninstall
+    - update
+
 - name: cluster-logging - user dir find files
   find:
     paths: "{{ V4M_CUSTOM_CONFIG_USER_DIR }}"
