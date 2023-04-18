@@ -141,8 +141,8 @@ When V4_CFG_MANAGE_STORAGE is set to `true`, the `sas` and `pg-storage` storage 
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_CR_USER | Container registry username | string | | false | By default, credentials are included in the downloaded deployment assets. See notes below. | viya |
-| V4_CFG_CR_PASSWORD | Container registry password | string | | false | By default, credentials are included in the downloaded deployment assets. See notes below. | viya |
+| V4_CFG_CR_USER | Container registry username | string | | false | By default, credentials are included in the downloaded deployment assets. | viya |
+| V4_CFG_CR_PASSWORD | Container registry password | string | | false | By default, credentials are included in the downloaded deployment assets. | viya |
 | V4_CFG_CR_URL | Container registry server | string | https://cr.sas.com | false | | viya |
 
 ## Ingress
