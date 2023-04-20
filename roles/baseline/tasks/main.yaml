@@ -77,8 +77,11 @@
   tags:
     - baseline
 
+# The metrics-server tasks are only applicable for AWS
 - name: Include metrics-server
   include_tasks: 
     file: metrics-server.yaml
   tags:
     - baseline
+  when:
+    - PROVIDER in ["aws"]
