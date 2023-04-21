@@ -8,7 +8,7 @@
   - [kustomize - Generate deployment manifest](#kustomize---generate-deployment-manifest)
   - [Ingress-Nginx issue - Unable to access SAS Viya Platform web apps](#ingress-nginx-issue---unable-to-access-sas-viya-platform-web-apps)
   - [Ansible Variables with Special Jinja2 Characters](#ansible-variables-with-special-jinja2-characters)
-
+  - [Ingress-Nginx - use-forwarded-headers disabled](#ingress-nginx---use-forwarded-headers-disabled)
 
 ## Debug Mode
 Debug mode can be enabled by adding "-vvv" to the end of the docker or ansible commands
@@ -31,6 +31,7 @@ Example:
     -e TFSTATE=$HOME/viya4-iac-aws/terraform.tfstate \
     viya4-deployment --tags "baseline,viya,cluster-logging,cluster-monitoring,viya-monitoring,install" -vvv
   ```
+
 ## Viya4 Monitoring and Logging
 ### Symptom:
 While deploying the SAS Viya platform to a cluster with the "cluster-logging" and "install" Ansible task tags specified, the following error message is encountered.
@@ -149,7 +150,6 @@ Note: If you used viya4-iac-aws:5.6.0 or newer to create your infrastructure, th
       kubectl scale --replicas=1 deployment/cluster-autoscaler-aws-cluster-autoscaler
       ```
 
-
 ## kustomize - Generate deployment manifest
 
 ### Symptom:
@@ -260,3 +260,25 @@ V4_CFG_CR_PASSWORD: !unsafe "A1{%a%}{{b}}{#c#}#d##"
 ```
 
 For additional information about the `!unsafe` keyword see the [Ansible Advanced playbook syntax documentation](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_advanced_syntax.html#unsafe-or-raw-strings)
+
+## Ingress-Nginx - use-forwarded-headers disabled
+### Symptom:
+In viya4-deployment v6.4.0 or before the default value for `use-forwarded-headers` was set to true. This has raised a security concern and needs to be updated.
+
+### Diagnosis:
+
+The document [NGINX Ingress Controller](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/configmap/#use-forwarded-headers) states the use of `use-forwarded-headers` as follows:
+
+>If true, NGINX passes the incoming X-Forwarded-* headers to upstream. Use this option when NGINX is behind another L7 proxy / load balancer that is setting these headers.
+>
+>If false, NGINX ignores incoming X-Forwarded-* headers, filling them with the request information it sees. Use this option if NGINX is exposed directly to the internet, or it's behind a L3/packet-based load balancer that doesn't alter the source IP in the packets.
+
+### Solution:
+As NGINX is not behind another L7 proxy / load balancer we are setting the `use-forwarded-headers` to false by default starting viya4-deployment v6.5.0 or later. If you wish to enable the incoming X-Forwarded headers then please add the following in your ansible-vars.yaml file.
+
+```bash
+INGRESS_NGINX_CONFIG:
+  controller:
+    config:
+      use-forwarded-headers: "true"
+```
