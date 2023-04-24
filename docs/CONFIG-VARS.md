@@ -419,7 +419,7 @@ The NFS client is currently supported by the newer nfs-subdir-external-provision
 | NFS_CLIENT_NAMESPACE | nfs-subdir-external-provisioner Helm installation namespace | string | nfs-client | false | | baseline |
 | NFS_CLIENT_CHART_URL | nfs-subdir-external-provisioner Helm chart URL | string | Go [here](https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/) for more information. | false | | baseline |
 | NFS_CLIENT_CHART_NAME | nfs-subdir-external-provisioner Helm chart name | string | nfs-subdir-external-provisioner | false | | baseline |
-| NFS_CLIENT_CHART_VERSION | nfs-subdir-external-provisioner Helm chart version | string | 4.0.8| false | | baseline |
+| NFS_CLIENT_CHART_VERSION | nfs-subdir-external-provisioner Helm chart version | string | 4.0.18| false | | baseline |
 | NFS_CLIENT_CONFIG | nfs-subdir-external-provisioner Helm values | string | See [this file](../roles/baseline/defaults/main.yml) for more information. | false | | baseline |
 
 ### Postgres NFS Client
@@ -431,7 +431,7 @@ The Postgres NFS client is currently supported by the nfs-subdir-external-provis
 | PG_NFS_CLIENT_NAMESPACE | nfs-subdir-external-provisioner Helm installation namespace | string | nfs-client | false | | baseline |
 | PG_NFS_CLIENT_CHART_URL | nfs-subdir-external-provisioner Helm chart URL | string | Go [here](https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/) for more information. | false | | baseline |
 | PG_NFS_CLIENT_CHART_NAME | nfs-subdir-external-provisioner Helm chart name | string | nfs-subdir-external-provisioner | false | | baseline |
-| PG_NFS_CLIENT_CHART_VERSION | nfs-subdir-external-provisioner Helm chart version | string | 4.0.8| false | | baseline |
+| PG_NFS_CLIENT_CHART_VERSION | nfs-subdir-external-provisioner Helm chart version | string | 4.0.18| false | | baseline |
 | PG_NFS_CLIENT_CONFIG | nfs-subdir-external-provisioner Helm values | string | See [this file](../roles/baseline/defaults/main.yml) for more information. | false | | baseline |
 
 
