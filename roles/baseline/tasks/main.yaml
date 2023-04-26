@@ -3,6 +3,16 @@
 
 
 ---
+- name: baseline - gcloud auth for client-go kubeconfig
+  shell: |
+    gcloud auth activate-service-account '{{ V4_CFG_CLOUD_SERVICE_ACCOUNT_NAME }}' --key-file={{ V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH }}
+  when:
+    - V4_CFG_CLOUD_SERVICE_ACCOUNT_NAME is defined
+    - V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH is defined
+    - PROVIDER == "gcp"
+  tags:
+    - baseline
+
 - name: Include nfs-subdir-external-provisioner
   include_tasks: 
     file: nfs-subdir-external-provisioner.yaml
