@@ -44,7 +44,7 @@
         state: directory
     - name: deploy - Deploy SAS Viya
       environment:
-        PATH: "{{ ORCHESTRATION_TOOLING_PATH }}"
+        PATH: "{{ env_path + ':' + ORCHESTRATION_TOOLING_PATH }}"
         KUBECONFIG: "{{ KUBECONFIG }}"
         WORK_DIRECTORY: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/work"
       command: |
