@@ -24,6 +24,12 @@ The following list details our dependencies and versions (~ indicates multiple p
 | ansible-galaxy | ansible.utils    | 2.3.0       |
 | ansible-galaxy | kubernetes.core  | 2.3.2       |
 
+If you are using a provider based kubeconfig file created by viya4-iac-gcp:4.5.0 or newer, install these dependencies:
+| SOURCE         | NAME                    | VERSION     |
+|----------------|-------------------------|-------------|
+| ~              | gcloud                  | 428.0.0     |
+| ~              | gcloud-gke-auth-plugin  | 428.0.0     |
+
 Required project dependencies are generally pinned to known working or stable versions to ensure users have a smooth initial experience. In some cases it may be required to change the default version of a dependency. In such cases users are welcome to experiment with alternate versions, however compatibility may not be guaranteed.
 
 # Docker
