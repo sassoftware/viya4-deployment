@@ -1,0 +1,19 @@
+# This block of code is for setting the automatic restart
+# option on a CAS server. Any CAS server with this option
+# will automatically restart during updates using the
+# Deployment Operator.
+---
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: cas-auto-restart
+patch: |-
+   - op: add
+     path: /spec/autoRestart
+     value:
+       true
+target:
+  group: viya.sas.com
+  kind: CASDeployment
+  name: .*
+  version: v1alpha1

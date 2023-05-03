@@ -1,6 +1,9 @@
+# Copyright © 2020-2023, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 ---
 - name: Check for metrics service
-  community.kubernetes.k8s_info:
+  kubernetes.core.k8s_info:
     api_version: v1
     kind: Service
     name: metrics-server
@@ -15,7 +18,7 @@
     - uninstall
 
 - name: Deploy metrics-server
-  community.kubernetes.helm:
+  kubernetes.core.helm:
     name: "{{ METRICS_SERVER_NAME }}"
     namespace: "kube-system"
     chart_repo_url: "{{ METRICS_SERVER_CHART_URL }}"
@@ -32,7 +35,7 @@
     - METRICS_SERVER_ENABLED
 
 - name: Remove metrics-server
-  community.kubernetes.helm:
+  kubernetes.core.helm:
     name: "{{ METRICS_SERVER_NAME }}"
     namespace: "kube-system"
     kubeconfig: "{{ KUBECONFIG }}"
@@ -41,3 +44,5 @@
     wait: true
   tags:
     - uninstall
+  when:
+    - METRICS_SERVER_ENABLED

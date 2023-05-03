@@ -1,2 +1,0 @@
-persistentVolume:
-  storageClass: {{ V4M_STORAGECLASS }}

@@ -8,7 +8,8 @@ This project contains Ansible code that creates a baseline cluster in an existin
   - Deploy [ingress-nginx](https://kubernetes.github.io/ingress-nginx)
   - Deploy [nfs-subdir-external-provisioner](https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner) for PVs
   - Deploy [cert-manager](https://github.com/jetstack/cert-manager) for TLS
-  - Deploy [metrics-server](https://github.com/bitnami/charts/tree/master/bitnami/metrics-server/)
+  - Deploy [metrics-server](https://github.com/bitnami/charts/tree/master/bitnami/metrics-server/) (AWS only)
+  - Deploy [aws-ebs-csi-driver](https://github.com/kubernetes-sigs/aws-ebs-csi-driver) (AWS only)
   - Manage storageClass settings
   
 - Deploy the SAS Viya Platform

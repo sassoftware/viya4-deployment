@@ -1,3 +1,6 @@
+# Copyright © 2020-2023, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 ---
 - set_fact:
     INGRESS_NGINX_CONFIG: "{{ INGRESS_NGINX_CONFIG |combine(private_ingress[PROVIDER], recursive=True)}}"
@@ -11,7 +14,7 @@
 - name: Set the default INGRESS_NGINX_CHART_VERSION if not specified
   block:
     - name: Retreive K8s cluster information
-      community.kubernetes.k8s_cluster_info:
+      kubernetes.core.k8s_cluster_info:
         kubeconfig: "{{ KUBECONFIG }}"
       register: cluster_info
     - name: Set the default INGRESS_NGINX_CHART_VERSION based on K8s server minor version
@@ -28,10 +31,28 @@
     - install
     - update
 
+- name: Update INGRESS_NGINX_CONFIG to use NLB for AWS
+  set_fact:
+    INGRESS_NGINX_CONFIG: "{{ INGRESS_NGINX_CONFIG|combine(INGRESS_NGINX_AWS_NLB_CONFIG, recursive=True)}}"
+  when:
+    - PROVIDER == "aws"
+  tags:
+    - install
+    - update
+
+- name: Update INGRESS_NGINX_CONFIG to add Azure load-balancer health probe request path
+  set_fact:
+    INGRESS_NGINX_CONFIG: "{{ INGRESS_NGINX_CONFIG|combine(INGRESS_NGINX_AZURE_LB_HEALTH_PROBE_CONFIG, recursive=True)}}"
+  when:
+    - PROVIDER == "azure"
+  tags:
+    - install
+    - update    
+
 - name: Apply Mitigation for CVE-2021-25742
   block:
     - name: Retreive K8s cluster information
-      community.kubernetes.k8s_cluster_info:
+      kubernetes.core.k8s_cluster_info:
         kubeconfig: "{{ KUBECONFIG }}"
       register: cluster_info
     - name: Update INGRESS_NGINX_CONFIG
@@ -46,7 +67,7 @@
     - update
 
 - name: Deploy ingress-nginx
-  community.kubernetes.helm:
+  kubernetes.core.helm:
     name: "{{ INGRESS_NGINX_NAME }}"
     namespace: "{{ INGRESS_NGINX_NAMESPACE }}"
     chart_repo_url: "{{ INGRESS_NGINX_CHART_URL }}"
@@ -61,7 +82,7 @@
     - update
 
 - name: Remove ingress-nginx
-  community.kubernetes.helm:
+  kubernetes.core.helm:
     name: "{{ INGRESS_NGINX_NAME }}"
     namespace: "{{ INGRESS_NGINX_NAMESPACE }}"
     kubeconfig: "{{ KUBECONFIG }}"
@@ -72,7 +93,7 @@
     - uninstall
 
 - name: Remove {{ INGRESS_NGINX_NAMESPACE }} namespace
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     api_version: v1
     kind: Namespace
     name: "{{ INGRESS_NGINX_NAMESPACE }}"

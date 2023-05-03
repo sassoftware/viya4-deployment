@@ -1,3 +1,6 @@
+# Copyright © 2020-2023, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 ---
 # Update Resources in Kustomization.yaml
 - name: check if cas resources present
@@ -32,6 +35,43 @@
   tags:
     - offboard
 
+## Add tenant specific pod templates
+- name: check if tenant resources are present
+  lineinfile:
+    path: "{{ DEPLOY_DIR }}/kustomization.yaml"
+    line: "- site-config/multi-tenant/{{ item | trim }}"
+    state: present
+  check_mode: yes
+  register: result
+  with_items: "{{ V4MT_TENANT_IDS.split(',') }}"
+  when: V4_CFG_CADENCE_VERSION is version('2023.03', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
+  tags:
+    - cas-onboard
+
+- name: add tenant directories to resources 
+  lineinfile:
+    path: "{{ DEPLOY_DIR }}/kustomization.yaml"
+    insertafter: "resources:" 
+    line: "- site-config/multi-tenant/{{ item | trim }}"
+    state: present
+  with_items: "{{ V4MT_TENANT_IDS.split(',') }}"
+  when:
+    - result.changed
+    - V4_CFG_CADENCE_VERSION is version('2023.03', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
+  tags:
+    - cas-onboard
+
+# On offboard remove all the tenant pod template resources
+- name: remove all tenant resources
+  lineinfile:
+    path: "{{ DEPLOY_DIR }}/kustomization.yaml"
+    regexp: '.*site-config/multi-tenant/{{ item | trim }}.*$'
+    state: absent
+  with_items: "{{ V4MT_TENANT_IDS.split(',') }}"
+  when: V4_CFG_CADENCE_VERSION is version('2023.03', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
+  tags:
+    - offboard
+
 # Offboard CAS servers
 - name: kubectl delete cas servers for tenants
   ansible.builtin.shell: |
@@ -47,8 +87,16 @@
     state: absent
     path: "{{ DEPLOY_DIR }}/site-config/cas-{{ item | trim }}-default"
   with_items: '{{ V4MT_TENANT_IDS.split(",") | replace(" ", "") }}'
-  when: 
-    - V4MT_ENABLE
+  tags:
+    - offboard
+
+# On offboard delete the tenant pod template directories
+- name: delete tenant pod template directory
+  file:
+    state: absent
+    path: "{{ DEPLOY_DIR }}/site-config/multi-tenant/{{ item | trim }}"
+  with_items: '{{ V4MT_TENANT_IDS.split(",") | replace(" ", "") }}'
+  when: V4_CFG_CADENCE_VERSION is version('2023.03', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
   tags:
     - offboard
 

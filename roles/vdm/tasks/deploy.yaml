@@ -1,6 +1,9 @@
+# Copyright © 2020-2023, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 ---
 - name: deploy - Apply SAS Viya deployment
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     src: "{{ DEPLOY_DIR }}/sasdeployment.yaml"
     state: present
     namespace: "{{ NAMESPACE }}"
@@ -28,7 +31,7 @@
       failed_when:
         - ( deployment_manifests.files | length ) != 1
     - name: deploy - Apply supporting resources
-      community.kubernetes.k8s:
+      kubernetes.core.k8s:
         src: "{{ item.path }}"
         state: present
         namespace: "{{ NAMESPACE }}"
@@ -91,7 +94,7 @@
     - uninstall
 
 - name: deploy - Remove Viya
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     state: absent
     src: "{{ ORCHESTRATION_TOOLING_UNINSTALL_MANIFEST }}"
     wait: true
@@ -102,7 +105,7 @@
     - uninstall
 
 - name: deploy - Delete namespace
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     api_version: v1
     kind: Namespace
     name: "{{ NAMESPACE }}"

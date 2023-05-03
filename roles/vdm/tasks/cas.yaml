@@ -1,3 +1,6 @@
+# Copyright © 2020-2023, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 ---
 - name: "cas - base"
   overlay_facts:
@@ -103,6 +106,21 @@
       - { transformers: "cas-enable-external-services.yaml", vdm: true }
   when:
     - V4_CFG_CAS_ENABLE_LOADBALANCER
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: cas - Enable CAS Auto-Restart After Updates
+  overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { transformers: "cas-auto-restart.yaml", vdm: true, min: "2021.2" }
+  when:
+    - V4_DEPLOYMENT_OPERATOR_ENABLED
+    - V4_CFG_CAS_ENABLE_AUTO_RESTART
   tags:
     - install
     - uninstall

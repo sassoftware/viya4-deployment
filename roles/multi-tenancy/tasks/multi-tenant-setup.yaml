@@ -1,3 +1,6 @@
+# Copyright © 2020-2023, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 ---
 - name: create sas-tenant-job folder
   file:
@@ -31,6 +34,21 @@
     - onboard
     - offboard
 
+# Update the job names to unique identifier - required for Kustomize v4.5.7+
+- name: sas-tenant-job - update job-name
+  replace:
+    path: "{{ item.path }}"
+    regexp: "{{ item.regexp }}"
+    replace: "{{ item.replace }}"
+  with_items:
+    - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-onboard-job.yaml', regexp: '{% raw %}{{ JOB-TAG }}{% endraw %}', replace: "{{ lookup('password', '/dev/null chars=ascii_letters,digit length=8') | lower }}" }
+    - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-offboard-job.yaml', regexp: '{% raw %}{{ JOB-TAG }}{% endraw %}', replace: "{{ lookup('password', '/dev/null chars=ascii_letters,digit length=8') | lower }}" }
+  when: 
+    - V4MT_ENABLE
+    - V4_CFG_CADENCE_VERSION is version('2023.02', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
+  tags:
+    - onboard
+    - offboard
 
 - name: sas-tenant-job - update sas-tenant-ids
   replace:
@@ -149,5 +167,40 @@
          --output {{ DEPLOY_DIR }}/site-config --workers 0 --backup 0"
   with_items: '{{ V4MT_TENANT_IDS.split(",") | replace(" ", "") | lower }}'
   when: item not in (V4MT_TENANT_CAS_CUSTOMIZATION.keys()| lower)
+  tags:
+    - onboard
+
+## FileGenerator for tenant-specific resources
+- name: Check if sas-programming-environment directory exists
+  stat:
+    path: "{{ DEPLOY_DIR }}/sas-bases/overlays/multi-tenant/sas-programming-environment"
+  register: result
+  when:
+    - V4MT_ENABLE
+    - V4_CFG_CADENCE_VERSION is version('2023.03', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
+  tags:
+    - onboard
+
+- name: add env variable for pod templates in sas-tenant-job
+  lineinfile:
+    path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-onboard-job.yaml'
+    insertafter: "env:"
+    line: "          - name: SAS_CREATE_TENANT_POD_TEMPLATES\n            value: 'false'"
+  when:
+    - result.stat.exists
+    - V4MT_ENABLE
+    - V4_CFG_CADENCE_VERSION is version('2023.03', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
+  tags:
+    - onboard
+
+- name: tenant pod templates
+  include_tasks: tenant-pod-templates.yaml
+  vars:
+    tenant: "{{ item }}"
+  with_items: '{{ V4MT_TENANT_IDS.split(",") | replace(" ", "") | lower }}'
+  when:
+    - result.stat.exists
+    - V4MT_ENABLE
+    - V4_CFG_CADENCE_VERSION is version('2023.03', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
   tags:
     - onboard

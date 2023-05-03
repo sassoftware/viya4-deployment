@@ -1,4 +1,19 @@
+# Copyright © 2020-2023, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 ---
+- name: v4m - ensure supported value for V4M_ROUTING
+  ansible.builtin.assert:
+    that: '{{ ["host-based", "path-based"] | intersect(V4M_ROUTING) | count == 1}}'
+    msg: >
+      Invalid V4M_ROUTING value: {{ V4M_ROUTING }}
+
+      Supported values for V4M_ROUTING are `host-based` or `path-based`
+  tags:
+    - install
+    - uninstall
+    - update
+
 - name: v4m - download 
   git:
     repo: https://github.com/sassoftware/viya4-monitoring-kubernetes.git
@@ -10,7 +25,7 @@
     - update
 
 - name: v4m - add storageclass
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     kubeconfig: "{{ KUBECONFIG }}"
     state: present
     src: "{{ role_path }}/files/{{ PROVIDER }}-storageclass.yaml"
@@ -18,7 +33,7 @@
     - PROVIDER is not none
     - PROVIDER in ["azure","aws","gcp"]
     - V4_CFG_MANAGE_STORAGE is not none
-    - V4_CFG_MANAGE_STORAGE
+    - V4_CFG_MANAGE_STORAGE|bool
   tags:
     - install
     - update
@@ -34,7 +49,7 @@
     - cluster-logging
 
 - name: v4m - remove storageclass
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     kubeconfig: "{{ KUBECONFIG }}"
     state: absent
     src: "{{ role_path }}/files/{{ PROVIDER }}-storageclass.yaml"
@@ -42,6 +57,6 @@
     - PROVIDER is not none
     - PROVIDER == "azure"
     - V4_CFG_MANAGE_STORAGE is not none
-    - V4_CFG_MANAGE_STORAGE
+    - V4_CFG_MANAGE_STORAGE|bool
   tags:
     - uninstall

@@ -1,6 +1,9 @@
+# Copyright © 2020-2023, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 ---
 - name: Deploy contour
-  community.kubernetes.helm:
+  kubernetes.core.helm:
     name: "{{ CONTOUR_NAME }}"
     namespace: "{{ CONTOUR_NAMESPACE }}"
     chart_repo_url: "{{ CONTOUR_CHART_URL }}"
@@ -15,7 +18,7 @@
     - update
 
 - name: Remove contour
-  community.kubernetes.helm:
+  kubernetes.core.helm:
     name: "{{ CONTOUR_NAME }}"
     namespace: "{{ CONTOUR_NAMESPACE }}"
     kubeconfig: "{{ KUBECONFIG }}"
@@ -26,7 +29,7 @@
     - uninstall
 
 - name: Remove {{ CONTOUR_NAMESPACE }} namespace
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     api_version: v1
     kind: Namespace
     name: "{{ CONTOUR_NAMESPACE }}"

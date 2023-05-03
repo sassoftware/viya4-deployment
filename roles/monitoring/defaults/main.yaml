@@ -1,5 +1,9 @@
+# Copyright © 2020-2023, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 KUBECONFIG: ~/.kube/config
 NAMESPACE: null
+V4_CFG_MANAGE_STORAGE: true
 
 V4M_STORAGECLASS: v4m
 
@@ -8,6 +12,7 @@ V4M_NODE_PLACEMENT_ENABLE: false
 V4M_BASE_DOMAIN: "{{ V4_CFG_BASE_DOMAIN }}"
 V4M_CERT: null
 V4M_KEY: null
+V4M_ROUTING: host-based
 
 V4M_LOGGING_NAMESPACE: logging
 V4M_MONITORING_NAMESPACE: monitoring

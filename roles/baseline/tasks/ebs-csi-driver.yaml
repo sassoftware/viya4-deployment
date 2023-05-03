@@ -1,6 +1,9 @@
+# Copyright © 2020-2023, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 ---
 - name: Deploy ebs-csi-driver
-  community.kubernetes.helm:
+  kubernetes.core.helm:
     name: "{{ EBS_CSI_DRIVER_NAME }}"
     namespace: "{{ EBS_CSI_DRIVER_NAMESPACE }}"
     chart_repo_url: "{{ EBS_CSI_DRIVER_CHART_URL }}"
@@ -16,7 +19,7 @@
     - update
 
 - name: Remove ebs-csi-driver
-  community.kubernetes.helm:
+  kubernetes.core.helm:
     name: "{{ EBS_CSI_DRIVER_NAME }}"
     namespace: "{{ EBS_CSI_DRIVER_NAMESPACE }}"
     kubeconfig: "{{ KUBECONFIG }}"

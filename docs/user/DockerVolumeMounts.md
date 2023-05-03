@@ -24,6 +24,7 @@ Ansible vars to docker volume mounts mappings. For full listing of config vars s
 | V4_CFG_CERTS | `--volume <desired_path>:/config/v4_cfg_certs `|
 | V4_CFG_DEPLOYMENT_ASSETS | `--volume <desired_path>:/config/v4_cfg_deployment_assets `|
 | V4_CFG_LICENSE | `--volume <desired_path>:/config/v4_cfg_license `|
+| V4_CFG_CERTS | `--volume <desired_path>:/config/v4_cfg_certs `|
 
 ## Monitoring and Logging
 
