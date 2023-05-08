@@ -23,7 +23,7 @@ do
   fi
 done
 
-# TODO: Can remove the next line when DAC moves to kubectl >= 1.26
+# TODO: Can remove the next line when the default GKE kubernetes_version is moved to 1.26 and greater
 export USE_GKE_GCLOUD_AUTH_PLUGIN=True
 echo  "Running: ansible-playbook $OPTS $@ playbooks/${PLAYBOOK}"
 ANSIBLE_STDOUT_CALLBACK=yaml exec ansible-playbook $OPTS $@ playbooks/${PLAYBOOK}
