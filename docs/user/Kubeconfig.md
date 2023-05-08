@@ -23,7 +23,7 @@ See the [viya4-iac-gcp Kubeconfig document](https://github.com/sassoftware/viya4
 
 ### Examples
 
-Using the viya4-deployment project with a viya4-iac-gcp created provider based kubeconfig file requires providing values for the V4_CFG_CLOUD_SERVICE_ACCOUNT_NAME and a V4_CLOUD_SERVICE_ACCOUNT_AUTH file. Refer to the section below for examples of how to express those two values with either the docker container or ansible CLI usage patterns.
+Using the viya4-deployment project with a viya4-iac-gcp "provider based" kubeconfig file requires providing values for the V4_CFG_CLOUD_SERVICE_ACCOUNT_NAME and a V4_CLOUD_SERVICE_ACCOUNT_AUTH file. Refer to the section below for examples of how to express those two values with either the docker container or ansible CLI usage patterns.
 
 - I have opted to use this project via a Docker container produced with the provided Dockerfile. I have a provider based Kubernetes configuration file and I want to baseline and deploy Viya only.
 
