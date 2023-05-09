@@ -121,6 +121,8 @@ The value is the path to a standard SAS Viya platform sitedefault file. If none 
 
 The Kubernetes access configuration file. If you used one of the SAS Viya 4 IaC projects to provision your cluster, this value is not required.
 
+If you used the [viya4-iac-gcp](https://github.com/sassoftware/viya4-iac-gcp) project to create a provider based kubeconfig file to access your GKE cluster, refer to [kubernetes configuration file types](./docs/user/Kubeconfig.md) for instructions on using a GCP provider based kubeconfig file with the viya4-deployment project.
+
 #### Terraform State File
 
 If you used a SAS Viya 4 IaC project to provision your cluster, you can provide the resulting tfstate file to have the kubeconfig and other settings auto-discovered. The [ansible-vars-iac.yaml](examples/ansible-vars-iac.yaml) example file shows the values that must be set when using the SAS Viya 4 IaC integration.
