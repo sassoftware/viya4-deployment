@@ -48,7 +48,7 @@ As described in the [Docker Installation](./DockerUsage.md) section add addition
 ```bash
 # Override kubectl version
 docker build \
-	--build-arg kubectl_version=1.25.8 \
+	--build-arg kubectl_version=1.25.9 \
 	-t viya4-deployment .
 ```
 
