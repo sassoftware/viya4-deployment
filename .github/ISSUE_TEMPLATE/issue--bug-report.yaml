@@ -1,0 +1,75 @@
+name: Bug report
+description: |
+  Welcome, Thanks for opening an issue. The more information you provide, the easier it is for us to assess the problem, prioritize, assign, develop, then release a fix. The SAS Viya 4 IaC team.
+labels: [bug, new]
+body:
+  - type: textarea
+    id: dac_version
+    attributes:
+      label: Viya4 Deployment Version Details
+      description: |
+        We ask this to know which version of viya4-deployment you are running from your work environment.
+
+        If you are not running the latest version of viya4-deployment, please try upgrading because your issue may have already been fixed.
+
+        If you're not sure what the latest version is, here's a link to the releases: https://github.com/sassoftware/viya4-deployment/releases
+    validations:
+      required: true
+  - type: textarea
+    id: dac_vars
+    attributes:
+      label: Ansible Variable File Details
+      description: |
+        Paste the relevant parts of your ansible-vars.yaml variables file or variable flag values here.
+
+        The relevant parts should come from your `ansible-vars.yaml` file or equivalent that seem to be causing the error.
+
+        For security reasons, do not copy and paste any sensitive information in this issue, like account information and passwords etc.
+    validations:
+      required: false
+  - type: textarea
+    id: dac_steps_to_reproduce
+    attributes:
+      label: Steps to Reproduce
+      description: Please list the full steps required to reproduce the issue including the docker run or ansible-playbook command used that reproduces the issue.
+    validations:
+      required: true
+  - type: textarea
+    id: dac_expected_behavior
+    attributes:
+      label: Expected Behavior
+      description: What should have happened?
+    validations:
+      required: true
+  - type: textarea
+    id: dac_actual_behavior
+    attributes:
+      label: Actual Behavior
+      description: |
+        What actually happened? Here you can include output and information from your viya4-deployment run.
+    validations:
+      required: true
+  - type: textarea
+    id: dac_additional_context
+    attributes:
+      label: Additional Context
+      description: |
+        Is there anything atypical about your situation that we should know? For example: Are you passing any unusual command line options or environment variables to opt-in to non-default behavior?
+    validations:
+      required: false
+  - type: input
+    id: dac_references
+    attributes:
+      label: References
+      description: |
+        Are there any other GitHub issues (open or closed) or Pull Requests that should be linked here? Before you create a new issue, please do a search in open [issues](https://github.com/sassoftware/viya4-deployment/issues) to see if a similar issue or feature request has already been filed.
+    validations:
+      required: false
+  - type: checkboxes
+    id: dac_terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/sassoftware/viya4-deployment/blob/main/CODE_OF_CONDUCT.md)
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true
