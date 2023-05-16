@@ -186,6 +186,7 @@ EBS_CSI_DRIVER_ACCOUNT: null
 EBS_CSI_DRIVER_LOCATION: us-east-1
 EBS_CSI_DRIVER_CONFIG:
   controller:
+    k8sTagClusterId: "{{ CLUSTER_NAME }}"
     region: "{{ EBS_CSI_DRIVER_LOCATION }}"
     serviceAccount:
       create: true
