@@ -338,8 +338,8 @@ When running the viya4-deployment project as a Docker container the `sas-orchest
 ### Solution:
 
 You have a couple of options:
-* If you would still like to deploy the SAS Viya platform with the `sas-orchestration` command with your existing kubernetes configuration file, it is recommended to build Docker image for this project with the [Dockerfile](https://github.com/sassoftware/viya4-deployment/blob/main/Dockerfile) and run it using the [Docker run command](https://github.com/sassoftware/viya4-deployment/blob/main/docs/user/DockerUsage.md).
-* If you created your infrastructure with an Viya 4 IAC projects, you can go back and set `create_static_kubeconfig=true` and run `terraform apply` again to generate a "static" kubeconfig file that is compatible with `sas-orchestration`.
+* If you would still like to deploy the SAS Viya platform with the `sas-orchestration` command with your existing kubernetes configuration file, it is recommended to build a Docker image for this project with the [Dockerfile](https://github.com/sassoftware/viya4-deployment/blob/main/Dockerfile) and run it using the [Docker run command](https://github.com/sassoftware/viya4-deployment/blob/main/docs/user/DockerUsage.md).
+* If you created your infrastructure with the sassoftware/viya4-iac-* projects, you can go back and set `create_static_kubeconfig=true` and run `terraform apply` again to generate a "static" kubeconfig file that is compatible with `sas-orchestration`.
 * Using your existing provider based kubernetes configuration and `kubectl` you can alternatively create a new ServiceAccount, associate a service-account-token to it, and grant it admin permissions using RBAC. You should be able to use the ca cert and token from service-account-token to create your own "static" kubernetes configuration file.
   * See [Kubernetes documentation](https://kubernetes.io/docs/concepts/security/service-accounts/)
   * Note: this is what the second option above would do for you automatically.
