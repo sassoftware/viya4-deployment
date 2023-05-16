@@ -287,7 +287,7 @@ INGRESS_NGINX_CONFIG:
 ## Deploying with the SAS Orchestration Tool using a Provider Based Kubernetes Configuration File
 
 ### Symptom:
-While deploying the SAS Viya platform to a cluster in GCP or AWS while using a provider based kubernetes configuration file and setting `V4_DEPLOYMENT_OPERATOR_ENABLED: false`  the following error message is encountered:
+While deploying the SAS Viya platform into a GCP OR AWS cluster using a provider based kubernetes configuration file and setting `V4_DEPLOYMENT_OPERATOR_ENABLED: false` in your `ansible-vars.yaml`, the following error message is encountered:
 
 In GCP:
   ```bash
@@ -319,13 +319,13 @@ Error: Cannot create client for namespace 'deploy'
 ### Diagnosis:
 
 
-If you are using a provider based kubernetes configuration file; one that relies on external binaries from the cloud provider to authenticate into the kubernetes cluster ([AWS](https://docs.aws.amazon.com/eks/latest/userguide/cluster-auth.html) & [GCP](https://cloud.google.com/kubernetes-engine/docs/how-to/api-server-authentication)), there are deployment constraints you need to consider when planning your SAS Viya platform deployment when using this project. If you are using a "kubernetes service account and cluster role binding" or "static" based kubernetes configuration file it will be compatible will all the SAS Viya platform deployment methods as well as ways to execute this project, and the statements below are not applicable.
+If you are using a provider based kubernetes configuration file; one that relies on external binaries from the cloud provider to authenticate into the kubernetes cluster ([AWS](https://docs.aws.amazon.com/eks/latest/userguide/cluster-auth.html) & [GCP](https://cloud.google.com/kubernetes-engine/docs/how-to/api-server-authentication)), there are deployment constraints you need to consider when planning your SAS Viya platform deployment when using this project. If you are using a "kubernetes service account and cluster role binding" or "static" based kubernetes configuration file it will be compatible will all SAS Viya platform deployment methods as well as ways to execute this project, and the statements below are not applicable.
 
 Some background information, using the `V4_DEPLOYMENT_OPERATOR_ENABLED` flag  in your `ansible-vars.yaml` you are able to control the method of deployment that this project will use to deploy SAS Viya.
 * `V4_DEPLOYMENT_OPERATOR_ENABLED: true`, the [SAS Viya Platform Deployment Operator](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=itopscon&docsetTarget=p0839p972nrx25n1dq264egtgrcq.htm) will be installed into the cluster and used to deploy the SAS Viya platform
-* `V4_DEPLOYMENT_OPERATOR_ENABLED: false`, the [sas-orchestration command](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=itopscon&docsetTarget=p0839p972nrx25n1dq264egtgrcq.htm) whose tooling is delivered a Docker image, is used to deploy SAS Viya
+* `V4_DEPLOYMENT_OPERATOR_ENABLED: false`, the [sas-orchestration command](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=itopscon&docsetTarget=p0839p972nrx25n1dq264egtgrcq.htm) whose tooling is delivered as a Docker image, is used to deploy the SAS Viya platform
 
-Alongside the two SAS Viya deployments methods, consideration for the two different ways that this project, viya4-deployment, can be run will also need to be made. You can either:
+Alongside the two SAS Viya deployments methods, considerations for the two different ways that this project, viya4-deployment, can be run will also need to be made. You can either:
 * Clone this project and execute it [using the ansible-playbook](https://github.com/sassoftware/viya4-deployment/blob/main/docs/user/AnsibleUsage.md) binary you have installed on your host
 * Alternatively you can build a Docker image with the [Dockerfile](https://github.com/sassoftware/viya4-deployment/blob/main/Dockerfile) provided in this repository and run it using the [Docker run command](https://github.com/sassoftware/viya4-deployment/blob/main/docs/user/DockerUsage.md).
 
@@ -338,8 +338,8 @@ When running the viya4-deployment project as a Docker container the `sas-orchest
 ### Solution:
 
 You have a couple of options:
-* If you will still like to deploy the SAS Viya platform with the sas-orchestration command with your existing kubernetes configuration file, it's recommended to build Docker image with the [Dockerfile](https://github.com/sassoftware/viya4-deployment/blob/main/Dockerfile) and run it using the [Docker run command](https://github.com/sassoftware/viya4-deployment/blob/main/docs/user/DockerUsage.md).
-* If you created your infrastructure with an Viya 4 IAC project you can go back and set `create_static_kubeconfig` to true and run `terraform apply` again to generate a "static" kubeconfig file that is compatible with `sas-orchestration`
-* Using your existing provider based kubernetes configuration and `kubectl` you can create a new ServiceAccount, associate a service-account-token to it, and grant it admin permissions using RBAC. You should be able to use the ca cert and token from service-account-token to create your own "static" kubernetes configuration file.
+* If you would still like to deploy the SAS Viya platform with the `sas-orchestration` command with your existing kubernetes configuration file, it is recommended to build Docker image for this project with the [Dockerfile](https://github.com/sassoftware/viya4-deployment/blob/main/Dockerfile) and run it using the [Docker run command](https://github.com/sassoftware/viya4-deployment/blob/main/docs/user/DockerUsage.md).
+* If you created your infrastructure with an Viya 4 IAC projects, you can go back and set `create_static_kubeconfig=true` and run `terraform apply` again to generate a "static" kubeconfig file that is compatible with `sas-orchestration`.
+* Using your existing provider based kubernetes configuration and `kubectl` you can alternatively create a new ServiceAccount, associate a service-account-token to it, and grant it admin permissions using RBAC. You should be able to use the ca cert and token from service-account-token to create your own "static" kubernetes configuration file.
   * See [Kubernetes documentation](https://kubernetes.io/docs/concepts/security/service-accounts/)
-  * Note: this is what the second option above would do for automatically.
+  * Note: this is what the second option above would do for you automatically.
