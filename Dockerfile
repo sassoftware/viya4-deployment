@@ -1,12 +1,13 @@
 # syntax=docker/dockerfile:experimental
 FROM ubuntu:22.04 as baseline
-RUN apt update && apt upgrade -y \
-  && apt install -y python3 python3-dev python3-pip curl unzip \
+
+RUN apt-get update && apt-get upgrade -y \
+  && apt-get install -y python3 python3-dev python3-pip curl unzip apt-transport-https ca-certificates gnupg \
   && update-alternatives --install /usr/bin/python python /usr/bin/python3 1 \
   && update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
 
 FROM baseline as tool_builder
-ARG kubectl_version=1.24.10
+ARG kubectl_version=1.25.8
 
 WORKDIR /build
 
@@ -16,10 +17,10 @@ RUN curl -sLO https://storage.googleapis.com/kubernetes-release/release/v{$kubec
 FROM baseline
 ARG helm_version=3.9.4
 ARG aws_cli_version=2.7.22
-ARG gcp_cli_version=409.0.0
+ARG gcp_cli_version=428.0.0-0
 
 # Add extra packages
-RUN apt install -y gzip wget git git-lfs jq sshpass skopeo rsync \
+RUN apt-get install -y gzip wget git git-lfs jq sshpass skopeo rsync \
   && curl -ksLO https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 && chmod 755 get-helm-3 \
   && ./get-helm-3 --version v$helm_version --no-sudo \
   && helm plugin install https://github.com/databus23/helm-diff \
@@ -30,9 +31,10 @@ RUN apt install -y gzip wget git git-lfs jq sshpass skopeo rsync \
   # AZURE
   && curl -sL https://aka.ms/InstallAzureCLIDeb | bash \
   # GCP
-  && curl "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${gcp_cli_version}-linux-x86_64.tar.gz" -o gcpcli.tar.gz \
-  && tar -xvf gcpcli.tar.gz \
-  && ./google-cloud-sdk/install.sh
+  && echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list \
+  && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add - \
+  && apt-get update && apt-get install google-cloud-cli:amd64=${gcp_cli_version} \
+  && apt-get install google-cloud-sdk-gke-gcloud-auth-plugin 
 
 COPY --from=tool_builder /build/kubectl /usr/local/bin/kubectl
 
@@ -50,7 +52,6 @@ RUN pip install -r ./requirements.txt \
 ENV PLAYBOOK=playbook.yaml
 ENV VIYA4_DEPLOYMENT_TOOLING=docker
 ENV ANSIBLE_CONFIG=/viya4-deployment/ansible.cfg
-ENV PATH=$PATH:/google-cloud-sdk/bin/
 
 VOLUME ["/data", "/config", "/vault"]
 ENTRYPOINT ["/viya4-deployment/docker-entrypoint.sh"]

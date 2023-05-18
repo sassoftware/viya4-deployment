@@ -44,7 +44,7 @@
         state: directory
     - name: deploy - Deploy SAS Viya
       environment:
-        PATH: "{{ ORCHESTRATION_TOOLING_PATH }}"
+        PATH: "{{ env_path + ':' + ORCHESTRATION_TOOLING_PATH }}"
         KUBECONFIG: "{{ KUBECONFIG }}"
         WORK_DIRECTORY: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/work"
       command: |
@@ -57,6 +57,25 @@
         - "{{ deployment_manifests.files }}"
       when:
         - deployment_tooling == "docker"
+        - not V4_CFG_BELOW_THE_LINE
+    - name: deploy BLT - Deploy SAS Viya
+      environment:
+        PATH: "{{ ORCHESTRATION_TOOLING_PATH }}"
+        KUBECONFIG: "{{ KUBECONFIG }}"
+        WORK_DIRECTORY: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/work"
+        EXPERIMENTAL_FEATURE_LOCAL_DEPLOYMENT_ASSETS: true
+      command: |
+        orchestration deploy
+             --namespace "{{ NAMESPACE }}"
+             --user-content "{{ DEPLOY_DIR }}"
+             --local-deployment-assets
+      args:
+        chdir: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}"
+      with_items:
+        - "{{ deployment_manifests.files }}"
+      when:
+        - deployment_tooling == "docker"
+        - V4_CFG_BELOW_THE_LINE
     - name: deploy - Deploy SAS Viya
       ansible.builtin.shell: >
         docker run --rm
@@ -74,6 +93,26 @@
         - "{{ deployment_manifests.files }}"
       when:
         - deployment_tooling == "ansible"
+        - not V4_CFG_BELOW_THE_LINE
+    - name: deploy BLT - Deploy SAS Viya
+      ansible.builtin.shell: >
+        docker run --rm
+        --user="{{ UID_GID }}"
+        --name "orchestration_{{ lookup('password', '/dev/null chars=ascii_lowercase length=8') }}"
+        --env KUBECONFIG="/config/kubeconfig"
+        --env WORK_DIRECTORY="/tmp/work"
+        --env EXPERIMENTAL_FEATURE_LOCAL_DEPLOYMENT_ASSETS=true
+        --volume "{{ ORCHESTRATION_TOOLING_INSTALL_MANIFESTS_DIRECTORY }}:/manifests"
+        --volume "{{ KUBECONFIG }}:/config/kubeconfig"
+        --volume "{{ DEPLOY_DIR }}:/src"
+        "{{ V4_CFG_CR_HOST }}/{{ ORCHESTRATION_IMAGE }}"
+        deploy
+        --namespace {{ NAMESPACE }}
+        --user-content /src
+        --local-deployment-assets
+      when:
+        - deployment_tooling == "ansible"
+        - V4_CFG_BELOW_THE_LINE
   when:
     - V4_DEPLOYMENT_OPERATOR_ENABLED == False
   tags:

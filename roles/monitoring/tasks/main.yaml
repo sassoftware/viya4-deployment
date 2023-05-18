@@ -9,6 +9,8 @@
       Invalid V4M_ROUTING value: {{ V4M_ROUTING }}
 
       Supported values for V4M_ROUTING are `host-based` or `path-based`
+  when:
+    - V4M_CUSTOM_CONFIG_USER_DIR is none
   tags:
     - install
     - uninstall
@@ -39,12 +41,12 @@
     - update
      
 - name: v4m - cluster monitoring
-  include_tasks: cluster-monitoring.yaml
+  include_tasks: cluster-monitoring-common.yaml
   tags:
     - cluster-monitoring
 
 - name: v4m - cluster logging
-  include_tasks: cluster-logging.yaml
+  include_tasks: cluster-logging-common.yaml
   tags:
     - cluster-logging
 

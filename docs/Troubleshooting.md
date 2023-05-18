@@ -8,7 +8,8 @@
   - [kustomize - Generate deployment manifest](#kustomize---generate-deployment-manifest)
   - [Ingress-Nginx issue - Unable to access SAS Viya Platform web apps](#ingress-nginx-issue---unable-to-access-sas-viya-platform-web-apps)
   - [Ansible Variables with Special Jinja2 Characters](#ansible-variables-with-special-jinja2-characters)
-
+  - [Ingress-Nginx - use-forwarded-headers disabled](#ingress-nginx---use-forwarded-headers-disabled)
+  - [Deploying with the SAS Orchestration Tool using a Provider Based Kubernetes Configuration File](#deploying-with-the-sas-orchestration-tool-using-a-provider-based-kubernetes-configuration-file)
 
 ## Debug Mode
 Debug mode can be enabled by adding "-vvv" to the end of the docker or ansible commands
@@ -31,6 +32,7 @@ Example:
     -e TFSTATE=$HOME/viya4-iac-aws/terraform.tfstate \
     viya4-deployment --tags "baseline,viya,cluster-logging,cluster-monitoring,viya-monitoring,install" -vvv
   ```
+
 ## Viya4 Monitoring and Logging
 ### Symptom:
 While deploying the SAS Viya platform to a cluster with the "cluster-logging" and "install" Ansible task tags specified, the following error message is encountered.
@@ -149,7 +151,6 @@ Note: If you used viya4-iac-aws:5.6.0 or newer to create your infrastructure, th
       kubectl scale --replicas=1 deployment/cluster-autoscaler-aws-cluster-autoscaler
       ```
 
-
 ## kustomize - Generate deployment manifest
 
 ### Symptom:
@@ -260,3 +261,84 @@ V4_CFG_CR_PASSWORD: !unsafe "A1{%a%}{{b}}{#c#}#d##"
 ```
 
 For additional information about the `!unsafe` keyword see the [Ansible Advanced playbook syntax documentation](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_advanced_syntax.html#unsafe-or-raw-strings)
+
+## Ingress-Nginx - use-forwarded-headers disabled
+### Symptom:
+In viya4-deployment v6.4.0 or before the default value for `use-forwarded-headers` was set to true. This has raised a security concern and needs to be updated.
+
+### Diagnosis:
+
+The document [NGINX Ingress Controller](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/configmap/#use-forwarded-headers) states the use of `use-forwarded-headers` as follows:
+
+>If true, NGINX passes the incoming X-Forwarded-* headers to upstream. Use this option when NGINX is behind another L7 proxy / load balancer that is setting these headers.
+>
+>If false, NGINX ignores incoming X-Forwarded-* headers, filling them with the request information it sees. Use this option if NGINX is exposed directly to the internet, or it's behind a L3/packet-based load balancer that doesn't alter the source IP in the packets.
+
+### Solution:
+As NGINX is not behind another L7 proxy / load balancer we are setting the `use-forwarded-headers` to false by default starting viya4-deployment v6.5.0 or later. If you wish to enable the incoming X-Forwarded headers then please add the following in your ansible-vars.yaml file.
+
+```bash
+INGRESS_NGINX_CONFIG:
+  controller:
+    config:
+      use-forwarded-headers: "true"
+```
+
+## Deploying with the SAS Orchestration Tool using a Provider Based Kubernetes Configuration File
+
+### Symptom:
+While deploying the SAS Viya platform into a GCP OR AWS cluster using a provider based kubernetes configuration file and setting `V4_DEPLOYMENT_OPERATOR_ENABLED: false` in your `ansible-vars.yaml`, the following error message is encountered:
+
+In GCP:
+  ```bash
+Error: Cannot create client for namespace 'deploy'
+ Caused by:
+        * Get " https://11.111.11.111/api?timeout=32s ": getting credentials: exec: executable gke-gcloud-auth-plugin not found
+	 
+        It looks like you are trying to use a client-go credential plugin that is not installed.
+	 
+        To learn more about this feature, consult the documentation available at:
+        https://kubernetes.io/docs/reference/access-authn-authz/authentication/#client-go-credential-plugins
+	 
+        Install gke-gcloud-auth-plugin for use with kubectl by following https://cloud.google.com/blog/products/containers-kubernetes/kubectl-auth-changes-in-gke
+ ```
+
+In AWS:
+
+```bash
+Error: Cannot create client for namespace 'deploy'
+ Caused by:
+        * Get "https://12345678123456781234123456785678.abc.us-west-1.eks.amazonaws.com/api?timeout=32s": getting credentials: exec: executable aws not found
+
+         It looks like you are trying to use a client-go credential plugin that is not installed.
+
+         To learn more about this feature, consult the documentation available at:
+               https://kubernetes.io/docs/reference/access-authn-authz/authentication/#client-go-credential-plugins
+```
+
+### Diagnosis:
+
+If you are using a provider based kubernetes configuration file; one that relies on external binaries from the cloud provider to authenticate into the kubernetes cluster ([AWS](https://docs.aws.amazon.com/eks/latest/userguide/cluster-auth.html) & [GCP](https://cloud.google.com/kubernetes-engine/docs/how-to/api-server-authentication)), there are deployment constraints you need to consider when planning your SAS Viya platform deployment when using this project. If you are using a "kubernetes service account and cluster role binding" or "static" based kubernetes configuration file it will be compatible will all SAS Viya platform deployment methods as well as ways to execute this project, and the statements below are not applicable.
+
+Some background information, using the `V4_DEPLOYMENT_OPERATOR_ENABLED` flag  in your `ansible-vars.yaml` you are able to control the method of deployment that this project will use to deploy SAS Viya.
+* `V4_DEPLOYMENT_OPERATOR_ENABLED: true`, the [SAS Viya Platform Deployment Operator](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=itopscon&docsetTarget=p0839p972nrx25n1dq264egtgrcq.htm) will be installed into the cluster and used to deploy the SAS Viya platform
+* `V4_DEPLOYMENT_OPERATOR_ENABLED: false`, the [sas-orchestration command](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=itopscon&docsetTarget=p0839p972nrx25n1dq264egtgrcq.htm) whose tooling is delivered as a Docker image, is used to deploy the SAS Viya platform
+
+Alongside the two SAS Viya deployments methods, considerations for the two different ways that this project, viya4-deployment, can be run will also need to be made. You can either:
+* Clone this project and execute it [using the ansible-playbook](https://github.com/sassoftware/viya4-deployment/blob/main/docs/user/AnsibleUsage.md) binary you have installed on your host
+* Alternatively you can build a Docker image with the [Dockerfile](https://github.com/sassoftware/viya4-deployment/blob/main/Dockerfile) provided in this repository and run it using the [Docker run command](https://github.com/sassoftware/viya4-deployment/blob/main/docs/user/DockerUsage.md).
+
+The combination of setting `V4_DEPLOYMENT_OPERATOR_ENABLED: false` and running directly on your host using the `ansible-playbook` command is where using a provider based kubernetes configuration file is not compatible.
+
+When the `sas-orchestration` tooling is run (as a Docker container) to deploy SAS Viya into the cluster, the required binaries from the cloud provider for authentication are not present, meaning that the tooling will not be able to connect to the cluster to perform the deployment.
+
+When running the viya4-deployment project as a Docker container the `sas-orchestration` tooling is run in a slightly different manner to get around this limitation. We make use of `skopeo` to exact the contents of the `sas-orchestration` tooling image directly into our running viya4-deployment container. Since in our Dockerfile we include the installation of the required authentications binaries for GCP and AWS, the `sas-orchestration` tooling is able to make use of them and successfully connect to the kubernetes cluster.
+
+### Solution:
+
+You have a couple of options:
+* If you would still like to deploy the SAS Viya platform with the `sas-orchestration` command with your existing kubernetes configuration file, it is recommended to build the Docker image for this project with the [Dockerfile](https://github.com/sassoftware/viya4-deployment/blob/main/Dockerfile) and run it using the [Docker run command](https://github.com/sassoftware/viya4-deployment/blob/main/docs/user/DockerUsage.md).
+* If you created your infrastructure with the sassoftware/viya4-iac-* projects, you can go back and set `create_static_kubeconfig=true` and run `terraform apply` again to generate a "static" kubeconfig file that is compatible with `sas-orchestration`.
+* Using your existing provider based kubernetes configuration and `kubectl` you can alternatively create a new ServiceAccount, associate a service-account-token to it, and grant it admin permissions using RBAC. You should be able to use the ca cert and token from service-account-token to create your own "static" kubernetes configuration file.
+  * See [Kubernetes documentation](https://kubernetes.io/docs/concepts/security/service-accounts/)
+  * Note: this is what the option above setting `create_static_kubeconfig=true` and running `terraform apply` would do for you automatically.

@@ -31,15 +31,15 @@ METRICS_SERVER_CONFIG:
 ## Ingress-nginx - Defaults
 ingressVersions:
   k8sMinorVersionCeiling:
-    value: 21
-    api:
-      chartVersion: 3.40.0
-      appVersion: 0.50.0
-  k8sMinorVersionFloor:
-    value: 22
+    value: 23
     api:
       chartVersion: 4.3.0
       appVersion: 1.4.0
+  k8sMinorVersionFloor:
+    value: 24
+    api:
+      chartVersion: 4.6.0
+      appVersion: 1.7.0
 
 ## Ingress-nginx - Ingress
 INGRESS_NGINX_NAME: ingress-nginx
@@ -54,9 +54,8 @@ INGRESS_NGINX_CONFIG:
       sessionAffinity: None
       loadBalancerSourceRanges: "{{ LOADBALANCER_SOURCE_RANGES |default(['0.0.0.0/0'], -1) }}"
       annotations:
-
     config:
-      use-forwarded-headers: "true"
+      use-forwarded-headers: "false"
       hsts-max-age: "63072000"
     tcp: {}
     udp: {}
@@ -86,7 +85,6 @@ INGRESS_NGINX_CVE_2021_25742_PATCH:
     config:
       allow-snippet-annotations: "true"
       large-client-header-buffers: "4 32k"
-      use-forwarded-headers: "true"
       annotation-value-word-blocklist: "load_module,lua_package,_by_lua,location,root,proxy_pass,serviceaccount,{,},\\"
 
 ## Nfs-subdir-external-provisioner
@@ -94,7 +92,7 @@ NFS_CLIENT_NAME: nfs-subdir-external-provisioner-sas
 NFS_CLIENT_NAMESPACE: nfs-client
 NFS_CLIENT_CHART_NAME: nfs-subdir-external-provisioner
 NFS_CLIENT_CHART_URL: https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/
-NFS_CLIENT_CHART_VERSION: 4.0.8
+NFS_CLIENT_CHART_VERSION: 4.0.18
 NFS_CLIENT_CONFIG:
   nfs:
     server: "{{ V4_CFG_RWX_FILESTORE_ENDPOINT }}"
@@ -113,7 +111,7 @@ PG_NFS_CLIENT_NAME: nfs-subdir-external-provisioner-pg-storage
 PG_NFS_CLIENT_NAMESPACE: nfs-client
 PG_NFS_CLIENT_CHART_NAME: nfs-subdir-external-provisioner
 PG_NFS_CLIENT_CHART_URL: https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/
-PG_NFS_CLIENT_CHART_VERSION: 4.0.8
+PG_NFS_CLIENT_CHART_VERSION: 4.0.18
 PG_NFS_CLIENT_CONFIG:
   nfs:
     server: "{{ V4_CFG_RWX_FILESTORE_ENDPOINT }}"
