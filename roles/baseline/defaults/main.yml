@@ -42,6 +42,12 @@ ingressVersions:
       appVersion: 1.7.0
 
 ## Ingress-nginx - Ingress
+##
+## NOTE: Links on adding extra configuration options and on hardening ingress-nginx
+##
+## ConfigMaps      - https://github.com/kubernetes/ingress-nginx/blob/main/docs/user-guide/nginx-configuration/configmap.md
+## Hardening Guide - https://github.com/kubernetes/ingress-nginx/blob/main/docs/deploy/hardening-guide.md
+##
 INGRESS_NGINX_NAME: ingress-nginx
 INGRESS_NGINX_NAMESPACE: ingress-nginx
 INGRESS_NGINX_CHART_NAME: ingress-nginx
@@ -57,6 +63,7 @@ INGRESS_NGINX_CONFIG:
     config:
       use-forwarded-headers: "false"
       hsts-max-age: "63072000"
+      hide-headers: "Server,X-Powered-By"
     tcp: {}
     udp: {}
     lifecycle:
