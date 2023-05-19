@@ -102,3 +102,8 @@ V4_DEPLOYMENT_OPERATOR_CRB: sasoperator
 ## Below the line deployment -- internal use only
 ## Setting true enables using custom du for below the line testing
 V4_CFG_BELOW_THE_LINE: false
+
+## Azure Service Bus
+V4_CFG_SERVICEBUS_HOST: null
+V4_CFG_SERVICEBUS_POLICY_NAME: null
+V4_CFG_SERVICEBUS_PRIMARY_KEY: null

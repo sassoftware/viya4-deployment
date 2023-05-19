@@ -228,6 +228,30 @@
         - tfstate.cluster_api_mode is defined
         - tfstate.cluster_api_mode.value|length > 0
         - V4_CFG_INGRESS_MODE is not defined
+    - name: tfstate - azure service bus host
+      set_fact:
+        V4_CFG_SERVICEBUS_HOST: "{{ tfstate.servicebus_hostname.value }}"
+      when:
+        - PROVIDER == "azure"
+        - tfstate.servicebus_hostname is defined
+        - tfstate.servicebus_hostname.value|length > 0
+        - V4_CFG_SERVICEBUS_HOST is not defined
+    - name: tfstate - azure service bus policy name
+      set_fact:
+        V4_CFG_SERVICEBUS_POLICY_NAME: "{{ tfstate.servicebus_policy_name.value }}"
+      when:
+        - PROVIDER == "azure"
+        - tfstate.servicebus_policy_name is defined
+        - tfstate.servicebus_policy_name.value|length > 0
+        - V4_CFG_SERVICEBUS_POLICY_NAME is not defined
+    - name: tfstate - azure service bus primary_key
+      set_fact:
+        V4_CFG_SERVICEBUS_PRIMARY_KEY: "{{ tfstate.servicebus_primary_key.value }}"
+      when:
+        - PROVIDER == "azure"
+        - tfstate.servicebus_primary_key is defined
+        - tfstate.servicebus_primary_key.value|length > 0
+        - V4_CFG_SERVICEBUS_PRIMARY_KEY is not defined
     - set_fact:
         tfstate: ""
   when:

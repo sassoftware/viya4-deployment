@@ -23,6 +23,7 @@ Supported configuration variables are listed in the table below.  All variables 
   - [PostgreSQL](#postgresql)
   - [CAS](#cas)
   - [CONNECT](#connect)
+  - [Azure Service Bus](#azure-service-bus)
   - [Miscellaneous](#miscellaneous)
   - [Third-Party Tools](#third-party-tools)
     - [Cert-manager](#cert-manager)
@@ -325,6 +326,14 @@ V4_CFG_POSTGRES_SERVERS:
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_CONNECT_ENABLE_LOADBALANCER | Set up LoadBalancer to access SAS/CONNECT | bool | false | false | | viya |
 | V4_CFG_CONNECT_FQDN | FQDN that is assigned to access SAS/CONNECT | string | | false | Required when V4_CFG_TLS_MODE is not disabled and cert-manager is used to issue TLS certificates. This FQDN is added to the SAN DNS list of the issued certificates. | viya |
+
+## Azure Service Bus
+
+| Name | Description | Type | Default | Required | Notes | Tasks |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
+| V4_CFG_SERVICEBUS_HOST | The URL to access the Azure ServiceBus| string | | false | | viya |
+| V4_CFG_SERVICEBUS_POLICY_NAME | Specifies the name of the ServiceBus Namespace Authorization Rule | string | | false | | viya |
+| V4_CFG_SERVICEBUS_PRIMARY_KEY | The Primary Key for the ServiceBus Namespace authorization Rule | string | | false | | viya |
 
 ## Miscellaneous
 

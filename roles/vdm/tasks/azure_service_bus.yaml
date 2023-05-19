@@ -1,0 +1,73 @@
+# Copyright © 2020-2023, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+---
+- stat:
+    path: "{{ DEPLOY_DIR }}/site-config/sitedefault.yaml"
+  register: stat_result
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: Update site-default with Azure ServiceBus details
+  lineinfile:
+    path: "{{ DEPLOY_DIR }}/site-config/sitedefault.yaml"
+    line: "{{ item.line }}"
+    state: present
+    insertafter: EOF
+  with_items:
+    - { line: 'config/application/sas.event.arke.broker/type: azure' }
+    - { line: 'config/application/sas.event.arke.broker/host: {{ V4_CFG_SERVICEBUS_HOST }}' }
+    - { line: 'config/application/sas.event.arke.broker/port: 8000' }
+    - { line: 'config/application/sas.event.arke.broker/username: {{ V4_CFG_SERVICEBUS_POLICY_NAME }}' }
+    - { line: 'config/application/sas.event.arke.broker/password: {{ V4_CFG_SERVICEBUS_PRIMARY_KEY }}' }
+  when: stat_result.stat.exists
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: check Rabbitmq configuration file is present
+  stat:
+    path: "{{ DEPLOY_DIR }}/sas-bases/examples/rabbitmq/configuration/rabbitmq-node-count.yaml"
+  register: rabbitmq_config
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: copy rabbitmq config file
+  copy:
+    src: "{{ DEPLOY_DIR }}/sas-bases/examples/rabbitmq/configuration/rabbitmq-node-count.yaml"
+    dest: "{{ role_path }}/templates/transformers/rabbitmq-node-count.yaml"
+    mode: "0660"
+  when: rabbitmq_config.stat.exists
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: Scale Rabbitmq to 0 replicas
+  replace:
+    path: "{{ role_path }}/templates/transformers/rabbitmq-node-count.yaml"
+    regexp: "{% raw %}{{ NUMBER-OF-NODES }}{% endraw %}"
+    replace: "0"
+  when: rabbitmq_config.stat.exists
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: add resource
+  overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { transformers: "rabbitmq-node-count.yaml", vdm: true}
+  when: rabbitmq_config.stat.exists
+  tags: 
+    - install
+    - uninstall
+    - update

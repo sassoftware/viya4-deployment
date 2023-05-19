@@ -193,6 +193,14 @@
     - uninstall
     - update
 
+- name: Include Azure Service Bus
+  include_tasks: azure_service_bus.yaml
+  when: PROVIDER == "azure"
+  tags:
+    - install
+    - uninstall
+    - update
+
 - name: Include Kustomize
   include_tasks: kustomize.yaml
   tags:
