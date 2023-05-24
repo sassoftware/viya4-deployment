@@ -99,6 +99,9 @@ V4_DEPLOYMENT_OPERATOR_SCOPE: cluster
 V4_DEPLOYMENT_OPERATOR_NAMESPACE: sasoperator
 V4_DEPLOYMENT_OPERATOR_CRB: sasoperator
 
+# SAS Orchestration Command
+V4_SAS_ORCHESTRATION_USE_SITE_YAML: false
+
 ## Below the line deployment -- internal use only
 ## Setting true enables using custom du for below the line testing
 V4_CFG_BELOW_THE_LINE: false

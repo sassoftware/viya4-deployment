@@ -1,0 +1,53 @@
+# Copyright © 2020-2023, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+# The site.yaml SAS Viya Kubernetes manifest will only be generated if you set the
+# V4_SAS_ORCHESTRATION_USE_SITE_YAML flag and are setting the V4_DEPLOYMENT_OPERATOR_ENABLED flag to false so that
+# the sas-orchestration deploy command is being used to orchestrate the deployment.
+# If the V4_SAS_ORCHESTRATION_USE_SITE_YAML flag is not set, the generated SASDeployment Custom resource
+# used for the deployment.
+# See roles/vdm/tasks/sasdeployment_custom_resource.yaml
+---
+
+# NOTE: At this point in time we are only generating the site.yaml file so a
+# user could potentially perform a deployment using the "kubernetes commands" method
+# Changes are planned to make use of the site.yaml later.
+
+- name: SAS Viya Kubernetes Manifest - clean up site.yaml
+  file:
+    state: absent
+    path: "{{ DEPLOY_DIR }}/site.yaml"
+  tags:
+    - install
+    - update
+    - cas-onboard
+    - offboard
+
+- name: SAS Viya Kubernetes Manifest - generate site.yaml
+  block:
+    - name: SAS Viya Kubernetes Manifest - generate new site.yaml - Ansible
+      ansible.builtin.shell: >
+        docker run --rm
+        --user="{{ UID_GID }}"
+        --name "orchestration_{{ lookup('password', '/dev/null chars=ascii_lowercase length=8') }}"
+        --volume "{{ DEPLOY_DIR }}:/data"
+        --entrypoint kustomize
+        "{{ V4_CFG_CR_HOST }}/{{ ORCHESTRATION_IMAGE }}"
+        build /data/ {{ LOAD_RESTRICTOR_FLAG }} -o /data/site.yaml
+      when:
+        - deployment_tooling == "ansible"
+    - name: SAS Viya Kubernetes Manifest - generate new site.yaml - Docker
+      environment:
+        PATH: "{{ ORCHESTRATION_TOOLING_PATH }}"
+      command:
+        cmd: |
+          kustomize build {{ DEPLOY_DIR }}/ -o {{ DEPLOY_DIR }}/site.yaml
+      args:
+        chdir: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}"
+      when:
+        - deployment_tooling == "docker"
+  tags:
+    - install
+    - update
+    - cas-onboard
+    - offboard
