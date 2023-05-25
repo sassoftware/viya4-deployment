@@ -33,7 +33,7 @@
         --volume "{{ DEPLOY_DIR }}:/data"
         --entrypoint kustomize
         "{{ V4_CFG_CR_HOST }}/{{ ORCHESTRATION_IMAGE }}"
-        build /data/ {{ LOAD_RESTRICTOR_FLAG }} -o /data/site.yaml
+        build /data/ /data/site.yaml
       when:
         - deployment_tooling == "ansible"
     - name: SAS Viya Kubernetes Manifest - generate new site.yaml - Docker
