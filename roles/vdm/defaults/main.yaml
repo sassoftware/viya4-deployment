@@ -100,6 +100,7 @@ V4_DEPLOYMENT_OPERATOR_NAMESPACE: sasoperator
 V4_DEPLOYMENT_OPERATOR_CRB: sasoperator
 
 # SAS Orchestration Command
+# Experimental
 V4_SAS_ORCHESTRATION_USE_SITE_YAML: false
 
 ## Below the line deployment -- internal use only
