@@ -101,7 +101,7 @@ V4_DEPLOYMENT_OPERATOR_CRB: sasoperator
 
 # SAS Orchestration Command
 # Experimental
-V4_SAS_ORCHESTRATION_USE_SITE_YAML: false
+V4_SAS_ORCHESTRATION_USE_SITE_YAML: true
 
 ## Below the line deployment -- internal use only
 ## Setting true enables using custom du for below the line testing
