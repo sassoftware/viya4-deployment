@@ -137,6 +137,7 @@
     state: absent
     src: "{{ ORCHESTRATION_TOOLING_UNINSTALL_MANIFEST }}"
     wait: true
+    wait_timeout: 600
     namespace: "{{ NAMESPACE }}"
     kubeconfig: "{{ KUBECONFIG }}"
   ignore_errors: yes

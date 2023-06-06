@@ -141,6 +141,16 @@
       register: cm_info
     - name: postgres instance - set facts for either role from configMap keys
       block:
+      - name: postgres instance - check for cds values
+        block:
+        - name:
+          set_fact:
+            dac_crunchy_storage_cm_cds_values_present: false
+          when: cm_info.resources[0].data['cds-postgres-storage-class'] is not defined
+        - name:
+          set_fact:
+            dac_crunchy_storage_cm_cds_values_present: true
+          when: cm_info.resources[0].data['cds-postgres-storage-class'] is defined
 
       - name: postgres instance - set facts for default role
         set_fact:
@@ -156,7 +166,9 @@
           cds_postgres_pvc_access_mode: "{{ cm_info.resources[0].data['cds-postgres-access-mode'] }}"
           cds_backrest_storage_class: "{{ cm_info.resources[0].data['cds-backrest-storage-class'] }}"
           cds_backrest_pvc_access_mode: "{{ cm_info.resources[0].data['cds-backrest-access-mode'] }}"
-        when: role == 'cds-postgres'
+        when: 
+          - dac_crunchy_storage_cm_cds_values_present
+          - role == 'cds-postgres'
 
       when: 
         - dac_crunchy_storage_cm_found
@@ -234,7 +246,7 @@
               cds-backrest-storage-class: "{{ cds_backrest_storage_class | string }}"
               cds-backrest-access-mode: "{{ cds_backrest_pvc_access_mode | string }}"
       when: 
-        - not dac_crunchy_storage_cm_found
+        - not dac_crunchy_storage_cm_found or not dac_crunchy_storage_cm_cds_values_present
         - DEPLOY
         - role == "cds-postgres"
   when:
