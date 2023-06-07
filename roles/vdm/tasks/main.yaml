@@ -193,8 +193,8 @@
     - uninstall
     - update
 
-- name: Include Azure Service Bus
-  include_tasks: azure_service_bus.yaml
+- name: Include Message broker
+  include_tasks: message_broker.yaml
   when: PROVIDER == "azure"
   tags:
     - install
