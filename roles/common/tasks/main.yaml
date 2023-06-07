@@ -26,17 +26,17 @@
     - offboard
 - block:
     - name: Parse tfstate
-      set_fact: 
+      set_fact:
         tfstate: "{{ lookup('tfstate', TFSTATE) }}"
     - name: default LOADBALANCER_SOURCE_RANGES
       set_fact:
         LOADBALANCER_SOURCE_RANGES: ["0.0.0.0/0"]
-      when: 
+      when:
         - LOADBALANCER_SOURCE_RANGES is not defined
     - name: Add nat ip to LOADBALANCER_SOURCE_RANGES
       set_fact:
         LOADBALANCER_SOURCE_RANGES: "{{ LOADBALANCER_SOURCE_RANGES + [tfstate.nat_ip.value+'/32'] }}"
-      when: 
+      when:
         - tfstate.nat_ip is defined
         - tfstate.nat_ip.value|length > 0
         - (tfstate.nat_ip.value+'/32') not in LOADBALANCER_SOURCE_RANGES
@@ -53,13 +53,13 @@
     - name: tfstate - nfs endpoint
       set_fact:
         V4_CFG_RWX_FILESTORE_ENDPOINT: "{{ tfstate.rwx_filestore_endpoint.value }}"
-      when: 
+      when:
         - tfstate.rwx_filestore_endpoint is defined
         - tfstate.rwx_filestore_endpoint.value|length > 0
     - name: tfstate - nfs path
       set_fact:
         V4_CFG_RWX_FILESTORE_PATH: "{{ tfstate.rwx_filestore_path.value }}"
-      when: 
+      when:
         - tfstate.rwx_filestore_path is defined
         - tfstate.rwx_filestore_path.value|length > 0
     - name: tfstate - export kubeconfig
@@ -78,19 +78,19 @@
         - tfstate.kube_config is defined
         - tfstate.kube_config.value|length > 0
     - name: tfstate - provider
-      set_fact: 
+      set_fact:
         PROVIDER: "{{ tfstate.provider.value }}"
       when:
         - tfstate.provider is defined
         - tfstate.provider.value|length > 0
     - name: tfstate - provider account
-      set_fact: 
+      set_fact:
         PROVIDER_ACCOUNT: "{{ tfstate.provider_account.value }}"
       when:
         - tfstate.provider_account is defined
         - tfstate.provider_account.value|length > 0
     - name: tfstate - cluster name
-      set_fact: 
+      set_fact:
         CLUSTER_NAME: "{{ tfstate.cluster_name.value }}"
       when:
         - tfstate.cluster_name is defined
@@ -102,25 +102,25 @@
         - tfstate.postgres_servers is defined
         - tfstate.postgres_servers.value|length > 0
     - name: tfstate - ebs csi driver account
-      set_fact: 
+      set_fact:
         EBS_CSI_DRIVER_ACCOUNT: "{{ tfstate.ebs_csi_account.value }}"
       when:
         - tfstate.ebs_csi_account is defined
         - tfstate.ebs_csi_account.value|length > 0
     - name: tfstate - ebs csi driver location
-      set_fact: 
+      set_fact:
         EBS_CSI_DRIVER_LOCATION: "{{ tfstate.location.value }}"
       when:
         - tfstate.location is defined
         - tfstate.location.value|length > 0
     - name: tfstate - cluster autoscaler account
-      set_fact: 
+      set_fact:
         CLUSTER_AUTOSCALER_ACCOUNT: "{{ tfstate.autoscaler_account.value }}"
       when:
         - tfstate.autoscaler_account is defined
         - tfstate.autoscaler_account.value|length > 0
     - name: tfstate - cluster autoscaler location
-      set_fact: 
+      set_fact:
         CLUSTER_AUTOSCALER_LOCATION: "{{ tfstate.location.value }}"
       when:
         - tfstate.location is defined
@@ -294,6 +294,9 @@
     - install
     - uninstall
     - update
+    - onboard
+    - cas-onboard
+    - offboard
 
 - name: baseline - gcloud auth use service account
   shell: |
@@ -321,7 +324,7 @@
     - name: Fail empty value
       fail:
         msg: "V4_CFG_MANAGE_STORAGE is defined but empty, supported values are true or false."
-      when: 
+      when:
         - V4_CFG_MANAGE_STORAGE is defined
         - V4_CFG_MANAGE_STORAGE == ''
       tags:
@@ -329,14 +332,14 @@
     - name: Fail unsupported values
       fail:
         msg: "The value provided for V4_CFG_MANAGE_STORAGE is unsupported, supported values are true or false."
-      when: 
-        - V4_CFG_MANAGE_STORAGE|lower != 'false' 
+      when:
+        - V4_CFG_MANAGE_STORAGE|lower != 'false'
         - V4_CFG_MANAGE_STORAGE|lower != 'true'
       tags:
         - always
 
 - name: migrations
-  include_tasks: 
+  include_tasks:
     file: migrations.yaml
   tags:
     - install

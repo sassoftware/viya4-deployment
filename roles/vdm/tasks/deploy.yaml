@@ -60,7 +60,7 @@
         - not V4_CFG_BELOW_THE_LINE
     - name: deploy BLT - Deploy SAS Viya
       environment:
-        PATH: "{{ ORCHESTRATION_TOOLING_PATH }}"
+        PATH: "{{ env_path + ':' + ORCHESTRATION_TOOLING_PATH }}"
         KUBECONFIG: "{{ KUBECONFIG }}"
         WORK_DIRECTORY: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/work"
         EXPERIMENTAL_FEATURE_LOCAL_DEPLOYMENT_ASSETS: true
