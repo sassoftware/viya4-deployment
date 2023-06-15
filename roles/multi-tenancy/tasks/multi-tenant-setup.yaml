@@ -10,6 +10,7 @@
   when: V4MT_ENABLE
   tags:
     - onboard
+    - offboard
 
 - name: copy - sas-tenant-job
   copy:
@@ -19,6 +20,7 @@
   when: V4MT_ENABLE
   tags:
     - onboard
+    - offboard
 
 - name: update namespace
   replace:
