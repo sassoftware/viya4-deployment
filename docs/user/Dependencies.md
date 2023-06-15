@@ -15,7 +15,7 @@ The following list details our dependencies and versions (~ indicates multiple p
 | ~              | rsync            | any         |
 | ~              | kubectl          | 1.24 - 1.26 |
 | ~              | Helm             | 3           |
-| pip3           | ansible          | 2.10.7      |
+| pip3           | ansible          | 8.0.0       |
 | pip3           | openshift        | 0.12.0      |
 | pip3           | kubernetes       | 12.0.1      |
 | pip3           | dnspython        | 2.1.0       |
