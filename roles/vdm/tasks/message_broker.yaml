@@ -10,6 +10,18 @@
     - uninstall
     - update
 
+- name: check message broker values present
+  ansible.builtin.fail:
+    msg: >
+      Message Broker - Azure Service Bus enabled but one or all of the expected variables:
+      V4_CFG_MESSAGE_BROKER_HOST, V4_CFG_MESSAGE_BROKER_NAME and V4_CFG_MESSAGE_BROKER_PASSWORD are missing.
+  when:
+    - V4_CFG_MESSAGE_BROKER_HOST is none or V4_CFG_MESSAGE_BROKER_NAME is none or V4_CFG_MESSAGE_BROKER_PASSWORD is none
+  tags:
+    - install
+    - uninstall
+    - update
+
 - name: Update site-default with message broker details
   lineinfile:
     path: "{{ DEPLOY_DIR }}/site-config/sitedefault.yaml"

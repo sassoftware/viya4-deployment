@@ -195,7 +195,9 @@
 
 - name: Include Message broker
   include_tasks: message_broker.yaml
-  when: PROVIDER == "azure"
+  when: 
+    - PROVIDER == "azure"
+    - V4_CFG_MESSAGE_BROKER_ENABLE
   tags:
     - install
     - uninstall
