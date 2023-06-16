@@ -16,9 +16,9 @@ The following list details our dependencies and versions (~ indicates multiple p
 | ~              | kubectl          | 1.24 - 1.26 |
 | ~              | Helm             | 3           |
 | pip3           | ansible          | 8.0.0       |
-| pip3           | openshift        | 0.12.0      |
-| pip3           | kubernetes       | 12.0.1      |
-| pip3           | dnspython        | 2.1.0       |
+| pip3           | openshift        | 0.13.1      |
+| pip3           | kubernetes       | 26.1.0      |
+| pip3           | dnspython        | 2.3.0       |
 | pip3           | docker           | 5.0.3       |
 | ansible-galaxy | community.docker | 2.7.0       |
 | ansible-galaxy | ansible.utils    | 2.3.0       |
