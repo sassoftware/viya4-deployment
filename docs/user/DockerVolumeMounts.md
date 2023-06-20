@@ -31,6 +31,7 @@ Ansible vars to docker volume mounts mappings. For full listing of config vars s
 | :--- | ---: |
 | V4M_CERT | `--volume <desired_path>:/config/v4m_cert `|
 | V4M_KEY | `--volume <desired_path>:/config/v4m_key `|
+| V4M_CUSTOM_CONFIG_USER_DIR | `--volume <desired_path>:/config/v4m_custom_config_user_dir `|
 
 ### Monitoring
 

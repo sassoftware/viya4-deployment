@@ -36,7 +36,7 @@ literals:
     objectClass: inetOrgPerson
     objectclass: extensibleObject
     uid: user1
-    uidNumber: 1001
+    uidNumber: 7001
     gidNumber: 1000
     cn: user1
     sn: Tester
@@ -51,7 +51,7 @@ literals:
     objectClass: inetOrgPerson
     objectclass: extensibleObject
     uid: user2
-    uidNumber: 1002
+    uidNumber: 7002
     gidNumber: 1000
     cn: user2
     sn: Tester

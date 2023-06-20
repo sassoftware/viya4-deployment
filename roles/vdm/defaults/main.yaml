@@ -99,3 +99,7 @@ V4_DEPLOYMENT_OPERATOR_ENABLED: true
 V4_DEPLOYMENT_OPERATOR_SCOPE: cluster
 V4_DEPLOYMENT_OPERATOR_NAMESPACE: sasoperator
 V4_DEPLOYMENT_OPERATOR_CRB: sasoperator
+
+## Below the line deployment -- internal use only
+## Setting true enables using custom du for below the line testing
+V4_CFG_BELOW_THE_LINE: false

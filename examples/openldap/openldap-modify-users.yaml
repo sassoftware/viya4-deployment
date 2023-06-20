@@ -27,7 +27,7 @@ patch: |-
       objectClass: inetOrgPerson
       objectclass: extensibleObject
       uid: basic_user1
-      uidNumber: 1001
+      uidNumber: 7001
       gidNumber: 1000
       cn: basic_user1
       sn: BasicUser

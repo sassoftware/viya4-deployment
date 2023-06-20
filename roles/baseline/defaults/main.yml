@@ -13,7 +13,7 @@ CERT_MANAGER_NAMESPACE: cert-manager
 CERT_MANAGER_CHART_NAME: cert-manager
 CERT_MANAGER_CHART_URL: https://charts.jetstack.io/
 CERT_MANAGER_CHART_VERSION: 1.11.0
-CERT_MANAGER_CONFIG: 
+CERT_MANAGER_CONFIG:
   installCRDs: "true"
   extraArgs:
     - --enable-certificate-owner-ref=true
@@ -31,17 +31,23 @@ METRICS_SERVER_CONFIG:
 ## Ingress-nginx - Defaults
 ingressVersions:
   k8sMinorVersionCeiling:
-    value: 21
-    api:
-      chartVersion: 3.40.0
-      appVersion: 0.50.0
-  k8sMinorVersionFloor:
-    value: 22
+    value: 23
     api:
       chartVersion: 4.3.0
       appVersion: 1.4.0
+  k8sMinorVersionFloor:
+    value: 24
+    api:
+      chartVersion: 4.6.0
+      appVersion: 1.7.0
 
 ## Ingress-nginx - Ingress
+##
+## NOTE: Links on adding extra configuration options and on hardening ingress-nginx
+##
+## ConfigMaps      - https://github.com/kubernetes/ingress-nginx/blob/main/docs/user-guide/nginx-configuration/configmap.md
+## Hardening Guide - https://github.com/kubernetes/ingress-nginx/blob/main/docs/deploy/hardening-guide.md
+##
 INGRESS_NGINX_NAME: ingress-nginx
 INGRESS_NGINX_NAMESPACE: ingress-nginx
 INGRESS_NGINX_CHART_NAME: ingress-nginx
@@ -49,15 +55,15 @@ INGRESS_NGINX_CHART_URL: https://kubernetes.github.io/ingress-nginx
 INGRESS_NGINX_CHART_VERSION: ""
 INGRESS_NGINX_CONFIG:
   controller:
-    service: 
+    service:
       externalTrafficPolicy: Local
       sessionAffinity: None
       loadBalancerSourceRanges: "{{ LOADBALANCER_SOURCE_RANGES |default(['0.0.0.0/0'], -1) }}"
       annotations:
-
     config:
-      use-forwarded-headers: "true"
+      use-forwarded-headers: "false"
       hsts-max-age: "63072000"
+      hide-headers: "Server,X-Powered-By"
     tcp: {}
     udp: {}
     lifecycle:
@@ -86,7 +92,6 @@ INGRESS_NGINX_CVE_2021_25742_PATCH:
     config:
       allow-snippet-annotations: "true"
       large-client-header-buffers: "4 32k"
-      use-forwarded-headers: "true"
       annotation-value-word-blocklist: "load_module,lua_package,_by_lua,location,root,proxy_pass,serviceaccount,{,},\\"
 
 ## Nfs-subdir-external-provisioner
@@ -94,12 +99,12 @@ NFS_CLIENT_NAME: nfs-subdir-external-provisioner-sas
 NFS_CLIENT_NAMESPACE: nfs-client
 NFS_CLIENT_CHART_NAME: nfs-subdir-external-provisioner
 NFS_CLIENT_CHART_URL: https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/
-NFS_CLIENT_CHART_VERSION: 4.0.8
+NFS_CLIENT_CHART_VERSION: 4.0.18
 NFS_CLIENT_CONFIG:
   nfs:
     server: "{{ V4_CFG_RWX_FILESTORE_ENDPOINT }}"
     path: "{{ V4_CFG_RWX_FILESTORE_PATH | replace('/$', '') }}/pvs"
-    mountOptions: 
+    mountOptions:
       - noatime
       - nodiratime
       - 'rsize=262144'
@@ -113,12 +118,12 @@ PG_NFS_CLIENT_NAME: nfs-subdir-external-provisioner-pg-storage
 PG_NFS_CLIENT_NAMESPACE: nfs-client
 PG_NFS_CLIENT_CHART_NAME: nfs-subdir-external-provisioner
 PG_NFS_CLIENT_CHART_URL: https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/
-PG_NFS_CLIENT_CHART_VERSION: 4.0.8
+PG_NFS_CLIENT_CHART_VERSION: 4.0.18
 PG_NFS_CLIENT_CONFIG:
   nfs:
     server: "{{ V4_CFG_RWX_FILESTORE_ENDPOINT }}"
     path: "{{ V4_CFG_RWX_FILESTORE_PATH | replace('/$', '') }}/pvs"
-    mountOptions: 
+    mountOptions:
       - noatime
       - nodiratime
       - 'rsize=262144'
@@ -181,6 +186,7 @@ EBS_CSI_DRIVER_ACCOUNT: null
 EBS_CSI_DRIVER_LOCATION: us-east-1
 EBS_CSI_DRIVER_CONFIG:
   controller:
+    k8sTagClusterId: "{{ CLUSTER_NAME }}"
     region: "{{ EBS_CSI_DRIVER_LOCATION }}"
     serviceAccount:
       create: true
@@ -203,6 +209,6 @@ private_ingress:
           service.beta.kubernetes.io/azure-load-balancer-internal: "true"
   gcp:
     controller:
-      service: 
+      service:
         annotations:
           networking.gke.io/load-balancer-type: "Internal"
