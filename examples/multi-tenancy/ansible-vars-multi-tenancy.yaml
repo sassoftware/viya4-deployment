@@ -7,13 +7,13 @@ NAMESPACE: <namespace>
 DEPLOY: true # Set to false to stop at generating the manifest
 LOADBALANCER_SOURCE_RANGES: ['<cluster_nat_ip>/32']
 
-## Storage 
+## Storage
 V4_CFG_MANAGE_STORAGE: true
 
 ## SAS API Access
 V4_CFG_SAS_API_KEY: '<api_client_id>'
 V4_CFG_SAS_API_SECRET: '<api_client_secret>'
-V4_CFG_ORDER_NUMBER:  <order_number>
+V4_CFG_ORDER_NUMBER: <order_number>
 
 ## CR Access
 V4_CFG_CR_USER: <container_registry_user>
@@ -42,7 +42,7 @@ V4MT_ENABLE: true
 # SAS Viya supports two modes of data isolation (schemaPerApplicationTenant and databasePerTenant) for tenant data.
 # Set V4MT_MODE to either schema or database
 V4MT_MODE: "<desired_mode>"
-V4MT_TENANT_IDS: "<desired_tenant_ids>"    #For single tenant ID: "acme" or for multiple tenant IDs: "acme, cyberdyne, intech"
+V4MT_TENANT_IDS: "<desired_tenant_ids>"    # For single tenant ID: "acme" or for multiple tenant IDs: "acme, cyberdyne, intech"
 
 # Optional: Either set password for sasprovider, common to all tenants or set unique passwords for each tenants.
 # V4MT_PROVIDER_PASSWORD: "<desired_password>"
