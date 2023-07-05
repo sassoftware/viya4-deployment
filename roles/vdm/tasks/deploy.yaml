@@ -21,11 +21,12 @@
       environment:
         PATH: "{{ env_path + ':' + ORCHESTRATION_TOOLING_PATH }}"
         KUBECONFIG: "{{ KUBECONFIG }}"
-        WORK_DIRECTORY: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/work"
+        EXPERIMENTAL_FEATURE_DEPLOY_MANIFEST: "true"
       command: |
-        orchestration deploy
+        orchestration deploy manifest
              --namespace "{{ NAMESPACE }}"
-             --sas-deployment-cr "{{ item.path }}"
+             --manifest "{{ DEPLOY_DIR }}/site.yaml"
+             --deployment-dir "{{ DEPLOY_DIR }}/site.yaml"
       args:
         chdir: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}"
       with_items:
@@ -67,21 +68,28 @@
   tags:
     - uninstall
 
-
 - name: deploy - Remove Viya
-  kubernetes.core.k8s:
-    state: absent
-    src: >-
-      {% if V4_DEPLOYMENT_OPERATOR_ENABLED -%}
-      {{ ORCHESTRATION_TOOLING_UNINSTALL_MANIFEST }}
-      {%- else -%}
-      {{ DEPLOY_DIR }}/site.yaml
-      {%- endif %}
-    wait: true
-    wait_timeout: 600
-    namespace: "{{ NAMESPACE }}"
-    kubeconfig: "{{ KUBECONFIG }}"
-  ignore_errors: yes
+  block:
+    - name: deploy - Remove Viya - Deployment Operator
+      kubernetes.core.k8s:
+        state: absent
+        src: "{{ ORCHESTRATION_TOOLING_UNINSTALL_MANIFEST }}"
+        wait: true
+        wait_timeout: 600
+        namespace: "{{ NAMESPACE }}"
+        kubeconfig: "{{ KUBECONFIG }}"
+      ignore_errors: yes
+      when:
+        - V4_DEPLOYMENT_OPERATOR_ENABLED
+    - name: deploy - Remove Viya - sas-orchestration
+      kubernetes.core.k8s:
+        state: absent
+        src: "{{ DEPLOY_DIR }}/site.yaml"
+        namespace: "{{ NAMESPACE }}"
+        kubeconfig: "{{ KUBECONFIG }}"
+      ignore_errors: yes
+      when:
+        - not V4_DEPLOYMENT_OPERATOR_ENABLED
   tags:
     - uninstall
 
