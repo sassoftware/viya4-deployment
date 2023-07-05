@@ -79,12 +79,11 @@
       {%- endif %}
     wait: true
     wait_timeout: 600
-    namespace: '{{ NAMESPACE }}'
-    kubeconfig: '{{ KUBECONFIG }}'
-  ignore_errors: 'yes'
+    namespace: "{{ NAMESPACE }}"
+    kubeconfig: "{{ KUBECONFIG }}"
+  ignore_errors: yes
   tags:
     - uninstall
-
 
 - name: deploy - Delete namespace
   kubernetes.core.k8s:
