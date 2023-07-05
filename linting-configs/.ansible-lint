@@ -1,0 +1,56 @@
+---
+# .ansible-lint
+
+profile: moderate
+verbosity: 1
+strict: true
+
+# Enforce variable names to follow pattern below, in addition to Ansible own
+# requirements, like avoiding python identifiers. To disable add `var-naming`
+# to skip_list.
+var_naming_pattern: "^[a-zA-Z0-9_]*$"
+
+use_default_rules: true
+
+# Ansible-lint is able to recognize and load skip rules stored inside
+# `.ansible-lint-ignore` (or `.config/ansible-lint-ignore.txt`) files.
+# To skip a rule just enter filename and tag, like "playbook.yml package-latest"
+# on a new line.
+skip_list:
+  - role-name # roles are dynamically selected based on user's choice so we do need to use paths
+  - yaml[line-length] # it's easier to understand/debug the underlying command when it's not broken up, excessively long lines that make sense to split up should be caught during code review,
+  - name[template] # task name is being templated, this can be ignored
+  - command-instead-of-shell # shell should only be used when necessary, swap to command TODO future update requires functionality change
+  - command-instead-of-module # there are some cases where command calls could be replaced with modules TODO future update requires functionality change
+  - deprecated-module # In future look for suitable replacement TODO future update requires functionality change
+  - var-naming
+
+# Ansible-lint does not automatically load rules that have the 'opt-in' tag.
+# You must enable opt-in rules by listing each rule 'id' below.
+enable_list:
+  - args
+  - empty-string-compare
+  - no-log-password
+  - no-same-owner
+  - yaml
+
+# exclude_paths included in this file are parsed relative to this file's location
+# and not relative to the CWD of execution. CLI arguments passed to the --exclude
+# option are parsed relative to the CWD of execution.
+exclude_paths:
+  - .git/
+  - .gitignore
+  - .cache/
+  - roles/istio
+  - .github/workflows/linter-analysis.yaml
+
+# Offline mode disables installation of requirements.yml and schema refreshing
+offline: false
+
+# Define required Ansible's variables to satisfy syntax check
+extra_vars:
+  deployment_type: vsphere
+
+warn_list:
+  - experimental
+  - no-changed-when
