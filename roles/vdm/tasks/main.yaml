@@ -217,6 +217,8 @@
 
 - name: Include SASDeployment Custom Resource
   include_tasks: sasdeployment_custom_resource.yaml
+  when:
+    - V4_DEPLOYMENT_OPERATOR_ENABLED
   tags:
     - install
     - uninstall
@@ -224,12 +226,10 @@
     - multi-tenancy
 
 # Only applicable for sas-orchestration based deployments
-# when the V4_SAS_ORCHESTRATION_USE_SITE_YAML flag is set
 - name: Include SAS Viya Kubernetes Manifest
   include_tasks: sas_viya_kubernetes_manifest.yaml
   when:
     - not V4_DEPLOYMENT_OPERATOR_ENABLED
-    - V4_SAS_ORCHESTRATION_USE_SITE_YAML
   tags:
     - install
     - uninstall
