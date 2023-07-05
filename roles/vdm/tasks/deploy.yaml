@@ -125,7 +125,7 @@
     KUBECONFIG: "{{ KUBECONFIG }}"
   ansible.builtin.shell: >
     kubectl -n {{ NAMESPACE }} delete postgresclusters --selector="sas.com/deployment=sas-viya" --ignore-not-found=true
-  ignore_errors: yes
+  ignore_errors: true
   when:
     - V4_CFG_CADENCE_VERSION is version('2022.10', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
     - internal_postgres
@@ -140,7 +140,7 @@
     wait_timeout: 600
     namespace: "{{ NAMESPACE }}"
     kubeconfig: "{{ KUBECONFIG }}"
-  ignore_errors: yes
+  ignore_errors: true
   tags:
     - uninstall
 

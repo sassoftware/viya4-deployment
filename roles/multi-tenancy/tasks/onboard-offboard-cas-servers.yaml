@@ -8,7 +8,7 @@
     path: "{{ DEPLOY_DIR }}/kustomization.yaml"
     line: "- site-config/cas-{{ item | trim }}-default"
     state: present
-  check_mode: yes
+  check_mode: true
   register: out
   with_items: "{{ V4MT_TENANT_IDS.split(',') }}"
   tags:
@@ -17,7 +17,7 @@
 - name: add cas resources
   lineinfile:
     path: "{{ DEPLOY_DIR }}/kustomization.yaml"
-    insertafter: "resources:" 
+    insertafter: "resources:"
     line: "- site-config/cas-{{ item | trim }}-default"
     state: present
   with_items: "{{ V4MT_TENANT_IDS.split(',') }}"
@@ -29,7 +29,7 @@
 - name: remove cas resources
   lineinfile:
     path: "{{ DEPLOY_DIR }}/kustomization.yaml"
-    regexp: '.*site-config/cas-{{ item | trim }}-default.*$'
+    regexp: .*site-config/cas-{{ item | trim }}-default.*$
     state: absent
   with_items: "{{ V4MT_TENANT_IDS.split(',') }}"
   tags:
@@ -41,17 +41,17 @@
     path: "{{ DEPLOY_DIR }}/kustomization.yaml"
     line: "- site-config/multi-tenant/{{ item | trim }}"
     state: present
-  check_mode: yes
+  check_mode: true
   register: result
   with_items: "{{ V4MT_TENANT_IDS.split(',') }}"
   when: V4_CFG_CADENCE_VERSION is version('2023.03', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
   tags:
     - cas-onboard
 
-- name: add tenant directories to resources 
+- name: add tenant directories to resources
   lineinfile:
     path: "{{ DEPLOY_DIR }}/kustomization.yaml"
-    insertafter: "resources:" 
+    insertafter: "resources:"
     line: "- site-config/multi-tenant/{{ item | trim }}"
     state: present
   with_items: "{{ V4MT_TENANT_IDS.split(',') }}"
@@ -65,7 +65,7 @@
 - name: remove all tenant resources
   lineinfile:
     path: "{{ DEPLOY_DIR }}/kustomization.yaml"
-    regexp: '.*site-config/multi-tenant/{{ item | trim }}.*$'
+    regexp: .*site-config/multi-tenant/{{ item | trim }}.*$
     state: absent
   with_items: "{{ V4MT_TENANT_IDS.split(',') }}"
   when: V4_CFG_CADENCE_VERSION is version('2023.03', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"

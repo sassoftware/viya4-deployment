@@ -10,7 +10,7 @@
     kubeconfig: "{{ KUBECONFIG }}"
     label_selectors:
       - managed-by = v4m-es-script
-  register: "logging_secrets"
+  register: logging_secrets
   tags:
     - install
 
@@ -45,7 +45,7 @@
 
 - name: cluster-logging - host-based opensearch user values
   template:
-    src: "host-based/user-values-opensearch.yaml"
+    src: host-based/user-values-opensearch.yaml
     dest: "{{ tmpdir.path }}/logging/user-values-opensearch.yaml"
     mode: "0660"
   when:
@@ -57,7 +57,7 @@
 
 - name: cluster-logging - host-based osd user values
   template:
-    src: "host-based/user-values-osd.yaml"
+    src: host-based/user-values-osd.yaml
     dest: "{{ tmpdir.path }}/logging/user-values-osd.yaml"
     mode: "0660"
   when:
@@ -69,7 +69,7 @@
 
 - name: cluster-logging - path-based opensearch user values
   template:
-    src: "path-based/user-values-opensearch.yaml"
+    src: path-based/user-values-opensearch.yaml
     dest: "{{ tmpdir.path }}/logging/user-values-opensearch.yaml"
     mode: "0660"
   when:
@@ -81,7 +81,7 @@
 
 - name: cluster-logging - path-based osd user values
   template:
-    src: "path-based/user-values-osd.yaml"
+    src: path-based/user-values-osd.yaml
     dest: "{{ tmpdir.path }}/logging/user-values-osd.yaml"
     mode: "0660"
   when:

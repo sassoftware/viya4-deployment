@@ -37,7 +37,7 @@
       kind: Secret
       apiVersion: v1
       metadata:
-        name: "elasticsearch-ingress-tls-secret"
+        name: elasticsearch-ingress-tls-secret
         namespace: "{{ V4M_LOGGING_NAMESPACE }}"
       data:
         tls.crt: >-
@@ -60,7 +60,7 @@
       kind: Secret
       apiVersion: v1
       metadata:
-        name: "kibana-ingress-tls-secret"
+        name: kibana-ingress-tls-secret
         namespace: "{{ V4M_LOGGING_NAMESPACE }}"
       data:
         tls.crt: >-

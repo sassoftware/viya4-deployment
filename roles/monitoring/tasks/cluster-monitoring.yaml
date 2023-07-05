@@ -38,7 +38,7 @@
 
 - name: cluster-monitoring - host-based user values
   template:
-    src: "host-based/user-values-prom-operator.yaml"
+    src: host-based/user-values-prom-operator.yaml
     dest: "{{ tmpdir.path }}/monitoring/user-values-prom-operator.yaml"
     mode: "0660"
   when:
@@ -52,12 +52,12 @@
   block:
     - name: copy operator yaml
       template:
-        src: "path-based/user-values-prom-operator.yaml"
+        src: path-based/user-values-prom-operator.yaml
         dest: "{{ tmpdir.path }}/monitoring/user-values-prom-operator.yaml"
         mode: "0660"
     - name: copy user env
       template:
-        src: "path-based/user.env"
+        src: path-based/user.env
         dest: "{{ tmpdir.path }}/monitoring/user.env"
         mode: "0660"
   when:

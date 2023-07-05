@@ -5,7 +5,7 @@
 - name: copy - create VDM {{ resource }} folder
   file:
     state: directory
-    dest: '{{ DEPLOY_DIR }}/site-config/vdm/{{ resource }}'
+    dest: "{{ DEPLOY_DIR }}/site-config/vdm/{{ resource }}"
     mode: "0770"
   when: overlays|length > 0
   tags:

@@ -1,3 +1,4 @@
+---
 # Copyright © 2020-2023, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
@@ -14,8 +15,7 @@
     - offboard
 
 - name: Set BASE_DIR default path
-  set_fact:
-    BASE_DIR="{{ ansible_env.HOME }}"
+  set_fact: BASE_DIR="{{ ansible_env.HOME }}"
   when: BASE_DIR is not defined
   tags:
     - install
@@ -265,8 +265,7 @@
     - offboard
 
 - name: Set DEPLOY_DIR
-  set_fact:
-    DEPLOY_DIR="{{ BASE_DIR | regex_replace('\\/$', '') }}/{{ CLUSTER_NAME }}/{{ NAMESPACE }}"
+  set_fact: DEPLOY_DIR="{{ BASE_DIR | regex_replace('\\/$', '') }}/{{ CLUSTER_NAME }}/{{ NAMESPACE }}"
   when: DEPLOY_DIR is not defined
   tags:
     - install
@@ -317,13 +316,13 @@
   block:
     - name: Set V4_CFG_MANAGE_STORAGE default
       set_fact:
-        V4_CFG_MANAGE_STORAGE: True
+        V4_CFG_MANAGE_STORAGE: true
       when: V4_CFG_MANAGE_STORAGE is not defined
       tags:
         - always
     - name: Fail empty value
       fail:
-        msg: "V4_CFG_MANAGE_STORAGE is defined but empty, supported values are true or false."
+        msg: V4_CFG_MANAGE_STORAGE is defined but empty, supported values are true or false.
       when:
         - V4_CFG_MANAGE_STORAGE is defined
         - V4_CFG_MANAGE_STORAGE == ''
@@ -331,7 +330,7 @@
         - always
     - name: Fail unsupported values
       fail:
-        msg: "The value provided for V4_CFG_MANAGE_STORAGE is unsupported, supported values are true or false."
+        msg: The value provided for V4_CFG_MANAGE_STORAGE is unsupported, supported values are true or false.
       when:
         - V4_CFG_MANAGE_STORAGE|lower != 'false'
         - V4_CFG_MANAGE_STORAGE|lower != 'true'

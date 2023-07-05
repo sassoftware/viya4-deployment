@@ -17,7 +17,7 @@
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { transformers: "overlays/multi-tenant/sas-shared-configmap-transformer.yaml" }
+      - { transformers: overlays/multi-tenant/sas-shared-configmap-transformer.yaml }
   when:
     - V4MT_ENABLE
     - result.stat.exists
@@ -29,7 +29,7 @@
 - name: create site-config/multi-tenant folder
   file:
     state: directory
-    dest: '{{ DEPLOY_DIR }}/site-config/multi-tenant'
+    dest: "{{ DEPLOY_DIR }}/site-config/multi-tenant"
     mode: "0770"
   when: V4MT_ENABLE
   tags:
@@ -62,7 +62,7 @@
 - name: db mode - uncomment db-mode
   replace:
     path: "{{ DEPLOY_DIR }}/site-config/multi-tenant/sasdefault.yaml"
-    regexp: '#\s*sas.multi.tenancy.db.mode.*$'
+    regexp: "#\\s*sas.multi.tenancy.db.mode.*$"
     replace: "    sas.multi.tenancy.db.mode: databasePerTenant"
   when: V4MT_MODE|lower == "database"
   tags:

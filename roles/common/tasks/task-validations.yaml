@@ -2,7 +2,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
-
 - name: task validation
   block:
     - name: task validation - ensure at least one action tag is used
@@ -10,7 +9,7 @@
         that: '{{ ["install", "uninstall", "onboard", "cas-onboard", "offboard"] | intersect(ansible_run_tags) | count > 0 }}'
         msg: >
           Invalid tags: {{ansible_run_tags|join(',')}}
-          
+
           You must define at least one action tag during execution. For the 'baseline', 'viya', 'cluster-logging',
           'cluster-monitoring', or 'viya-monitoring' tasks either 'install' or 'uninstall'. For the 'multi-tenancy' task
           either 'onboard', 'cas-onboard', or 'offboard'. See usage documentation at docs/user/AnsibleUsage.md and
@@ -21,7 +20,7 @@
         that: '{{ ["viya", "multi-tenancy"] | intersect(ansible_run_tags) | count <= 1 }}'
         msg: >
           Invalid tags: {{ansible_run_tags|join(',')}}
-          
+
           The 'viya' and 'multi-tenancy' tasks can not be run simultaneously. See usage documentation at
           docs/user/AnsibleUsage.md and docs/user/Multi-Tenancy.md
 

@@ -40,8 +40,7 @@
     path: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/kustomization.yaml"
     regexp: "- tenant-onboard-job-tls-transformer.yaml"
     replace: "# - tenant-onboard-job-tls-transformer.yaml"
-  when:
-    V4_CFG_TLS_MODE == "disabled"
+  when: V4_CFG_TLS_MODE == "disabled"
   tags:
     - onboard
 
@@ -50,14 +49,14 @@
     path: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/kustomization.yaml"
     regexp: "- tenant-offboard-job-tls-transformer.yaml"
     replace: "# - tenant-offboard-job-tls-transformer.yaml"
-  when:
-    V4_CFG_TLS_MODE == "disabled"
+  when: V4_CFG_TLS_MODE == "disabled"
   tags:
     - offboard
 
 - name: kustomize - get load restrictor flag
   set_fact:
-      LOAD_RESTRICTOR_FLAG: "{{ '--load-restrictor LoadRestrictionsNone' if V4_CFG_CADENCE_VERSION is version('2023.02', '>=') or V4_CFG_CADENCE_NAME|lower == 'fast' else '--load_restrictor=none' }}"
+    LOAD_RESTRICTOR_FLAG: "{{ '--load-restrictor LoadRestrictionsNone' if V4_CFG_CADENCE_VERSION is version('2023.02', '>=') or V4_CFG_CADENCE_NAME|lower == 'fast'
+      else '--load_restrictor=none' }}"
   tags:
     - onboard
     - offboard
@@ -129,8 +128,8 @@
     regexp: "{{ item.regexp }}"
     replace: "{{ item.replace }}"
   with_items:
-    - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-onboard.yaml', regexp: 'sas-image-pull-secrets.*$', replace: '{{ secret_name.stdout }}' }
-    - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-onboard.yaml', regexp: 'cr.sas.com', replace: '{{ V4_CFG_CR_HOST }}' }
+    - { path: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-onboard.yaml", regexp: sas-image-pull-secrets.*$, replace: "{{ secret_name.stdout }}" }
+    - { path: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-onboard.yaml", regexp: cr.sas.com, replace: "{{ V4_CFG_CR_HOST }}" }
   tags:
     - onboard
 
@@ -140,8 +139,8 @@
     regexp: "{{ item.regexp }}"
     replace: "{{ item.replace }}"
   with_items:
-    - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-offboard.yaml', regexp: 'sas-image-pull-secrets.*$', replace: '{{ secret_name.stdout }}' }
-    - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-offboard.yaml', regexp: 'cr.sas.com', replace: '{{ V4_CFG_CR_HOST }}' }
+    - { path: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-offboard.yaml", regexp: sas-image-pull-secrets.*$, replace: "{{ secret_name.stdout }}" }
+    - { path: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-offboard.yaml", regexp: cr.sas.com, replace: "{{ V4_CFG_CR_HOST }}" }
   tags:
     - offboard
 
@@ -201,7 +200,8 @@
 
 - name: check for pods failing status
   ansible.builtin.fail:
-    msg: '{{ ansible_run_tags | select("match", "[on|off].*") | list | first }} job failed with status {{ pod_status.stdout_lines[0] }}. Please check pod log for more details.'
+    msg: '{{ ansible_run_tags | select("match", "[on|off].*") | list | first }} job failed with status {{ pod_status.stdout_lines[0] }}. Please check pod log for
+      more details.'
   when: pod_status.stdout_lines[0] in pod_fail_list
   tags:
     - onboard

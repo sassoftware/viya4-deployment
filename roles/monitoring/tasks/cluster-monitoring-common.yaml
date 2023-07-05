@@ -37,7 +37,7 @@
       kind: Secret
       apiVersion: v1
       metadata:
-        name: "grafana-ingress-tls-secret"
+        name: grafana-ingress-tls-secret
         namespace: "{{ V4M_MONITORING_NAMESPACE }}"
       data:
         tls.crt: >-
@@ -60,7 +60,7 @@
       kind: Secret
       apiVersion: v1
       metadata:
-        name: "prometheus-ingress-tls-secret"
+        name: prometheus-ingress-tls-secret
         namespace: "{{ V4M_MONITORING_NAMESPACE }}"
       data:
         tls.crt: >-
@@ -83,7 +83,7 @@
       kind: Secret
       apiVersion: v1
       metadata:
-        name: "alertmanager-ingress-tls-secret"
+        name: alertmanager-ingress-tls-secret
         namespace: "{{ V4M_MONITORING_NAMESPACE }}"
       data:
         tls.crt: >-

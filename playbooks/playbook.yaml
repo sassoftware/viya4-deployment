@@ -1,3 +1,4 @@
+---
 # Copyright © 2020-2023, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
@@ -21,9 +22,9 @@
       tags:
         - always
     - name: common role
-      include_role: 
+      include_role:
         name: common
-        public: yes
+        public: true
       tags:
         - install
         - uninstall

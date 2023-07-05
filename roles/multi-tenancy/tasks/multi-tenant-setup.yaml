@@ -43,9 +43,13 @@
     regexp: "{{ item.regexp }}"
     replace: "{{ item.replace }}"
   with_items:
-    - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-onboard-job.yaml', regexp: '{% raw %}{{ JOB-TAG }}{% endraw %}', replace: "{{ lookup('password', '/dev/null chars=ascii_letters,digit length=8') | lower }}" }
-    - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-offboard-job.yaml', regexp: '{% raw %}{{ JOB-TAG }}{% endraw %}', replace: "{{ lookup('password', '/dev/null chars=ascii_letters,digit length=8') | lower }}" }
-  when: 
+    - path: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-onboard-job.yaml"
+      regexp: "{% raw %}{{ JOB-TAG }}{% endraw %}"
+      replace: "{{ lookup('password', '/dev/null chars=ascii_letters,digit length=8') | lower }}"
+    - path: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-offboard-job.yaml"
+      regexp: "{% raw %}{{ JOB-TAG }}{% endraw %}"
+      replace: "{{ lookup('password', '/dev/null chars=ascii_letters,digit length=8') | lower }}"
+  when:
     - V4MT_ENABLE
     - V4_CFG_CADENCE_VERSION is version('2023.02', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
   tags:
@@ -58,8 +62,12 @@
     regexp: "{{ item.regexp }}"
     replace: "{{ item.replace }}"
   with_items:
-    - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-onboard-job.yaml', regexp: '- name: SAS_TENANT_IDS\n[^\n]+', replace: '- name: SAS_TENANT_IDS\n            value: "{{ V4MT_TENANT_IDS }}"' }
-    - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-offboard-job.yaml', regexp: '- name: SAS_TENANT_IDS\n[^\n]+', replace: '- name: SAS_TENANT_IDS\n            value: "{{ V4MT_TENANT_IDS }}"' }
+    - path: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-onboard-job.yaml"
+      regexp: "- name: SAS_TENANT_IDS\\n[^\\n]+"
+      replace: '- name: SAS_TENANT_IDS\n            value: "{{ V4MT_TENANT_IDS }}"'
+    - path: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-offboard-job.yaml"
+      regexp: "- name: SAS_TENANT_IDS\\n[^\\n]+"
+      replace: '- name: SAS_TENANT_IDS\n            value: "{{ V4MT_TENANT_IDS }}"'
   when: V4MT_ENABLE
   tags:
     - onboard
@@ -67,9 +75,9 @@
 
 - name: sas-tenant-job - update sas-provider-password
   replace:
-    path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-onboard-job.yaml'
-    regexp: '{% raw %}{{ SAS-PROVIDER-PASSWORD }}{% endraw %}'
-    replace: '{{ V4MT_PROVIDER_PASSWORD }}'
+    path: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-onboard-job.yaml"
+    regexp: "{% raw %}{{ SAS-PROVIDER-PASSWORD }}{% endraw %}"
+    replace: "{{ V4MT_PROVIDER_PASSWORD }}"
   when: V4MT_PROVIDER_PASSWORD
   tags:
     - onboard
@@ -86,22 +94,22 @@
 
 - name: sas-tenant-job - add sas-provider-password-TENANT-ID if provided
   lineinfile:
-    path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-onboard-job.yaml'
+    path: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-onboard-job.yaml"
     insertafter: "{% raw %}value: {{ SAS-PROVIDER-PASSWORD }}{% endraw %}"
     line: "          - name: SAS_PROVIDER_PASSWORD_{{ item.split('_')[-1] }}\n            value: {% raw %}{{{% endraw %} {{ item }} {% raw %}}}{% endraw %}"
   with_items: "{{ tenant_password_list }}"
-  when: 
+  when:
     - not V4MT_PROVIDER_PASSWORD
     - ({{ item }} is defined)
   tags:
     - onboard
-        
+
 - name: sas-tenant-job - update sas-provider-password-TENANT-ID
   replace:
-    path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-onboard-job.yaml'
-    regexp: '{% raw %}{{{% endraw %} {{ item }} {% raw %}}}{% endraw %}'
-    replace: '{{ vars[item] }}'
-  when: 
+    path: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-onboard-job.yaml"
+    regexp: "{% raw %}{{{% endraw %} {{ item }} {% raw %}}}{% endraw %}"
+    replace: "{{ vars[item] }}"
+  when:
     - not V4MT_PROVIDER_PASSWORD
     - ({{ item }} is defined)
   with_items: "{{ tenant_password_list }}"
@@ -114,8 +122,9 @@
     state: absent
     line: "{{ item.line }}"
   with_items:
-    - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-onboard-job.yaml', line: '          - name: SAS_PROVIDER_PASSWORD'}
-    - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-onboard-job.yaml', line: '            value: {% raw %}{{ SAS-PROVIDER-PASSWORD }}{% endraw %}'}
+    - { path: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-onboard-job.yaml", line: "          - name: SAS_PROVIDER_PASSWORD" }
+    - path: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-onboard-job.yaml"
+      line: "            value: {% raw %}{{ SAS-PROVIDER-PASSWORD }}{% endraw %}"
   when: not V4MT_PROVIDER_PASSWORD
   tags:
     - onboard
@@ -133,7 +142,7 @@
     dest: "{{ DEPLOY_DIR }}/site-config"
     mode: "0770"
   when:
-    - not result.stat.exists 
+    - not result.stat.exists
     - V4MT_ENABLE
   tags:
     - onboard
@@ -155,7 +164,7 @@
     tenant: "{{ item.key | lower }}"
     settings: "{{ item.value }}"
   with_dict: "{{ V4MT_TENANT_CAS_CUSTOMIZATION }}"
-  when: 
+  when:
     - V4MT_ENABLE
     - V4MT_TENANT_CAS_CUSTOMIZATION is not none
   tags:
@@ -165,8 +174,7 @@
 - name: create cas servers for tenants
   command:
   # Example cmd: $deploy/sas-bases/examples/cas/create/create-cas-server.sh --tenant acme --output ../site-config/ --workers 2 --backup 1
-    cmd: "{{ DEPLOY_DIR }}/site-config/create-cas-server.sh --tenant {{ item }} \
-         --output {{ DEPLOY_DIR }}/site-config --workers 0 --backup 0"
+    cmd: "{{ DEPLOY_DIR }}/site-config/create-cas-server.sh --tenant {{ item }} --output {{ DEPLOY_DIR }}/site-config --workers 0 --backup 0"
   with_items: '{{ V4MT_TENANT_IDS.split(",") | replace(" ", "") | lower }}'
   when: item not in (V4MT_TENANT_CAS_CUSTOMIZATION.keys()| lower)
   tags:
@@ -185,7 +193,7 @@
 
 - name: add env variable for pod templates in sas-tenant-job
   lineinfile:
-    path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-onboard-job.yaml'
+    path: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-onboard-job.yaml"
     insertafter: "env:"
     line: "          - name: SAS_CREATE_TENANT_POD_TEMPLATES\n            value: 'false'"
   when:

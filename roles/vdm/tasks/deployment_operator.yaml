@@ -48,10 +48,10 @@
 
 - name: deployment-operator - ensure cluster-wide mode namespace is not the same as the SAS Viya namespace
   ansible.builtin.assert:
-    that: '{{ V4_DEPLOYMENT_OPERATOR_NAMESPACE != NAMESPACE}}'
+    that: "{{ V4_DEPLOYMENT_OPERATOR_NAMESPACE != NAMESPACE}}"
     msg: >
       Invalid V4_DEPLOYMENT_OPERATOR_NAMESPACE value: {{ V4_DEPLOYMENT_OPERATOR_NAMESPACE }}
-      
+
       When the V4_DEPLOYMENT_OPERATOR_SCOPE is set to `cluster`, the V4_DEPLOYMENT_OPERATOR_NAMESPACE value cannot be
       the same as NAMESPACE.
   when:
@@ -167,7 +167,7 @@
                                      V4_CFG_CADENCE_VERSION is version('2021.1.5', '<') and
                                      V4_CFG_CADENCE_NAME|lower != 'fast') else 'Deployment'}}"
     secret_generator_required: "{{ true if (V4_CFG_CADENCE_VERSION is version('2021.1.5', '<') and
-     V4_CFG_CADENCE_NAME|lower != 'fast') else false}}"
+      V4_CFG_CADENCE_NAME|lower != 'fast') else false}}"
   tags:
     - install
     - update
@@ -183,7 +183,7 @@
 
 - name: deployment-operator - copy CR access
   template:
-    src: "cr_access.json"
+    src: cr_access.json
     dest: "{{ OPERATOR_DEPLOY_DIRECTORY }}/site-config/cr_access.json"
     mode: "0660"
   when:
@@ -194,7 +194,7 @@
 
 - name: deployment-operator - create kustomization.yaml
   template:
-    src: "deployment_operator_kustomization.yaml"
+    src: deployment_operator_kustomization.yaml
     dest: "{{ OPERATOR_DEPLOY_DIRECTORY }}/kustomization.yaml"
     mode: "0660"
   tags:
@@ -238,7 +238,7 @@
 
 - name: deployment-operator - create deployment-operator-clusterwide.yaml
   ansible.builtin.template:
-    src: "deployment-operator-clusterwide.yaml"
+    src: deployment-operator-clusterwide.yaml
     dest: "{{ BASE_DIR | regex_replace('\\/$', '') }}/{{ CLUSTER_NAME }}/deployment-operator-clusterwide.yaml"
     mode: "0660"
   when:
@@ -259,9 +259,9 @@
 - name: deployment-operator - Skip deletion if other SASDeployment resources still exist
   ansible.builtin.debug:
     msg: >
-     A SAS Viya deployment that relies on the Deployment Operator still exists in cluster in the following namespaces:
-     {{ cluster_sasdeployments.resources | map(attribute='metadata.namespace') | list | join(', ') }}.
-     Skipping Deployment Operator deletion.
+      A SAS Viya deployment that relies on the Deployment Operator still exists in cluster in the following namespaces:
+      {{ cluster_sasdeployments.resources | map(attribute='metadata.namespace') | list | join(', ') }}.
+      Skipping Deployment Operator deletion.
   when:
     - cluster_sasdeployments.resources|length != 0
   tags:
@@ -279,8 +279,8 @@
       environment:
         KUBECONFIG: "{{ KUBECONFIG }}"
       ansible.builtin.shell: >
-        kubectl get clusterrolebindings --selector "app.kubernetes.io/name=sas-deployment-operator" 
-        -o jsonpath='{.items[?(@.subjects[0].namespace == "{{ V4_DEPLOYMENT_OPERATOR_NAMESPACE }}")].metadata.name}'
+        kubectl get clusterrolebindings --selector "app.kubernetes.io/name=sas-deployment-operator"  -o jsonpath='{.items[?(@.subjects[0].namespace == "{{ V4_DEPLOYMENT_OPERATOR_NAMESPACE
+        }}")].metadata.name}'
       register: result
     - name: deployment-operator - Uninstall clusterrolebindings
       environment:

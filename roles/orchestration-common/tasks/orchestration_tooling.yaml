@@ -59,8 +59,10 @@
 # https://jinja.palletsprojects.com/en/2.11.x/templates/#synopsis
 - name: orchestration tooling - set registry credentials if using defaults
   set_fact:
-    ORCHESTRATION_CR_USER: "{{ lookup('file', '{{DEPLOY_DIR}}/sas-bases/base/secrets.yaml') | regex_search('username=(.+)', '\\1') | first | regex_escape() | regex_replace('{%','{\\%') }}"
-    ORCHESTRATION_CR_PASSWORD: "{{ lookup('file', '{{DEPLOY_DIR}}/sas-bases/base/secrets.yaml') | regex_search('password=(.+)', '\\1') | first | regex_escape() | regex_replace('{%','{\\%') }}"
+    ORCHESTRATION_CR_USER: "{{ lookup('file', '{{DEPLOY_DIR}}/sas-bases/base/secrets.yaml') | regex_search('username=(.+)', '\\1') | first | regex_escape() | regex_replace('{%','{\\\
+      %') }}"
+    ORCHESTRATION_CR_PASSWORD: "{{ lookup('file', '{{DEPLOY_DIR}}/sas-bases/base/secrets.yaml') | regex_search('password=(.+)', '\\1') | first | regex_escape() |
+      regex_replace('{%','{\\%') }}"
   when:
     - ORCHESTRATION_CR_USER is none
   tags:
@@ -139,7 +141,7 @@
 # The ansible log output will have escape characters for ORCHESTRATION_CR_USER & ORCHESTRATION_CR_PASSWORD.
 # if the parsed creds contain symbols. This is expected and required to avoid Jinja2 templating issues.
 - name: orchestration tooling - log into V4_CFG_CR_HOST
-  command: 'docker login -u {{ ORCHESTRATION_CR_USER|string}} -p {{ ORCHESTRATION_CR_PASSWORD|string }} {{ V4_CFG_CR_HOST }}'
+  command: docker login -u {{ ORCHESTRATION_CR_USER|string}} -p {{ ORCHESTRATION_CR_PASSWORD|string }} {{ V4_CFG_CR_HOST }}
   when:
     - deployment_tooling == "ansible"
   tags:

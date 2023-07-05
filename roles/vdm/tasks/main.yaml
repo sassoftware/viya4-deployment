@@ -4,7 +4,7 @@
 ---
 - file:
     state: directory
-    dest: '{{ DEPLOY_DIR }}/site-config/'
+    dest: "{{ DEPLOY_DIR }}/site-config/"
     mode: "0770"
   tags:
     - install
@@ -46,15 +46,15 @@
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { resources: "base", priority: 0 }
-      - { resources: "overlays/update-checker" }
-      - { configurations: "overlays/required/kustomizeconfig.yaml", priority: 51 }
-      - { transformers: "overlays/required/transformers.yaml", priority: 60 }
-      - { generators: "sas-license.yaml", vdm: true }
-      - { generators: "sas-shared-config.yaml", vdm: true }
-      - { generators: "sas-consul-config.yaml", vdm: true , max: "2021.1" }
-      - { generators: "sas-consul-config-secret.yaml", vdm: true, min: "2021.1.1" }
-      - { generators: "ingress-input.yaml", vdm: true }
+      - { resources: base, priority: 0 }
+      - { resources: overlays/update-checker }
+      - { configurations: overlays/required/kustomizeconfig.yaml, priority: 51 }
+      - { transformers: overlays/required/transformers.yaml, priority: 60 }
+      - { generators: sas-license.yaml, vdm: true }
+      - { generators: sas-shared-config.yaml, vdm: true }
+      - { generators: sas-consul-config.yaml, vdm: true, max: "2021.1" }
+      - { generators: sas-consul-config-secret.yaml, vdm: true, min: 2021.1.1 }
+      - { generators: ingress-input.yaml, vdm: true }
   tags:
     - install
     - uninstall
@@ -63,7 +63,7 @@
 - name: CR access
   block:
     - template:
-        src: "cr_access.json"
+        src: cr_access.json
         dest: "{{ DEPLOY_DIR }}/site-config/cr_access.json"
         mode: "0660"
     - overlay_facts:
@@ -71,7 +71,7 @@
         cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
         existing: "{{ vdm_overlays }}"
         add:
-          - { generators: "sas-image-pull-secrets.yaml", vdm: true }
+          - { generators: sas-image-pull-secrets.yaml, vdm: true }
   when:
     - V4_CFG_CR_USER is not none
   tags:
@@ -81,8 +81,7 @@
 
 - name: Include Mirror
   include_tasks: mirror.yaml
-  when:
-    V4_CFG_CR_HOST != "cr.sas.com"
+  when: V4_CFG_CR_HOST != "cr.sas.com"
   tags:
     - install
     - uninstall
@@ -116,12 +115,12 @@
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { resources: "openldap.yaml", vdm: true }
-      - { transformers: "openldap.yaml", vdm: true }
-      - { generators: "openldap-bootstrap-config.yaml", vdm: true }
-  when: 
+      - { resources: openldap.yaml, vdm: true }
+      - { transformers: openldap.yaml, vdm: true }
+      - { generators: openldap-bootstrap-config.yaml, vdm: true }
+  when:
     - not V4MT_ENABLE
-    - V4_CFG_EMBEDDED_LDAP_ENABLE 
+    - V4_CFG_EMBEDDED_LDAP_ENABLE
   tags:
     - install
     - uninstall
@@ -133,12 +132,12 @@
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { resources: "openldap.yaml", vdm: true }
-      - { transformers: "openldap.yaml", vdm: true }
-      - { generators: "openldap-bootstrap-mt-config.yaml", vdm: true }
-  when: 
+      - { resources: openldap.yaml, vdm: true }
+      - { transformers: openldap.yaml, vdm: true }
+      - { generators: openldap-bootstrap-mt-config.yaml, vdm: true }
+  when:
     - V4MT_ENABLE
-    - V4_CFG_EMBEDDED_LDAP_ENABLE 
+    - V4_CFG_EMBEDDED_LDAP_ENABLE
   tags:
     - install
     - uninstall

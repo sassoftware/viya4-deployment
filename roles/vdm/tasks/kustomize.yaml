@@ -27,7 +27,7 @@
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { resources: "sas-deployment-buildinfo.yaml", vdm: true }
+      - { resources: sas-deployment-buildinfo.yaml, vdm: true }
   tags:
     - install
     - uninstall
@@ -36,7 +36,7 @@
 - name: kustomize - Get user's customizations
   siteconfig_info:
     path: "{{ DEPLOY_DIR }}"
-    exclude: 
+    exclude:
       - vdm
       - multi-tenant
       - sas-tenant-job
@@ -69,11 +69,10 @@
 
 - name: kustomize - Generate kustomization.yaml
   template:
-    src: "kustomization.yaml"
+    src: kustomization.yaml
     dest: "{{ DEPLOY_DIR }}/kustomization.yaml"
     mode: "0660"
   tags:
     - install
     - uninstall
     - update
-

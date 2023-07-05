@@ -6,11 +6,9 @@
   block:
     - name: tenant cas - MPP workers
       command:
-        cmd: "{{ DEPLOY_DIR }}/site-config/create-cas-server.sh --tenant {{ tenant }} \
-             --output {{ DEPLOY_DIR }}/site-config \
-             --workers {{ settings.worker_count if (settings.worker_count is defined and settings.worker_count is not none ) else 0 }} \
-             --backup {{ 1 if (settings.backup_controller_enabled is defined) and \
-                              (settings.backup_controller_enabled|bool == True) else 0 }}"
+        cmd: "{{ DEPLOY_DIR }}/site-config/create-cas-server.sh --tenant {{ tenant }} --output {{ DEPLOY_DIR }}/site-config --workers {{ settings.worker_count if
+          (settings.worker_count is defined and settings.worker_count is not none ) else 0 }} --backup {{ 1 if (settings.backup_controller_enabled is defined) and
+          (settings.backup_controller_enabled|bool == True) else 0 }}"
 
     - name: tenant cas user-defined resources - copy template
       copy:
@@ -27,9 +25,9 @@
         regexp: "{{ outer_item.regexp }}"
         replace: "{{ outer_item.replace }}"
       with_items:
-        - { regexp: '{% raw %}{{ AMOUNT-OF-RAM }}{% endraw %}', replace: '{{ settings.memory }}' }
-        - { regexp: '{% raw %}{{ NUMBER-OF-CORES }}{% endraw %}', replace: '{{ settings.cpus }}' }
-        - { regexp: '{% raw %}{{ NAME-OF-SERVER }}{% endraw %}', replace: '{{ tenant }}-default' }
+        - { regexp: "{% raw %}{{ AMOUNT-OF-RAM }}{% endraw %}", replace: "{{ settings.memory }}" }
+        - { regexp: "{% raw %}{{ NUMBER-OF-CORES }}{% endraw %}", replace: "{{ settings.cpus }}" }
+        - { regexp: "{% raw %}{{ NAME-OF-SERVER }}{% endraw %}", replace: "{{ tenant }}-default" }
       loop_control:
         loop_var: outer_item
       when:
@@ -60,8 +58,8 @@
         regexp: "{{ outer_item.regexp }}"
         replace: "{{ outer_item.replace }}"
       with_items:
-        - { regexp: '{% raw %}{{ LOADBALANCER_SOURCE_RANGES }}{% endraw %}', replace: '{{ settings.loadbalancer_source_ranges }}' }
-        - { regexp: '{% raw %}{{ NAME-OF-SERVER }}{% endraw %}', replace: '{{ tenant }}-default' }
+        - { regexp: "{% raw %}{{ LOADBALANCER_SOURCE_RANGES }}{% endraw %}", replace: "{{ settings.loadbalancer_source_ranges }}" }
+        - { regexp: "{% raw %}{{ NAME-OF-SERVER }}{% endraw %}", replace: "{{ tenant }}-default" }
       loop_control:
         loop_var: outer_item
       when:

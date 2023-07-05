@@ -4,8 +4,8 @@
 ---
 - name: Remove deprecated nfs-client-provisioner
   kubernetes.core.helm:
-    name: "nfs-client"
-    namespace: "nfs-client"
+    name: nfs-client
+    namespace: nfs-client
     kubeconfig: "{{ KUBECONFIG }}"
     state: absent
   tags:
@@ -15,8 +15,8 @@
 
 - name: Remove deprecated efs-provisioner
   kubernetes.core.helm:
-    name: "efs-provisioner"
-    namespace: "efs-provisioner"
+    name: efs-provisioner
+    namespace: efs-provisioner
     kubeconfig: "{{ KUBECONFIG }}"
     state: absent
   tags:
@@ -28,7 +28,7 @@
   kubernetes.core.k8s:
     api_version: v1
     kind: Namespace
-    name: "efs-provisioner"
+    name: efs-provisioner
     state: absent
     kubeconfig: "{{ KUBECONFIG }}"
   tags:

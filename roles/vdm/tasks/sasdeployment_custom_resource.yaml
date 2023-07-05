@@ -58,8 +58,8 @@
         src: "{{ DEPLOY_DIR }}/site-config"
         dest: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/data"
         rsync_opts:
-              - "--exclude=operator-deploy"
-              - "--exclude=sas-tenant-job"
+          - --exclude=operator-deploy
+          - --exclude=sas-tenant-job
     - name: sasdeployment custom resource - Copy kustomization.yaml into orchestration tooling directory
       copy:
         src: "{{ DEPLOY_DIR }}/kustomization.yaml"

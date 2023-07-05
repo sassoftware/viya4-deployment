@@ -1,3 +1,4 @@
+---
 - set_fact:
     internal_postgres: "{{ V4_CFG_POSTGRES_SERVERS.default.internal }}"
   tags:
@@ -7,9 +8,9 @@
 
 - name: fail - if cds-postgres is external
   ansible.builtin.fail:
-    msg: "CDS postgres instance must be internal server. To use CDS postgres, please reconfigure your infrastructure to set all your postgres servers internal"
+    msg: CDS postgres instance must be internal server. To use CDS postgres, please reconfigure your infrastructure to set all your postgres servers internal
   when:
-    - V4_CFG_CADENCE_VERSION is version('2022.11', "<=") 
+    - V4_CFG_CADENCE_VERSION is version('2022.11', "<=")
     - V4_CFG_CADENCE_NAME|lower != "fast"
     - V4_CFG_POSTGRES_SERVERS['cds-postgres'] is defined
     - V4_CFG_POSTGRES_SERVERS['cds-postgres'].internal is defined
@@ -25,7 +26,7 @@
     role: "{{ item.key }}"
     settings: "{{ item.value }}"
   with_dict: "{{ V4_CFG_POSTGRES_SERVERS }}"
-  when: 
+  when:
     - not item.value.internal
     - "'service_account' in item.value"
     - item.value.service_account is defined
@@ -44,12 +45,12 @@
         cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
         existing: "{{ vdm_overlays }}"
         add:
-          - { resources: "overlays/internal-postgres" }
-          - { resources: "overlays/crunchydata" }
-          - { transformers: "overlays/internal-postgres/internal-postgres-transformer.yaml" }
-          - { transformers: "postgres-storage-transformer.yaml", vdm: true, max: "2020.1.3" }
-          - { transformers: "postgres-storage-transformer.v2.yaml", vdm: true, min: "2020.1.3"}
-      when: 
+          - { resources: overlays/internal-postgres }
+          - { resources: overlays/crunchydata }
+          - { transformers: overlays/internal-postgres/internal-postgres-transformer.yaml }
+          - { transformers: postgres-storage-transformer.yaml, vdm: true, max: 2020.1.3 }
+          - { transformers: postgres-storage-transformer.v2.yaml, vdm: true, min: 2020.1.3 }
+      when:
         - internal_postgres
     - name: postgres - external
       overlay_facts:
@@ -57,12 +58,12 @@
         cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
         existing: "{{ vdm_overlays }}"
         add:
-          - { transformers: "overlays/external-postgres/external-postgres-transformer.yaml" }
-          - { generators: "postgres-sas-user.yaml", vdm: true }
-          - { generators: "sas-go-config.yaml", vdm: true }
-          - { generators: "sas-postgres-config.yaml", max: "2020.0.4", vdm: true }
-          - { generators: "sas-postgres-config.v2.yaml", min: "2020.0.5", vdm: true }
-      when: 
+          - { transformers: overlays/external-postgres/external-postgres-transformer.yaml }
+          - { generators: postgres-sas-user.yaml, vdm: true }
+          - { generators: sas-go-config.yaml, vdm: true }
+          - { generators: sas-postgres-config.yaml, max: 2020.0.4, vdm: true }
+          - { generators: sas-postgres-config.v2.yaml, min: 2020.0.5, vdm: true }
+      when:
         - not internal_postgres
   when:
     - V4_CFG_CADENCE_VERSION is version('2021.1.4', "<")
@@ -80,8 +81,8 @@
         cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
         existing: "{{ vdm_overlays }}"
         add:
-          - { transformers: "postgres-storage-transformer.v3.yaml", vdm: true }
-      when: 
+          - { transformers: postgres-storage-transformer.v3.yaml, vdm: true }
+      when:
         - internal_postgres
     - name: postgres - external
       overlay_facts:
@@ -89,7 +90,7 @@
         cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
         existing: "{{ vdm_overlays }}"
         add:
-          - { transformers: "overlays/external-postgres/external-postgres-transformer.yaml", max: "2022.09" }
+          - { transformers: overlays/external-postgres/external-postgres-transformer.yaml, max: "2022.09" }
       when:
         - not internal_postgres
     - name: postgres - instance
@@ -115,8 +116,8 @@
         cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
         existing: "{{ vdm_overlays }}"
         add:
-          - { resources: "overlays/crunchydata/postgres-operator", min: "2022.10" }
-      when: 
+          - { resources: overlays/crunchydata/postgres-operator, min: "2022.10" }
+      when:
         - internal_postgres
     - name: postgres - external
       overlay_facts:
@@ -124,8 +125,8 @@
         cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
         existing: "{{ vdm_overlays }}"
         add:
-          - { resources: "overlays/postgres/platform-postgres", min: "2022.10" }
-      when: 
+          - { resources: overlays/postgres/platform-postgres, min: "2022.10" }
+      when:
         - not internal_postgres
     - name: postgres - instance
       include_tasks: postgres-instance.yaml
