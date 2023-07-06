@@ -30,7 +30,7 @@
 
 - name: SAS Viya Kubernetes Manifest - generate site.yaml
   block:
-    - name: SAS Viya Kubernetes Manifest - generate new site.yaml - Ansible
+    - name: SAS Viya Kubernetes Manifest - generate site.yaml - Ansible
       ansible.builtin.shell: >
         docker run --rm
         --user="{{ UID_GID }}"
@@ -41,7 +41,7 @@
         build /data/ -o /data/site.yaml
       when:
         - deployment_tooling == "ansible"
-    - name: SAS Viya Kubernetes Manifest - generate new site.yaml - Docker
+    - name: SAS Viya Kubernetes Manifest - generate site.yaml - Docker
       environment:
         PATH: "{{ ORCHESTRATION_TOOLING_PATH }}"
       command:
