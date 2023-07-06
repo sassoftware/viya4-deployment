@@ -26,7 +26,7 @@
         orchestration deploy manifest
              --namespace "{{ NAMESPACE }}"
              --manifest "{{ DEPLOY_DIR }}/site.yaml"
-             --deployment-dir "{{ DEPLOY_DIR }}/site.yaml"
+             --deployment-dir "{{ DEPLOY_DIR }}/sas-bases"
       args:
         chdir: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}"
       when:
