@@ -17,7 +17,7 @@
 
 - name: deploy - Apply SAS Viya deployment - sas-orchestration
   block:
-    - name: deploy - Deploy SAS Viya
+    - name: deploy - Deploy SAS Viya - sas-orchestration - Docker
       environment:
         PATH: "{{ env_path + ':' + ORCHESTRATION_TOOLING_PATH }}"
         KUBECONFIG: "{{ KUBECONFIG }}"
@@ -29,11 +29,9 @@
              --deployment-dir "{{ DEPLOY_DIR }}/site.yaml"
       args:
         chdir: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}"
-      with_items:
-        - "{{ deployment_manifests.files }}"
       when:
         - deployment_tooling == "docker"
-    - name: deploy - Deploy SAS Viya
+    - name: deploy - Deploy SAS Viya - sas-orchestration - Ansible
       ansible.builtin.shell: >
         docker run --rm
         --user="{{ UID_GID }}"
