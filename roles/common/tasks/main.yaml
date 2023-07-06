@@ -228,6 +228,30 @@
         - tfstate.cluster_api_mode is defined
         - tfstate.cluster_api_mode.value|length > 0
         - V4_CFG_INGRESS_MODE is not defined
+    - name: tfstate - azure message broker host
+      set_fact:
+        V4_CFG_MESSAGE_BROKER_HOST: "{{ tfstate.message_broker_hostname.value }}"
+      when:
+        - PROVIDER == "azure"
+        - tfstate.message_broker_hostname is defined
+        - tfstate.message_broker_hostname.value|length > 0
+        - V4_CFG_MESSAGE_BROKER_HOST is not defined
+    - name: tfstate - azure message broker name
+      set_fact:
+        V4_CFG_MESSAGE_BROKER_NAME: "{{ tfstate.message_broker_name.value }}"
+      when:
+        - PROVIDER == "azure"
+        - tfstate.message_broker_name is defined
+        - tfstate.message_broker_name.value|length > 0
+        - V4_CFG_MESSAGE_BROKER_NAME is not defined
+    - name: tfstate - azure message broker primary_key
+      set_fact:
+        V4_CFG_MESSAGE_BROKER_PASSWORD: "{{ tfstate.message_broker_primary_key.value }}"
+      when:
+        - PROVIDER == "azure"
+        - tfstate.message_broker_primary_key is defined
+        - tfstate.message_broker_primary_key.value|length > 0
+        - V4_CFG_MESSAGE_BROKER_PASSWORD is not defined
     - set_fact:
         tfstate: ""
   when:
