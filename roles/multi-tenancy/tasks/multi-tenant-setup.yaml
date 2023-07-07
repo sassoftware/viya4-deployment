@@ -100,7 +100,7 @@
   with_items: "{{ tenant_password_list }}"
   when:
     - not V4MT_PROVIDER_PASSWORD
-    - ({{ item }} is defined)
+    - (item is defined)
   tags:
     - onboard
 
@@ -111,7 +111,7 @@
     replace: "{{ vars[item] }}"
   when:
     - not V4MT_PROVIDER_PASSWORD
-    - ({{ item }} is defined)
+    - (item is defined)
   with_items: "{{ tenant_password_list }}"
   tags:
     - onboard
