@@ -24,7 +24,17 @@
     - onboard
     - cas-onboard
     - offboard
+
 - name: Parse tfstate
+  when:
+    - TFSTATE is defined
+  tags:
+    - install
+    - uninstall
+    - update
+    - onboard
+    - cas-onboard
+    - offboard
   block:
     - name: Parse tfstate
       set_fact:
@@ -36,7 +46,7 @@
         - LOADBALANCER_SOURCE_RANGES is not defined
     - name: Add nat ip to LOADBALANCER_SOURCE_RANGES
       set_fact:
-        LOADBALANCER_SOURCE_RANGES: "{{ LOADBALANCER_SOURCE_RANGES + [tfstate.nat_ip.value+'/32'] }}"
+        LOADBALANCER_SOURCE_RANGES: "{{ LOADBALANCER_SOURCE_RANGES + [tfstate.nat_ip.value + '/32'] }}"
       when:
         - tfstate.nat_ip is defined
         - tfstate.nat_ip.value|length > 0
@@ -98,7 +108,7 @@
         - tfstate.cluster_name.value|length > 0
     - name: Tfstate - postgres servers
       set_fact:
-        V4_CFG_POSTGRES_SERVERS: "{{ tfstate.postgres_servers.value |combine(V4_CFG_POSTGRES_SERVERS, recursive=True) }}"
+        V4_CFG_POSTGRES_SERVERS: "{{ tfstate.postgres_servers.value | combine(V4_CFG_POSTGRES_SERVERS, recursive=True) }}"
       when:
         - tfstate.postgres_servers is defined
         - tfstate.postgres_servers.value|length > 0
@@ -256,15 +266,6 @@
     - name: Tfstate - set tfstate to empty string
       set_fact:
         tfstate: ""
-  when:
-    - TFSTATE is defined
-  tags:
-    - install
-    - uninstall
-    - update
-    - onboard
-    - cas-onboard
-    - offboard
 
 - name: Set DEPLOY_DIR
   set_fact: DEPLOY_DIR="{{ BASE_DIR | regex_replace('\\/$', '') }}/{{ CLUSTER_NAME }}/{{ NAMESPACE }}"
@@ -279,7 +280,7 @@
 
 - name: Set deployment_tooling
   set_fact:
-    deployment_tooling: "{{ lookup('env', 'VIYA4_DEPLOYMENT_TOOLING') |default('ansible', -1) }}"
+    deployment_tooling: "{{ lookup('env', 'VIYA4_DEPLOYMENT_TOOLING') | default('ansible', -1) }}"
   tags:
     - install
     - uninstall
@@ -290,7 +291,7 @@
 
 - name: Set env_path
   set_fact:
-    env_path: "{{ lookup('env', 'PATH') |default('', True) }}"
+    env_path: "{{ lookup('env', 'PATH') | default('', True) }}"
   tags:
     - install
     - uninstall

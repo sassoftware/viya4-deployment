@@ -17,6 +17,12 @@
     - update
 
 - name: Connect - CONNECT FQDN and configure customer certificates
+  when:
+    - V4_CFG_CONNECT_FQDN is not none
+  tags:
+    - install
+    - uninstall
+    - update
   block:
     - name: Connect - SAS/CONNECT FQDN to the SAN DNS list for cert-manager
       set_fact:
@@ -31,9 +37,3 @@
       when:
         - V4_CFG_TLS_MODE != "disabled"
         - V4_CFG_TLS_CERT is not none
-  when:
-    - V4_CFG_CONNECT_FQDN is not none
-  tags:
-    - install
-    - uninstall
-    - update

@@ -2,6 +2,13 @@
 # SPDX-License-Identifier: Apache-2.0
 ---
 - name: Migrations - Postgres server FQDN
+  when:
+    - V4_CFG_POSTGRES_FQDN is defined
+    - "'fqdn' not in V4_CFG_POSTGRES_SERVERS['default']"
+  tags:
+    - install
+    - uninstall
+    - update
   block:
     - name: Update Postgres server FQDN
       ansible.utils.update_fact:
@@ -12,15 +19,15 @@
     - name: Update Postgres servers
       set_fact:
         V4_CFG_POSTGRES_SERVERS: "{{ updated.V4_CFG_POSTGRES_SERVERS }}"
+
+- name: Migrations - Postgres server admin login
   when:
-    - V4_CFG_POSTGRES_FQDN is defined
-    - "'fqdn' not in V4_CFG_POSTGRES_SERVERS['default']"
+    - V4_CFG_POSTGRES_ADMIN_LOGIN is defined
+    - "'admin' not in V4_CFG_POSTGRES_SERVERS['default']"
   tags:
     - install
     - uninstall
     - update
-
-- name: Migrations - Postgres server admin login
   block:
     - name: Update Postgres server admin login
       ansible.utils.update_fact:
@@ -31,15 +38,15 @@
     - name: Update Postgres servers
       set_fact:
         V4_CFG_POSTGRES_SERVERS: "{{ updated.V4_CFG_POSTGRES_SERVERS }}"
+
+- name: Migrations - Postgres server port
   when:
-    - V4_CFG_POSTGRES_ADMIN_LOGIN is defined
-    - "'admin' not in V4_CFG_POSTGRES_SERVERS['default']"
+    - V4_CFG_POSTGRES_PORT is defined
+    - "'server_port' not in V4_CFG_POSTGRES_SERVERS['default']"
   tags:
     - install
     - uninstall
     - update
-
-- name: Migrations - Postgres server port
   block:
     - name: Update Postgres server port
       ansible.utils.update_fact:
@@ -50,15 +57,15 @@
     - name: Update Postgres servers
       set_fact:
         V4_CFG_POSTGRES_SERVERS: "{{ updated.V4_CFG_POSTGRES_SERVERS }}"
+
+- name: Migrations - Postgres server password
   when:
-    - V4_CFG_POSTGRES_PORT is defined
-    - "'server_port' not in V4_CFG_POSTGRES_SERVERS['default']"
+    - V4_CFG_POSTGRES_PASSWORD is defined
+    - "'password' not in V4_CFG_POSTGRES_SERVERS['default']"
   tags:
     - install
     - uninstall
     - update
-
-- name: Migrations - Postgres server password
   block:
     - name: Update Postgres server password
       ansible.utils.update_fact:
@@ -69,15 +76,15 @@
     - name: Update Postgres servers
       set_fact:
         V4_CFG_POSTGRES_SERVERS: "{{ updated.V4_CFG_POSTGRES_SERVERS }}"
+
+- name: Migrations - Postgres server connection name
   when:
-    - V4_CFG_POSTGRES_PASSWORD is defined
-    - "'password' not in V4_CFG_POSTGRES_SERVERS['default']"
+    - V4_CFG_POSTGRES_CONNECTION_NAME is defined
+    - "'connection_name' not in V4_CFG_POSTGRES_SERVERS['default']"
   tags:
     - install
     - uninstall
     - update
-
-- name: Migrations - Postgres server connection name
   block:
     - name: Update Postgres server connection name
       ansible.utils.update_fact:
@@ -88,15 +95,15 @@
     - name: Update Postgres servers
       set_fact:
         V4_CFG_POSTGRES_SERVERS: "{{ updated.V4_CFG_POSTGRES_SERVERS }}"
+
+- name: Migrations - Postgres server service account
   when:
-    - V4_CFG_POSTGRES_CONNECTION_NAME is defined
-    - "'connection_name' not in V4_CFG_POSTGRES_SERVERS['default']"
+    - V4_CFG_POSTGRES_SERVICE_ACCOUNT is defined
+    - "'service_account' not in V4_CFG_POSTGRES_SERVERS['default']"
   tags:
     - install
     - uninstall
     - update
-
-- name: Migrations - Postgres server service account
   block:
     - name: Update Postgres server service account
       ansible.utils.update_fact:
@@ -107,15 +114,15 @@
     - name: Update Postgres servers
       set_fact:
         V4_CFG_POSTGRES_SERVERS: "{{ updated.V4_CFG_POSTGRES_SERVERS }}"
+
+- name: Migrations - Postgres server ssl enforcement
   when:
-    - V4_CFG_POSTGRES_SERVICE_ACCOUNT is defined
-    - "'service_account' not in V4_CFG_POSTGRES_SERVERS['default']"
+    - V4_CFG_POSTGRES_SSL_ENFORCEMENT is defined
+    - "'ssl_enforcement_enabled' not in V4_CFG_POSTGRES_SERVERS['default']"
   tags:
     - install
     - uninstall
     - update
-
-- name: Migrations - Postgres server ssl enforcement
   block:
     - name: Update Postgres server ssl enforcement
       ansible.utils.update_fact:
@@ -126,15 +133,15 @@
     - name: Update Postgres servers
       set_fact:
         V4_CFG_POSTGRES_SERVERS: "{{ updated.V4_CFG_POSTGRES_SERVERS }}"
+
+- name: Migrations - Postgres server internal
   when:
-    - V4_CFG_POSTGRES_SSL_ENFORCEMENT is defined
-    - "'ssl_enforcement_enabled' not in V4_CFG_POSTGRES_SERVERS['default']"
+    - V4_CFG_POSTGRES_TYPE is defined
+    - "'internal' not in V4_CFG_POSTGRES_SERVERS['default']"
   tags:
     - install
     - uninstall
     - update
-
-- name: Migrations - Postgres server internal
   block:
     - name: Update Postgres server internal
       ansible.utils.update_fact:
@@ -145,15 +152,15 @@
     - name: Update Postgres servers
       set_fact:
         V4_CFG_POSTGRES_SERVERS: "{{ updated.V4_CFG_POSTGRES_SERVERS }}"
+
+- name: Migrations - Postgres server database
   when:
-    - V4_CFG_POSTGRES_TYPE is defined
-    - "'internal' not in V4_CFG_POSTGRES_SERVERS['default']"
+    - V4_CFG_POSTGRES_DATABASE is defined
+    - "'database' not in V4_CFG_POSTGRES_SERVERS['default']"
   tags:
     - install
     - uninstall
     - update
-
-- name: Migrations - Postgres server database
   block:
     - name: Update Postgres server database
       ansible.utils.update_fact:
@@ -164,10 +171,3 @@
     - name: Update Postgres servers
       set_fact:
         V4_CFG_POSTGRES_SERVERS: "{{ updated.V4_CFG_POSTGRES_SERVERS }}"
-  when:
-    - V4_CFG_POSTGRES_DATABASE is defined
-    - "'database' not in V4_CFG_POSTGRES_SERVERS['default']"
-  tags:
-    - install
-    - uninstall
-    - update

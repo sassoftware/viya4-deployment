@@ -55,13 +55,15 @@
 
 - name: Kustomize - get load restrictor flag
   set_fact:
-    LOAD_RESTRICTOR_FLAG: "{{ '--load-restrictor LoadRestrictionsNone' if V4_CFG_CADENCE_VERSION is version('2023.02', '>=') or V4_CFG_CADENCE_NAME|lower == 'fast'
+    LOAD_RESTRICTOR_FLAG: "{{ '--load-restrictor LoadRestrictionsNone' if V4_CFG_CADENCE_VERSION is version('2023.02', '>=') or V4_CFG_CADENCE_NAME | lower == 'fast'
       else '--load_restrictor=none' }}"
   tags:
     - onboard
     - offboard
 
 - name: Kustomize - generate onboard manifest
+  tags:
+    - onboard
   block:
     - name: Kustomize - generate onboard manifest - Ansible
       ansible.builtin.shell: >
@@ -84,10 +86,10 @@
         chdir: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}"
       when:
         - deployment_tooling == "docker"
-  tags:
-    - onboard
 
 - name: Kustomize - generate offboard manifest
+  tags:
+    - offboard
   block:
     - name: Kustomize - generate offboard manifest - Ansible
       ansible.builtin.shell: >
@@ -110,8 +112,6 @@
         chdir: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}"
       when:
         - deployment_tooling == "docker"
-  tags:
-    - offboard
 
 # Get the full name of the sas-image-pull-secrets in current deployment
 - name: Get - sas-image-pull-secrets

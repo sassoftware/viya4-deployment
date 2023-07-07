@@ -22,18 +22,18 @@
     - update
 
 - name: Sitedefault
-  block:
-    - name: Copy sitedefault.yaml
-      copy:
-        src: "{{ V4_CFG_SITEDEFAULT }}"
-        dest: "{{ DEPLOY_DIR }}/site-config/sitedefault.yaml"
-        mode: "0660"
   when:
     - not stat_result.stat.exists
   tags:
     - install
     - uninstall
     - update
+  block:
+    - name: Copy sitedefault.yaml
+      copy:
+        src: "{{ V4_CFG_SITEDEFAULT }}"
+        dest: "{{ DEPLOY_DIR }}/site-config/sitedefault.yaml"
+        mode: "0660"
 
 - name: Include Deployment assets
   include_tasks: assets.yaml
@@ -64,6 +64,12 @@
     - update
 
 - name: CR access
+  when:
+    - V4_CFG_CR_USER is not none
+  tags:
+    - install
+    - uninstall
+    - update
   block:
     - name: Copy container registry access
       template:
@@ -77,12 +83,6 @@
         existing: "{{ vdm_overlays }}"
         add:
           - { generators: sas-image-pull-secrets.yaml, vdm: true }
-  when:
-    - V4_CFG_CR_USER is not none
-  tags:
-    - install
-    - uninstall
-    - update
 
 - name: Include Mirror
   include_tasks: mirror.yaml

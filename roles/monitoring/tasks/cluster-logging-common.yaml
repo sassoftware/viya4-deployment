@@ -41,9 +41,9 @@
         namespace: "{{ V4M_LOGGING_NAMESPACE }}"
       data:
         tls.crt: >-
-          {{ lookup('file', V4M_ELASTICSEARCH_CERT ) |b64encode }}
+          {{ lookup('file', V4M_ELASTICSEARCH_CERT) | b64encode }}
         tls.key: >-
-          {{ lookup('file', V4M_ELASTICSEARCH_KEY ) |b64encode }}
+          {{ lookup('file', V4M_ELASTICSEARCH_KEY) | b64encode }}
       type: kubernetes.io/tls
   when:
     - V4M_ELASTICSEARCH_CERT is not none
@@ -64,9 +64,9 @@
         namespace: "{{ V4M_LOGGING_NAMESPACE }}"
       data:
         tls.crt: >-
-          {{ lookup('file', V4M_KIBANA_CERT ) |b64encode }}
+          {{ lookup('file', V4M_KIBANA_CERT) | b64encode }}
         tls.key: >-
-          {{ lookup('file', V4M_KIBANA_KEY ) |b64encode }}
+          {{ lookup('file', V4M_KIBANA_KEY) | b64encode }}
       type: kubernetes.io/tls
   when:
     - V4M_KIBANA_CERT is not none

@@ -15,6 +15,12 @@
     - update
 
 - name: Cas - user defined sssd
+  when:
+    - V4_CFG_SSSD is not none
+  tags:
+    - install
+    - uninstall
+    - update
   block:
     - name: Cas - create cas-server site-config folder
       file:
@@ -35,12 +41,6 @@
           - { transformers: overlays/cas-server/cas-sssd-sidecar.yaml, priority: 0 }
           - { transformers: cas-sssd.yaml, vdm: true }
           - { generators: sas-sssd-config.yaml, vdm: true }
-  when:
-    - V4_CFG_SSSD is not none
-  tags:
-    - install
-    - uninstall
-    - update
 
 - name: Cas - backup controller
   overlay_facts:

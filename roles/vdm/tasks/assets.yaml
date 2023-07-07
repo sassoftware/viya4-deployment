@@ -4,8 +4,7 @@
 ---
 - name: Assets - Download viya4-orders-cli
   get_url:
-    url: https://github.com/sassoftware/viya4-orders-cli/releases/download/{{ V4_ORDERS_CLI_VERSION }}/viya4-orders-cli_{{ hostvars[inventory_hostname]['ansible_system']|lower
-      }}_amd64
+    url: https://github.com/sassoftware/viya4-orders-cli/releases/download/{{ V4_ORDERS_CLI_VERSION }}/viya4-orders-cli_{{ hostvars[inventory_hostname]['ansible_system'] | lower }}_amd64
     dest: "{{ tmpdir.path }}/viya4-orders-cli"
     mode: "0755"
   when:
@@ -79,7 +78,7 @@
 
 - name: Assets - Set assets location
   set_fact:
-    order_output: "{{ res.stdout|from_json }}"
+    order_output: "{{ res.stdout | from_json }}"
   when:
     - V4_CFG_DEPLOYMENT_ASSETS is none
   tags:

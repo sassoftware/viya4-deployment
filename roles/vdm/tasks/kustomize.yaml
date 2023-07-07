@@ -17,7 +17,7 @@
 - name: Kustomize - set date and git refspec
   set_fact:
     timestamp: "{{ ansible_date_time.iso8601 }}"
-    git_hash: "{{ githash.stdout |default('unknown', -1) }}"
+    git_hash: "{{ githash.stdout | default('unknown', -1) }}"
   tags:
     - install
     - uninstall
@@ -62,7 +62,7 @@
   include_tasks: copy_overlay.yaml
   vars:
     resource: "{{ item.key }}"
-    overlays: "{{ item.value.pre|default([], true) + item.value.post|default([], true) }}"
+    overlays: "{{ item.value.pre | default([], true) + item.value.post | default([], true) }}"
   with_dict: "{{ ordered_overlays.result }}"
   tags:
     - install

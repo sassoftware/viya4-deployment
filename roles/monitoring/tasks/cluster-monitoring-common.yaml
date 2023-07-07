@@ -41,9 +41,9 @@
         namespace: "{{ V4M_MONITORING_NAMESPACE }}"
       data:
         tls.crt: >-
-          {{ lookup('file', V4M_GRAFANA_CERT ) |b64encode }}
+          {{ lookup('file', V4M_GRAFANA_CERT) | b64encode }}
         tls.key: >-
-          {{ lookup('file', V4M_GRAFANA_KEY ) |b64encode }}
+          {{ lookup('file', V4M_GRAFANA_KEY) | b64encode }}
       type: kubernetes.io/tls
   when:
     - V4M_GRAFANA_CERT is not none
@@ -64,9 +64,9 @@
         namespace: "{{ V4M_MONITORING_NAMESPACE }}"
       data:
         tls.crt: >-
-          {{ lookup('file', V4M_PROMETHEUS_CERT ) |b64encode }}
+          {{ lookup('file', V4M_PROMETHEUS_CERT) | b64encode }}
         tls.key: >-
-          {{ lookup('file', V4M_PROMETHEUS_KEY ) |b64encode }}
+          {{ lookup('file', V4M_PROMETHEUS_KEY) | b64encode }}
       type: kubernetes.io/tls
   when:
     - V4M_PROMETHEUS_CERT is not none
@@ -87,9 +87,9 @@
         namespace: "{{ V4M_MONITORING_NAMESPACE }}"
       data:
         tls.crt: >-
-          {{ lookup('file', V4M_ALERTMANAGER_CERT ) |b64encode }}
+          {{ lookup('file', V4M_ALERTMANAGER_CERT) | b64encode }}
         tls.key: >-
-          {{ lookup('file', V4M_ALERTMANAGER_KEY ) |b64encode }}
+          {{ lookup('file', V4M_ALERTMANAGER_KEY) | b64encode }}
       type: kubernetes.io/tls
   when:
     - V4M_ALERTMANAGER_CERT is not none

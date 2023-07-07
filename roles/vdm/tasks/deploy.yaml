@@ -16,6 +16,12 @@
     - cas-onboard
 
 - name: Deploy - Apply SAS Viya deployment
+  when:
+    - not V4_DEPLOYMENT_OPERATOR_ENABLED
+  tags:
+    - install
+    - update
+    - cas-onboard
   block:
     - name: Deploy - Gather all resource files
       find:
@@ -113,12 +119,6 @@
       when:
         - deployment_tooling == "ansible"
         - V4_CFG_BELOW_THE_LINE
-  when:
-    - not V4_DEPLOYMENT_OPERATOR_ENABLED
-  tags:
-    - install
-    - update
-    - cas-onboard
 
 - name: Deploy - Uninstall postgresclusters
   environment:

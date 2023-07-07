@@ -8,7 +8,7 @@
 - name: Orchestration tooling - Set orchestration tooling facts
   set_fact:
     ORCHESTRATION_TOOLING_DIRECTORY: "{{ tmpdir.path }}/orchestration"
-    ORCHESTRATION_TOOLING_ARCHIVE: "{{ tmpdir.path}}/orchestration.tar"
+    ORCHESTRATION_TOOLING_ARCHIVE: "{{ tmpdir.path }}/orchestration.tar"
     ORCHESTRATION_CR_USER: "{{ V4_CFG_CR_USER }}"
     ORCHESTRATION_CR_PASSWORD: "{{ V4_CFG_CR_PASSWORD }}"
   tags:
@@ -20,6 +20,15 @@
     - offboard
 
 - name: Orchestration tooling - collect uuid for running docker container
+  when:
+    - deployment_tooling == "ansible"
+  tags:
+    - install
+    - uninstall
+    - update
+    - onboard
+    - cas-onboard
+    - offboard
   block:
     - name: Orchestration tooling - Get the current uid/gid
       shell:
@@ -30,19 +39,10 @@
     - name: Orchestration tooling - Set the current uid/gid
       set_fact:
         UID_GID: "{{ out.stdout }}"
-  when:
-    - deployment_tooling == "ansible"
-  tags:
-    - install
-    - uninstall
-    - update
-    - onboard
-    - cas-onboard
-    - offboard
 
 - name: Orchestration tooling - Find orchestration tooling image
   set_fact:
-    ORCHESTRATION_IMAGE: "{{ (lookup('file', '{{ DEPLOY_DIR }}/sas-bases/.orchestration/images.yaml')|from_yaml).spec.images['sas-orchestration'] }}"
+    ORCHESTRATION_IMAGE: "{{ (lookup('file', '{{ DEPLOY_DIR }}/sas-bases/.orchestration/images.yaml') | from_yaml).spec.images['sas-orchestration'] }}"
   when:
     - ORCHESTRATION_IMAGE is not defined
   tags:
@@ -59,10 +59,8 @@
 # https://jinja.palletsprojects.com/en/2.11.x/templates/#synopsis
 - name: Orchestration tooling - set registry credentials if using defaults
   set_fact:
-    ORCHESTRATION_CR_USER: "{{ lookup('file', '{{DEPLOY_DIR}}/sas-bases/base/secrets.yaml') | regex_search('username=(.+)', '\\1') | first | regex_escape() | regex_replace('{%','{\\\
-      %') }}"
-    ORCHESTRATION_CR_PASSWORD: "{{ lookup('file', '{{DEPLOY_DIR}}/sas-bases/base/secrets.yaml') | regex_search('password=(.+)', '\\1') | first | regex_escape() |
-      regex_replace('{%','{\\%') }}"
+    ORCHESTRATION_CR_USER: "{{ lookup('file', '{{DEPLOY_DIR}}/sas-bases/base/secrets.yaml') | regex_search('username=(.+)', '\\1') | first | regex_escape() | regex_replace('{%','{\\%') }}"
+    ORCHESTRATION_CR_PASSWORD: "{{ lookup('file', '{{DEPLOY_DIR}}/sas-bases/base/secrets.yaml') | regex_search('password=(.+)', '\\1') | first | regex_escape() | regex_replace('{%','{\\%') }}"
   when:
     - ORCHESTRATION_CR_USER is none
   tags:
@@ -77,7 +75,7 @@
 # if the parsed creds contain symbols. This is expected and required to avoid Jinja2 templating issues.
 - name: Orchestration tooling - Download orchestration tooling image
   command: |
-    skopeo copy docker://{{ V4_CFG_CR_HOST }}/{{ ORCHESTRATION_IMAGE }} oci-archive:{{ ORCHESTRATION_TOOLING_ARCHIVE }} --src-creds {{ ORCHESTRATION_CR_USER|string }}:{{ ORCHESTRATION_CR_PASSWORD|string }}
+    skopeo copy docker://{{ V4_CFG_CR_HOST }}/{{ ORCHESTRATION_IMAGE }} oci-archive:{{ ORCHESTRATION_TOOLING_ARCHIVE }} --src-creds {{ ORCHESTRATION_CR_USER | string }}:{{ ORCHESTRATION_CR_PASSWORD | string }}
   when:
     - deployment_tooling == "docker"
   tags:
@@ -102,6 +100,15 @@
     - offboard
 
 - name: Orchestration tooling - Extract orchestration tooling
+  when:
+    - deployment_tooling == "docker"
+  tags:
+    - install
+    - uninstall
+    - update
+    - onboard
+    - cas-onboard
+    - offboard
   block:
     - name: Orchestration tooling - Extract orchestration tooling archive
       unarchive:
@@ -123,25 +130,16 @@
       register: orchestration_path
     - name: Orchestration tooling - Prepend path with tooling directory
       set_fact:
-        path_list: "{{ path_list | default([]) + [''.join((ORCHESTRATION_TOOLING_DIRECTORY,item))] }}"
-      loop: "{{ orchestration_path.stdout.split(':') | list}}"
+        path_list: "{{ path_list | default([]) + [''.join((ORCHESTRATION_TOOLING_DIRECTORY, item))] }}"
+      loop: "{{ orchestration_path.stdout.split(':') | list }}"
     - name: Orchestration tooling - Set orchestration tooling path
       set_fact:
         ORCHESTRATION_TOOLING_PATH: "{{ path_list | join(':') }}"
-  when:
-    - deployment_tooling == "docker"
-  tags:
-    - install
-    - uninstall
-    - update
-    - onboard
-    - cas-onboard
-    - offboard
 
 # The ansible log output will have escape characters for ORCHESTRATION_CR_USER & ORCHESTRATION_CR_PASSWORD.
 # if the parsed creds contain symbols. This is expected and required to avoid Jinja2 templating issues.
 - name: Orchestration tooling - log into V4_CFG_CR_HOST
-  command: docker login -u {{ ORCHESTRATION_CR_USER|string}} -p {{ ORCHESTRATION_CR_PASSWORD|string }} {{ V4_CFG_CR_HOST }}
+  command: docker login -u {{ ORCHESTRATION_CR_USER | string }} -p {{ ORCHESTRATION_CR_PASSWORD | string }} {{ V4_CFG_CR_HOST }}
   when:
     - deployment_tooling == "ansible"
   tags:

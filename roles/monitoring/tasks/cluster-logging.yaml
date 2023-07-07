@@ -26,7 +26,7 @@
 
 - name: Cluster-logging - save credentials
   set_fact:
-    "{{ logging_map['secret'][item.metadata.name] }}": "{{ item.data.password|b64decode }}"
+    "{{ logging_map['secret'][item.metadata.name] }}": "{{ item.data.password | b64decode }}"
   with_items: "{{ logging_secrets.resources }}"
   when:
     - item.metadata is defined

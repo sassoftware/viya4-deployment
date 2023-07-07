@@ -46,7 +46,7 @@ V4_CFG_TLS_GENERATOR: openssl # [cert-manager,openssl]
 V4_CFG_CONSUL_ENABLE_LOADBALANCER: false
 V4_CFG_EMBEDDED_LDAP_ENABLE: false
 V4_CFG_SSSD: null
-V4_CFG_SITEDEFAULT: "{{'files/sitedefault.yaml' if not V4MT_ENABLE else 'files/sitedefault-mt.yaml'}}"
+V4_CFG_SITEDEFAULT: "{{ 'files/sitedefault.yaml' if not V4MT_ENABLE else 'files/sitedefault-mt.yaml' }}"
 
 V4_CFG_CAS_RAM:
 V4_CFG_CAS_CORES:

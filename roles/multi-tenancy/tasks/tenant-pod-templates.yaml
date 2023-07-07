@@ -1,5 +1,8 @@
 ---
 - name: FileGenerator updates for tenant-specific resources
+  when: V4MT_TENANT_IDS is search(tenant)
+  tags:
+    - onboard
   block:
     - name: Delete tenant-specific resource directories if present
       file:
@@ -28,6 +31,3 @@
       with_items: "{{ result.files }}"
       loop_control:
         loop_var: outer_item
-  when: V4MT_TENANT_IDS is search(tenant)
-  tags:
-    - onboard

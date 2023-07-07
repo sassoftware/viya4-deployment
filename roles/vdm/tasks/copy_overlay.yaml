@@ -15,8 +15,8 @@
 
 - name: Copy - VDM {{ resource }}
   template:
-    src: "{{ resource }}/{{ overlay|basename }}"
-    dest: "{{ DEPLOY_DIR }}/{{ overlay |dirname }}/{{ overlay | basename | regex_replace('\\..*\\.yaml$', '.yaml') }}"
+    src: "{{ resource }}/{{ overlay | basename }}"
+    dest: "{{ DEPLOY_DIR }}/{{ overlay | dirname }}/{{ overlay | basename | regex_replace('\\..*\\.yaml$', '.yaml') }}"
     mode: "0660"
   with_items: "{{ overlays }}"
   loop_control:

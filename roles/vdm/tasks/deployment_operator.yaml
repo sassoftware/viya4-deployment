@@ -31,7 +31,7 @@
 
 - name: Deployment-operator - set scoped OPERATOR_DEPLOY_DIRECTORY
   set_fact:
-    OPERATOR_DEPLOY_DIRECTORY: "{{ OPERATOR_DEPLOY_DIRECTORY + '-clusterwide' if V4_DEPLOYMENT_OPERATOR_SCOPE == 'cluster' else OPERATOR_DEPLOY_DIRECTORY + '-namespace'}}"
+    OPERATOR_DEPLOY_DIRECTORY: "{{ OPERATOR_DEPLOY_DIRECTORY + '-clusterwide' if V4_DEPLOYMENT_OPERATOR_SCOPE == 'cluster' else OPERATOR_DEPLOY_DIRECTORY + '-namespace' }}"
   tags:
     - install
     - uninstall
@@ -48,7 +48,7 @@
 
 - name: Deployment-operator - ensure cluster-wide mode namespace is not the same as the SAS Viya namespace
   ansible.builtin.assert:
-    that: "{{ V4_DEPLOYMENT_OPERATOR_NAMESPACE != NAMESPACE}}"
+    that: "{{ V4_DEPLOYMENT_OPERATOR_NAMESPACE != NAMESPACE }}"
     msg: >
       Invalid V4_DEPLOYMENT_OPERATOR_NAMESPACE value: {{ V4_DEPLOYMENT_OPERATOR_NAMESPACE }}
 
@@ -117,6 +117,12 @@
     - update
 
 - name: Deployment-operator - determine if required/transformers.yaml overlay required
+  when:
+    - V4_CFG_CADENCE_VERSION is version('2021.1.6', "<")
+    - V4_CFG_CADENCE_NAME|lower != "fast"
+  tags:
+    - install
+    - update
   block:
     - name: Deployment-operator - Set required_transformers
       set_fact:
@@ -131,12 +137,6 @@
         src: "{{ DEPLOY_DIR }}/sas-bases/overlays/required/transformers.yaml"
         dest: "{{ OPERATOR_DEPLOY_DIRECTORY }}/site-config/required/transformers.yaml"
         mode: "0660"
-  when:
-    - V4_CFG_CADENCE_VERSION is version('2021.1.6', "<")
-    - V4_CFG_CADENCE_NAME|lower != "fast"
-  tags:
-    - install
-    - update
 
 - name: Deployment-operator - copy mirror example
   copy:
@@ -165,9 +165,9 @@
     image_pull_secret_patch_target: "{{ 'ServiceAccount'
                                      if (V4_CFG_CR_USER is not none and
                                      V4_CFG_CADENCE_VERSION is version('2021.1.5', '<') and
-                                     V4_CFG_CADENCE_NAME|lower != 'fast') else 'Deployment'}}"
+                                     V4_CFG_CADENCE_NAME | lower != 'fast') else 'Deployment' }}"
     secret_generator_required: "{{ true if (V4_CFG_CADENCE_VERSION is version('2021.1.5', '<') and
-      V4_CFG_CADENCE_NAME|lower != 'fast') else false}}"
+      V4_CFG_CADENCE_NAME | lower != 'fast') else false }}"
   tags:
     - install
     - update
@@ -202,6 +202,9 @@
     - update
 
 - name: Deployment-operator - deploy
+  tags:
+    - install
+    - update
   block:
     - name: Deployment-operator - Generate deployment-operator manifest - Ansible
       ansible.builtin.shell: >
@@ -232,9 +235,6 @@
         kubeconfig: "{{ KUBECONFIG }}"
       when:
         - DEPLOY
-  tags:
-    - install
-    - update
 
 - name: Deployment-operator - create deployment-operator-clusterwide.yaml
   ansible.builtin.template:
@@ -268,6 +268,11 @@
     - uninstall
 
 - name: Deployment-operator - uninstall
+  when:
+    - cluster_sasdeployments.resources|length == 0
+    - DEPLOY
+  tags:
+    - uninstall
   block:
     - name: Deployment-operator - Uninstall serviceaccounts, roles, rolebindings, deployments, and secrets
       environment:
@@ -289,11 +294,6 @@
         kubectl delete clusterrolebindings {{ result.stdout }}
       when:
         - result.stdout|length > 0
-  when:
-    - cluster_sasdeployments.resources|length == 0
-    - DEPLOY
-  tags:
-    - uninstall
 
 - name: Deployment-operator - Delete namespace
   kubernetes.core.k8s:
