@@ -253,7 +253,6 @@
         - tfstate.message_broker_primary_key is defined
         - tfstate.message_broker_primary_key.value|length > 0
         - V4_CFG_MESSAGE_BROKER_PASSWORD is not defined
-    - set_fact:
     - name: Tfstate - set tfstate to empty string
       set_fact:
         tfstate: ""
