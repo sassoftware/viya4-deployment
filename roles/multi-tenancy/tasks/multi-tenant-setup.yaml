@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
-- name: create sas-tenant-job folder
+- name: Create sas-tenant-job folder
   file:
     state: directory
     dest: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job"
@@ -12,7 +12,7 @@
     - onboard
     - offboard
 
-- name: copy - sas-tenant-job
+- name: Copy - sas-tenant-job
   copy:
     src: "{{ DEPLOY_DIR }}/sas-bases/examples/sas-tenant-job/"
     dest: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job"
@@ -22,7 +22,7 @@
     - onboard
     - offboard
 
-- name: update namespace
+- name: Update namespace
   replace:
     path: "{{ item }}"
     regexp: "{% raw %}{{ VIYA-DEPLOYMENT-NAMESPACE }}{% endraw %}"
@@ -37,7 +37,7 @@
     - offboard
 
 # Update the job names to unique identifier - required for Kustomize v4.5.7+
-- name: sas-tenant-job - update job-name
+- name: Sas-tenant-job - update job-name
   replace:
     path: "{{ item.path }}"
     regexp: "{{ item.regexp }}"
@@ -56,7 +56,7 @@
     - onboard
     - offboard
 
-- name: sas-tenant-job - update sas-tenant-ids
+- name: Sas-tenant-job - update sas-tenant-ids
   replace:
     path: "{{ item.path }}"
     regexp: "{{ item.regexp }}"
@@ -73,7 +73,7 @@
     - onboard
     - offboard
 
-- name: sas-tenant-job - update sas-provider-password
+- name: Sas-tenant-job - update sas-provider-password
   replace:
     path: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-onboard-job.yaml"
     regexp: "{% raw %}{{ SAS-PROVIDER-PASSWORD }}{% endraw %}"
@@ -92,7 +92,7 @@
   tags:
     - onboard
 
-- name: sas-tenant-job - add sas-provider-password-TENANT-ID if provided
+- name: Sas-tenant-job - add sas-provider-password-TENANT-ID if provided
   lineinfile:
     path: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-onboard-job.yaml"
     insertafter: "{% raw %}value: {{ SAS-PROVIDER-PASSWORD }}{% endraw %}"
@@ -104,7 +104,7 @@
   tags:
     - onboard
 
-- name: sas-tenant-job - update sas-provider-password-TENANT-ID
+- name: Sas-tenant-job - update sas-provider-password-TENANT-ID
   replace:
     path: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-onboard-job.yaml"
     regexp: "{% raw %}{{{% endraw %} {{ item }} {% raw %}}}{% endraw %}"
@@ -136,7 +136,7 @@
   tags:
     - onboard
 
-- name: copy - create-cas-server script
+- name: Copy - create-cas-server script
   copy:
     src: "{{ DEPLOY_DIR }}/sas-bases/examples/cas/create/create-cas-server.sh"
     dest: "{{ DEPLOY_DIR }}/site-config"
@@ -148,7 +148,7 @@
     - onboard
 
 # Delete the cas tenant directories if present to recreate new directories for re-onboarding
-- name: delete cas tenant directory
+- name: Delete cas tenant directory
   file:
     state: absent
     path: "{{ DEPLOY_DIR }}/site-config/cas-{{ item | trim }}-default"
@@ -158,7 +158,7 @@
     - onboard
 
 # Make tenant CAS customizations if user has specified values
-- name: tenant cas customizations
+- name: Tenant cas customizations
   include_tasks: tenant-cas-customizations.yaml
   vars:
     tenant: "{{ item.key | lower }}"
@@ -171,7 +171,7 @@
     - onboard
 
 # If customizations not specified, create cas servers with default values
-- name: create cas servers for tenants
+- name: Create cas servers for tenants
   command:
   # Example cmd: $deploy/sas-bases/examples/cas/create/create-cas-server.sh --tenant acme --output ../site-config/ --workers 2 --backup 1
     cmd: "{{ DEPLOY_DIR }}/site-config/create-cas-server.sh --tenant {{ item }} --output {{ DEPLOY_DIR }}/site-config --workers 0 --backup 0"
@@ -191,7 +191,7 @@
   tags:
     - onboard
 
-- name: add env variable for pod templates in sas-tenant-job
+- name: Add env variable for pod templates in sas-tenant-job
   lineinfile:
     path: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-onboard-job.yaml"
     insertafter: "env:"
@@ -203,7 +203,7 @@
   tags:
     - onboard
 
-- name: tenant pod templates
+- name: Tenant pod templates
   include_tasks: tenant-pod-templates.yaml
   vars:
     tenant: "{{ item }}"

@@ -4,7 +4,7 @@
 # These tasks are responsible for generating the SASDeployment Custom Resource
 
 ---
-- name: sasdeployment custom resource - Set orchestration tooling facts
+- name: Sasdeployment custom resource - Set orchestration tooling facts
   set_fact:
     ORCHESTRATION_TOOLING_DIRECTORY: "{{ tmpdir.path }}/orchestration"
     ORCHESTRATION_TOOLING_INSTALL_MANIFEST: "{{ DEPLOY_DIR }}/sasdeployment.yaml"
@@ -17,14 +17,14 @@
     - cas-onboard
     - offboard
 
-- name: sasdeployment custom resource - Find order cadence release
+- name: Sasdeployment custom resource - Find order cadence release
   block:
-    - name: sasdeployment custom resource - Find order cadence release from cadence.yaml
+    - name: Sasdeployment custom resource - Find order cadence release from cadence.yaml
       set_fact:
         V4_CFG_CADENCE_RELEASE: "{{ (lookup('file', '{{ DEPLOY_DIR }}/sas-bases/.orchestration/cadence.yaml')|from_yaml).spec.release }}"
       when:
         - V4_CFG_CADENCE_VERSION is version('2021.1', ">") or V4_CFG_CADENCE_NAME|lower == "fast"
-    - name: sasdeployment custom resource - Find order cadence release from configmaps.yaml
+    - name: Sasdeployment custom resource - Find order cadence release from configmaps.yaml
       set_fact:
         V4_CFG_CADENCE_RELEASE: "{{ lookup('file', '{{DEPLOY_DIR}}/sas-bases/base/configmaps.yaml') | regex_search('SAS_CADENCE_RELEASE=(.+)', '\\1') | first }}"
       when:
@@ -37,30 +37,30 @@
     - cas-onboard
     - offboard
 
-- name: sasdeployment custom resource - Setup orchestration tooling directory
+- name: Sasdeployment custom resource - Setup orchestration tooling directory
   block:
-    - name: sasdeployment custom resource - Make data directory in orchestration tooling directory
+    - name: Sasdeployment custom resource - Make data directory in orchestration tooling directory
       file:
         path: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/data/"
         state: directory
         mode: "0700"
-    - name: sasdeployment custom resource - Make work directory in orchestration tooling directory
+    - name: Sasdeployment custom resource - Make work directory in orchestration tooling directory
       file:
         path: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/work/"
         state: directory
         mode: "0700"
-    - name: sasdeployment custom resource - Copy licenses into orchestration tooling directory
+    - name: Sasdeployment custom resource - Copy licenses into orchestration tooling directory
       copy:
         src: "{{ LICENSE_DIRECTORY }}"
         dest: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/data"
-    - name: sasdeployment custom resource - Copy site-config into orchestration tooling directory
+    - name: Sasdeployment custom resource - Copy site-config into orchestration tooling directory
       synchronize:
         src: "{{ DEPLOY_DIR }}/site-config"
         dest: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/data"
         rsync_opts:
           - --exclude=operator-deploy
           - --exclude=sas-tenant-job
-    - name: sasdeployment custom resource - Copy kustomization.yaml into orchestration tooling directory
+    - name: Sasdeployment custom resource - Copy kustomization.yaml into orchestration tooling directory
       copy:
         src: "{{ DEPLOY_DIR }}/kustomization.yaml"
         dest: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/data/kustomization.yaml"
@@ -71,9 +71,9 @@
     - cas-onboard
     - offboard
 
-- name: sasdeployment custom resource - SAS Viya deployment manifest - Docker
+- name: Sasdeployment custom resource - SAS Viya deployment manifest - Docker
   block:
-    - name: sasdeployment custom resource - Generate SAS Viya deployment manifest
+    - name: Sasdeployment custom resource - Generate SAS Viya deployment manifest
       environment:
         PATH: "{{ ORCHESTRATION_TOOLING_PATH }}"
         WORK_DIRECTORY: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/work"
@@ -89,7 +89,7 @@
       args:
         chdir: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}"
       register: sasdeployment
-    - name: sasdeployment custom resource - Write SAS Viya deployment manifest
+    - name: Sasdeployment custom resource - Write SAS Viya deployment manifest
       copy:
         content: "{{ sasdeployment.stdout }}"
         dest: "{{ ORCHESTRATION_TOOLING_INSTALL_MANIFEST }}"
@@ -102,9 +102,9 @@
     - cas-onboard
     - offboard
 
-- name: sasdeployment custom resource - SAS Viya deployment manifest - Ansible
+- name: Sasdeployment custom resource - SAS Viya deployment manifest - Ansible
   block:
-    - name: sasdeployment custom resource - Generate SAS Viya deployment manifest
+    - name: Sasdeployment custom resource - Generate SAS Viya deployment manifest
       ansible.builtin.shell: >
         docker run --rm
         --user="{{ UID_GID }}"
@@ -121,7 +121,7 @@
         --deployment-data /data/license/certs.zip
         --user-content /data
       register: sasdeployment
-    - name: sasdeployment custom resource - Write SAS Viya deployment manifest
+    - name: Sasdeployment custom resource - Write SAS Viya deployment manifest
       copy:
         content: "{{ sasdeployment.stdout }}"
         dest: "{{ ORCHESTRATION_TOOLING_INSTALL_MANIFEST }}"
@@ -134,14 +134,14 @@
     - cas-onboard
     - offboard
 
-- name: sasdeployment custom resource - Write SAS Viya deployment manifests into orchestration tooling directory
+- name: Sasdeployment custom resource - Write SAS Viya deployment manifests into orchestration tooling directory
   block:
-    - name: sasdeployment custom resource - Create manifests directory in orchestration tooling directory
+    - name: Sasdeployment custom resource - Create manifests directory in orchestration tooling directory
       file:
         path: "{{ ORCHESTRATION_TOOLING_INSTALL_MANIFESTS_DIRECTORY }}"
         state: directory
         mode: "0700"
-    - name: sasdeployment custom resource - Split SAS Viya deployment manifest into orchestration directory
+    - name: Sasdeployment custom resource - Split SAS Viya deployment manifest into orchestration directory
       command:
         chdir: "{{ ORCHESTRATION_TOOLING_INSTALL_MANIFESTS_DIRECTORY }}"
         cmd: |
@@ -151,14 +151,14 @@
               --elide-empty-files
               '/^----*$/' '{*}'
   when:
-    - V4_DEPLOYMENT_OPERATOR_ENABLED == False
+    - not V4_DEPLOYMENT_OPERATOR_ENABLED
   tags:
     - install
     - update
     - cas-onboard
     - offboard
 
-- name: sasdeployment custom resource - Create SAS Viya namespace
+- name: Sasdeployment custom resource - Create SAS Viya namespace
   kubernetes.core.k8s:
     api_version: v1
     kind: Namespace
@@ -169,7 +169,7 @@
     - install
     - update
 
-- name: sasdeployment custom resource - create sas-orchestration-secret
+- name: Sasdeployment custom resource - create sas-orchestration-secret
   environment:
     KUBECONFIG: "{{ KUBECONFIG }}"
   ansible.builtin.shell: |
@@ -181,9 +181,9 @@
     - install
     - update
 
-- name: sasdeployment custom resource - Create SAS Viya uninstall manifest V4_DEPLOYMENT_OPERATOR_ENABLED - Docker
+- name: Sasdeployment custom resource - Create SAS Viya uninstall manifest V4_DEPLOYMENT_OPERATOR_ENABLED - Docker
   block:
-    - name: sasdeployment custom resource - Generate SAS Viya uninstall manifest
+    - name: Sasdeployment custom resource - Generate SAS Viya uninstall manifest
       environment:
         PATH: "{{ ORCHESTRATION_TOOLING_PATH }}"
         WORK_DIRECTORY: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/work"
@@ -199,7 +199,7 @@
       args:
         chdir: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}"
       register: sasdeployment
-    - name: sasdeployment custom resource - Write SAS Viya uninstall manifest
+    - name: Sasdeployment custom resource - Write SAS Viya uninstall manifest
       copy:
         content: "{{ sasdeployment.stdout }}"
         dest: "{{ ORCHESTRATION_TOOLING_UNINSTALL_MANIFEST }}"
@@ -211,9 +211,9 @@
     - uninstall
     - offboard
 
-- name: sasdeployment custom resource - Create SAS Viya uninstall manifest V4_DEPLOYMENT_OPERATOR_ENABLED - Ansible
+- name: Sasdeployment custom resource - Create SAS Viya uninstall manifest V4_DEPLOYMENT_OPERATOR_ENABLED - Ansible
   block:
-    - name: sasdeployment custom resource - Generate SAS Viya uninstall manifest
+    - name: Sasdeployment custom resource - Generate SAS Viya uninstall manifest
       ansible.builtin.shell: >
         docker run --rm
         --user="{{ UID_GID }}"
@@ -230,7 +230,7 @@
         --deployment-data /data/license/certs.zip
         --user-content /data
       register: sasdeployment
-    - name: sasdeployment custom resource - Write SAS Viya uninstall manifest
+    - name: Sasdeployment custom resource - Write SAS Viya uninstall manifest
       copy:
         content: "{{ sasdeployment.stdout }}"
         dest: "{{ ORCHESTRATION_TOOLING_UNINSTALL_MANIFEST }}"
@@ -242,9 +242,9 @@
     - uninstall
     - offboard
 
-- name: sasdeployment custom resource - Create SAS Viya uninstall manifest - Docker
+- name: Sasdeployment custom resource - Create SAS Viya uninstall manifest - Docker
   block:
-    - name: sasdeployment custom resource - Generate SAS Viya uninstall manifest
+    - name: Sasdeployment custom resource - Generate SAS Viya uninstall manifest
       environment:
         PATH: "{{ ORCHESTRATION_TOOLING_PATH }}"
         WORK_DIRECTORY: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/work"
@@ -254,20 +254,20 @@
       args:
         chdir: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}"
       register: uninstall
-    - name: sasdeployment custom resource - Write SAS Viya uninstall manifest
+    - name: Sasdeployment custom resource - Write SAS Viya uninstall manifest
       copy:
         content: "{{ uninstall.stdout }}"
         dest: "{{ ORCHESTRATION_TOOLING_UNINSTALL_MANIFEST }}"
         mode: "0660"
   when:
-    - V4_DEPLOYMENT_OPERATOR_ENABLED == False
+    - not V4_DEPLOYMENT_OPERATOR_ENABLED
     - deployment_tooling == "docker"
   tags:
     - uninstall
 
-- name: sasdeployment custom resource - Create SAS Viya uninstall manifest - Ansible
+- name: Sasdeployment custom resource - Create SAS Viya uninstall manifest - Ansible
   block:
-    - name: sasdeployment custom resource - Generate SAS Viya uninstall manifest
+    - name: Sasdeployment custom resource - Generate SAS Viya uninstall manifest
       ansible.builtin.shell: >
         docker run --rm
         --user="{{ UID_GID }}"
@@ -278,13 +278,13 @@
         "{{ V4_CFG_CR_HOST }}/{{ ORCHESTRATION_IMAGE }}"
         build /data
       register: uninstall
-    - name: sasdeployment custom resource - Write SAS Viya uninstall manifest
+    - name: Sasdeployment custom resource - Write SAS Viya uninstall manifest
       copy:
         content: "{{ uninstall.stdout }}"
         dest: "{{ ORCHESTRATION_TOOLING_UNINSTALL_MANIFEST }}"
         mode: "0660"
   when:
-    - V4_DEPLOYMENT_OPERATOR_ENABLED == False
+    - not V4_DEPLOYMENT_OPERATOR_ENABLED
     - deployment_tooling == "ansible"
   tags:
     - uninstall

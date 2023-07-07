@@ -1,12 +1,13 @@
 ---
-- set_fact:
+- name: Postgres - determine MAX_CONNECTIONS
+  set_fact:
     MAX_CONNECTIONS: '{{ ((((V4MT_TENANT_IDS.split(",") | length) | int ) + 1 ) * 1128) }}'
   tags:
     - install
     - uninstall
     - update
 
-- name: postgres crunchy v5 - crunchydata tuning folder check
+- name: Postgres crunchy v5 - crunchydata tuning folder check
   stat:
     path: "{{ DEPLOY_DIR }}/sas-bases/examples/crunchydata/tuning"
   register: crunchy_tuning_folder
@@ -16,7 +17,7 @@
     - uninstall
     - update
 
-- name: postgres - internal-postgres custom-config folder check
+- name: Postgres - internal-postgres custom-config folder check
   stat:
     path: "{{ DEPLOY_DIR }}/sas-bases/examples/postgres/custom-config"
   register: custom_config_folder
@@ -26,7 +27,7 @@
     - uninstall
     - update
 
-- name: postgres - copy custom config
+- name: Postgres - copy custom config
   copy:
     src: "{{ file.src }}"
     dest: "{{ file.dest }}"
@@ -46,15 +47,15 @@
     - uninstall
     - update
 
-- name: postgres - update config default
+- name: Postgres - update config default
   block:
-    - name: postgres - remove example shared_buffers line
+    - name: Postgres - remove example shared_buffers line
       lineinfile:
         path: "{{ role_path }}/templates/resources/sas-{{ 'postgres' if role == 'default' else role }}-custom-config.yaml"
         regexp: "shared_buffers: 2GB"
         state: absent
 
-    - name: postgres - add max_connections block
+    - name: Postgres - add max_connections block
       lineinfile:
         path: "{{ role_path }}/templates/resources/sas-{{ 'postgres' if role == 'default' else role }}-custom-config.yaml"
         insertafter: "data:"
@@ -71,7 +72,7 @@
     - install
     - uninstall
 
-- name: postgres - add resource
+- name: Postgres - add resource
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
@@ -88,7 +89,7 @@
     - update
 
 # Updates to support Crunchy v5 internal PostgreSQL - pre 2023.03
-- name: postgres crunchy v5 - copy custom config
+- name: Postgres crunchy v5 - copy custom config
   copy:
     src: "{{ DEPLOY_DIR }}/sas-bases/examples/crunchydata/tuning/crunchy-tuning-transformer.yaml"
     dest: "{{ role_path }}/templates/transformers/{{ 'platform-postgres' if role == 'default' else role }}-crunchy-tuning-transformer.yaml"
@@ -104,7 +105,7 @@
     - uninstall
     - update
 
-- name: postgres crunchy v5 - uncomment config for front-door or tls disabled
+- name: Postgres crunchy v5 - uncomment config for front-door or tls disabled
   replace:
     path: "{{ role_path }}/templates/transformers/{{ 'platform-postgres' if role == 'default' else role }}-crunchy-tuning-transformer.yaml"
     regexp: "{{ outer_item.regexp }}"
@@ -124,7 +125,7 @@
     - uninstall
     - update
 
-- name: postgres crunchy v5 - remove commented block
+- name: Postgres crunchy v5 - remove commented block
   lineinfile:
     path: "{{ role_path }}/templates/transformers/{{ 'platform-postgres' if role == 'default' else role }}-crunchy-tuning-transformer.yaml"
     regexp: "#.*$"
@@ -138,7 +139,7 @@
     - uninstall
     - update
 
-- name: postgres crunchy v5 - update config
+- name: Postgres crunchy v5 - update config
   replace:
     path: "{{ role_path }}/templates/transformers/{{ 'platform-postgres' if role == 'default' else role }}-crunchy-tuning-transformer.yaml"
     regexp: "{{ outer_item.regexp }}"
@@ -160,7 +161,7 @@
     - uninstall
     - update
 
-- name: postgres crunchy v5 - add custom config transformer to kustomization
+- name: Postgres crunchy v5 - add custom config transformer to kustomization
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
@@ -177,7 +178,7 @@
     - update
 
 ## Postgres tuning transformer updates for 2023.03 and above
-- name: postgres crunchy v5 - copy custom config transformers
+- name: Postgres crunchy v5 - copy custom config transformers
   copy:
     src: "{{ DEPLOY_DIR }}/sas-bases/examples/crunchydata/tuning/crunchy-tuning-connection-params-transformer.yaml"
     dest: "{{ role_path }}/templates/transformers/{{ 'platform-postgres' if role == 'default' else role }}-crunchy-tuning-connection-params-transformer.yaml"
@@ -193,7 +194,7 @@
     - uninstall
     - update
 
-- name: postgres crunchy v5 - add no-tls transformer for front-door or tls disabled
+- name: Postgres crunchy v5 - add no-tls transformer for front-door or tls disabled
   copy:
     src: "{{ DEPLOY_DIR }}/sas-bases/examples/crunchydata/tuning/crunchy-tuning-pg-hba-no-tls-transformer.yaml"
     dest: "{{ role_path }}/templates/transformers/{{ 'platform-postgres' if role == 'default' else role }}-crunchy-tuning-pg-hba-no-tls-transformer.yaml"
@@ -210,7 +211,7 @@
     - uninstall
     - update
 
-- name: postgres crunchy v5 - remove commented block
+- name: Postgres crunchy v5 - remove commented block
   lineinfile:
     path: "{{ outer_item.path }}"
     regexp: "#.*$"
@@ -229,7 +230,7 @@
     - uninstall
     - update
 
-- name: postgres crunchy v5 - update max_connections
+- name: Postgres crunchy v5 - update max_connections
   replace:
     path: "{{ role_path }}/templates/transformers/{{ 'platform-postgres' if role == 'default' else role }}-crunchy-tuning-connection-params-transformer.yaml"
     regexp: "{{ outer_item.regexp }}"
@@ -250,7 +251,7 @@
     - uninstall
     - update
 
-- name: postgres crunchy v5 - update no tls transformer
+- name: Postgres crunchy v5 - update no tls transformer
   replace:
     path: "{{ role_path }}/templates/transformers/{{ 'platform-postgres' if role == 'default' else role }}-crunchy-tuning-pg-hba-no-tls-transformer.yaml"
     regexp: "{{ outer_item.regexp }}"
@@ -270,7 +271,7 @@
     - uninstall
     - update
 
-- name: postgres crunchy v5 - add custom config transformer to kustomization
+- name: Postgres crunchy v5 - add custom config transformer to kustomization
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
@@ -288,7 +289,7 @@
     - uninstall
     - update
 
-- name: postgres crunchy v5 - add custom config transformer to kustomization
+- name: Postgres crunchy v5 - add custom config transformer to kustomization
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"

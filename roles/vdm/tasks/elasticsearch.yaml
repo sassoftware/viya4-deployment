@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
-- name: elasticsearch - folder check
+- name: Elasticsearch - folder check
   stat:
     path: "{{ DEPLOY_DIR }}/sas-bases/overlays/internal-elasticsearch"
   register: result
@@ -11,7 +11,7 @@
     - uninstall
     - update
 
-- name: elasticsearch - add overlays
+- name: Elasticsearch - add overlays
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"

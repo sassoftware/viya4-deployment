@@ -7,7 +7,7 @@
 # Regardless of type or source of certificates, additional root CA certs can be provided
 # See sas-bases/examples/security/README.md for full details
 ---
-- name: tls - openssl-generator check
+- name: Tls - openssl-generator check
   fail:
     msg: "When using openssl-generator, and V4_CFG_TLS_MODE is not 'disabled', and your V4_CFG_CADENCE_VERSION is <= 2021.1, you must provide: V4_CFG_TLS_CERT, V4_CFG_TLS_KEY,
       V4_CFG_TLS_TRUSTED_CA_CERTS"
@@ -22,7 +22,7 @@
     - uninstall
     - update
 
-- name: tls - base
+- name: Tls - base
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
@@ -36,7 +36,7 @@
     - uninstall
     - update
 
-- name: tls - http facts
+- name: Tls - http facts
   set_fact:
     V4_CFG_DEPLOYMENT_URL_PREFIX: http://
     V4_CFG_DEPLOYMENT_URL_PORT: :80
@@ -47,12 +47,13 @@
     - uninstall
     - update
 
-- block:
-    - name: tls - https facts
+- name: Tls - cert manager
+  block:
+    - name: Tls - https facts
       set_fact:
         V4_CFG_DEPLOYMENT_URL_PREFIX: https://
         V4_CFG_DEPLOYMENT_URL_PORT: :443
-    - name: tls - security
+    - name: Tls - security
       overlay_facts:
         cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
         cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
@@ -68,7 +69,7 @@
     - uninstall
     - update
 
-- name: tls - Full-stack TLS
+- name: Tls - Full-stack TLS
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
@@ -86,7 +87,7 @@
     - uninstall
     - update
 
-- name: tls - Front-door TLS
+- name: Tls - Front-door TLS
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
@@ -103,7 +104,7 @@
     - uninstall
     - update
 
-- name: tls - Ingress-only TLS - check cadence
+- name: Tls - Ingress-only TLS - check cadence
   ansible.builtin.fail:
     msg: V4_CFG_TLS_MODE=ingress-only is not supported for cadences older than 2021.2.4
   when:
@@ -115,7 +116,7 @@
     - uninstall
     - update
 
-- name: tls - Ingress-only TLS
+- name: Tls - Ingress-only TLS
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
@@ -130,7 +131,7 @@
     - uninstall
     - update
 
-- name: tls - Truststores only
+- name: Tls - Truststores only
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
@@ -146,17 +147,20 @@
     - uninstall
     - update
 
-- name: tls - customer provided ca certificates
+- name: Tls - customer provided ca certificates
   block:
-    - copy:
+    - name: Tls - copy customer provided ca certs
+      copy:
         src: "{{ (V4_CFG_TLS_TRUSTED_CA_CERTS|realpath) + '/' }}"
         dest: "{{ DEPLOY_DIR }}/site-config/vdm/security/cacerts/"
         mode: "0660"
-    - find:
+    - name: Tls - locate ca certs
+      find:
         paths: "{{ DEPLOY_DIR }}/site-config/vdm/security/cacerts/"
         depth: 2
       register: V4_CFG_TLS_TRUSTED_CA_CERT_FILES
-    - overlay_facts:
+    - name: Tls - add customer provided ca cert generator
+      overlay_facts:
         cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
         cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
         existing: "{{ vdm_overlays }}"
@@ -169,13 +173,15 @@
     - uninstall
     - update
 
-- name: tls - customer provided server certificates
+- name: Tls - customer provided server certificates
   block:
-    - ansible.builtin.file:
+    - name: Tls - create security folder
+      ansible.builtin.file:
         path: "{{ DEPLOY_DIR }}/site-config/vdm/security"
         state: directory
         mode: "0755"
-    - copy:
+    - name: Tls - copy cert and key
+      copy:
         src: "{{ item.src }}"
         dest: "{{ DEPLOY_DIR }}/site-config/vdm/security/{{ item.dest }}"
         mode: "0660"
@@ -184,7 +190,8 @@
           dest: sas-nginx-ingress.crt
         - src: "{{ V4_CFG_TLS_KEY }}"
           dest: sas-nginx-ingress.key
-    - overlay_facts:
+    - name: Tls - add customer provided ingress cert generator
+      overlay_facts:
         cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
         cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
         existing: "{{ vdm_overlays }}"
@@ -199,7 +206,7 @@
     - uninstall
     - update
 
-- name: tls - Certificate Generation - cert-manager
+- name: Tls - Certificate Generation - cert-manager
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
@@ -215,7 +222,7 @@
     - uninstall
     - update
 
-- name: tls - Certificate Generation - openssl
+- name: Tls - Certificate Generation - openssl
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
@@ -229,7 +236,7 @@
     - install
     - update
 
-- name: tls - Configuring Certificate Attributes
+- name: Tls - Configuring Certificate Attributes
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
@@ -244,7 +251,7 @@
     - uninstall
     - update
 
-- name: tls - Consul UI
+- name: Tls - Consul UI
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
@@ -258,7 +265,7 @@
     - uninstall
     - update
 
-- name: add ingress class
+- name: Add ingress class
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"

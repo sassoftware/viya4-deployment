@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
-- name: cluster-monitoring - lookup existing credentials
+- name: Cluster-monitoring - lookup existing credentials
   kubernetes.core.k8s_info:
     api_version: v1
     kind: Secret
@@ -20,7 +20,7 @@
   tags:
     - install
 
-- name: cluster-monitoring - save credentials
+- name: Cluster-monitoring - save credentials
   set_fact:
     V4M_GRAFANA_PASSWORD: "{{ monitoring_creds.resources[0].data['admin-password']|b64decode }}"
   tags:
@@ -29,14 +29,14 @@
   when:
     - (monitoring_creds.resources | length) == 1
 
-- name: cluster-monitoring - output credentials
+- name: Cluster-monitoring - output credentials
   debug:
     msg:
       - "Grafana - username: admin, password: {{ V4M_GRAFANA_PASSWORD }}"
   tags:
     - install
 
-- name: cluster-monitoring - host-based user values
+- name: Cluster-monitoring - host-based user values
   template:
     src: host-based/user-values-prom-operator.yaml
     dest: "{{ tmpdir.path }}/monitoring/user-values-prom-operator.yaml"
@@ -48,14 +48,14 @@
     - update
     - uninstall
 
-- name: cluster-monitoring - path-based user values
+- name: Cluster-monitoring - path-based user values
   block:
-    - name: copy operator yaml
+    - name: Copy operator yaml
       template:
         src: path-based/user-values-prom-operator.yaml
         dest: "{{ tmpdir.path }}/monitoring/user-values-prom-operator.yaml"
         mode: "0660"
-    - name: copy user env
+    - name: Copy user env
       template:
         src: path-based/user.env
         dest: "{{ tmpdir.path }}/monitoring/user.env"
@@ -67,7 +67,7 @@
     - update
     - uninstall
 
-- name: cluster-monitoring - deploy
+- name: Cluster-monitoring - deploy
   command:
     cmd: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/monitoring/bin/deploy_monitoring_cluster.sh"
   environment: "{{ monitoring_env }}"

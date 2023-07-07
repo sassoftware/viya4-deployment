@@ -2,7 +2,8 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
-- command: |
+- name: Kustomize - not a git repo
+  command: |
     git log -1 --format=format:"%H"
   failed_when:
     - "'fatal: not a git repository' not in githash.stderr"
@@ -13,7 +14,8 @@
     - uninstall
     - update
 
-- set_fact:
+- name: Kustomize - set date and git refspec
+  set_fact:
     timestamp: "{{ ansible_date_time.iso8601 }}"
     git_hash: "{{ githash.stdout |default('unknown', -1) }}"
   tags:
@@ -21,7 +23,7 @@
     - uninstall
     - update
 
-- name: kustomize - buildinfo
+- name: Kustomize - buildinfo
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
@@ -33,7 +35,7 @@
     - uninstall
     - update
 
-- name: kustomize - Get user's customizations
+- name: Kustomize - Get user's customizations
   siteconfig_info:
     path: "{{ DEPLOY_DIR }}"
     exclude:
@@ -47,7 +49,7 @@
     - uninstall
     - update
 
-- name: kustomize - Ordered overlays
+- name: Kustomize - Ordered overlays
   overlay_facts:
     existing: "{{ vdm_overlays }}"
   register: ordered_overlays
@@ -56,7 +58,7 @@
     - uninstall
     - update
 
-- name: kustomize - Copy VDM overlays
+- name: Kustomize - Copy VDM overlays
   include_tasks: copy_overlay.yaml
   vars:
     resource: "{{ item.key }}"
@@ -67,7 +69,7 @@
     - uninstall
     - update
 
-- name: kustomize - Generate kustomization.yaml
+- name: Kustomize - Generate kustomization.yaml
   template:
     src: kustomization.yaml
     dest: "{{ DEPLOY_DIR }}/kustomization.yaml"

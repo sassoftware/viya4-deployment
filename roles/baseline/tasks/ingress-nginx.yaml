@@ -2,7 +2,8 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
-- set_fact:
+- name: Update INGRESS_NGINX_CONFIG to add private_ingress
+  set_fact:
     INGRESS_NGINX_CONFIG: "{{ INGRESS_NGINX_CONFIG |combine(private_ingress[PROVIDER], recursive=True)}}"
   when:
     - V4_CFG_INGRESS_MODE == "private"

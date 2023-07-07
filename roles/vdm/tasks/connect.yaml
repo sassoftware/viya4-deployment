@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
-- name: "connect - Loadbalancer "
+- name: Connect - Loadbalancer
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
@@ -16,11 +16,12 @@
     - uninstall
     - update
 
-- block:
-    - name: connect - SAS/CONNECT FQDN to the SAN DNS list for cert-manager
+- name: Connect - CONNECT FQDN and configure customer certificates
+  block:
+    - name: Connect - SAS/CONNECT FQDN to the SAN DNS list for cert-manager
       set_fact:
         V4_CFG_TLS_ADDITIONAL_SAN_DNS: "{{ V4_CFG_TLS_ADDITIONAL_SAN_DNS }} {{ V4_CFG_CONNECT_FQDN }}"
-    - name: connect - Configure Customer Provided Server Certificates
+    - name: Connect - Configure Customer Provided Server Certificates
       overlay_facts:
         cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
         cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"

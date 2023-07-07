@@ -2,7 +2,8 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
-- file:
+- name: Create site-config folder
+  file:
     state: directory
     dest: "{{ DEPLOY_DIR }}/site-config/"
     mode: "0770"
@@ -11,7 +12,8 @@
     - uninstall
     - update
 
-- stat:
+- name: Check if sitedefault.yaml exists
+  stat:
     path: "{{ DEPLOY_DIR }}/site-config/sitedefault.yaml"
   register: stat_result
   tags:
@@ -21,7 +23,8 @@
 
 - name: Sitedefault
   block:
-    - copy:
+    - name: Copy sitedefault.yaml
+      copy:
         src: "{{ V4_CFG_SITEDEFAULT }}"
         dest: "{{ DEPLOY_DIR }}/site-config/sitedefault.yaml"
         mode: "0660"
@@ -62,11 +65,13 @@
 
 - name: CR access
   block:
-    - template:
+    - name: Copy container registry access
+      template:
         src: cr_access.json
         dest: "{{ DEPLOY_DIR }}/site-config/cr_access.json"
         mode: "0660"
-    - overlay_facts:
+    - name: Add image pull secrets generator
+      overlay_facts:
         cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
         cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
         existing: "{{ vdm_overlays }}"
