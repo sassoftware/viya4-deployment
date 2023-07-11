@@ -15,7 +15,8 @@
     - offboard
 
 - name: Set BASE_DIR default path
-  set_fact: BASE_DIR="{{ ansible_env.HOME }}"
+  set_fact:
+    BASE_DIR: "{{ ansible_env.HOME }}"
   when: BASE_DIR is not defined
   tags:
     - install
@@ -268,7 +269,8 @@
         tfstate: ""
 
 - name: Set DEPLOY_DIR
-  set_fact: DEPLOY_DIR="{{ BASE_DIR | regex_replace('\\/$', '') }}/{{ CLUSTER_NAME }}/{{ NAMESPACE }}"
+  set_fact:
+    DEPLOY_DIR: "{{ BASE_DIR | regex_replace('\\/$', '') }}/{{ CLUSTER_NAME }}/{{ NAMESPACE }}"
   when: DEPLOY_DIR is not defined
   tags:
     - install
