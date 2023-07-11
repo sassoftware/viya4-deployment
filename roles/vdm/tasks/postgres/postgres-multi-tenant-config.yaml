@@ -1,7 +1,7 @@
 ---
 - name: Postgres - determine MAX_CONNECTIONS
   set_fact:
-    MAX_CONNECTIONS: '{{ ((((V4MT_TENANT_IDS.split(",") | length) | int ) + 1 ) * 1128) }}'
+    MAX_CONNECTIONS: '{{ ((((V4MT_TENANT_IDS.split(",") | length) | int) + 1) * 1128) }}'
   tags:
     - install
     - uninstall
@@ -48,6 +48,12 @@
     - update
 
 - name: Postgres - update config default
+  when:
+    - custom_config_folder.stat.exists
+    - settings.internal
+  tags:
+    - install
+    - uninstall
   block:
     - name: Postgres - remove example shared_buffers line
       lineinfile:
@@ -65,12 +71,6 @@
         - '  max_connections: "{{ MAX_CONNECTIONS }}"'
       loop_control:
         loop_var: outer_item
-  when:
-    - custom_config_folder.stat.exists
-    - settings.internal
-  tags:
-    - install
-    - uninstall
 
 - name: Postgres - add resource
   overlay_facts:
@@ -146,8 +146,8 @@
     replace: "{{ outer_item.replace }}"
   with_items:
     - { regexp: "(^\n)", replace: "" }
-    - { regexp: max_connections.*, replace: "max_connections: {{ MAX_CONNECTIONS | indent( width=6, first=False)}}" }
-    - { regexp: max_prepared_transactions.*, replace: "max_prepared_transactions: {{ MAX_CONNECTIONS | indent( width=6, first=False)}}" }
+    - { regexp: max_connections.*, replace: "max_connections: {{ MAX_CONNECTIONS | indent(width=6, first=False) }}" }
+    - { regexp: max_prepared_transactions.*, replace: "max_prepared_transactions: {{ MAX_CONNECTIONS | indent(width=6, first=False) }}" }
     - { regexp: "{% raw %}{{ TRANSFORMER-NAME }}{% endraw %}", replace: "{{ 'platform-postgres' if role == 'default' else role }}" }
     - { regexp: "{% raw %}{{ CLUSTER-NAME }}{% endraw %}", replace: "sas-crunchy-{{ 'platform-postgres' if role == 'default' else role }}" }
   when:

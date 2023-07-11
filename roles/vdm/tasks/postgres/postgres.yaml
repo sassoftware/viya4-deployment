@@ -39,6 +39,13 @@
     - update
 
 - name: Postgres - pre 2021.1.4
+  when:
+    - V4_CFG_CADENCE_VERSION is version('2021.1.4', "<")
+    - V4_CFG_CADENCE_NAME|lower != "fast"
+  tags:
+    - install
+    - uninstall
+    - update
   block:
     - name: Postgres - internal
       overlay_facts:
@@ -66,15 +73,15 @@
           - { generators: sas-postgres-config.v2.yaml, min: 2020.0.5, vdm: true }
       when:
         - not internal_postgres
+
+- name: Postgres - post 2021.1.4
   when:
-    - V4_CFG_CADENCE_VERSION is version('2021.1.4', "<")
-    - V4_CFG_CADENCE_NAME|lower != "fast"
+    - V4_CFG_CADENCE_VERSION is version('2021.1.4', ">=")
+    - V4_CFG_CADENCE_VERSION is version('2022.10', "<")
   tags:
     - install
     - uninstall
     - update
-
-- name: Postgres - post 2021.1.4
   block:
     - name: Postgres - internal
       overlay_facts:
@@ -101,15 +108,14 @@
         settings: "{{ item.value }}"
         internal: "{{ internal_postgres }}"
       with_dict: "{{ V4_CFG_POSTGRES_SERVERS }}"
+
+- name: Postgres - post 2022.10
   when:
-    - V4_CFG_CADENCE_VERSION is version('2021.1.4', ">=")
-    - V4_CFG_CADENCE_VERSION is version('2022.10', "<")
+    - V4_CFG_CADENCE_VERSION is version('2022.10', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
   tags:
     - install
     - uninstall
     - update
-
-- name: Postgres - post 2022.10
   block:
     - name: Postgres - internal crunchy v5
       overlay_facts:
@@ -136,12 +142,6 @@
         settings: "{{ item.value }}"
         internal: "{{ internal_postgres }}"
       with_dict: "{{ V4_CFG_POSTGRES_SERVERS }}"
-  when:
-    - V4_CFG_CADENCE_VERSION is version('2022.10', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
-  tags:
-    - install
-    - uninstall
-    - update
 
 - name: Custom postgres - max connection
   include_tasks: postgres-multi-tenant-config.yaml

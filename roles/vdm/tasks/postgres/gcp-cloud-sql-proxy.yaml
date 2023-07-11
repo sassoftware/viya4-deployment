@@ -1,5 +1,9 @@
 ---
 - name: Postgres - update cloud-sql-proxy fqdn
+  tags:
+    - install
+    - uninstall
+    - update
   block:
     - name: Postgres - update cloud-sql-proxy fqdn
       ansible.utils.update_fact:
@@ -10,10 +14,6 @@
     - name: Postgres - update postgres servers map
       set_fact:
         V4_CFG_POSTGRES_SERVERS: "{{ updated.V4_CFG_POSTGRES_SERVERS }}"
-  tags:
-    - install
-    - uninstall
-    - update
 
 - name: Postgres - setup cloud-sql-proxy account
   shell: |
@@ -25,6 +25,10 @@
     - update
 
 - name: Postgres - cloud-sql-proxy overlays
+  tags:
+    - install
+    - uninstall
+    - update
   block:
     - name: Postgres - create cloud-sql-proxy role instance from template
       template:
@@ -40,7 +44,3 @@
           - { resources: "cloud-sql-proxy-{{ role }}-instance.yaml", vdm: true }
           - { transformers: overlays/external-postgres/googlecloud-full-stack-tls-transformer.yaml, priority: 55, max: "2022.09" }
           - { transformers: overlays/postgres/external-postgres/gcp-tls-transformer.yaml, priority: 55, min: "2022.10" }
-  tags:
-    - install
-    - uninstall
-    - update

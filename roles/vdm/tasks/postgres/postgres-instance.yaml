@@ -123,6 +123,14 @@
     - update
 
 - name: Postgres instance - internal post 2022.10
+  when:
+    - settings.internal
+    - role == "default" or role == "cds-postgres"
+    - V4_CFG_CADENCE_VERSION is version('2022.10', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
+  tags:
+    - install
+    - uninstall
+    - update
   block:
     - name: Postgres instance - crunchy v4 to crunchy v5 update is required
       fail:
@@ -142,6 +150,9 @@
             namespace: "{{ NAMESPACE }}"
           register: cm_info
         - name: Postgres instance - set facts for either role from configMap keys
+          when:
+            - dac_crunchy_storage_cm_found
+            - cm_info.resources
           block:
             - name: Postgres instance - check for cds values
               block:
@@ -172,9 +183,6 @@
                 - dac_crunchy_storage_cm_cds_values_present
                 - role == 'cds-postgres'
 
-          when:
-            - dac_crunchy_storage_cm_found
-            - cm_info.resources
 
     - name: Postgres instance - internal copy crunchy transformer template
       template:
@@ -191,13 +199,17 @@
     - name: Postgres instance - set immutable storage transformer values
       block:
         - name: Postgres instance - save role storage map values
+          when:
+            - not dac_crunchy_storage_cm_found
+            - DEPLOY
+            - role == "default"
           block:
             - name: Postgres instance - save default role map values
               set_fact:
-                default_postgres_storage_class: "{{ settings.postgres_storage_class|default('pg-storage', true) }}"
-                default_postgres_pvc_access_mode: "{{ settings.postgres_pvc_access_mode|default('ReadWriteOnce', true) }}"
-                default_backrest_storage_class: "{{ settings.backrest_storage_class|default('pg-storage', true) }}"
-                default_backrest_pvc_access_mode: "{{ settings.backrest_pvc_access_mode|default('ReadWriteOnce', true) }}"
+                default_postgres_storage_class: "{{ settings.postgres_storage_class | default('pg-storage', true) }}"
+                default_postgres_pvc_access_mode: "{{ settings.postgres_pvc_access_mode | default('ReadWriteOnce', true) }}"
+                default_backrest_storage_class: "{{ settings.backrest_storage_class | default('pg-storage', true) }}"
+                default_backrest_pvc_access_mode: "{{ settings.backrest_pvc_access_mode | default('ReadWriteOnce', true) }}"
             - name: Postgres instance - Create deployment namespace
               kubernetes.core.k8s:
                 kubeconfig: "{{ KUBECONFIG }}"
@@ -220,18 +232,18 @@
                     default-postgres-access-mode: "{{ default_postgres_pvc_access_mode | string }}"
                     default-backrest-storage-class: "{{ default_backrest_storage_class | string }}"
                     default-backrest-access-mode: "{{ default_backrest_pvc_access_mode | string }}"
-          when:
-            - not dac_crunchy_storage_cm_found
-            - DEPLOY
-            - role == "default"
         - name: Postgres instance - save role storage map values
+          when:
+            - not dac_crunchy_storage_cm_found or not dac_crunchy_storage_cm_cds_values_present
+            - DEPLOY
+            - role == "cds-postgres"
           block:
             - name: Postgres instance - save cds role map values
               set_fact:
-                cds_postgres_storage_class: "{{ settings.postgres_storage_class|default('pg-storage', true) }}"
-                cds_postgres_pvc_access_mode: "{{ settings.postgres_pvc_access_mode|default('ReadWriteOnce', true) }}"
-                cds_backrest_storage_class: "{{ settings.backrest_storage_class|default('pg-storage', true) }}"
-                cds_backrest_pvc_access_mode: "{{ settings.backrest_pvc_access_mode|default('ReadWriteOnce', true) }}"
+                cds_postgres_storage_class: "{{ settings.postgres_storage_class | default('pg-storage', true) }}"
+                cds_postgres_pvc_access_mode: "{{ settings.postgres_pvc_access_mode | default('ReadWriteOnce', true) }}"
+                cds_backrest_storage_class: "{{ settings.backrest_storage_class | default('pg-storage', true) }}"
+                cds_backrest_pvc_access_mode: "{{ settings.backrest_pvc_access_mode | default('ReadWriteOnce', true) }}"
             - name: Postgres instance - Update ConfigMap
               kubernetes.core.k8s:
                 kubeconfig: "{{ KUBECONFIG }}"
@@ -247,20 +259,16 @@
                     cds-postgres-access-mode: "{{ cds_postgres_pvc_access_mode | string }}"
                     cds-backrest-storage-class: "{{ cds_backrest_storage_class | string }}"
                     cds-backrest-access-mode: "{{ cds_backrest_pvc_access_mode | string }}"
-          when:
-            - not dac_crunchy_storage_cm_found or not dac_crunchy_storage_cm_cds_values_present
-            - DEPLOY
-            - role == "cds-postgres"
+
+- name: Postgres instance - external post 2022.10 - external cds post 2022.12
   when:
-    - settings.internal
+    - not settings.internal
     - role == "default" or role == "cds-postgres"
     - V4_CFG_CADENCE_VERSION is version('2022.10', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
   tags:
     - install
     - uninstall
     - update
-
-- name: Postgres instance - external post 2022.10 - external cds post 2022.12
   block:
     - name: Postgres instance - external cds resource
       overlay_facts:
@@ -294,16 +302,17 @@
         add:
           - { transformers: "{{ role }}-dataserver-transformer.yaml", min: "2022.10", vdm: true }
           - { generators: "postgres-{{ role }}-secrets.yaml", min: "2022.10", vdm: true }
+
+- name: Postgres instance - external post 2022.10 - additional servers
   when:
     - not settings.internal
-    - role == "default" or role == "cds-postgres"
+    - role != "default"
+    - role != "cds-postgres"
     - V4_CFG_CADENCE_VERSION is version('2022.10', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
   tags:
     - install
     - uninstall
     - update
-
-- name: Postgres instance - external post 2022.10 - additional servers
   block:
     - name: Postgres instance - external copy dataserver template
       template:
@@ -317,19 +326,17 @@
         existing: "{{ vdm_overlays }}"
         add:
           - { resources: "platform-postgres-{{ role }}-dataserver.yaml", min: "2022.10", vdm: true }
-  when:
-    - not settings.internal
-    - role != "default"
-    - role != "cds-postgres"
-    - V4_CFG_CADENCE_VERSION is version('2022.10', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
-  tags:
-    - install
-    - uninstall
-    - update
 
 # TODO Fix Logic for tasks below
 
 - name: Postgres instance - crd
+  when:
+    - settings.internal and role != "default" and not result.stat.exists
+    - not crunchydata_folder.stat.exists
+  tags:
+    - install
+    - uninstall
+    - update
   block:
     - name: Postgres instance - crd
       template:
@@ -343,15 +350,16 @@
         existing: "{{ vdm_overlays }}"
         add:
           - { resources: "postgres-{{ role }}-instance.yaml", vdm: true }
+
+- name: Postgres instance - external pre 2022.10
   when:
-    - settings.internal and role != "default" and not result.stat.exists
-    - not crunchydata_folder.stat.exists
+    - not settings.internal
+    - V4_CFG_CADENCE_VERSION is version('2022.10', "<")
+    - V4_CFG_CADENCE_NAME|lower != "fast"
   tags:
     - install
     - uninstall
     - update
-
-- name: Postgres instance - external pre 2022.10
   block:
     - name: Postgres instance - external crd
       template:
@@ -365,11 +373,3 @@
         existing: "{{ vdm_overlays }}"
         add:
           - { resources: "postgres-{{ role }}-instance.yaml", vdm: true }
-  when:
-    - not settings.internal
-    - V4_CFG_CADENCE_VERSION is version('2022.10', "<")
-    - V4_CFG_CADENCE_NAME|lower != "fast"
-  tags:
-    - install
-    - uninstall
-    - update

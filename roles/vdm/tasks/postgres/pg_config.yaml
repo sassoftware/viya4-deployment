@@ -1,5 +1,8 @@
 ---
 - name: Pg_config - Check for storage info ConfigMap
+  tags:
+    - install
+    - uninstall
   block:
     - name: Set facts
       set_fact:
@@ -24,12 +27,14 @@
           - The values you have in your ansible vars will be ignored because the storage class is already present in your cluster.
       when:
         - dac_crunchy_storage_cm_found
-  tags:
-    - install
-    - uninstall
 
 # Check for v4 crunchy operator if ConfigMap not found
 - name: Pg_config - v4 crunchy operator check
+  when:
+    - not dac_crunchy_storage_cm_found
+  tags:
+    - install
+    - update
   block:
     - name: Pg_config - Find v4 crunchy deployment
       kubernetes.core.k8s_info:
@@ -50,8 +55,3 @@
       when:
         - deploy.resources is defined
         - deploy.resources | length == 0
-  when:
-    - not dac_crunchy_storage_cm_found
-  tags:
-    - install
-    - update
