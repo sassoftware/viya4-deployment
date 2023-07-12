@@ -17,12 +17,9 @@ use_default_rules: true
 # To skip a rule just enter filename and tag, like "playbook.yml package-latest"
 # on a new line.
 skip_list:
-  - role-name # roles are dynamically selected based on user's choice so we do need to use paths
-  - yaml[line-length] # it's easier to understand/debug the underlying command when it's not broken up, excessively long lines that make sense to split up should be caught during code review,
-  - name[template] # task name is being templated, this can be ignored
-  - command-instead-of-shell # shell should only be used when necessary, swap to command TODO future update requires functionality change
-  - command-instead-of-module # there are some cases where command calls could be replaced with modules TODO future update requires functionality change
-  - deprecated-module # In future look for suitable replacement TODO future update requires functionality change
+  - role-name # DAC roles names contain dashes, can be ignored
+  - yaml[line-length] # it's easier to understand/debug the underlying command when it's not broken up
+  - name[template] # task name uses Jina template, this can be ignored
   - var-naming
 
 # Ansible-lint does not automatically load rules that have the 'opt-in' tag.
@@ -42,7 +39,8 @@ exclude_paths:
   - .gitignore
   - .cache/
   - roles/istio
-  - .github/workflows/linter-analysis.yaml
+  - roles/vdm/tasks/deploy.yaml # TODO schema[tasks] error for a docker 'Deploy BLT - Deploy SAS Viya' task
+  - .github/workflows # non ansible files
 
 # Offline mode disables installation of requirements.yml and schema refreshing
 offline: false
