@@ -134,30 +134,6 @@
         dest: "{{ ORCHESTRATION_TOOLING_INSTALL_MANIFEST }}"
         mode: "0660"
 
-- name: sasdeployment custom resource - Write SAS Viya deployment manifests into orchestration tooling directory # noqa: name[casing]
-  when:
-    - not V4_DEPLOYMENT_OPERATOR_ENABLED
-  tags:
-    - install
-    - update
-    - cas-onboard
-    - offboard
-  block:
-    - name: sasdeployment custom resource - Create manifests directory in orchestration tooling directory # noqa: name[casing]
-      file:
-        path: "{{ ORCHESTRATION_TOOLING_INSTALL_MANIFESTS_DIRECTORY }}"
-        state: directory
-        mode: "0700"
-    - name: sasdeployment custom resource - Split SAS Viya deployment manifest into orchestration directory # noqa: name[casing]
-      command:
-        chdir: "{{ ORCHESTRATION_TOOLING_INSTALL_MANIFESTS_DIRECTORY }}"
-        cmd: |
-          csplit "{{ ORCHESTRATION_TOOLING_INSTALL_MANIFEST }}"
-              --prefix='{{ NAMESPACE }}-sasdeployment.'
-              --suffix-format='%03d.yaml'
-              --elide-empty-files
-              '/^----*$/' '{*}'
-
 - name: sasdeployment custom resource - Create SAS Viya namespace # noqa: name[casing]
   kubernetes.core.k8s:
     api_version: v1
@@ -239,52 +215,5 @@
     - name: sasdeployment custom resource - Write SAS Viya uninstall manifest # noqa: name[casing]
       copy:
         content: "{{ sasdeployment.stdout }}"
-        dest: "{{ ORCHESTRATION_TOOLING_UNINSTALL_MANIFEST }}"
-        mode: "0660"
-
-- name: sasdeployment custom resource - Create SAS Viya uninstall manifest - Docker # noqa: name[casing]
-  when:
-    - not V4_DEPLOYMENT_OPERATOR_ENABLED
-    - deployment_tooling == "docker"
-  tags:
-    - uninstall
-  block:
-    - name: sasdeployment custom resource - Generate SAS Viya uninstall manifest # noqa: name[casing]
-      environment:
-        PATH: "{{ ORCHESTRATION_TOOLING_PATH }}"
-        WORK_DIRECTORY: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/work"
-      command:
-        cmd: |
-          kustomize build {{ DEPLOY_DIR }}
-      args:
-        chdir: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}"
-      register: uninstall
-    - name: sasdeployment custom resource - Write SAS Viya uninstall manifest # noqa: name[casing]
-      copy:
-        content: "{{ uninstall.stdout }}"
-        dest: "{{ ORCHESTRATION_TOOLING_UNINSTALL_MANIFEST }}"
-        mode: "0660"
-
-- name: sasdeployment custom resource - Create SAS Viya uninstall manifest - Ansible # noqa: name[casing]
-  when:
-    - not V4_DEPLOYMENT_OPERATOR_ENABLED
-    - deployment_tooling == "ansible"
-  tags:
-    - uninstall
-  block:
-    - name: sasdeployment custom resource - Generate SAS Viya uninstall manifest # noqa: name[casing]
-      ansible.builtin.shell: >
-        docker run --rm
-        --user="{{ UID_GID }}"
-        --name "orchestration_{{ lookup('password', '/dev/null chars=ascii_lowercase length=8') }}"
-        --volume "{{ DEPLOY_DIR }}:/data"
-        --volume "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/work:/work"
-        --entrypoint kustomize
-        "{{ V4_CFG_CR_HOST }}/{{ ORCHESTRATION_IMAGE }}"
-        build /data
-      register: uninstall
-    - name: sasdeployment custom resource - Write SAS Viya uninstall manifest # noqa: name[casing]
-      copy:
-        content: "{{ uninstall.stdout }}"
         dest: "{{ ORCHESTRATION_TOOLING_UNINSTALL_MANIFEST }}"
         mode: "0660"

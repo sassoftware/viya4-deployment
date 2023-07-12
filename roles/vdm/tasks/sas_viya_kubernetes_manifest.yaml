@@ -1,0 +1,59 @@
+# Copyright © 2020-2023, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+# The site.yaml SAS Viya Kubernetes manifest will only be generated if you set
+# the V4_DEPLOYMENT_OPERATOR_ENABLED flag to false so that the sas-orchestration deploy command
+# is being used to orchestrate the deployment.
+---
+
+- name: sasdeployment custom resource - Create SAS Viya namespace
+  kubernetes.core.k8s:
+    api_version: v1
+    kind: Namespace
+    name: "{{ NAMESPACE }}"
+    wait: true
+    kubeconfig: "{{ KUBECONFIG }}"
+  tags:
+    - install
+    - update
+
+- name: SAS Viya Kubernetes Manifest - clean up site.yaml
+  file:
+    state: absent
+    path: "{{ DEPLOY_DIR }}/site.yaml"
+  tags:
+    - install
+    - uninstall
+    - update
+    - cas-onboard
+    - offboard
+
+- name: SAS Viya Kubernetes Manifest - generate site.yaml
+  block:
+    - name: SAS Viya Kubernetes Manifest - generate site.yaml - Ansible
+      ansible.builtin.shell: >
+        docker run --rm
+        --user="{{ UID_GID }}"
+        --name "orchestration_{{ lookup('password', '/dev/null chars=ascii_lowercase length=8') }}"
+        --volume "{{ DEPLOY_DIR }}:/data"
+        --entrypoint kustomize
+        "{{ V4_CFG_CR_HOST }}/{{ ORCHESTRATION_IMAGE }}"
+        build /data/ -o /data/site.yaml
+      when:
+        - deployment_tooling == "ansible"
+    - name: SAS Viya Kubernetes Manifest - generate site.yaml - Docker
+      environment:
+        PATH: "{{ ORCHESTRATION_TOOLING_PATH }}"
+      command:
+        cmd: |
+          kustomize build {{ DEPLOY_DIR }}/ -o {{ DEPLOY_DIR }}/site.yaml
+      args:
+        chdir: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}"
+      when:
+        - deployment_tooling == "docker"
+  tags:
+    - install
+    - uninstall
+    - update
+    - cas-onboard
+    - offboard
