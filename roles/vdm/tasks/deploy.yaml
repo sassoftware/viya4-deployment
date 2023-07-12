@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
-- name: Deploy - Apply SAS Viya deployment
+- name: Deploy - Apply SAS Viya deployment - Deployment Operator
   kubernetes.core.k8s:
     src: "{{ DEPLOY_DIR }}/sasdeployment.yaml"
     state: present
@@ -15,7 +15,7 @@
     - update
     - cas-onboard
 
-- name: Deploy - Apply SAS Viya deployment
+- name: Deploy - Apply SAS Viya deployment - sas-orchestration
   when:
     - not V4_DEPLOYMENT_OPERATOR_ENABLED
   tags:
@@ -23,102 +23,36 @@
     - update
     - cas-onboard
   block:
-    - name: Deploy - Gather all resource files
-      find:
-        paths: "{{ ORCHESTRATION_TOOLING_INSTALL_MANIFESTS_DIRECTORY }}"
-        patterns: "*.yaml"
-      register: manifests
-    - name: Deploy - Gather SAS Viya deployment resource files
-      find:
-        paths: "{{ ORCHESTRATION_TOOLING_INSTALL_MANIFESTS_DIRECTORY }}"
-        patterns: "*.yaml"
-        contains: "^kind: SASDeployment"
-      register: deployment_manifests
-      failed_when:
-        - ( deployment_manifests.files | length ) != 1
-    - name: Deploy - Apply supporting resources
-      kubernetes.core.k8s:
-        src: "{{ item.path }}"
-        state: present
-        namespace: "{{ NAMESPACE }}"
-        kubeconfig: "{{ KUBECONFIG }}"
-      with_items:
-        - "{{ manifests.files | difference(deployment_manifests.files) }}"
-    - name: Orchestration - Create orchestration tooling work directory
-      file:
-        path: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/work"
-        state: directory
-    - name: Deploy - Deploy SAS Viya
+    - name: Deploy - Deploy SAS Viya - sas-orchestration - Docker
       environment:
         PATH: "{{ ORCHESTRATION_TOOLING_PATH + ':' + env_path }}"
         KUBECONFIG: "{{ KUBECONFIG }}"
-        WORK_DIRECTORY: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/work"
+        EXPERIMENTAL_FEATURE_DEPLOY_MANIFEST: "true"
       command: |
-        orchestration deploy
+        orchestration deploy manifest
              --namespace "{{ NAMESPACE }}"
-             --sas-deployment-cr "{{ item.path }}"
+             --manifest "{{ DEPLOY_DIR }}/site.yaml"
+             --deployment-dir "{{ DEPLOY_DIR }}/sas-bases"
       args:
         chdir: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}"
-      with_items:
-        - "{{ deployment_manifests.files }}"
       when:
         - deployment_tooling == "docker"
-        - not V4_CFG_BELOW_THE_LINE
-    - name: Deploy BLT - Deploy SAS Viya
-      environment:
-        PATH: "{{ ORCHESTRATION_TOOLING_PATH + ':' + env_path }}"
-        KUBECONFIG: "{{ KUBECONFIG }}"
-        WORK_DIRECTORY: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/work"
-        EXPERIMENTAL_FEATURE_LOCAL_DEPLOYMENT_ASSETS: true
-      command: |
-        orchestration deploy
-             --namespace "{{ NAMESPACE }}"
-             --user-content "{{ DEPLOY_DIR }}"
-             --local-deployment-assets
-      args:
-        chdir: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}"
-      with_items:
-        - "{{ deployment_manifests.files }}"
-      when:
-        - deployment_tooling == "docker"
-        - V4_CFG_BELOW_THE_LINE
-    - name: Deploy - Deploy SAS Viya
+    - name: Deploy - Deploy SAS Viya - sas-orchestration - Ansible
       ansible.builtin.shell: >
         docker run --rm
         --user="{{ UID_GID }}"
         --name "orchestration_{{ lookup('password', '/dev/null chars=ascii_lowercase length=8') }}"
         --env KUBECONFIG="/config/kubeconfig"
-        --env WORK_DIRECTORY="/tmp/work"
-        --volume "{{ ORCHESTRATION_TOOLING_INSTALL_MANIFESTS_DIRECTORY }}:/manifests"
+        --env EXPERIMENTAL_FEATURE_DEPLOY_MANIFEST=true
         --volume "{{ KUBECONFIG }}:/config/kubeconfig"
+        --volume "{{ DEPLOY_DIR }}:/deploy_dir"
         "{{ V4_CFG_CR_HOST }}/{{ ORCHESTRATION_IMAGE }}"
-        deploy
+        deploy manifest
         --namespace {{ NAMESPACE }}
-        --sas-deployment-cr {{ item.path | replace(ORCHESTRATION_TOOLING_DIRECTORY, '/') }}
-      with_items:
-        - "{{ deployment_manifests.files }}"
+        --manifest /deploy_dir/site.yaml
+        --deployment-dir /deploy_dir/sas-bases
       when:
         - deployment_tooling == "ansible"
-        - not V4_CFG_BELOW_THE_LINE
-    - name: Deploy BLT - Deploy SAS Viya
-      ansible.builtin.shell: >
-        docker run --rm
-        --user="{{ UID_GID }}"
-        --name "orchestration_{{ lookup('password', '/dev/null chars=ascii_lowercase length=8') }}"
-        --env KUBECONFIG="/config/kubeconfig"
-        --env WORK_DIRECTORY="/tmp/work"
-        --env EXPERIMENTAL_FEATURE_LOCAL_DEPLOYMENT_ASSETS=true
-        --volume "{{ ORCHESTRATION_TOOLING_INSTALL_MANIFESTS_DIRECTORY }}:/manifests"
-        --volume "{{ KUBECONFIG }}:/config/kubeconfig"
-        --volume "{{ DEPLOY_DIR }}:/src"
-        "{{ V4_CFG_CR_HOST }}/{{ ORCHESTRATION_IMAGE }}"
-        deploy
-        --namespace {{ NAMESPACE }}
-        --user-content /src
-        --local-deployment-assets
-      when:
-        - deployment_tooling == "ansible"
-        - V4_CFG_BELOW_THE_LINE
 
 - name: Deploy - Uninstall postgresclusters
   environment:
@@ -133,14 +67,27 @@
     - uninstall
 
 - name: Deploy - Remove Viya
-  kubernetes.core.k8s:
-    state: absent
-    src: "{{ ORCHESTRATION_TOOLING_UNINSTALL_MANIFEST }}"
-    wait: true
-    wait_timeout: 600
-    namespace: "{{ NAMESPACE }}"
-    kubeconfig: "{{ KUBECONFIG }}"
-  ignore_errors: true
+  block:
+    - name: Deploy - Remove Viya - Deployment Operator
+      kubernetes.core.k8s:
+        state: absent
+        src: "{{ ORCHESTRATION_TOOLING_UNINSTALL_MANIFEST }}"
+        wait: true
+        wait_timeout: 600
+        namespace: "{{ NAMESPACE }}"
+        kubeconfig: "{{ KUBECONFIG }}"
+      ignore_errors: true
+      when:
+        - V4_DEPLOYMENT_OPERATOR_ENABLED
+    - name: Deploy - Remove Viya - sas-orchestration
+      kubernetes.core.k8s:
+        state: absent
+        src: "{{ DEPLOY_DIR }}/site.yaml"
+        namespace: "{{ NAMESPACE }}"
+        kubeconfig: "{{ KUBECONFIG }}"
+      ignore_errors: true
+      when:
+        - not V4_DEPLOYMENT_OPERATOR_ENABLED
   tags:
     - uninstall
 
