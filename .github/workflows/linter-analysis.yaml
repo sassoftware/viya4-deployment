@@ -59,6 +59,6 @@ jobs:
         run: ansible-galaxy install -r ./requirements.yaml
 
       - name: Run ansible-lint Action
-        uses: ansible/ansible-lint-action@v6.16.0
+        uses: ansible/ansible-lint-action@v6.17.2
         env:
           ANSIBLE_ROLES_PATH: "./roles"
