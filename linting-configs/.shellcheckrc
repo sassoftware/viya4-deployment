@@ -2,4 +2,4 @@
 
 # Allow using `which` since it gives full paths and is common enough
 # https://github.com/koalaman/shellcheck/wiki/SC2230
-disable=SC2230
+disable=SC2145,SC2230,SC2068

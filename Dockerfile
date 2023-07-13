@@ -13,7 +13,7 @@ ARG kubectl_version=1.25.9
 
 WORKDIR /build
 
-RUN curl -sLO https://storage.googleapis.com/kubernetes-release/release/v{$kubectl_version}/bin/linux/amd64/kubectl && chmod 755 ./kubectl
+RUN curl -sLO https://storage.googleapis.com/kubernetes-release/release/v$kubectl_version/bin/linux/amd64/kubectl && chmod 755 ./kubectl
 
 # Installation
 FROM baseline
