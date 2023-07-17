@@ -84,10 +84,8 @@
 
 - name: Create tenant password list
   set_fact:
-    tenant_password_list: "{{ tenant_password_list }} + [ 'V4MT_PROVIDER_PASSWORD_{{ item }}' ]"
-  with_items: '{{ V4MT_TENANT_IDS.split(",") | replace(" ", "") | upper }}'
-  vars:
-    tenant_password_list: []
+    tenant_password_list: "{{ tenant_password_list | default([]) + ['V4MT_PROVIDER_PASSWORD_'] | product([item]) | map('join') }}"
+  with_items: '{{ V4MT_TENANT_IDS | split(",") | replace(" ", "") | upper }}'
   when: not V4MT_PROVIDER_PASSWORD
   tags:
     - onboard
