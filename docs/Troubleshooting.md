@@ -10,7 +10,7 @@
   - [Ansible Variables with Special Jinja2 Characters](#ansible-variables-with-special-jinja2-characters)
   - [Ingress-Nginx - use-forwarded-headers disabled](#ingress-nginx---use-forwarded-headers-disabled)
   - [Deploying with the SAS Orchestration Tool using a Provider Based Kubernetes Configuration File](#deploying-with-the-sas-orchestration-tool-using-a-provider-based-kubernetes-configuration-file)
-  - [SAS Risk Cirrus Solutions Onboarding failure](#sas-risk-cirrus-solutions-onboarding-failure)
+  - [SAS Risk Cirrus Solutions Multi-tenancy onboard failure](#sas-risk-cirrus-solutions-multi-tenancy-onboard-failure)
 
 ## Debug Mode
 Debug mode can be enabled by adding "-vvv" to the end of the docker or ansible commands
@@ -344,10 +344,10 @@ You have a couple of options:
   * See [Kubernetes documentation](https://kubernetes.io/docs/concepts/security/service-accounts/)
   * Note: this is what the option above setting `create_static_kubeconfig=true` and running `terraform apply` would do for you automatically.
 
-## SAS Risk Cirrus Solutions Onboarding failure
+## SAS Risk Cirrus Solutions Multi-tenancy onboard failure
 ### Symptom:
 
-For SAS Viya Platform cadence v2023.07, Onboard task fails for orders with SAS Risk Cirrus Solutions product.
+For SAS Viya Platform cadence v2023.07, Multi-tenancy onboard task fails for orders with SAS Risk Cirrus Solutions product.
 
 ### Diagnosis:
 
