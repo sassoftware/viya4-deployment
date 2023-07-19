@@ -35,7 +35,7 @@
     - offboard
 
 # Update kustomization files if TLS disabled
-- name: Tls disabled - onboard
+- name: TLS disabled - onboard
   replace:
     path: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/kustomization.yaml"
     regexp: "- tenant-onboard-job-tls-transformer.yaml"
@@ -44,7 +44,7 @@
   tags:
     - onboard
 
-- name: Tls disabled - offboard
+- name: TLS disabled - offboard
   replace:
     path: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/kustomization.yaml"
     regexp: "- tenant-offboard-job-tls-transformer.yaml"
