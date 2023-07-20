@@ -10,6 +10,7 @@
   - [Ansible Variables with Special Jinja2 Characters](#ansible-variables-with-special-jinja2-characters)
   - [Ingress-Nginx - use-forwarded-headers disabled](#ingress-nginx---use-forwarded-headers-disabled)
   - [Deploying with the SAS Orchestration Tool using a Provider Based Kubernetes Configuration File](#deploying-with-the-sas-orchestration-tool-using-a-provider-based-kubernetes-configuration-file)
+  - [SAS Risk Cirrus Solutions Multi-tenancy onboard failure](#sas-risk-cirrus-solutions-multi-tenancy-onboard-failure)
 
 ## Debug Mode
 Debug mode can be enabled by adding "-vvv" to the end of the docker or ansible commands
@@ -342,3 +343,18 @@ You have a couple of options:
 * Using your existing provider based kubernetes configuration and `kubectl` you can alternatively create a new ServiceAccount, associate a service-account-token to it, and grant it admin permissions using RBAC. You should be able to use the ca cert and token from service-account-token to create your own "static" kubernetes configuration file.
   * See [Kubernetes documentation](https://kubernetes.io/docs/concepts/security/service-accounts/)
   * Note: this is what the option above setting `create_static_kubeconfig=true` and running `terraform apply` would do for you automatically.
+
+## SAS Risk Cirrus Solutions Multi-tenancy onboard failure
+### Symptom:
+
+For SAS Viya Platform cadence v2023.07, Multi-tenancy onboard task fails for orders with SAS Risk Cirrus Solutions product.
+
+### Diagnosis:
+
+In the current multi-tenancy design of viya4-deployment the required tenant kubernetes resources or podtemplates are applied alongside cas-onboard task. However, SAS Risk Cirrus Solutions pods expect the podtemplates to be present at the time of onboarding. In SAS Viya Platform cadence v2023.07 the sas-tenant-job was modified to wait for all deployment services to start and return success or error code on exit for any services failures. This change causes the onboard task to fail as the SAS Risk Cirrus Solutions pods aren't able to start.
+
+### Solution:
+
+This is a known issue at the moment and will be fixed in future release of viya4-deployment. Meanwhile as a workaround users with SAS Risk Cirrus Solutions product please follow the manual steps to apply the required podtemplates and onboard tenants.
+
+After the initial provider deployment stabilizes follow the steps in `$deploy/sas-bases/examples/sas-tenant-job/README.md` to onboard tenants manually.
