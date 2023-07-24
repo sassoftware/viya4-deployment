@@ -76,21 +76,34 @@
       when:
         - deployment_tooling == "docker"
         - V4_CFG_BELOW_THE_LINE
+    - name: template - GCP auth plugin entrypoint script
+      template:
+        src: "deploy_viya_gcloud_auth_template.sh"
+        dest: "{{ role_path }}/templates/deploy_viya_gcloud_auth.sh"
+        mode: "0755"
+      when:
+        - deployment_tooling == "ansible"
+        - V4_CFG_CLOUD_SERVICE_ACCOUNT_NAME is defined
+        - V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH is defined
+        - PROVIDER == "gcp"
+    - name: Remove this task, pause for debug purposes
+      ansible.builtin.pause:
+        prompt: This code is WIP and this POC only works with GKE + Auth Plugin based kubeconfig files !
+        minutes: 5
     - name: deploy - Deploy SAS Viya
       ansible.builtin.shell: >
-        docker run --rm
-        --user="{{ UID_GID }}"
+        docker run 
+        --entrypoint /tmp/deploy_viya_gcloud_auth.sh
+        --rm
+        --user=0
         --name "orchestration_{{ lookup('password', '/dev/null chars=ascii_lowercase length=8') }}"
         --env KUBECONFIG="/config/kubeconfig"
         --env WORK_DIRECTORY="/tmp/work"
         --volume "{{ ORCHESTRATION_TOOLING_INSTALL_MANIFESTS_DIRECTORY }}:/manifests"
         --volume "{{ KUBECONFIG }}:/config/kubeconfig"
+        --volume "{{ role_path }}/templates/deploy_viya_gcloud_auth.sh:/tmp/deploy_viya_gcloud_auth.sh"
+        --volume "{{ V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH }}:/config/v4_cfg_cloud_service_account_auth"
         "{{ V4_CFG_CR_HOST }}/{{ ORCHESTRATION_IMAGE }}"
-        deploy
-        --namespace {{ NAMESPACE }}
-        --sas-deployment-cr {{ item.path | replace(ORCHESTRATION_TOOLING_DIRECTORY, '/') }}
-      with_items:
-        - "{{ deployment_manifests.files }}"
       when:
         - deployment_tooling == "ansible"
         - not V4_CFG_BELOW_THE_LINE
