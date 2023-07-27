@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
-- name: Cas - base
+- name: CAS - base
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
@@ -14,7 +14,7 @@
     - uninstall
     - update
 
-- name: Cas - user defined sssd
+- name: CAS - user defined sssd
   when:
     - V4_CFG_SSSD is not none
   tags:
@@ -22,17 +22,17 @@
     - uninstall
     - update
   block:
-    - name: Cas - create cas-server site-config folder
+    - name: CAS - create cas-server site-config folder
       file:
         path: "{{ DEPLOY_DIR }}/site-config/cas-server/"
         state: directory
         mode: "0770"
-    - name: Cas - copy sssd configuration file
+    - name: CAS - copy sssd configuration file
       copy:
         src: "{{ V4_CFG_SSSD }}"
         dest: "{{ DEPLOY_DIR }}/site-config/cas-server/sssd.conf"
         mode: "0660"
-    - name: Cas - update sssd kustomizations
+    - name: CAS - update sssd kustomizations
       overlay_facts:
         cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
         cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
@@ -42,7 +42,7 @@
           - { transformers: cas-sssd.yaml, vdm: true }
           - { generators: sas-sssd-config.yaml, vdm: true }
 
-- name: Cas - backup controller
+- name: CAS - backup controller
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
@@ -56,7 +56,7 @@
     - uninstall
     - update
 
-- name: Cas - auto resources
+- name: CAS - auto resources
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
@@ -71,7 +71,7 @@
     - uninstall
     - update
 
-- name: Cas - user-defined resources
+- name: CAS - user-defined resources
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
@@ -86,7 +86,7 @@
     - uninstall
     - update
 
-- name: Cas - MPP workers
+- name: CAS - MPP workers
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
@@ -100,7 +100,7 @@
     - uninstall
     - update
 
-- name: Cas - External services
+- name: CAS - External services
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
@@ -114,7 +114,7 @@
     - uninstall
     - update
 
-- name: Cas - Enable CAS Auto-Restart After Updates
+- name: CAS - Enable CAS Auto-Restart After Updates
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"

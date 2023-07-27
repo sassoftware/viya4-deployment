@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
-- name: V4m - ensure supported value for V4M_ROUTING
+- name: V4M - ensure supported value for V4M_ROUTING
   ansible.builtin.assert:
     that: '{{ ["host-based", "path-based"] | intersect(V4M_ROUTING) | count == 1 }}'
     msg: >
@@ -16,7 +16,7 @@
     - uninstall
     - update
 
-- name: V4m - download
+- name: V4M - download
   git:
     repo: https://github.com/sassoftware/viya4-monitoring-kubernetes.git
     dest: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/"
@@ -26,7 +26,7 @@
     - uninstall
     - update
 
-- name: V4m - add storageclass
+- name: V4M - add storageclass
   kubernetes.core.k8s:
     kubeconfig: "{{ KUBECONFIG }}"
     state: present
@@ -40,17 +40,17 @@
     - install
     - update
 
-- name: V4m - cluster monitoring
+- name: V4M - cluster monitoring
   include_tasks: cluster-monitoring-common.yaml
   tags:
     - cluster-monitoring
 
-- name: V4m - cluster logging
+- name: V4M - cluster logging
   include_tasks: cluster-logging-common.yaml
   tags:
     - cluster-logging
 
-- name: V4m - remove storageclass
+- name: V4M - remove storageclass
   kubernetes.core.k8s:
     kubeconfig: "{{ KUBECONFIG }}"
     state: absent

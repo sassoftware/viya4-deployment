@@ -12,7 +12,7 @@
     - uninstall
     - update
 
-- name: V4m - cluster logging config vars
+- name: V4M - cluster logging config vars
   include_tasks: cluster-logging.yaml
   when:
     - V4M_CUSTOM_CONFIG_USER_DIR is none
@@ -21,7 +21,7 @@
     - uninstall
     - update
 
-- name: V4m - cluster logging custom config user dir
+- name: V4M - cluster logging custom config user dir
   include_tasks: cluster-logging-custom-config.yaml
   when:
     - V4M_CUSTOM_CONFIG_USER_DIR is not none

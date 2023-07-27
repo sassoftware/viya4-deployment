@@ -12,7 +12,7 @@
     - uninstall
     - update
 
-- name: V4m - cluster monitoring config vars
+- name: V4M - cluster monitoring config vars
   include_tasks: cluster-monitoring.yaml
   when:
     - V4M_CUSTOM_CONFIG_USER_DIR is none
@@ -21,7 +21,7 @@
     - uninstall
     - update
 
-- name: V4m - cluster monitoring custom config user dir
+- name: V4M - cluster monitoring custom config user dir
   include_tasks: cluster-monitoring-custom-config.yaml
   when:
     - V4M_CUSTOM_CONFIG_USER_DIR is not none

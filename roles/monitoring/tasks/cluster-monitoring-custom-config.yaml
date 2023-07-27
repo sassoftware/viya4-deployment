@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
-- name: V4m - custom config is valid path
+- name: V4M - custom config is valid path
   stat:
     path: "{{ V4M_CUSTOM_CONFIG_USER_DIR }}"
   register: folder
@@ -11,7 +11,7 @@
     - uninstall
     - update
 
-- name: V4m - custom config user dir check
+- name: V4M - custom config user dir check
   fail:
     msg: "{{ V4M_CUSTOM_CONFIG_USER_DIR }} does not exist."
   when:
