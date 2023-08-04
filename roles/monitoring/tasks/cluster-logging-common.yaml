@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
-- name: Cluster-logging - create userdir
+- name: cluster-logging - create userdir # noqa: name[casing]
   file:
     path: "{{ tmpdir.path }}/logging/"
     state: directory
@@ -29,7 +29,7 @@
     - install
     - update
 
-- name: Cluster-logging - elasticsearch cert
+- name: cluster-logging - elasticsearch cert # noqa: name[casing]
   kubernetes.core.k8s:
     kubeconfig: "{{ KUBECONFIG }}"
     state: present
@@ -52,7 +52,7 @@
     - install
     - update
 
-- name: Cluster-logging - kibana cert
+- name: cluster-logging - kibana cert # noqa: name[casing]
   kubernetes.core.k8s:
     kubeconfig: "{{ KUBECONFIG }}"
     state: present
@@ -75,14 +75,14 @@
     - install
     - update
 
-- name: Cluster-logging - uninstall
+- name: cluster-logging - uninstall # noqa: name[casing]
   command:
     cmd: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/logging/bin/remove_logging.sh"
   environment: "{{ logging_map['env'] }}"
   tags:
     - uninstall
 
-- name: Cluster-logging - delete namespace
+- name: cluster-logging - delete namespace # noqa: name[casing]
   kubernetes.core.k8s:
     api_version: v1
     kind: Namespace
