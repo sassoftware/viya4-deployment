@@ -37,7 +37,7 @@
     - offboard
 
 # Update the job names to unique identifier - required for Kustomize v4.5.7+
-- name: Sas-tenant-job - update job-name
+- name: sas-tenant-job - update job-name # noqa: name[casing]
   replace:
     path: "{{ item.path }}"
     regexp: "{{ item.regexp }}"
@@ -56,7 +56,7 @@
     - onboard
     - offboard
 
-- name: Sas-tenant-job - update sas-tenant-ids
+- name: sas-tenant-job - update sas-tenant-ids # noqa: name[casing]
   replace:
     path: "{{ item.path }}"
     regexp: "{{ item.regexp }}"
@@ -73,7 +73,7 @@
     - onboard
     - offboard
 
-- name: Sas-tenant-job - update sas-provider-password
+- name: sas-tenant-job - update sas-provider-password # noqa: name[casing]
   replace:
     path: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-onboard-job.yaml"
     regexp: "{% raw %}{{ SAS-PROVIDER-PASSWORD }}{% endraw %}"
@@ -90,7 +90,7 @@
   tags:
     - onboard
 
-- name: Sas-tenant-job - add sas-provider-password-TENANT-ID if provided
+- name: sas-tenant-job - add sas-provider-password-TENANT-ID if provided # noqa: name[casing]
   lineinfile:
     path: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-onboard-job.yaml"
     insertafter: "{% raw %}value: {{ SAS-PROVIDER-PASSWORD }}{% endraw %}"
@@ -102,7 +102,7 @@
   tags:
     - onboard
 
-- name: Sas-tenant-job - update sas-provider-password-TENANT-ID
+- name: sas-tenant-job - update sas-provider-password-TENANT-ID # noqa: name[casing]
   replace:
     path: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-onboard-job.yaml"
     regexp: "{% raw %}{{{% endraw %} {{ item }} {% raw %}}}{% endraw %}"
