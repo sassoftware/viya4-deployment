@@ -21,7 +21,7 @@
     - uninstall
     - update
 
-- name: Cluster-monitoring - user dir find files
+- name: cluster-monitoring - user dir find files # noqa: name[casing]
   find:
     paths: "{{ V4M_CUSTOM_CONFIG_USER_DIR }}"
     file_type: file
@@ -30,7 +30,7 @@
     - install
     - update
 
-- name: Cluster-monitoring - copy user dir files
+- name: cluster-monitoring - copy user dir files # noqa: name[casing]
   copy:
     src: "{{ item.path }}"
     dest: "{{ tmpdir.path }}"
@@ -40,7 +40,7 @@
     - install
     - update
 
-- name: Cluster-monitoring - find files
+- name: cluster-monitoring - find files # noqa: name[casing]
   find:
     paths: "{{ V4M_CUSTOM_CONFIG_USER_DIR }}/monitoring/"
     file_type: file
@@ -49,7 +49,7 @@
     - install
     - update
 
-- name: Cluster-monitoring - copy user dir monitoring files
+- name: cluster-monitoring - copy user dir monitoring files # noqa: name[casing]
   copy:
     src: "{{ item.path }}"
     dest: "{{ tmpdir.path }}/monitoring/"
@@ -59,7 +59,7 @@
     - install
     - update
 
-- name: Cluster-monitoring - deploy
+- name: cluster-monitoring - deploy # noqa: name[casing]
   command:
     cmd: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/monitoring/bin/deploy_monitoring_cluster.sh"
   environment: "{{ monitoring_env }}"

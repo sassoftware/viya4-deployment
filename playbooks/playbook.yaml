@@ -62,7 +62,7 @@
       when: V4MT_ENABLE is defined
       tags:
         - multi-tenancy
-    - name: Vdm role
+    - name: vdm role # noqa: name[casing]
       include_role:
         name: vdm
       tags:

@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
-- name: Cluster-monitoring - create userdir
+- name: cluster-monitoring - create userdir # noqa: name[casing]
   file:
     path: "{{ tmpdir.path }}/monitoring/"
     state: directory
@@ -29,7 +29,7 @@
     - install
     - update
 
-- name: Cluster-monitoring - grafana cert
+- name: cluster-monitoring - grafana cert # noqa: name[casing]
   kubernetes.core.k8s:
     kubeconfig: "{{ KUBECONFIG }}"
     state: present
@@ -52,7 +52,7 @@
     - install
     - update
 
-- name: Cluster-monitoring - prometheus cert
+- name: cluster-monitoring - prometheus cert # noqa: name[casing]
   kubernetes.core.k8s:
     kubeconfig: "{{ KUBECONFIG }}"
     state: present
@@ -75,7 +75,7 @@
     - install
     - update
 
-- name: Cluster-monitoring - alertmanager cert
+- name: cluster-monitoring - alertmanager cert # noqa: name[casing]
   kubernetes.core.k8s:
     kubeconfig: "{{ KUBECONFIG }}"
     state: present
@@ -98,14 +98,14 @@
     - install
     - update
 
-- name: Cluster-monitoring - uninstall
+- name: cluster-monitoring - uninstall # noqa: name[casing]
   command:
     cmd: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/monitoring/bin/remove_monitoring_cluster.sh"
   environment: "{{ monitoring_env }}"
   tags:
     - uninstall
 
-- name: Cluster-monitoring - delete namespace
+- name: cluster-monitoring - delete namespace # noqa: name[casing]
   kubernetes.core.k8s:
     api_version: v1
     kind: Namespace
