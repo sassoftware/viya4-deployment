@@ -44,7 +44,7 @@
         - V4_CFG_MANAGE_STORAGE|bool
       tags:
         - viya
-    - name: Baseline role install
+    - name: baseline role install # noqa: name[casing]
       include_role:
         name: baseline
       when: ('baseline' in ansible_run_tags) and ('install' in ansible_run_tags)
@@ -74,7 +74,7 @@
         tasks_from: viya-monitoring
       tags:
         - viya-monitoring
-    - name: Baseline role uninstall
+    - name: baseline role uninstall # noqa: name[casing]
       include_role:
         name: baseline
       when: ('baseline' in ansible_run_tags) and ('uninstall' in ansible_run_tags)

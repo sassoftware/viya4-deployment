@@ -21,7 +21,7 @@
   tags:
     - install
 
-- name: Jumps-server - group nfsnobody
+- name: Jump-server - group nfsnobody
   set_fact:
     folder_group: nfsnobody
     folder_owner: nfsnobody
@@ -30,7 +30,7 @@
   tags:
     - install
 
-- name: Jumps-server - group nogroup
+- name: Jump-server - group nogroup
   set_fact:
     folder_group: nogroup
   when:

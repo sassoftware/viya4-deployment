@@ -302,7 +302,7 @@
     - cas-onboard
     - offboard
 
-- name: Baseline - gcloud auth use service account
+- name: baseline - gcloud auth use service account # noqa: name[casing]
   shell: |
     gcloud auth activate-service-account '{{ V4_CFG_CLOUD_SERVICE_ACCOUNT_NAME }}' --key-file={{ V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH }}
   when:
