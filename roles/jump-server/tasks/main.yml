@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
-- name: Jump-server - add host
+- name: jump-server - add host # noqa: name[casing]
   add_host:
     hostname: "{{ JUMP_SVR_HOST }}"
     ansible_ssh_user: "{{ JUMP_SVR_USER }}"
@@ -13,7 +13,7 @@
   tags:
     - install
 
-- name: Jump-server - lookup groups
+- name: jump-server - lookup groups # noqa: name[casing]
   getent:
     database: group
   delegate_to: "{{ groups['jump'][0] }}"
@@ -21,7 +21,7 @@
   tags:
     - install
 
-- name: Jump-server - group nfsnobody
+- name: jump-server - group nfsnobody # noqa: name[casing]
   set_fact:
     folder_group: nfsnobody
     folder_owner: nfsnobody
@@ -30,7 +30,7 @@
   tags:
     - install
 
-- name: Jump-server - group nogroup
+- name: jump-server - group nogroup # noqa: name[casing]
   set_fact:
     folder_group: nogroup
   when:
@@ -38,7 +38,7 @@
   tags:
     - install
 
-- name: Jump-server - create folders
+- name: jump-server - create folders # noqa: name[casing]
   file:
     state: directory
     path: "{{ JUMP_SVR_RWX_FILESTORE_PATH | replace('/$', '') }}/{{ hostvars['localhost']['NAMESPACE'] }}/{{ item }}"

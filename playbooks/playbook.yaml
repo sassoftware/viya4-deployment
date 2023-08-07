@@ -33,7 +33,7 @@
         - onboard
         - cas-onboard
         - offboard
-    - name: Jump-server role
+    - name: jump-server role # noqa: name[casing]
       include_role:
         name: jump-server
       when:
