@@ -1,6 +1,7 @@
 # Copyright © 2020-2023, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+---
 logging_map:
   secret:
     internal-user-admin: V4M_KIBANA_PASSWORD
@@ -21,7 +22,7 @@ logging_map:
     ES_LOGCOLLECTOR_PASSWD: "{{ V4M_LOGCOLLECTOR_PASSWORD }}"
     ES_METRICGETTER_PASSWD: "{{ V4M_METRICGETTER_PASSWORD }}"
     LOG_NS: "{{ V4M_LOGGING_NAMESPACE }}"
-    CERT_GENERATOR: "{{ 'openssl' if (V4_CFG_TLS_GENERATOR is not defined or V4_CFG_TLS_GENERATOR==None) else V4_CFG_TLS_GENERATOR }}"
+    CERT_GENERATOR: "{{ 'openssl' if (V4_CFG_TLS_GENERATOR is not defined or V4_CFG_TLS_GENERATOR == None) else V4_CFG_TLS_GENERATOR }}"
 
 monitoring_env:
   USER_DIR: "{{ tmpdir.path }}"
@@ -32,4 +33,4 @@ monitoring_env:
   GRAFANA_ADMIN_PASSWORD: "{{ V4M_GRAFANA_PASSWORD }}"
   VIYA_NS: "{{ NAMESPACE }}"
   MON_NS: "{{ V4M_MONITORING_NAMESPACE }}"
-  CERT_GENERATOR: "{{ 'openssl' if (V4_CFG_TLS_GENERATOR is not defined or V4_CFG_TLS_GENERATOR==None) else V4_CFG_TLS_GENERATOR }}"
+  CERT_GENERATOR: "{{ 'openssl' if (V4_CFG_TLS_GENERATOR is not defined or V4_CFG_TLS_GENERATOR == None) else V4_CFG_TLS_GENERATOR }}"

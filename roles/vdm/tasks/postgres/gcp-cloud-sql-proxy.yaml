@@ -1,18 +1,21 @@
-- name: postgres - update cloud-sql-proxy fqdn
-  block:
-    - ansible.utils.update_fact:
-        updates:
-          - path: "V4_CFG_POSTGRES_SERVERS[{{ role }}][fqdn]"
-            value: "sql-proxy-{{ role }}"
-      register: updated
-    - set_fact:
-        V4_CFG_POSTGRES_SERVERS: "{{ updated.V4_CFG_POSTGRES_SERVERS }}"
+---
+- name: Postgres - update cloud-sql-proxy fqdn
   tags:
     - install
     - uninstall
     - update
+  block:
+    - name: Postgres - update cloud-sql-proxy fqdn
+      ansible.utils.update_fact:
+        updates:
+          - path: V4_CFG_POSTGRES_SERVERS[{{ role }}][fqdn]
+            value: sql-proxy-{{ role }}
+      register: updated
+    - name: Postgres - update postgres servers map
+      set_fact:
+        V4_CFG_POSTGRES_SERVERS: "{{ updated.V4_CFG_POSTGRES_SERVERS }}"
 
-- name: postgres - setup cloud-sql-proxy account
+- name: Postgres - setup cloud-sql-proxy account
   shell: |
     gcloud auth activate-service-account '{{ V4_CFG_CLOUD_SERVICE_ACCOUNT_NAME }}' --key-file={{ V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH }}
     gcloud iam service-accounts add-iam-policy-binding '{{ settings.service_account }}' --role='roles/iam.workloadIdentityUser' --member='serviceAccount:{{ PROVIDER_ACCOUNT }}.svc.id.goog[{{ NAMESPACE }}/sql-proxy-{{ role }}]' --project='{{ PROVIDER_ACCOUNT }}'
@@ -21,21 +24,23 @@
     - uninstall
     - update
 
-- name: postgres - cloud-sql-proxy overlays
+- name: Postgres - cloud-sql-proxy overlays
+  tags:
+    - install
+    - uninstall
+    - update
   block:
-    - template:
+    - name: Postgres - create cloud-sql-proxy role instance from template
+      template:
         src: "{{ role_path }}/templates/resources/cloud-sql-proxy-instance.yaml"
         dest: "{{ role_path }}/templates/resources/cloud-sql-proxy-{{ role }}-instance.yaml"
         mode: "0660"
-    - overlay_facts:
+    - name: Postgres - add gcp tls overlays
+      overlay_facts:
         cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
         cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
         existing: "{{ vdm_overlays }}"
         add:
           - { resources: "cloud-sql-proxy-{{ role }}-instance.yaml", vdm: true }
-          - { transformers: "overlays/external-postgres/googlecloud-full-stack-tls-transformer.yaml", priority: 55, max: "2022.09" }
-          - { transformers: "overlays/postgres/external-postgres/gcp-tls-transformer.yaml", priority: 55, min: "2022.10" }
-  tags:
-    - install
-    - uninstall
-    - update
+          - { transformers: overlays/external-postgres/googlecloud-full-stack-tls-transformer.yaml, priority: 55, max: "2022.09" }
+          - { transformers: overlays/postgres/external-postgres/gcp-tls-transformer.yaml, priority: 55, min: "2022.10" }

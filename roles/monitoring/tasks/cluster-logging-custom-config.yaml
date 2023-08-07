@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
-- name: v4m - custom config is valid path
+- name: V4M - custom config is valid path
   stat:
     path: "{{ V4M_CUSTOM_CONFIG_USER_DIR }}"
   register: folder
@@ -11,7 +11,7 @@
     - uninstall
     - update
 
-- name: v4m - custom config user dir check
+- name: V4M - custom config user dir check
   fail:
     msg: "{{ V4M_CUSTOM_CONFIG_USER_DIR }} does not exist."
   when:
@@ -21,7 +21,7 @@
     - uninstall
     - update
 
-- name: cluster-logging - user dir find files
+- name: cluster-logging - user dir find files # noqa: name[casing]
   find:
     paths: "{{ V4M_CUSTOM_CONFIG_USER_DIR }}"
     file_type: file
@@ -30,7 +30,7 @@
     - install
     - update
 
-- name: cluster-logging - copy user dir files
+- name: cluster-logging - copy user dir files # noqa: name[casing]
   copy:
     src: "{{ item.path }}"
     dest: "{{ tmpdir.path }}"
@@ -40,7 +40,7 @@
     - install
     - update
 
-- name: cluster-logging - find files
+- name: cluster-logging - find files # noqa: name[casing]
   find:
     paths: "{{ V4M_CUSTOM_CONFIG_USER_DIR }}/logging/"
     file_type: file
@@ -49,7 +49,7 @@
     - install
     - update
 
-- name: cluster-logging - copy user dir logging files
+- name: cluster-logging - copy user dir logging files # noqa: name[casing]
   copy:
     src: "{{ item.path }}"
     dest: "{{ tmpdir.path }}/logging/"
@@ -59,7 +59,7 @@
     - install
     - update
 
-- name: cluster-logging - deploy
+- name: cluster-logging - deploy # noqa: name[casing]
   command:
     cmd: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/logging/bin/deploy_logging.sh"
   environment: "{{ logging_map['env'] }}"

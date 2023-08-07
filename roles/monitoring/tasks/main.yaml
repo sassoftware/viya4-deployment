@@ -2,9 +2,9 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
-- name: v4m - ensure supported value for V4M_ROUTING
+- name: V4M - ensure supported value for V4M_ROUTING
   ansible.builtin.assert:
-    that: '{{ ["host-based", "path-based"] | intersect(V4M_ROUTING) | count == 1}}'
+    that: '{{ ["host-based", "path-based"] | intersect(V4M_ROUTING) | count == 1 }}'
     msg: >
       Invalid V4M_ROUTING value: {{ V4M_ROUTING }}
 
@@ -16,7 +16,7 @@
     - uninstall
     - update
 
-- name: v4m - download 
+- name: V4M - download
   git:
     repo: https://github.com/sassoftware/viya4-monitoring-kubernetes.git
     dest: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/"
@@ -26,12 +26,12 @@
     - uninstall
     - update
 
-- name: v4m - add storageclass
+- name: V4M - add storageclass
   kubernetes.core.k8s:
     kubeconfig: "{{ KUBECONFIG }}"
     state: present
     src: "{{ role_path }}/files/{{ PROVIDER }}-storageclass.yaml"
-  when: 
+  when:
     - PROVIDER is not none
     - PROVIDER in ["azure","aws","gcp"]
     - V4_CFG_MANAGE_STORAGE is not none
@@ -39,23 +39,23 @@
   tags:
     - install
     - update
-     
-- name: v4m - cluster monitoring
+
+- name: V4M - cluster monitoring
   include_tasks: cluster-monitoring-common.yaml
   tags:
     - cluster-monitoring
 
-- name: v4m - cluster logging
+- name: V4M - cluster logging
   include_tasks: cluster-logging-common.yaml
   tags:
     - cluster-logging
 
-- name: v4m - remove storageclass
+- name: V4M - remove storageclass
   kubernetes.core.k8s:
     kubeconfig: "{{ KUBECONFIG }}"
     state: absent
     src: "{{ role_path }}/files/{{ PROVIDER }}-storageclass.yaml"
-  when: 
+  when:
     - PROVIDER is not none
     - PROVIDER == "azure"
     - V4_CFG_MANAGE_STORAGE is not none

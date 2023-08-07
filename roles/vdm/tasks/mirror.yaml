@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
-- name: mirror - copy example
+- name: Mirror - copy example
   copy:
     src: "{{ DEPLOY_DIR }}/sas-bases/examples/mirror/mirror.yaml"
     dest: "{{ role_path }}/templates/transformers/mirror.yaml"
@@ -12,26 +12,26 @@
     - uninstall
     - update
 
-- name: mirror - update example
+- name: Mirror - update example
   replace:
     path: "{{ role_path }}/templates/transformers/mirror.yaml"
-    regexp: "MIRROR-HOST"
-    replace: "V4_CFG_CR_HOST"  
+    regexp: MIRROR-HOST
+    replace: V4_CFG_CR_HOST
   tags:
     - install
     - uninstall
     - update
 
-- name: mirror - overlay
+- name: Mirror - overlay
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { transformers: "mirror.yaml", vdm: true, priority: 65 }
-      - { generators: "mirror.yaml", vdm: true, max: "2022.09" }
-      - { generators: "mirror.v2.yaml", vdm: true, min: "2022.10" }
-  tags: 
+      - { transformers: mirror.yaml, vdm: true, priority: 65 }
+      - { generators: mirror.yaml, vdm: true, max: "2022.09" }
+      - { generators: mirror.v2.yaml, vdm: true, min: "2022.10" }
+  tags:
     - install
     - uninstall
     - update

@@ -1,7 +1,7 @@
 ---
 apiVersion: builtin
 kind: PatchTransformer
-metadata: 
+metadata:
   name: openldap-users
 patch: |-
   - op: replace

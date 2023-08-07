@@ -2,7 +2,8 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
-- command: |
+- name: Kustomize - not a git repo
+  command: |
     git log -1 --format=format:"%H"
   failed_when:
     - "'fatal: not a git repository' not in githash.stderr"
@@ -13,30 +14,31 @@
     - uninstall
     - update
 
-- set_fact:
+- name: Kustomize - set date and git refspec
+  set_fact:
     timestamp: "{{ ansible_date_time.iso8601 }}"
-    git_hash: "{{ githash.stdout |default('unknown', -1) }}"
+    git_hash: "{{ githash.stdout | default('unknown', -1) }}"
   tags:
     - install
     - uninstall
     - update
 
-- name: kustomize - buildinfo
+- name: Kustomize - buildinfo
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { resources: "sas-deployment-buildinfo.yaml", vdm: true }
+      - { resources: sas-deployment-buildinfo.yaml, vdm: true }
   tags:
     - install
     - uninstall
     - update
 
-- name: kustomize - Get user's customizations
+- name: Kustomize - Get user's customizations
   siteconfig_info:
     path: "{{ DEPLOY_DIR }}"
-    exclude: 
+    exclude:
       - vdm
       - multi-tenant
       - sas-tenant-job
@@ -47,7 +49,7 @@
     - uninstall
     - update
 
-- name: kustomize - Ordered overlays
+- name: Kustomize - Ordered overlays
   overlay_facts:
     existing: "{{ vdm_overlays }}"
   register: ordered_overlays
@@ -56,24 +58,23 @@
     - uninstall
     - update
 
-- name: kustomize - Copy VDM overlays
+- name: Kustomize - Copy VDM overlays
   include_tasks: copy_overlay.yaml
   vars:
     resource: "{{ item.key }}"
-    overlays: "{{ item.value.pre|default([], true) + item.value.post|default([], true) }}"
+    overlays: "{{ item.value.pre | default([], true) + item.value.post | default([], true) }}"
   with_dict: "{{ ordered_overlays.result }}"
   tags:
     - install
     - uninstall
     - update
 
-- name: kustomize - Generate kustomization.yaml
+- name: Kustomize - Generate kustomization.yaml
   template:
-    src: "kustomization.yaml"
+    src: kustomization.yaml
     dest: "{{ DEPLOY_DIR }}/kustomization.yaml"
     mode: "0660"
   tags:
     - install
     - uninstall
     - update
-

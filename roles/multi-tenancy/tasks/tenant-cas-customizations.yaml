@@ -2,17 +2,16 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
-- name: update tenant cas customizations
+- name: Update tenant cas customizations
+  when: V4MT_TENANT_IDS is search(tenant)
+  tags:
+    - onboard
   block:
-    - name: tenant cas - MPP workers
+    - name: Tenant cas - MPP workers
       command:
-        cmd: "{{ DEPLOY_DIR }}/site-config/create-cas-server.sh --tenant {{ tenant }} \
-             --output {{ DEPLOY_DIR }}/site-config \
-             --workers {{ settings.worker_count if (settings.worker_count is defined and settings.worker_count is not none ) else 0 }} \
-             --backup {{ 1 if (settings.backup_controller_enabled is defined) and \
-                              (settings.backup_controller_enabled|bool == True) else 0 }}"
+        cmd: "{{ DEPLOY_DIR }}/site-config/create-cas-server.sh --tenant {{ tenant }} --output {{ DEPLOY_DIR }}/site-config --workers {{ settings.worker_count if (settings.worker_count is defined and settings.worker_count is not none) else 0 }} --backup {{ 1 if (settings.backup_controller_enabled is defined) and (settings.backup_controller_enabled | bool == True) else 0 }}"
 
-    - name: tenant cas user-defined resources - copy template
+    - name: Tenant cas user-defined resources - copy template
       copy:
         src: "{{ role_path }}/templates/cas-manage-cpu-and-memory.yaml"
         dest: "{{ DEPLOY_DIR }}/site-config/cas-{{ tenant }}-default/cas-manage-cpu-and-memory.yaml"
@@ -21,22 +20,22 @@
         - settings.memory is defined and settings.memory is not none
         - settings.cpus is defined and settings.cpus is not none
 
-    - name: tenant cas user-defined resources - update
+    - name: Tenant cas user-defined resources - update
       replace:
         path: "{{ DEPLOY_DIR }}/site-config/cas-{{ tenant }}-default/cas-manage-cpu-and-memory.yaml"
         regexp: "{{ outer_item.regexp }}"
         replace: "{{ outer_item.replace }}"
       with_items:
-        - { regexp: '{% raw %}{{ AMOUNT-OF-RAM }}{% endraw %}', replace: '{{ settings.memory }}' }
-        - { regexp: '{% raw %}{{ NUMBER-OF-CORES }}{% endraw %}', replace: '{{ settings.cpus }}' }
-        - { regexp: '{% raw %}{{ NAME-OF-SERVER }}{% endraw %}', replace: '{{ tenant }}-default' }
+        - { regexp: "{% raw %}{{ AMOUNT-OF-RAM }}{% endraw %}", replace: "{{ settings.memory }}" }
+        - { regexp: "{% raw %}{{ NUMBER-OF-CORES }}{% endraw %}", replace: "{{ settings.cpus }}" }
+        - { regexp: "{% raw %}{{ NAME-OF-SERVER }}{% endraw %}", replace: "{{ tenant }}-default" }
       loop_control:
         loop_var: outer_item
       when:
         - settings.memory is defined and settings.memory is not none
         - settings.cpus is defined and settings.cpus is not none
 
-    - name: add tenant cas user-defined resources to kustomization
+    - name: Add tenant cas user-defined resources to kustomization
       lineinfile:
         path: "{{ DEPLOY_DIR }}/site-config/cas-{{ tenant }}-default/kustomization.yaml"
         insertafter: "transformers:"
@@ -45,7 +44,7 @@
         - settings.memory is defined and settings.memory is not none
         - settings.cpus is defined and settings.cpus is not none
 
-    - name: tenant cas - external services copy template
+    - name: Tenant cas - external services copy template
       copy:
         src: "{{ role_path }}/templates/cas-enable-external-services.yaml"
         dest: "{{ DEPLOY_DIR }}/site-config/cas-{{ tenant }}-default"
@@ -54,21 +53,21 @@
         - settings.loadbalancer_enabled is defined and settings.loadbalancer_enabled is true
         - settings.loadbalancer_source_ranges is defined and settings.loadbalancer_source_ranges is not none
 
-    - name: tenant cas external services - update
+    - name: Tenant cas external services - update
       replace:
         path: "{{ DEPLOY_DIR }}/site-config/cas-{{ tenant }}-default/cas-enable-external-services.yaml"
         regexp: "{{ outer_item.regexp }}"
         replace: "{{ outer_item.replace }}"
       with_items:
-        - { regexp: '{% raw %}{{ LOADBALANCER_SOURCE_RANGES }}{% endraw %}', replace: '{{ settings.loadbalancer_source_ranges }}' }
-        - { regexp: '{% raw %}{{ NAME-OF-SERVER }}{% endraw %}', replace: '{{ tenant }}-default' }
+        - { regexp: "{% raw %}{{ LOADBALANCER_SOURCE_RANGES }}{% endraw %}", replace: "{{ settings.loadbalancer_source_ranges }}" }
+        - { regexp: "{% raw %}{{ NAME-OF-SERVER }}{% endraw %}", replace: "{{ tenant }}-default" }
       loop_control:
         loop_var: outer_item
       when:
         - settings.loadbalancer_enabled is defined and settings.loadbalancer_enabled is true
         - settings.loadbalancer_source_ranges is defined and settings.loadbalancer_source_ranges is not none
 
-    - name: add tenant cas external services to kustomization
+    - name: Add tenant cas external services to kustomization
       lineinfile:
         path: "{{ DEPLOY_DIR }}/site-config/cas-{{ tenant }}-default/kustomization.yaml"
         insertafter: "transformers:"
@@ -76,7 +75,3 @@
       when:
         - settings.loadbalancer_enabled is defined and settings.loadbalancer_enabled is true
         - settings.loadbalancer_source_ranges is defined and settings.loadbalancer_source_ranges is not none
-
-  when: V4MT_TENANT_IDS is search(tenant)
-  tags:
-    - onboard

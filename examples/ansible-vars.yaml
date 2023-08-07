@@ -1,3 +1,4 @@
+---
 ## Cluster
 PROVIDER: <provider>
 CLUSTER_NAME: <cluster_name>
@@ -5,9 +6,9 @@ NAMESPACE: <namespace>
 
 ## MISC
 DEPLOY: true # Set to false to stop at generating the manifest
-LOADBALANCER_SOURCE_RANGES: ['<cluster_nat_ip>/32']
+LOADBALANCER_SOURCE_RANGES: [<cluster_nat_ip>/32]
 
-## Jump 
+## Jump
 JUMP_SVR_HOST: <jump_host>
 JUMP_SVR_USER: <jump_user>
 
@@ -15,13 +16,13 @@ JUMP_SVR_USER: <jump_user>
 V4_CFG_RWX_FILESTORE_ENDPOINT: <nfs_host>
 V4_CFG_RWX_FILESTORE_PATH: <nfs_export_path>
 
-## Storage 
+## Storage
 V4_CFG_MANAGE_STORAGE: true
 
 ## SAS API Access
-V4_CFG_SAS_API_KEY: '<api_client_id>'
-V4_CFG_SAS_API_SECRET: '<api_client_secret>'
-V4_CFG_ORDER_NUMBER:  <order_number>
+V4_CFG_SAS_API_KEY: <api_client_id>
+V4_CFG_SAS_API_SECRET: <api_client_secret>
+V4_CFG_ORDER_NUMBER: <order_number>
 
 ## CR Access
 V4_CFG_CR_USER: <container_registry_user>
@@ -30,7 +31,7 @@ V4_CFG_CR_PASSWORD: <container_registry_password>
 ## Ingress
 V4_CFG_INGRESS_TYPE: ingress
 V4_CFG_INGRESS_FQDN: <desired_fqdn>
-V4_CFG_TLS_MODE: "full-stack" # [full-stack|front-door|ingress-only|disabled]
+V4_CFG_TLS_MODE: full-stack # [full-stack|front-door|ingress-only|disabled]
 
 ## Postgres
 V4_CFG_POSTGRES_SERVERS:
@@ -53,10 +54,10 @@ V4_CFG_CONNECT_ENABLE_LOADBALANCER: false
 
 ## Monitoring and Logging
 ## uncomment and update the below values when deploying the viya4-monitoring-kubernetes stack
-#V4M_BASE_DOMAIN: <base_domain>
+# V4M_BASE_DOMAIN: <base_domain>
 
 ## Viya Start and Stop Schedule
 ## uncomment and update the values below with CronJob schedule expressions if you would
 ## like to start and stop your Viya Deployment on a schedule
-#V4_CFG_VIYA_START_SCHEDULE: "0 7 * * 1-5"
-#V4_CFG_VIYA_STOP_SCHEDULE: "0 19 * * 1-5"
+# V4_CFG_VIYA_START_SCHEDULE: "0 7 * * 1-5"
+# V4_CFG_VIYA_STOP_SCHEDULE: "0 19 * * 1-5"

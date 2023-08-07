@@ -1,3 +1,4 @@
+---
 ## Cluster
 PROVIDER: <provider>
 CLUSTER_NAME: <cluster_name>
@@ -5,15 +6,15 @@ NAMESPACE: <namespace>
 
 ## MISC
 DEPLOY: true # Set to false to stop at generating the manifest
-LOADBALANCER_SOURCE_RANGES: ['<cluster_nat_ip>/32']
+LOADBALANCER_SOURCE_RANGES: [<cluster_nat_ip>/32]
 
-## Storage 
+## Storage
 V4_CFG_MANAGE_STORAGE: true
 
 ## SAS API Access
-V4_CFG_SAS_API_KEY: '<api_client_id>'
-V4_CFG_SAS_API_SECRET: '<api_client_secret>'
-V4_CFG_ORDER_NUMBER:  <order_number>
+V4_CFG_SAS_API_KEY: <api_client_id>
+V4_CFG_SAS_API_SECRET: <api_client_secret>
+V4_CFG_ORDER_NUMBER: <order_number>
 
 ## CR Access
 V4_CFG_CR_USER: <container_registry_user>
@@ -22,7 +23,7 @@ V4_CFG_CR_PASSWORD: <container_registry_password>
 ## Ingress
 V4_CFG_INGRESS_TYPE: ingress
 V4_CFG_INGRESS_FQDN: <desired_fqdn>
-V4_CFG_TLS_MODE: "full-stack" # [full-stack|front-door|ingress-only|disabled]
+V4_CFG_TLS_MODE: full-stack # [full-stack|front-door|ingress-only|disabled]
 
 ## Internal Postgres -- remove this section if using external Postgres
 V4_CFG_POSTGRES_SERVERS:
@@ -41,8 +42,8 @@ V4_CFG_EMBEDDED_LDAP_ENABLE: true
 V4MT_ENABLE: true
 # SAS Viya supports two modes of data isolation (schemaPerApplicationTenant and databasePerTenant) for tenant data.
 # Set V4MT_MODE to either schema or database
-V4MT_MODE: "<desired_mode>"
-V4MT_TENANT_IDS: "<desired_tenant_ids>"    #For single tenant ID: "acme" or for multiple tenant IDs: "acme, cyberdyne, intech"
+V4MT_MODE: <desired_mode>
+V4MT_TENANT_IDS: <desired_tenant_ids> # For single tenant ID: "acme" or for multiple tenant IDs: "acme, cyberdyne, intech"
 
 # Optional: Either set password for sasprovider, common to all tenants or set unique passwords for each tenants.
 # V4MT_PROVIDER_PASSWORD: "<desired_password>"

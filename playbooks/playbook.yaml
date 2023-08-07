@@ -1,9 +1,11 @@
 # Copyright © 2020-2023, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-- hosts: localhost
+---
+- name: Play for deploying Viya
+  hosts: localhost
   tasks:
-    - name: global tmp dir
+    - name: Global tmp dir
       tempfile:
         state: directory
       register: tmpdir
@@ -14,16 +16,16 @@
         - onboard
         - cas-onboard
         - offboard
-    - name: common role - task validations
+    - name: Common role - task validations
       include_role:
         name: common
         tasks_from: task-validations
       tags:
         - always
-    - name: common role
-      include_role: 
+    - name: Common role
+      include_role:
         name: common
-        public: yes
+        public: true
       tags:
         - install
         - uninstall
@@ -31,7 +33,7 @@
         - onboard
         - cas-onboard
         - offboard
-    - name: jump-server role
+    - name: jump-server role # noqa: name[casing]
       include_role:
         name: jump-server
       when:
@@ -42,37 +44,37 @@
         - V4_CFG_MANAGE_STORAGE|bool
       tags:
         - viya
-    - name: baseline role install
+    - name: baseline role install # noqa: name[casing]
       include_role:
         name: baseline
       when: ('baseline' in ansible_run_tags) and ('install' in ansible_run_tags)
       tags:
         - baseline
-    - name: monitoring role - cluster
+    - name: Monitoring role - cluster
       include_role:
         name: monitoring
       tags:
         - cluster-monitoring
         - cluster-logging
-    - name: multi-tenancy role
+    - name: Multi-tenancy role
       include_role:
         name: multi-tenancy
       when: V4MT_ENABLE is defined
       tags:
         - multi-tenancy
-    - name: vdm role
+    - name: vdm role # noqa: name[casing]
       include_role:
         name: vdm
       tags:
         - viya
         - multi-tenancy
-    - name: monitoring role - namespace
+    - name: Monitoring role - namespace
       include_role:
         name: monitoring
         tasks_from: viya-monitoring
       tags:
         - viya-monitoring
-    - name: baseline role uninstall
+    - name: baseline role uninstall # noqa: name[casing]
       include_role:
         name: baseline
       when: ('baseline' in ansible_run_tags) and ('uninstall' in ansible_run_tags)

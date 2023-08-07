@@ -1,11 +1,13 @@
-- set_fact:
-    MAX_CONNECTIONS: '{{ ((((V4MT_TENANT_IDS.split(",") | length) | int ) + 1 ) * 1128) }}'
+---
+- name: Postgres - determine MAX_CONNECTIONS
+  set_fact:
+    MAX_CONNECTIONS: '{{ ((((V4MT_TENANT_IDS.split(",") | length) | int) + 1) * 1128) }}'
   tags:
     - install
     - uninstall
     - update
 
-- name: postgres crunchy v5 - crunchydata tuning folder check
+- name: Postgres crunchy v5 - crunchydata tuning folder check
   stat:
     path: "{{ DEPLOY_DIR }}/sas-bases/examples/crunchydata/tuning"
   register: crunchy_tuning_folder
@@ -15,7 +17,7 @@
     - uninstall
     - update
 
-- name: postgres - internal-postgres custom-config folder check
+- name: Postgres - internal-postgres custom-config folder check
   stat:
     path: "{{ DEPLOY_DIR }}/sas-bases/examples/postgres/custom-config"
   register: custom_config_folder
@@ -25,17 +27,19 @@
     - uninstall
     - update
 
-- name: postgres - copy custom config
+- name: Postgres - copy custom config
   copy:
     src: "{{ file.src }}"
     dest: "{{ file.dest }}"
     mode: "0660"
   with_items:
-    - {src: "{{ DEPLOY_DIR }}/sas-bases/examples/postgres/custom-config/sas-{{ 'postgres' if role == 'default' else role }}-custom-config.yaml", dest: "{{ role_path }}/templates/resources/sas-{{ 'postgres' if role == 'default' else role }}-custom-config.yaml"}
-    - {src: "{{ DEPLOY_DIR }}/sas-bases/examples/postgres/custom-config/sas-{{ 'postgres' if role == 'default' else role }}-custom-config-transformer.yaml", dest: "{{ role_path }}/templates/transformers/sas-{{ 'postgres' if role == 'default' else role }}-custom-config-transformer.yaml"}
+    - src: "{{ DEPLOY_DIR }}/sas-bases/examples/postgres/custom-config/sas-{{ 'postgres' if role == 'default' else role }}-custom-config.yaml"
+      dest: "{{ role_path }}/templates/resources/sas-{{ 'postgres' if role == 'default' else role }}-custom-config.yaml"
+    - src: "{{ DEPLOY_DIR }}/sas-bases/examples/postgres/custom-config/sas-{{ 'postgres' if role == 'default' else role }}-custom-config-transformer.yaml"
+      dest: "{{ role_path }}/templates/transformers/sas-{{ 'postgres' if role == 'default' else role }}-custom-config-transformer.yaml"
   loop_control:
     loop_var: file
-  when: 
+  when:
     - custom_config_folder.stat.exists
     - settings.internal
   tags:
@@ -43,56 +47,56 @@
     - uninstall
     - update
 
-- name: postgres - update config default
+- name: Postgres - update config default
+  when:
+    - custom_config_folder.stat.exists
+    - settings.internal
+  tags:
+    - install
+    - uninstall
   block:
-    - name: postgres - remove example shared_buffers line
+    - name: Postgres - remove example shared_buffers line
       lineinfile:
         path: "{{ role_path }}/templates/resources/sas-{{ 'postgres' if role == 'default' else role }}-custom-config.yaml"
-        regexp: "shared_buffers: 2GB" 
+        regexp: "shared_buffers: 2GB"
         state: absent
 
-    - name: postgres - add max_connections block
+    - name: Postgres - add max_connections block
       lineinfile:
         path: "{{ role_path }}/templates/resources/sas-{{ 'postgres' if role == 'default' else role }}-custom-config.yaml"
-        insertafter: "data:" 
+        insertafter: "data:"
         line: "{{ outer_item }}"
       with_items:
         - '  max_prepared_transactions: "{{ MAX_CONNECTIONS }}"'
         - '  max_connections: "{{ MAX_CONNECTIONS }}"'
       loop_control:
         loop_var: outer_item
-  when: 
-    - custom_config_folder.stat.exists
-    - settings.internal
-  tags:
-    - install
-    - uninstall
 
-- name: postgres - add resource
+- name: Postgres - add resource
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
       - { transformers: "sas-{{ 'postgres' if role == 'default' else role }}-custom-config-transformer.yaml", vdm: true, priority: 65 }
-      - { resources: "sas-{{ 'postgres' if role == 'default' else role }}-custom-config.yaml", vdm: true,}
-  when: 
+      - { resources: "sas-{{ 'postgres' if role == 'default' else role }}-custom-config.yaml", vdm: true }
+  when:
     - custom_config_folder.stat.exists
     - settings.internal
-  tags: 
+  tags:
     - install
     - uninstall
     - update
 
 # Updates to support Crunchy v5 internal PostgreSQL - pre 2023.03
-- name: postgres crunchy v5 - copy custom config 
+- name: Postgres crunchy v5 - copy custom config
   copy:
     src: "{{ DEPLOY_DIR }}/sas-bases/examples/crunchydata/tuning/crunchy-tuning-transformer.yaml"
     dest: "{{ role_path }}/templates/transformers/{{ 'platform-postgres' if role == 'default' else role }}-crunchy-tuning-transformer.yaml"
     mode: "0660"
   loop_control:
     loop_var: file
-  when: 
+  when:
     - not V4_CFG_CADENCE_NAME|lower == "fast" and V4_CFG_CADENCE_VERSION is version('2023.03', "<")
     - crunchy_tuning_folder.stat.exists
     - settings.internal
@@ -101,7 +105,7 @@
     - uninstall
     - update
 
-- name: postgres crunchy v5 - uncomment config for front-door or tls disabled 
+- name: Postgres crunchy v5 - uncomment config for front-door or tls disabled
   replace:
     path: "{{ role_path }}/templates/transformers/{{ 'platform-postgres' if role == 'default' else role }}-crunchy-tuning-transformer.yaml"
     regexp: "{{ outer_item.regexp }}"
@@ -109,7 +113,7 @@
   with_items:
     - { regexp: "#pg_hba:", replace: "pg_hba:" }
     - { regexp: '#  - "hostnossl all all all md5"', replace: ' - "hostnossl all all all md5"' }
-  when: 
+  when:
     - not V4_CFG_CADENCE_NAME|lower == "fast" and V4_CFG_CADENCE_VERSION is version('2023.03', "<")
     - crunchy_tuning_folder.stat.exists
     - settings.internal
@@ -121,12 +125,12 @@
     - uninstall
     - update
 
-- name: postgres crunchy v5 - remove commented block
+- name: Postgres crunchy v5 - remove commented block
   lineinfile:
     path: "{{ role_path }}/templates/transformers/{{ 'platform-postgres' if role == 'default' else role }}-crunchy-tuning-transformer.yaml"
-    regexp: '#.*$'
+    regexp: "#.*$"
     state: absent
-  when: 
+  when:
     - not V4_CFG_CADENCE_NAME|lower == "fast" and V4_CFG_CADENCE_VERSION is version('2023.03', "<")
     - crunchy_tuning_folder.stat.exists
     - settings.internal
@@ -135,18 +139,18 @@
     - uninstall
     - update
 
-- name: postgres crunchy v5 - update config
+- name: Postgres crunchy v5 - update config
   replace:
     path: "{{ role_path }}/templates/transformers/{{ 'platform-postgres' if role == 'default' else role }}-crunchy-tuning-transformer.yaml"
     regexp: "{{ outer_item.regexp }}"
     replace: "{{ outer_item.replace }}"
   with_items:
     - { regexp: "(^\n)", replace: "" }
-    - { regexp: "max_connections.*", replace: "max_connections: {{ MAX_CONNECTIONS | indent( width=6, first=False)}}" }
-    - { regexp: "max_prepared_transactions.*", replace: "max_prepared_transactions: {{ MAX_CONNECTIONS | indent( width=6, first=False)}}" }
+    - { regexp: max_connections.*, replace: "max_connections: {{ MAX_CONNECTIONS | indent(width=6, first=False) }}" }
+    - { regexp: max_prepared_transactions.*, replace: "max_prepared_transactions: {{ MAX_CONNECTIONS | indent(width=6, first=False) }}" }
     - { regexp: "{% raw %}{{ TRANSFORMER-NAME }}{% endraw %}", replace: "{{ 'platform-postgres' if role == 'default' else role }}" }
     - { regexp: "{% raw %}{{ CLUSTER-NAME }}{% endraw %}", replace: "sas-crunchy-{{ 'platform-postgres' if role == 'default' else role }}" }
-  when: 
+  when:
     - not V4_CFG_CADENCE_NAME|lower == "fast" and V4_CFG_CADENCE_VERSION is version('2023.03', "<")
     - crunchy_tuning_folder.stat.exists
     - settings.internal
@@ -157,31 +161,31 @@
     - uninstall
     - update
 
-- name: postgres crunchy v5 - add custom config transformer to kustomization
+- name: Postgres crunchy v5 - add custom config transformer to kustomization
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
       - { transformers: "{{ 'platform-postgres' if role == 'default' else role }}-crunchy-tuning-transformer.yaml", vdm: true, priority: 65 }
-  when: 
+  when:
     - not V4_CFG_CADENCE_NAME|lower == "fast" and V4_CFG_CADENCE_VERSION is version('2023.03', "<")
     - crunchy_tuning_folder.stat.exists
     - settings.internal
-  tags: 
+  tags:
     - install
     - uninstall
     - update
 
 ## Postgres tuning transformer updates for 2023.03 and above
-- name: postgres crunchy v5 - copy custom config transformers
+- name: Postgres crunchy v5 - copy custom config transformers
   copy:
     src: "{{ DEPLOY_DIR }}/sas-bases/examples/crunchydata/tuning/crunchy-tuning-connection-params-transformer.yaml"
     dest: "{{ role_path }}/templates/transformers/{{ 'platform-postgres' if role == 'default' else role }}-crunchy-tuning-connection-params-transformer.yaml"
     mode: "0660"
   loop_control:
     loop_var: file
-  when: 
+  when:
     - V4_CFG_CADENCE_VERSION is version('2023.03', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
     - crunchy_tuning_folder.stat.exists
     - settings.internal
@@ -190,14 +194,14 @@
     - uninstall
     - update
 
-- name: postgres crunchy v5 - add no-tls transformer for front-door or tls disabled 
+- name: Postgres crunchy v5 - add no-tls transformer for front-door or tls disabled
   copy:
     src: "{{ DEPLOY_DIR }}/sas-bases/examples/crunchydata/tuning/crunchy-tuning-pg-hba-no-tls-transformer.yaml"
     dest: "{{ role_path }}/templates/transformers/{{ 'platform-postgres' if role == 'default' else role }}-crunchy-tuning-pg-hba-no-tls-transformer.yaml"
     mode: "0660"
   loop_control:
     loop_var: file
-  when: 
+  when:
     - V4_CFG_CADENCE_VERSION is version('2023.03', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
     - V4_CFG_TLS_MODE in ["front-door", "disabled"]
     - crunchy_tuning_folder.stat.exists
@@ -207,15 +211,15 @@
     - uninstall
     - update
 
-- name: postgres crunchy v5 - remove commented block
+- name: Postgres crunchy v5 - remove commented block
   lineinfile:
     path: "{{ outer_item.path }}"
-    regexp: '#.*$'
+    regexp: "#.*$"
     state: absent
   with_items:
-    - { path: "{{ role_path }}/templates/transformers/{{ 'platform-postgres' if role == 'default' else role }}-crunchy-tuning-connection-params-transformer.yaml"}
-    - { path: "{{ role_path }}/templates/transformers/{{ 'platform-postgres' if role == 'default' else role }}-crunchy-tuning-pg-hba-no-tls-transformer.yaml"}
-  when: 
+    - path: "{{ role_path }}/templates/transformers/{{ 'platform-postgres' if role == 'default' else role }}-crunchy-tuning-connection-params-transformer.yaml"
+    - path: "{{ role_path }}/templates/transformers/{{ 'platform-postgres' if role == 'default' else role }}-crunchy-tuning-pg-hba-no-tls-transformer.yaml"
+  when:
     - V4_CFG_CADENCE_VERSION is version('2023.03', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
     - crunchy_tuning_folder.stat.exists
     - settings.internal
@@ -226,7 +230,7 @@
     - uninstall
     - update
 
-- name: postgres crunchy v5 - update max_connections
+- name: Postgres crunchy v5 - update max_connections
   replace:
     path: "{{ role_path }}/templates/transformers/{{ 'platform-postgres' if role == 'default' else role }}-crunchy-tuning-connection-params-transformer.yaml"
     regexp: "{{ outer_item.regexp }}"
@@ -236,7 +240,7 @@
     - { regexp: "{% raw %}{{ MAX-CONNECTIONS }}{% endraw %}", replace: "{{ MAX_CONNECTIONS }}" }
     - { regexp: "{% raw %}{{ MAX-PREPARED-TRANSACTIONS }}{% endraw %}", replace: "{{ MAX_CONNECTIONS }}" }
     - { regexp: "{% raw %}{{ CLUSTER-NAME }}{% endraw %}", replace: "sas-crunchy-{{ 'platform-postgres' if role == 'default' else role }}" }
-  when: 
+  when:
     - V4_CFG_CADENCE_VERSION is version('2023.03', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
     - crunchy_tuning_folder.stat.exists
     - settings.internal
@@ -247,7 +251,7 @@
     - uninstall
     - update
 
-- name: postgres crunchy v5 - update no tls transformer
+- name: Postgres crunchy v5 - update no tls transformer
   replace:
     path: "{{ role_path }}/templates/transformers/{{ 'platform-postgres' if role == 'default' else role }}-crunchy-tuning-pg-hba-no-tls-transformer.yaml"
     regexp: "{{ outer_item.regexp }}"
@@ -255,7 +259,7 @@
   with_items:
     - { regexp: "(^\n)", replace: "" }
     - { regexp: "{% raw %}{{ CLUSTER-NAME }}{% endraw %}", replace: "sas-crunchy-{{ 'platform-postgres' if role == 'default' else role }}" }
-  when: 
+  when:
     - V4_CFG_CADENCE_VERSION is version('2023.03', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
     - V4_CFG_TLS_MODE in ["front-door", "disabled"]
     - crunchy_tuning_folder.stat.exists
@@ -267,35 +271,39 @@
     - uninstall
     - update
 
-- name: postgres crunchy v5 - add custom config transformer to kustomization
+- name: Postgres crunchy v5 - add custom config transformer to kustomization
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { transformers: "{{ 'platform-postgres' if role == 'default' else role }}-crunchy-tuning-connection-params-transformer.yaml", vdm: true, priority: 65 }
-  when: 
+      - transformers: "{{ 'platform-postgres' if role == 'default' else role }}-crunchy-tuning-connection-params-transformer.yaml"
+        vdm: true
+        priority: 65
+  when:
     - V4_CFG_CADENCE_VERSION is version('2023.03', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
     - crunchy_tuning_folder.stat.exists
     - settings.internal
-  tags: 
+  tags:
     - install
     - uninstall
     - update
 
-- name: postgres crunchy v5 - add custom config transformer to kustomization
+- name: Postgres crunchy v5 - add custom config transformer to kustomization
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { transformers: "{{ 'platform-postgres' if role == 'default' else role }}-crunchy-tuning-pg-hba-no-tls-transformer.yaml", vdm: true, priority: 65 }
-  when: 
+      - transformers: "{{ 'platform-postgres' if role == 'default' else role }}-crunchy-tuning-pg-hba-no-tls-transformer.yaml"
+        vdm: true
+        priority: 65
+  when:
     - V4_CFG_CADENCE_VERSION is version('2023.03', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
     - V4_CFG_TLS_MODE in ["front-door", "disabled"]
     - crunchy_tuning_folder.stat.exists
     - settings.internal
-  tags: 
+  tags:
     - install
     - uninstall
     - update

@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
-- name: deploy - Apply SAS Viya deployment
+- name: Deploy - Apply SAS Viya deployment
   kubernetes.core.k8s:
     src: "{{ DEPLOY_DIR }}/sasdeployment.yaml"
     state: present
@@ -15,14 +15,20 @@
     - update
     - cas-onboard
 
-- name: deploy - Apply SAS Viya deployment
+- name: Deploy - Apply SAS Viya deployment
+  when:
+    - not V4_DEPLOYMENT_OPERATOR_ENABLED
+  tags:
+    - install
+    - update
+    - cas-onboard
   block:
-    - name: deploy - Gather all resource files
+    - name: Deploy - Gather all resource files
       find:
         paths: "{{ ORCHESTRATION_TOOLING_INSTALL_MANIFESTS_DIRECTORY }}"
         patterns: "*.yaml"
       register: manifests
-    - name: deploy - Gather SAS Viya deployment resource files
+    - name: Deploy - Gather SAS Viya deployment resource files
       find:
         paths: "{{ ORCHESTRATION_TOOLING_INSTALL_MANIFESTS_DIRECTORY }}"
         patterns: "*.yaml"
@@ -30,7 +36,7 @@
       register: deployment_manifests
       failed_when:
         - ( deployment_manifests.files | length ) != 1
-    - name: deploy - Apply supporting resources
+    - name: Deploy - Apply supporting resources
       kubernetes.core.k8s:
         src: "{{ item.path }}"
         state: present
@@ -38,11 +44,11 @@
         kubeconfig: "{{ KUBECONFIG }}"
       with_items:
         - "{{ manifests.files | difference(deployment_manifests.files) }}"
-    - name: orchestration - Create orchestration tooling work directory
+    - name: Orchestration - Create orchestration tooling work directory
       file:
         path: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/work"
         state: directory
-    - name: deploy - Deploy SAS Viya
+    - name: Deploy - Deploy SAS Viya
       environment:
         PATH: "{{ env_path + ':' + ORCHESTRATION_TOOLING_PATH }}"
         KUBECONFIG: "{{ KUBECONFIG }}"
@@ -58,7 +64,7 @@
       when:
         - deployment_tooling == "docker"
         - not V4_CFG_BELOW_THE_LINE
-    - name: deploy BLT - Deploy SAS Viya
+    - name: Deploy BLT - Deploy SAS Viya
       environment:
         PATH: "{{ env_path + ':' + ORCHESTRATION_TOOLING_PATH }}"
         KUBECONFIG: "{{ KUBECONFIG }}"
@@ -76,7 +82,7 @@
       when:
         - deployment_tooling == "docker"
         - V4_CFG_BELOW_THE_LINE
-    - name: deploy - Deploy SAS Viya
+    - name: Deploy - Deploy SAS Viya
       ansible.builtin.shell: >
         docker run --rm
         --user="{{ UID_GID }}"
@@ -94,7 +100,7 @@
       when:
         - deployment_tooling == "ansible"
         - not V4_CFG_BELOW_THE_LINE
-    - name: deploy BLT - Deploy SAS Viya
+    - name: Deploy BLT - Deploy SAS Viya
       ansible.builtin.shell: >
         docker run --rm
         --user="{{ UID_GID }}"
@@ -113,26 +119,20 @@
       when:
         - deployment_tooling == "ansible"
         - V4_CFG_BELOW_THE_LINE
-  when:
-    - V4_DEPLOYMENT_OPERATOR_ENABLED == False
-  tags:
-    - install
-    - update
-    - cas-onboard
 
-- name: deploy - Uninstall postgresclusters
+- name: Deploy - Uninstall postgresclusters
   environment:
     KUBECONFIG: "{{ KUBECONFIG }}"
   ansible.builtin.shell: >
     kubectl -n {{ NAMESPACE }} delete postgresclusters --selector="sas.com/deployment=sas-viya" --ignore-not-found=true
-  ignore_errors: yes
+  ignore_errors: true
   when:
     - V4_CFG_CADENCE_VERSION is version('2022.10', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
     - internal_postgres
   tags:
     - uninstall
 
-- name: deploy - Remove Viya
+- name: Deploy - Remove Viya
   kubernetes.core.k8s:
     state: absent
     src: "{{ ORCHESTRATION_TOOLING_UNINSTALL_MANIFEST }}"
@@ -140,11 +140,11 @@
     wait_timeout: 600
     namespace: "{{ NAMESPACE }}"
     kubeconfig: "{{ KUBECONFIG }}"
-  ignore_errors: yes
+  ignore_errors: true
   tags:
     - uninstall
 
-- name: deploy - Delete namespace
+- name: Deploy - Delete namespace
   kubernetes.core.k8s:
     api_version: v1
     kind: Namespace

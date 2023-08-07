@@ -5,10 +5,10 @@
 # so that the tooling it contains may be used during the deployment process.
 
 ---
-- name: orchestration tooling - Set orchestration tooling facts
+- name: Orchestration tooling - Set orchestration tooling facts
   set_fact:
     ORCHESTRATION_TOOLING_DIRECTORY: "{{ tmpdir.path }}/orchestration"
-    ORCHESTRATION_TOOLING_ARCHIVE: "{{ tmpdir.path}}/orchestration.tar"
+    ORCHESTRATION_TOOLING_ARCHIVE: "{{ tmpdir.path }}/orchestration.tar"
     ORCHESTRATION_CR_USER: "{{ V4_CFG_CR_USER }}"
     ORCHESTRATION_CR_PASSWORD: "{{ V4_CFG_CR_PASSWORD }}"
   tags:
@@ -19,17 +19,7 @@
     - cas-onboard
     - offboard
 
-- name: orchestration tooling - collect uuid for running docker container
-  block:
-    - name: orchestration tooling - Get the current uid/gid
-      shell:
-        cmd: |
-          uid_gid_pair="$(id -u):$(id -g)"
-          echo $uid_gid_pair
-      register: out
-    - name: orchestration tooling - Set the current uid/gid
-      set_fact:
-        UID_GID: "{{ out.stdout }}"
+- name: Orchestration tooling - collect uuid for running docker container
   when:
     - deployment_tooling == "ansible"
   tags:
@@ -39,10 +29,20 @@
     - onboard
     - cas-onboard
     - offboard
+  block:
+    - name: Orchestration tooling - Get the current uid/gid
+      shell:
+        cmd: |
+          uid_gid_pair="$(id -u):$(id -g)"
+          echo $uid_gid_pair
+      register: out
+    - name: Orchestration tooling - Set the current uid/gid
+      set_fact:
+        UID_GID: "{{ out.stdout }}"
 
-- name: orchestration tooling - Find orchestration tooling image
+- name: Orchestration tooling - Find orchestration tooling image
   set_fact:
-    ORCHESTRATION_IMAGE: "{{ (lookup('file', '{{ DEPLOY_DIR }}/sas-bases/.orchestration/images.yaml')|from_yaml).spec.images['sas-orchestration'] }}"
+    ORCHESTRATION_IMAGE: "{{ (lookup('file', '{{ DEPLOY_DIR }}/sas-bases/.orchestration/images.yaml') | from_yaml).spec.images['sas-orchestration'] }}"
   when:
     - ORCHESTRATION_IMAGE is not defined
   tags:
@@ -57,10 +57,10 @@
 # This is expected and required to avoid Jinja2 templating issues in the tasks that use these two facts.
 # Note we are also escaping '{%' which to resolve templating issues around Jinja statements
 # https://jinja.palletsprojects.com/en/2.11.x/templates/#synopsis
-- name: orchestration tooling - set registry credentials if using defaults
+- name: Orchestration tooling - set registry credentials if using defaults
   set_fact:
-    ORCHESTRATION_CR_USER: "{{ lookup('file', '{{DEPLOY_DIR}}/sas-bases/base/secrets.yaml') | regex_search('username=(.+)', '\\1') | first | regex_escape() | regex_replace('{%','{\\%') }}"
-    ORCHESTRATION_CR_PASSWORD: "{{ lookup('file', '{{DEPLOY_DIR}}/sas-bases/base/secrets.yaml') | regex_search('password=(.+)', '\\1') | first | regex_escape() | regex_replace('{%','{\\%') }}"
+    ORCHESTRATION_CR_USER: "{{ lookup('file', '{{DEPLOY_DIR}}/sas-bases/base/secrets.yaml') | regex_search('username=(.+)', '\\1') | first | regex_escape() | regex_replace('{%', '{\\%') }}"
+    ORCHESTRATION_CR_PASSWORD: "{{ lookup('file', '{{DEPLOY_DIR}}/sas-bases/base/secrets.yaml') | regex_search('password=(.+)', '\\1') | first | regex_escape() | regex_replace('{%', '{\\%') }}"
   when:
     - ORCHESTRATION_CR_USER is none
   tags:
@@ -73,9 +73,9 @@
 
 # The ansible log output will have escape characters for ORCHESTRATION_CR_USER & ORCHESTRATION_CR_PASSWORD.
 # if the parsed creds contain symbols. This is expected and required to avoid Jinja2 templating issues.
-- name: orchestration tooling - Download orchestration tooling image
+- name: Orchestration tooling - Download orchestration tooling image
   command: |
-    skopeo copy docker://{{ V4_CFG_CR_HOST }}/{{ ORCHESTRATION_IMAGE }} oci-archive:{{ ORCHESTRATION_TOOLING_ARCHIVE }} --src-creds {{ ORCHESTRATION_CR_USER|string }}:{{ ORCHESTRATION_CR_PASSWORD|string }}
+    skopeo copy docker://{{ V4_CFG_CR_HOST }}/{{ ORCHESTRATION_IMAGE }} oci-archive:{{ ORCHESTRATION_TOOLING_ARCHIVE }} --src-creds {{ ORCHESTRATION_CR_USER | string }}:{{ ORCHESTRATION_CR_PASSWORD | string }}
   when:
     - deployment_tooling == "docker"
   tags:
@@ -86,7 +86,7 @@
     - cas-onboard
     - offboard
 
-- name: orchestration tooling - Create orchestration tooling directory
+- name: Orchestration tooling - Create orchestration tooling directory
   file:
     path: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}"
     state: directory
@@ -99,33 +99,7 @@
     - cas-onboard
     - offboard
 
-- name: orchestration tooling - Extract orchestration tooling
-  block:
-    - name: orchestration tooling - Extract orchestration tooling archive
-      unarchive:
-        src: "{{ ORCHESTRATION_TOOLING_ARCHIVE }}"
-        dest: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}"
-    - name: orchestration tooling - Extract orchestration tooling layers
-      shell:
-        chdir: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}"
-        cmd: |
-          manifest=$(cat index.json | jq -r '.manifests[0].digest' | cut -d: -f2)
-          cat "blobs/sha256/$manifest" | jq -r '.layers[].digest' | cut -d: -f2 | while read layer; do tar -xf "blobs/sha256/$layer"; chmod -R 700 * .; done;
-    - name: orchestration tooling - Extract orchestration tooling path
-      shell:
-        chdir: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}"
-        cmd: |
-          manifest=$(cat index.json | jq -r '.manifests[0].digest' | cut -d: -f2)
-          config=$(cat blobs/sha256/$manifest | jq -r '.config.digest' | cut -d: -f2)
-          cat blobs/sha256/$config | jq -r '.config.Env[]' | grep PATH= | cut -d= -f2
-      register: orchestration_path
-    - name: orchestration tooling - Prepend path with tooling directory
-      set_fact:
-        path_list: "{{ path_list | default([]) + [''.join((ORCHESTRATION_TOOLING_DIRECTORY,item))] }}"
-      loop: "{{ orchestration_path.stdout.split(':') | list}}"
-    - name: orchestration tooling - Set orchestration tooling path
-      set_fact:
-        ORCHESTRATION_TOOLING_PATH: "{{ path_list | join(':') }}"
+- name: Orchestration tooling - Extract orchestration tooling
   when:
     - deployment_tooling == "docker"
   tags:
@@ -135,11 +109,37 @@
     - onboard
     - cas-onboard
     - offboard
+  block:
+    - name: Orchestration tooling - Extract orchestration tooling archive
+      unarchive:
+        src: "{{ ORCHESTRATION_TOOLING_ARCHIVE }}"
+        dest: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}"
+    - name: Orchestration tooling - Extract orchestration tooling layers
+      shell:
+        chdir: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}"
+        cmd: |
+          manifest=$(cat index.json | jq -r '.manifests[0].digest' | cut -d: -f2)
+          cat "blobs/sha256/$manifest" | jq -r '.layers[].digest' | cut -d: -f2 | while read layer; do tar -xf "blobs/sha256/$layer"; chmod -R 700 * .; done;
+    - name: Orchestration tooling - Extract orchestration tooling path
+      shell:
+        chdir: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}"
+        cmd: |
+          manifest=$(cat index.json | jq -r '.manifests[0].digest' | cut -d: -f2)
+          config=$(cat blobs/sha256/$manifest | jq -r '.config.digest' | cut -d: -f2)
+          cat blobs/sha256/$config | jq -r '.config.Env[]' | grep PATH= | cut -d= -f2
+      register: orchestration_path
+    - name: Orchestration tooling - Prepend path with tooling directory
+      set_fact:
+        path_list: "{{ path_list | default([]) + [''.join((ORCHESTRATION_TOOLING_DIRECTORY, item))] }}"
+      loop: "{{ orchestration_path.stdout.split(':') | list }}"
+    - name: Orchestration tooling - Set orchestration tooling path
+      set_fact:
+        ORCHESTRATION_TOOLING_PATH: "{{ path_list | join(':') }}"
 
 # The ansible log output will have escape characters for ORCHESTRATION_CR_USER & ORCHESTRATION_CR_PASSWORD.
 # if the parsed creds contain symbols. This is expected and required to avoid Jinja2 templating issues.
-- name: orchestration tooling - log into V4_CFG_CR_HOST
-  command: 'docker login -u {{ ORCHESTRATION_CR_USER|string}} -p {{ ORCHESTRATION_CR_PASSWORD|string }} {{ V4_CFG_CR_HOST }}'
+- name: Orchestration tooling - log into V4_CFG_CR_HOST
+  command: docker login -u {{ ORCHESTRATION_CR_USER | string }} -p {{ ORCHESTRATION_CR_PASSWORD | string }} {{ V4_CFG_CR_HOST }}
   when:
     - deployment_tooling == "ansible"
   tags:
@@ -150,7 +150,7 @@
     - cas-onboard
     - offboard
 
-- name: orchestration tooling - orchestration tooling image
+- name: Orchestration tooling - orchestration tooling image
   community.docker.docker_image:
     name: "{{ V4_CFG_CR_HOST }}/{{ ORCHESTRATION_IMAGE }}"
     source: pull

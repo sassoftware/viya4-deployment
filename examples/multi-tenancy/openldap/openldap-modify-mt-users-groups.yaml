@@ -14,7 +14,7 @@
 ---
 apiVersion: builtin
 kind: PatchTransformer
-metadata: 
+metadata:
   name: openldap-users-and-groups
 patch: |-
   - op: replace
@@ -34,7 +34,7 @@ patch: |-
       distinguishedName: uid=viya_admin,ou=people,ou=provider,dc=example,dc=com
       displayName: Viya Administrator
       userPassword: Password123
-      
+
       dn: uid=basic_user1,ou=people,ou=provider,dc=example,dc=com
       changetype: add
       objectClass: inetOrgPerson
@@ -49,7 +49,7 @@ patch: |-
       userPassword: Password123
       homeDirectory: /home/basic_user1
       mail: basic_user1@example.com
-      
+
       dn: cn=users,ou=groups,ou=provider,dc=example,dc=com
       changetype: add
       objectclass: groupofUniqueNames
@@ -57,7 +57,7 @@ patch: |-
       gidNumber: 1000
       distinguishedName: cn=group1,ou=groups,ou=provider,dc=example,dc=com
       uniqueMember:uid=basic_user1,ou=people,ou=provider,dc=example,dc=com
-      
+
       dn: cn=admins,ou=groups,ou=provider,dc=example,dc=com
       changetype: add
       objectclass: groupofUniqueNames
@@ -65,7 +65,7 @@ patch: |-
       gidNumber: 2000
       distinguishedName: cn=admins,ou=groups,ou=provider,dc=example,dc=com
       uniqueMember:uid=viya_admin,ou=people,ou=provider,dc=example,dc=com
-      
+
       dn: uid=tenant1_admin,ou=people,ou=tenant1,dc=example,dc=com
       changetype: add
       objectClass: inetOrgPerson
@@ -80,7 +80,7 @@ patch: |-
       distinguishedName: uid=tenant1_admin,ou=people,ou=tenant1,dc=example,dc=com
       displayName: tenant1 Administrator
       userPassword: Password123
-      
+
       dn: uid=tenant1_user1,ou=people,ou=tenant1,dc=example,dc=com
       changetype: add
       objectClass: inetOrgPerson
@@ -95,7 +95,7 @@ patch: |-
       userPassword: Password123
       homeDirectory: /home/tenant1_user1
       mail: tenant1_user1@example.com
-      
+
       dn: uid=tenant1_user2,ou=people,ou=tenant1,dc=example,dc=com
       changetype: add
       objectClass: inetOrgPerson
@@ -110,7 +110,7 @@ patch: |-
       userPassword: Password123
       homeDirectory: /home/tenant1_user2
       mail: tenant1_user2@example.com
-      
+
       dn: cn=users,ou=groups,ou=tenant1,dc=example,dc=com
       changetype: add
       objectclass: groupofUniqueNames
@@ -119,7 +119,7 @@ patch: |-
       distinguishedName: cn=group1,ou=groups,ou=tenant1,dc=example,dc=com
       uniqueMember:uid=tenant1_user1,ou=people,ou=tenant1,dc=example,dc=com
       uniqueMember:uid=tenant1_user2,ou=people,ou=tenant1,dc=example,dc=com
-      
+
       dn: cn=admins,ou=groups,ou=tenant1,dc=example,dc=com
       changetype: add
       objectclass: groupofUniqueNames
@@ -127,7 +127,7 @@ patch: |-
       gidNumber: 3000
       distinguishedName: cn=admins,ou=groups,ou=tenant1,dc=example,dc=com
       uniqueMember:uid=tenant1_admin,ou=people,ou=tenant1,dc=example,dc=com
-      
+
       dn: uid=tenant2_admin,ou=people,ou=tenant2,dc=example,dc=com
       changetype: add
       objectClass: inetOrgPerson
@@ -142,7 +142,7 @@ patch: |-
       distinguishedName: uid=tenant2_admin,ou=people,ou=tenant2,dc=example,dc=com
       displayName: tenant2 Administrator
       userPassword: Password123
-      
+
       dn: uid=tenant2_user1,ou=people,ou=tenant2,dc=example,dc=com
       changetype: add
       objectClass: inetOrgPerson
@@ -157,7 +157,7 @@ patch: |-
       userPassword: Password123
       homeDirectory: /home/tenant2_user1
       mail: tenant2_user1@example.com
-      
+
       dn: cn=users,ou=groups,ou=tenant2,dc=example,dc=com
       changetype: add
       objectclass: groupofUniqueNames
@@ -165,7 +165,7 @@ patch: |-
       gidNumber: 6000
       distinguishedName: cn=group1,ou=groups,ou=tenant2,dc=example,dc=com
       uniqueMember:uid=tenant2_user1,ou=people,ou=tenant2,dc=example,dc=com
-      
+
       dn: cn=admins,ou=groups,ou=tenant2,dc=example,dc=com
       changetype: add
       objectclass: groupofUniqueNames
@@ -181,50 +181,50 @@ patch: |-
       ou: provider
       objectClass: organizationalUnit
       objectClass: top
-      
+
       dn: ou=groups,ou=provider,dc=example,dc=com
       changetype: add
       ou: groups
       description: provider groups
       objectClass: organizationalUnit
       objectClass: top
-      
+
       dn: ou=people,ou=provider,dc=example,dc=com
       changetype: add
       ou: people
       objectClass: organizationalUnit
       objectClass: top
-      
+
       dn: ou=tenant1,dc=example,dc=com
       changetype: add
       ou: tenant1
       objectClass: organizationalUnit
       objectClass: top
-      
+
       dn: ou=groups,ou=tenant1,dc=example,dc=com
       changetype: add
       ou: groups
       objectClass: organizationalUnit
       objectClass: top
-      
+
       dn: ou=people,ou=tenant1,dc=example,dc=com
       changetype: add
       ou: people
       objectClass: organizationalUnit
       objectClass: top
-      
+
       dn: ou=tenant2,dc=example,dc=com
       changetype: add
       ou: tenant2
       objectClass: organizationalUnit
       objectClass: top
-      
+
       dn: ou=groups,ou=tenant2,dc=example,dc=com
       changetype: add
       ou: groups
       objectClass: organizationalUnit
       objectClass: top
-      
+
       dn: ou=people,ou=tenant2,dc=example,dc=com
       changetype: add
       ou: people

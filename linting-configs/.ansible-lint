@@ -1,0 +1,54 @@
+---
+# .ansible-lint
+
+profile: moderate
+verbosity: 1
+strict: true
+
+# Enforce variable names to follow pattern below, in addition to Ansible own
+# requirements, like avoiding python identifiers. To disable add `var-naming`
+# to skip_list.
+var_naming_pattern: ^[a-zA-Z0-9_]*$
+
+use_default_rules: true
+
+# Ansible-lint is able to recognize and load skip rules stored inside
+# `.ansible-lint-ignore` (or `.config/ansible-lint-ignore.txt`) files.
+# To skip a rule just enter filename and tag, like "playbook.yml package-latest"
+# on a new line.
+skip_list:
+  - role-name # DAC roles names contain dashes, can be ignored
+  - yaml[line-length] # it's easier to understand/debug the underlying command when it's not broken up
+  - name[template] # task name uses Jina template, this can be ignored
+  - var-naming
+
+# Ansible-lint does not automatically load rules that have the 'opt-in' tag.
+# You must enable opt-in rules by listing each rule 'id' below.
+enable_list:
+  - args
+  - empty-string-compare
+  - no-log-password
+  - no-same-owner
+  - yaml
+
+# exclude_paths included in this file are parsed relative to this file's location
+# and not relative to the CWD of execution. CLI arguments passed to the --exclude
+# option are parsed relative to the CWD of execution.
+exclude_paths:
+  - .git/
+  - .gitignore
+  - .cache/
+  - roles/istio
+  - roles/vdm/tasks/deploy.yaml # TODO schema[tasks] error for a docker 'Deploy BLT - Deploy SAS Viya' task
+  - .github/workflows # non ansible files
+
+# Offline mode disables installation of requirements.yml and schema refreshing
+offline: false
+
+# Define required Ansible's variables to satisfy syntax check
+extra_vars:
+  deployment_type: vsphere
+
+warn_list:
+  - experimental
+  - no-changed-when

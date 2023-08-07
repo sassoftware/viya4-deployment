@@ -1,28 +1,28 @@
 # Copyright © 2020-2023, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+---
 PROXY_SQL_IMAGE: gcr.io/cloudsql-docker/gce-proxy:1.20.2
 
 vdm_overlays: {}
 
 db_default_name_map: {
-  default: "SharedServices",
-  cds-postgres: "SharedServices"
+  default: SharedServices,
+  cds-postgres: SharedServices
 }
 
 pg_dataserver_name_map: {
-  default: "sas-platform-postgres",
-  cds-postgres: "sas-cds-postgres"
+  default: sas-platform-postgres,
+  cds-postgres: sas-cds-postgres
 }
 
 pg_cluster_name_map: {
-  default: "sas-crunchy-platform-postgres",
-  cds-postgres: "sas-crunchy-cds-postgres"
+  default: sas-crunchy-platform-postgres,
+  cds-postgres: sas-crunchy-cds-postgres
 }
-
 # TODO - Fix once 2021.1.6 is ready and the kustomization files have been updated
 network_name_map: {
-  ingress: "networking.k8s.io",
-  contour: "projectcountour.io",
-  route: "route.openshift.io"
+  ingress: networking.k8s.io,
+  contour: projectcountour.io,
+  route: route.openshift.io
 }

@@ -11,7 +11,7 @@
     kubeconfig: "{{ KUBECONFIG }}"
   register: metrics_service
   when:
-  - METRICS_SERVER_ENABLED
+    - METRICS_SERVER_ENABLED
   tags:
     - install
     - update
@@ -20,7 +20,7 @@
 - name: Deploy metrics-server
   kubernetes.core.helm:
     name: "{{ METRICS_SERVER_NAME }}"
-    namespace: "kube-system"
+    namespace: kube-system
     chart_repo_url: "{{ METRICS_SERVER_CHART_URL }}"
     chart_ref: "{{ METRICS_SERVER_CHART_NAME }}"
     chart_version: "{{ METRICS_SERVER_CHART_VERSION }}"
@@ -31,13 +31,13 @@
     - install
     - update
   when:
-    - "('resources' not in metrics_service) or ((metrics_service.resources | length) == 0)"
+    - ('resources' not in metrics_service) or ((metrics_service.resources | length) == 0)
     - METRICS_SERVER_ENABLED
 
 - name: Remove metrics-server
   kubernetes.core.helm:
     name: "{{ METRICS_SERVER_NAME }}"
-    namespace: "kube-system"
+    namespace: kube-system
     kubeconfig: "{{ KUBECONFIG }}"
     values: "{{ METRICS_SERVER_CONFIG }}"
     state: absent

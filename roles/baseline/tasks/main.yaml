@@ -4,7 +4,7 @@
 
 ---
 - name: Include nfs-subdir-external-provisioner
-  include_tasks: 
+  include_tasks:
     file: nfs-subdir-external-provisioner.yaml
   when:
     - V4_CFG_RWX_FILESTORE_ENDPOINT is defined
@@ -15,7 +15,7 @@
     - baseline
 
 - name: Include ingress nginx
-  include_tasks: 
+  include_tasks:
     file: ingress-nginx.yaml
   when:
     - (V4_CFG_INGRESS_TYPE == 'ingress') or ('nginx' in ansible_run_tags)
@@ -23,7 +23,7 @@
     - baseline
 
 - name: Include contour
-  include_tasks: 
+  include_tasks:
     file: contour.yaml
   when:
     - (V4_CFG_INGRESS_TYPE == 'contour') or ('contour' in ansible_run_tags)
@@ -31,7 +31,7 @@
     - baseline
 
 - name: Include istio
-  include_role: 
+  include_role:
     name: istio
   when:
     - (V4_CFG_INGRESS_TYPE == 'istio') or ('istio' in ansible_run_tags)
@@ -39,6 +39,8 @@
     - baseline
 
 - name: Lookup K8s version info
+  tags:
+    - baseline
   block:
     - name: Retrieve K8s cluster information
       kubernetes.core.k8s_cluster_info:
@@ -47,11 +49,9 @@
     - name: Set the K8s server version
       set_fact:
         K8S_VERSION: "{{ cluster_info.version.server.kubernetes.major + '.' + cluster_info.version.server.kubernetes.minor | regex_replace('\\+$', '') }}"
-  tags:
-    - baseline
 
 - name: Include cluster-autoscaler
-  include_tasks: 
+  include_tasks:
     file: cluster-autoscaler.yaml
   when:
     - PROVIDER == "aws"
@@ -61,7 +61,7 @@
     - baseline
 
 - name: Include ebs-csi-driver
-  include_tasks: 
+  include_tasks:
     file: ebs-csi-driver.yaml
   when:
     - PROVIDER == "aws"
@@ -72,14 +72,14 @@
     - baseline
 
 - name: Include cert manager
-  include_tasks: 
+  include_tasks:
     file: cert-manager.yaml
   tags:
     - baseline
 
 # The metrics-server tasks are only applicable for AWS
 - name: Include metrics-server
-  include_tasks: 
+  include_tasks:
     file: metrics-server.yaml
   tags:
     - baseline

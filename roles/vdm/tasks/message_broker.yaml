@@ -2,7 +2,8 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
-- stat:
+- name: Message Broker - check sitedefault.yaml exists
+  stat:
     path: "{{ DEPLOY_DIR }}/site-config/sitedefault.yaml"
   register: stat_result
   tags:
@@ -10,7 +11,7 @@
     - uninstall
     - update
 
-- name: check message broker values present
+- name: Message Broker - check message broker values present
   ansible.builtin.fail:
     msg: >
       Message Broker - Azure Service Bus enabled but one or all of the expected variables:
@@ -40,7 +41,7 @@
     - uninstall
     - update
 
-- name: check Rabbitmq configuration file is present
+- name: Message Broker - check Rabbitmq configuration file is present
   stat:
     path: "{{ DEPLOY_DIR }}/sas-bases/examples/rabbitmq/configuration/rabbitmq-node-count.yaml"
   register: rabbitmq_config
@@ -49,7 +50,7 @@
     - uninstall
     - update
 
-- name: copy rabbitmq config file
+- name: Message Broker - copy rabbitmq config file
   copy:
     src: "{{ DEPLOY_DIR }}/sas-bases/examples/rabbitmq/configuration/rabbitmq-node-count.yaml"
     dest: "{{ role_path }}/templates/transformers/rabbitmq-node-count.yaml"
@@ -60,7 +61,7 @@
     - uninstall
     - update
 
-- name: Scale Rabbitmq to 0 replicas
+- name: Message Broker - scale Rabbitmq to 0 replicas
   replace:
     path: "{{ role_path }}/templates/transformers/rabbitmq-node-count.yaml"
     regexp: "{% raw %}{{ NUMBER-OF-NODES }}{% endraw %}"
@@ -71,7 +72,7 @@
     - uninstall
     - update
 
-- name: add resource
+- name: Message Broker - add resource
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"

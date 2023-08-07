@@ -13,7 +13,7 @@
     kubeconfig: "{{ KUBECONFIG }}"
     wait: true
   when:
-  - EBS_CSI_DRIVER_ENABLED
+    - EBS_CSI_DRIVER_ENABLED
   tags:
     - install
     - update

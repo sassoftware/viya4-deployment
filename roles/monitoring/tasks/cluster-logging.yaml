@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
-- name: cluster-logging - lookup existing credentials
+- name: cluster-logging - lookup existing credentials # noqa: name[casing]
   kubernetes.core.k8s_info:
     api_version: v1
     kind: Secret
@@ -10,7 +10,7 @@
     kubeconfig: "{{ KUBECONFIG }}"
     label_selectors:
       - managed-by = v4m-es-script
-  register: "logging_secrets"
+  register: logging_secrets
   tags:
     - install
 
@@ -24,9 +24,9 @@
   tags:
     - install
 
-- name: cluster-logging - save credentials
+- name: cluster-logging - save credentials # noqa: name[casing]
   set_fact:
-    "{{ logging_map['secret'][item.metadata.name] }}": "{{ item.data.password|b64decode }}"
+    "{{ logging_map['secret'][item.metadata.name] }}": "{{ item.data.password | b64decode }}"
   with_items: "{{ logging_secrets.resources }}"
   when:
     - item.metadata is defined
@@ -35,7 +35,7 @@
   tags:
     - install
 
-- name: cluster-logging - output credentials
+- name: cluster-logging - output credentials # noqa: name[casing]
   debug:
     msg:
       - "OpenSearch admin  - username: admin,                   password: {{ V4M_KIBANA_PASSWORD }}"
@@ -43,9 +43,9 @@
   tags:
     - install
 
-- name: cluster-logging - host-based opensearch user values
+- name: cluster-logging - host-based opensearch user values # noqa: name[casing]
   template:
-    src: "host-based/user-values-opensearch.yaml"
+    src: host-based/user-values-opensearch.yaml
     dest: "{{ tmpdir.path }}/logging/user-values-opensearch.yaml"
     mode: "0660"
   when:
@@ -55,9 +55,9 @@
     - update
     - uninstall
 
-- name: cluster-logging - host-based osd user values
+- name: cluster-logging - host-based osd user values # noqa: name[casing]
   template:
-    src: "host-based/user-values-osd.yaml"
+    src: host-based/user-values-osd.yaml
     dest: "{{ tmpdir.path }}/logging/user-values-osd.yaml"
     mode: "0660"
   when:
@@ -67,9 +67,9 @@
     - update
     - uninstall
 
-- name: cluster-logging - path-based opensearch user values
+- name: cluster-logging - path-based opensearch user values # noqa: name[casing]
   template:
-    src: "path-based/user-values-opensearch.yaml"
+    src: path-based/user-values-opensearch.yaml
     dest: "{{ tmpdir.path }}/logging/user-values-opensearch.yaml"
     mode: "0660"
   when:
@@ -79,9 +79,9 @@
     - update
     - uninstall
 
-- name: cluster-logging - path-based osd user values
+- name: cluster-logging - path-based osd user values # noqa: name[casing]
   template:
-    src: "path-based/user-values-osd.yaml"
+    src: path-based/user-values-osd.yaml
     dest: "{{ tmpdir.path }}/logging/user-values-osd.yaml"
     mode: "0660"
   when:
@@ -91,7 +91,7 @@
     - update
     - uninstall
 
-- name: cluster-logging - deploy
+- name: cluster-logging - deploy # noqa: name[casing]
   command:
     cmd: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/logging/bin/deploy_logging.sh"
   environment: "{{ logging_map['env'] }}"

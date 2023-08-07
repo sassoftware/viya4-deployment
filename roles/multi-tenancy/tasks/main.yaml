@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
-- name: multi-tenant role - setup
+- name: Multi-tenant role - setup
   include_tasks: multi-tenant-setup.yaml
   tags:
     - onboard
@@ -15,13 +15,13 @@
     - cas-onboard
     - offboard
 
-- name: multi-tenant role - onboard offboard
+- name: Multi-tenant role - onboard offboard
   include_tasks: multi-tenant-onboard-offboard.yaml
   tags:
     - onboard
     - offboard
 
-- name: multi-tenant role - cas
+- name: Multi-tenant role - cas
   include_tasks: onboard-offboard-cas-servers.yaml
   tags:
     - cas-onboard

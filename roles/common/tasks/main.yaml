@@ -1,6 +1,7 @@
 # Copyright © 2020-2023, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+---
 - name: Load config file
   include_vars:
     file: "{{ CONFIG }}"
@@ -15,7 +16,7 @@
 
 - name: Set BASE_DIR default path
   set_fact:
-    BASE_DIR="{{ ansible_env.HOME }}"
+    BASE_DIR: "{{ ansible_env.HOME }}"
   when: BASE_DIR is not defined
   tags:
     - install
@@ -24,236 +25,8 @@
     - onboard
     - cas-onboard
     - offboard
-- block:
-    - name: Parse tfstate
-      set_fact:
-        tfstate: "{{ lookup('tfstate', TFSTATE) }}"
-    - name: default LOADBALANCER_SOURCE_RANGES
-      set_fact:
-        LOADBALANCER_SOURCE_RANGES: ["0.0.0.0/0"]
-      when:
-        - LOADBALANCER_SOURCE_RANGES is not defined
-    - name: Add nat ip to LOADBALANCER_SOURCE_RANGES
-      set_fact:
-        LOADBALANCER_SOURCE_RANGES: "{{ LOADBALANCER_SOURCE_RANGES + [tfstate.nat_ip.value+'/32'] }}"
-      when:
-        - tfstate.nat_ip is defined
-        - tfstate.nat_ip.value|length > 0
-        - (tfstate.nat_ip.value+'/32') not in LOADBALANCER_SOURCE_RANGES
-    - name: tfstate - Add GKE pod subnet cidr to LOADBALANCER_SOURCE_RANGES
-      set_fact:
-        LOADBALANCER_SOURCE_RANGES: "{{ LOADBALANCER_SOURCE_RANGES + [tfstate.gke_pod_subnet_cidr.value] }}"
-      when:
-        - tfstate.provider is defined
-        - tfstate.provider.value|length > 0
-        - tfstate.provider.value == "gcp"
-        - tfstate.gke_pod_subnet_cidr is defined
-        - tfstate.gke_pod_subnet_cidr.value|length > 0
-        - (tfstate.gke_pod_subnet_cidr.value) not in LOADBALANCER_SOURCE_RANGES
-    - name: tfstate - nfs endpoint
-      set_fact:
-        V4_CFG_RWX_FILESTORE_ENDPOINT: "{{ tfstate.rwx_filestore_endpoint.value }}"
-      when:
-        - tfstate.rwx_filestore_endpoint is defined
-        - tfstate.rwx_filestore_endpoint.value|length > 0
-    - name: tfstate - nfs path
-      set_fact:
-        V4_CFG_RWX_FILESTORE_PATH: "{{ tfstate.rwx_filestore_path.value }}"
-      when:
-        - tfstate.rwx_filestore_path is defined
-        - tfstate.rwx_filestore_path.value|length > 0
-    - name: tfstate - export kubeconfig
-      copy:
-        dest: "{{ tmpdir.path }}/.kube"
-        content: |
-          {{ tfstate.kube_config.value }}
-        mode: "0600"
-      when:
-        - tfstate.kube_config is defined
-        - tfstate.kube_config.value|length > 0
-    - name: tfstate - kubeconfig var
-      set_fact:
-        KUBECONFIG: "{{ tmpdir.path }}/.kube"
-      when:
-        - tfstate.kube_config is defined
-        - tfstate.kube_config.value|length > 0
-    - name: tfstate - provider
-      set_fact:
-        PROVIDER: "{{ tfstate.provider.value }}"
-      when:
-        - tfstate.provider is defined
-        - tfstate.provider.value|length > 0
-    - name: tfstate - provider account
-      set_fact:
-        PROVIDER_ACCOUNT: "{{ tfstate.provider_account.value }}"
-      when:
-        - tfstate.provider_account is defined
-        - tfstate.provider_account.value|length > 0
-    - name: tfstate - cluster name
-      set_fact:
-        CLUSTER_NAME: "{{ tfstate.cluster_name.value }}"
-      when:
-        - tfstate.cluster_name is defined
-        - tfstate.cluster_name.value|length > 0
-    - name: tfstate - postgres servers
-      set_fact:
-        V4_CFG_POSTGRES_SERVERS: "{{ tfstate.postgres_servers.value |combine(V4_CFG_POSTGRES_SERVERS, recursive=True) }}"
-      when:
-        - tfstate.postgres_servers is defined
-        - tfstate.postgres_servers.value|length > 0
-    - name: tfstate - ebs csi driver account
-      set_fact:
-        EBS_CSI_DRIVER_ACCOUNT: "{{ tfstate.ebs_csi_account.value }}"
-      when:
-        - tfstate.ebs_csi_account is defined
-        - tfstate.ebs_csi_account.value|length > 0
-    - name: tfstate - ebs csi driver location
-      set_fact:
-        EBS_CSI_DRIVER_LOCATION: "{{ tfstate.location.value }}"
-      when:
-        - tfstate.location is defined
-        - tfstate.location.value|length > 0
-    - name: tfstate - cluster autoscaler account
-      set_fact:
-        CLUSTER_AUTOSCALER_ACCOUNT: "{{ tfstate.autoscaler_account.value }}"
-      when:
-        - tfstate.autoscaler_account is defined
-        - tfstate.autoscaler_account.value|length > 0
-    - name: tfstate - cluster autoscaler location
-      set_fact:
-        CLUSTER_AUTOSCALER_LOCATION: "{{ tfstate.location.value }}"
-      when:
-        - tfstate.location is defined
-        - tfstate.location.value|length > 0
-    - name: tfstate - cluster node pool mode
-      set_fact:
-        V4_CFG_CLUSTER_NODE_POOL_MODE: "{{ tfstate.cluster_node_pool_mode.value }}"
-      when:
-        - tfstate.cluster_node_pool_mode is defined
-        - tfstate.cluster_node_pool_mode.value|length > 0
-    - name: tfstate - jump server
-      set_fact:
-        JUMP_SVR_HOST: "{{ tfstate.jump_public_ip.value }}"
-      when:
-        - tfstate.jump_public_ip is defined
-        - tfstate.jump_public_ip.value|length > 0
-    - name: tfstate - jump server private
-      set_fact:
-        JUMP_SVR_HOST: "{{ tfstate.jump_private_ip.value }}"
-      when:
-        - tfstate.jump_private_ip is defined
-        - tfstate.jump_private_ip.value|length > 0
-        - JUMP_SVR_HOST is not defined
-    - name: tfstate - jump user
-      set_fact:
-        JUMP_SVR_USER: "{{ tfstate.jump_admin_username.value }}"
-      when:
-        - tfstate.jump_admin_username is defined
-        - tfstate.jump_admin_username.value|length > 0
-    - name: tfstate - jump rwx filestore path
-      set_fact:
-        JUMP_SVR_RWX_FILESTORE_PATH: "{{ tfstate.jump_rwx_filestore_path.value }}"
-      when:
-        - tfstate.jump_rwx_filestore_path is defined
-        - tfstate.jump_rwx_filestore_path.value|length > 0
-    - name: tfstate - ssh private key
-      copy:
-        content: "{{ tfstate.ssh_private_key.value }}"
-        dest: "{{ tmpdir.path }}/.ssh"
-        mode: "0600"
-      when:
-        - tfstate.ssh_private_key is defined
-        - tfstate.ssh_private_key.value|length > 0
-    - name: tfstate - jump private key var
-      set_fact:
-        JUMP_SVR_PRIVATE_KEY: "{{ tmpdir.path }}/.ssh"
-      when:
-        - tfstate.ssh_private_key is defined
-        - tfstate.ssh_private_key.value|length > 0
-    ### Deprecations
-    - name: tfstate - postgres admin
-      set_fact:
-        V4_CFG_POSTGRES_ADMIN_LOGIN: "{{ tfstate.postgres_admin.value }}"
-      when:
-        - V4_CFG_POSTGRES_TYPE is defined
-        - V4_CFG_POSTGRES_TYPE == "external"
-        - tfstate.postgres_admin is defined
-        - tfstate.postgres_server_name is defined
-    - name: tfstate - postgres port
-      set_fact:
-        V4_CFG_POSTGRES_PORT: "{{ tfstate.postgres_server_port.value }}"
-      when:
-        - V4_CFG_POSTGRES_TYPE is defined
-        - V4_CFG_POSTGRES_TYPE == "external"
-        - tfstate.postgres_server_port is defined
-    - name: tfstate - postgres password
-      set_fact:
-        V4_CFG_POSTGRES_PASSWORD: "{{ tfstate.postgres_password.value }}"
-      when:
-        - V4_CFG_POSTGRES_TYPE is defined
-        - V4_CFG_POSTGRES_TYPE == "external"
-        - tfstate.postgres_password is defined
-    - name: tfstate - postgres fqdn
-      set_fact:
-        V4_CFG_POSTGRES_FQDN: "{{ tfstate.postgres_fqdn.value }}"
-      when:
-        - V4_CFG_POSTGRES_TYPE is defined
-        - V4_CFG_POSTGRES_TYPE == "external"
-        - tfstate.postgres_fqdn is defined
-    - name: tfstate - postgres connection name
-      set_fact:
-        V4_CFG_POSTGRES_CONNECTION_NAME: "{{ tfstate.postgres_connection_name.value }}"
-      when:
-        - V4_CFG_POSTGRES_TYPE is defined
-        - V4_CFG_POSTGRES_TYPE == "external"
-        - tfstate.postgres_connection_name is defined
-    - name: tfstate - postgres service account
-      set_fact:
-        V4_CFG_POSTGRES_SERVICE_ACCOUNT: "{{ tfstate.sql_proxy_sa_email.value }}"
-      when:
-        - V4_CFG_POSTGRES_TYPE is defined
-        - V4_CFG_POSTGRES_TYPE == "external"
-        - tfstate.sql_proxy_sa_email is defined
-    - name: tfstate - postgres ssl enforcement
-      set_fact:
-        V4_CFG_POSTGRES_SSL_ENFORCEMENT: "{{ tfstate.postgres_ssl_enforcement_enabled.value }}"
-      when:
-        - V4_CFG_POSTGRES_TYPE is defined
-        - V4_CFG_POSTGRES_TYPE == "external"
-        - tfstate.postgres_ssl_enforcement_enabled is defined
-    - name: tfstate - infra_mode
-      set_fact:
-        V4_CFG_INGRESS_MODE: "{{ tfstate.cluster_api_mode.value }}"
-      when:
-        - tfstate.cluster_api_mode is defined
-        - tfstate.cluster_api_mode.value|length > 0
-        - V4_CFG_INGRESS_MODE is not defined
-    - name: tfstate - azure message broker host
-      set_fact:
-        V4_CFG_MESSAGE_BROKER_HOST: "{{ tfstate.message_broker_hostname.value }}"
-      when:
-        - PROVIDER == "azure"
-        - tfstate.message_broker_hostname is defined
-        - tfstate.message_broker_hostname.value|length > 0
-        - V4_CFG_MESSAGE_BROKER_HOST is not defined
-    - name: tfstate - azure message broker name
-      set_fact:
-        V4_CFG_MESSAGE_BROKER_NAME: "{{ tfstate.message_broker_name.value }}"
-      when:
-        - PROVIDER == "azure"
-        - tfstate.message_broker_name is defined
-        - tfstate.message_broker_name.value|length > 0
-        - V4_CFG_MESSAGE_BROKER_NAME is not defined
-    - name: tfstate - azure message broker primary_key
-      set_fact:
-        V4_CFG_MESSAGE_BROKER_PASSWORD: "{{ tfstate.message_broker_primary_key.value }}"
-      when:
-        - PROVIDER == "azure"
-        - tfstate.message_broker_primary_key is defined
-        - tfstate.message_broker_primary_key.value|length > 0
-        - V4_CFG_MESSAGE_BROKER_PASSWORD is not defined
-    - set_fact:
-        tfstate: ""
+
+- name: Parse tfstate
   when:
     - TFSTATE is defined
   tags:
@@ -263,10 +36,241 @@
     - onboard
     - cas-onboard
     - offboard
+  block:
+    - name: Parse tfstate
+      set_fact:
+        tfstate: "{{ lookup('tfstate', TFSTATE) }}"
+    - name: Default LOADBALANCER_SOURCE_RANGES
+      set_fact:
+        LOADBALANCER_SOURCE_RANGES: ["0.0.0.0/0"]
+      when:
+        - LOADBALANCER_SOURCE_RANGES is not defined
+    - name: Add nat ip to LOADBALANCER_SOURCE_RANGES
+      set_fact:
+        LOADBALANCER_SOURCE_RANGES: "{{ LOADBALANCER_SOURCE_RANGES + [tfstate.nat_ip.value + '/32'] }}"
+      when:
+        - tfstate.nat_ip is defined
+        - tfstate.nat_ip.value|length > 0
+        - (tfstate.nat_ip.value+'/32') not in LOADBALANCER_SOURCE_RANGES
+    - name: tfstate - Add GKE pod subnet cidr to LOADBALANCER_SOURCE_RANGES # noqa: name[casing]
+      set_fact:
+        LOADBALANCER_SOURCE_RANGES: "{{ LOADBALANCER_SOURCE_RANGES + [tfstate.gke_pod_subnet_cidr.value] }}"
+      when:
+        - tfstate.provider is defined
+        - tfstate.provider.value|length > 0
+        - tfstate.provider.value == "gcp"
+        - tfstate.gke_pod_subnet_cidr is defined
+        - tfstate.gke_pod_subnet_cidr.value|length > 0
+        - (tfstate.gke_pod_subnet_cidr.value) not in LOADBALANCER_SOURCE_RANGES
+    - name: tfstate - nfs endpoint # noqa: name[casing]
+      set_fact:
+        V4_CFG_RWX_FILESTORE_ENDPOINT: "{{ tfstate.rwx_filestore_endpoint.value }}"
+      when:
+        - tfstate.rwx_filestore_endpoint is defined
+        - tfstate.rwx_filestore_endpoint.value|length > 0
+    - name: tfstate - nfs path # noqa: name[casing]
+      set_fact:
+        V4_CFG_RWX_FILESTORE_PATH: "{{ tfstate.rwx_filestore_path.value }}"
+      when:
+        - tfstate.rwx_filestore_path is defined
+        - tfstate.rwx_filestore_path.value|length > 0
+    - name: tfstate - export kubeconfig # noqa: name[casing]
+      copy:
+        dest: "{{ tmpdir.path }}/.kube"
+        content: |
+          {{ tfstate.kube_config.value }}
+        mode: "0600"
+      when:
+        - tfstate.kube_config is defined
+        - tfstate.kube_config.value|length > 0
+    - name: tfstate - kubeconfig var # noqa: name[casing]
+      set_fact:
+        KUBECONFIG: "{{ tmpdir.path }}/.kube"
+      when:
+        - tfstate.kube_config is defined
+        - tfstate.kube_config.value|length > 0
+    - name: tfstate - provider # noqa: name[casing]
+      set_fact:
+        PROVIDER: "{{ tfstate.provider.value }}"
+      when:
+        - tfstate.provider is defined
+        - tfstate.provider.value|length > 0
+    - name: tfstate - provider account # noqa: name[casing]
+      set_fact:
+        PROVIDER_ACCOUNT: "{{ tfstate.provider_account.value }}"
+      when:
+        - tfstate.provider_account is defined
+        - tfstate.provider_account.value|length > 0
+    - name: tfstate - cluster name # noqa: name[casing]
+      set_fact:
+        CLUSTER_NAME: "{{ tfstate.cluster_name.value }}"
+      when:
+        - tfstate.cluster_name is defined
+        - tfstate.cluster_name.value|length > 0
+    - name: tfstate - postgres servers # noqa: name[casing]
+      set_fact:
+        V4_CFG_POSTGRES_SERVERS: "{{ tfstate.postgres_servers.value | combine(V4_CFG_POSTGRES_SERVERS, recursive=True) }}"
+      when:
+        - tfstate.postgres_servers is defined
+        - tfstate.postgres_servers.value|length > 0
+    - name: tfstate - ebs csi driver account # noqa: name[casing]
+      set_fact:
+        EBS_CSI_DRIVER_ACCOUNT: "{{ tfstate.ebs_csi_account.value }}"
+      when:
+        - tfstate.ebs_csi_account is defined
+        - tfstate.ebs_csi_account.value|length > 0
+    - name: tfstate - ebs csi driver location # noqa: name[casing]
+      set_fact:
+        EBS_CSI_DRIVER_LOCATION: "{{ tfstate.location.value }}"
+      when:
+        - tfstate.location is defined
+        - tfstate.location.value|length > 0
+    - name: tfstate - cluster autoscaler account # noqa: name[casing]
+      set_fact:
+        CLUSTER_AUTOSCALER_ACCOUNT: "{{ tfstate.autoscaler_account.value }}"
+      when:
+        - tfstate.autoscaler_account is defined
+        - tfstate.autoscaler_account.value|length > 0
+    - name: tfstate - cluster autoscaler location # noqa: name[casing]
+      set_fact:
+        CLUSTER_AUTOSCALER_LOCATION: "{{ tfstate.location.value }}"
+      when:
+        - tfstate.location is defined
+        - tfstate.location.value|length > 0
+    - name: tfstate - cluster node pool mode # noqa: name[casing]
+      set_fact:
+        V4_CFG_CLUSTER_NODE_POOL_MODE: "{{ tfstate.cluster_node_pool_mode.value }}"
+      when:
+        - tfstate.cluster_node_pool_mode is defined
+        - tfstate.cluster_node_pool_mode.value|length > 0
+    - name: tfstate - jump server # noqa: name[casing]
+      set_fact:
+        JUMP_SVR_HOST: "{{ tfstate.jump_public_ip.value }}"
+      when:
+        - tfstate.jump_public_ip is defined
+        - tfstate.jump_public_ip.value|length > 0
+    - name: tfstate - jump server private # noqa: name[casing]
+      set_fact:
+        JUMP_SVR_HOST: "{{ tfstate.jump_private_ip.value }}"
+      when:
+        - tfstate.jump_private_ip is defined
+        - tfstate.jump_private_ip.value|length > 0
+        - JUMP_SVR_HOST is not defined
+    - name: tfstate - jump user # noqa: name[casing]
+      set_fact:
+        JUMP_SVR_USER: "{{ tfstate.jump_admin_username.value }}"
+      when:
+        - tfstate.jump_admin_username is defined
+        - tfstate.jump_admin_username.value|length > 0
+    - name: tfstate - jump rwx filestore path # noqa: name[casing]
+      set_fact:
+        JUMP_SVR_RWX_FILESTORE_PATH: "{{ tfstate.jump_rwx_filestore_path.value }}"
+      when:
+        - tfstate.jump_rwx_filestore_path is defined
+        - tfstate.jump_rwx_filestore_path.value|length > 0
+    - name: tfstate - ssh private key # noqa: name[casing]
+      copy:
+        content: "{{ tfstate.ssh_private_key.value }}"
+        dest: "{{ tmpdir.path }}/.ssh"
+        mode: "0600"
+      when:
+        - tfstate.ssh_private_key is defined
+        - tfstate.ssh_private_key.value|length > 0
+    - name: tfstate - jump private key var # noqa: name[casing]
+      set_fact:
+        JUMP_SVR_PRIVATE_KEY: "{{ tmpdir.path }}/.ssh"
+      when:
+        - tfstate.ssh_private_key is defined
+        - tfstate.ssh_private_key.value|length > 0
+    ### Deprecations
+    - name: tfstate - postgres admin # noqa: name[casing]
+      set_fact:
+        V4_CFG_POSTGRES_ADMIN_LOGIN: "{{ tfstate.postgres_admin.value }}"
+      when:
+        - V4_CFG_POSTGRES_TYPE is defined
+        - V4_CFG_POSTGRES_TYPE == "external"
+        - tfstate.postgres_admin is defined
+        - tfstate.postgres_server_name is defined
+    - name: tfstate - postgres port # noqa: name[casing]
+      set_fact:
+        V4_CFG_POSTGRES_PORT: "{{ tfstate.postgres_server_port.value }}"
+      when:
+        - V4_CFG_POSTGRES_TYPE is defined
+        - V4_CFG_POSTGRES_TYPE == "external"
+        - tfstate.postgres_server_port is defined
+    - name: tfstate - postgres password # noqa: name[casing]
+      set_fact:
+        V4_CFG_POSTGRES_PASSWORD: "{{ tfstate.postgres_password.value }}"
+      when:
+        - V4_CFG_POSTGRES_TYPE is defined
+        - V4_CFG_POSTGRES_TYPE == "external"
+        - tfstate.postgres_password is defined
+    - name: tfstate - postgres fqdn # noqa: name[casing]
+      set_fact:
+        V4_CFG_POSTGRES_FQDN: "{{ tfstate.postgres_fqdn.value }}"
+      when:
+        - V4_CFG_POSTGRES_TYPE is defined
+        - V4_CFG_POSTGRES_TYPE == "external"
+        - tfstate.postgres_fqdn is defined
+    - name: tfstate - postgres connection name # noqa: name[casing]
+      set_fact:
+        V4_CFG_POSTGRES_CONNECTION_NAME: "{{ tfstate.postgres_connection_name.value }}"
+      when:
+        - V4_CFG_POSTGRES_TYPE is defined
+        - V4_CFG_POSTGRES_TYPE == "external"
+        - tfstate.postgres_connection_name is defined
+    - name: tfstate - postgres service account # noqa: name[casing]
+      set_fact:
+        V4_CFG_POSTGRES_SERVICE_ACCOUNT: "{{ tfstate.sql_proxy_sa_email.value }}"
+      when:
+        - V4_CFG_POSTGRES_TYPE is defined
+        - V4_CFG_POSTGRES_TYPE == "external"
+        - tfstate.sql_proxy_sa_email is defined
+    - name: tfstate - postgres ssl enforcement # noqa: name[casing]
+      set_fact:
+        V4_CFG_POSTGRES_SSL_ENFORCEMENT: "{{ tfstate.postgres_ssl_enforcement_enabled.value }}"
+      when:
+        - V4_CFG_POSTGRES_TYPE is defined
+        - V4_CFG_POSTGRES_TYPE == "external"
+        - tfstate.postgres_ssl_enforcement_enabled is defined
+    - name: tfstate - infra_mode # noqa: name[casing]
+      set_fact:
+        V4_CFG_INGRESS_MODE: "{{ tfstate.cluster_api_mode.value }}"
+      when:
+        - tfstate.cluster_api_mode is defined
+        - tfstate.cluster_api_mode.value|length > 0
+        - V4_CFG_INGRESS_MODE is not defined
+    - name: tfstate - azure message broker host # noqa: name[casing]
+      set_fact:
+        V4_CFG_MESSAGE_BROKER_HOST: "{{ tfstate.message_broker_hostname.value }}"
+      when:
+        - PROVIDER == "azure"
+        - tfstate.message_broker_hostname is defined
+        - tfstate.message_broker_hostname.value|length > 0
+        - V4_CFG_MESSAGE_BROKER_HOST is not defined
+    - name: tfstate - azure message broker name # noqa: name[casing]
+      set_fact:
+        V4_CFG_MESSAGE_BROKER_NAME: "{{ tfstate.message_broker_name.value }}"
+      when:
+        - PROVIDER == "azure"
+        - tfstate.message_broker_name is defined
+        - tfstate.message_broker_name.value|length > 0
+        - V4_CFG_MESSAGE_BROKER_NAME is not defined
+    - name: tfstate - azure message broker primary_key # noqa: name[casing]
+      set_fact:
+        V4_CFG_MESSAGE_BROKER_PASSWORD: "{{ tfstate.message_broker_primary_key.value }}"
+      when:
+        - PROVIDER == "azure"
+        - tfstate.message_broker_primary_key is defined
+        - tfstate.message_broker_primary_key.value|length > 0
+        - V4_CFG_MESSAGE_BROKER_PASSWORD is not defined
+    - name: tfstate - set tfstate to empty string # noqa: name[casing]
+      set_fact:
+        tfstate: ""
 
 - name: Set DEPLOY_DIR
   set_fact:
-    DEPLOY_DIR="{{ BASE_DIR | regex_replace('\\/$', '') }}/{{ CLUSTER_NAME }}/{{ NAMESPACE }}"
+    DEPLOY_DIR: "{{ BASE_DIR | regex_replace('\\/$', '') }}/{{ CLUSTER_NAME }}/{{ NAMESPACE }}"
   when: DEPLOY_DIR is not defined
   tags:
     - install
@@ -278,7 +282,7 @@
 
 - name: Set deployment_tooling
   set_fact:
-    deployment_tooling: "{{ lookup('env', 'VIYA4_DEPLOYMENT_TOOLING') |default('ansible', -1) }}"
+    deployment_tooling: "{{ lookup('env', 'VIYA4_DEPLOYMENT_TOOLING') | default('ansible', -1) }}"
   tags:
     - install
     - uninstall
@@ -289,7 +293,7 @@
 
 - name: Set env_path
   set_fact:
-    env_path: "{{ lookup('env', 'PATH') |default('', True) }}"
+    env_path: "{{ lookup('env', 'PATH') | default('', True) }}"
   tags:
     - install
     - uninstall
@@ -298,7 +302,7 @@
     - cas-onboard
     - offboard
 
-- name: baseline - gcloud auth use service account
+- name: baseline - gcloud auth use service account # noqa: name[casing]
   shell: |
     gcloud auth activate-service-account '{{ V4_CFG_CLOUD_SERVICE_ACCOUNT_NAME }}' --key-file={{ V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH }}
   when:
@@ -317,13 +321,13 @@
   block:
     - name: Set V4_CFG_MANAGE_STORAGE default
       set_fact:
-        V4_CFG_MANAGE_STORAGE: True
+        V4_CFG_MANAGE_STORAGE: true
       when: V4_CFG_MANAGE_STORAGE is not defined
       tags:
         - always
     - name: Fail empty value
       fail:
-        msg: "V4_CFG_MANAGE_STORAGE is defined but empty, supported values are true or false."
+        msg: V4_CFG_MANAGE_STORAGE is defined but empty, supported values are true or false.
       when:
         - V4_CFG_MANAGE_STORAGE is defined
         - V4_CFG_MANAGE_STORAGE == ''
@@ -331,14 +335,14 @@
         - always
     - name: Fail unsupported values
       fail:
-        msg: "The value provided for V4_CFG_MANAGE_STORAGE is unsupported, supported values are true or false."
+        msg: The value provided for V4_CFG_MANAGE_STORAGE is unsupported, supported values are true or false.
       when:
         - V4_CFG_MANAGE_STORAGE|lower != 'false'
         - V4_CFG_MANAGE_STORAGE|lower != 'true'
       tags:
         - always
 
-- name: migrations
+- name: Migrations
   include_tasks:
     file: migrations.yaml
   tags:
