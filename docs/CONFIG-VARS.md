@@ -27,6 +27,7 @@ Supported configuration variables are listed in the table below.  All variables 
   - [Third-Party Tools](#third-party-tools)
     - [Cert-manager](#cert-manager)
     - [Cluster Autoscaler](#cluster-autoscaler)
+    - [EBS CSI Driver](#ebs-csi-driver)
     - [Ingress-nginx](#ingress-nginx)
     - [Metrics Server](#metrics-server)
     - [NFS Client](#nfs-client)
