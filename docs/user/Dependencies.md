@@ -6,7 +6,7 @@ The following list details our dependencies and versions (~ indicates multiple p
 
 | SOURCE         | NAME             | VERSION     |
 |----------------|------------------|-------------|
-| ~              | python           | 3.x         |
+| ~              | python           | >=3.9       |
 | ~              | pip              | 3.x         |
 | ~              | unzip            | any         |
 | ~              | tar              | any         |
