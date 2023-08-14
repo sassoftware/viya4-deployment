@@ -22,6 +22,7 @@
   tags:
     - install
     - update
+    - onboard
     - cas-onboard
   block:
     - name: Deploy - Gather all resource files
@@ -120,13 +121,6 @@
       when:
         - deployment_tooling == "ansible"
         - V4_CFG_BELOW_THE_LINE
-  when:
-    - V4_DEPLOYMENT_OPERATOR_ENABLED == False
-  tags:
-    - install
-    - update
-    - onboard
-    - cas-onboard
 
 - name: Deploy - Uninstall postgresclusters
   environment:

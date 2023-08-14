@@ -23,6 +23,7 @@
     - install
     - uninstall
     - update
+    - onboard
     - cas-onboard
     - offboard
   block:
@@ -162,14 +163,6 @@
               --suffix-format='%03d.yaml'
               --elide-empty-files
               '/^----*$/' '{*}'
-  when:
-    - V4_DEPLOYMENT_OPERATOR_ENABLED == False
-  tags:
-    - install
-    - update
-    - onboard
-    - cas-onboard
-    - offboard
 
 - name: sasdeployment custom resource - Create SAS Viya namespace # noqa: name[casing]
   kubernetes.core.k8s:
