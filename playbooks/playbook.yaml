@@ -67,7 +67,7 @@
         name: vdm
       tags:
         - viya
-    - name: monitoring role - namespace
+    - name: Monitoring role - namespace
       include_role:
         name: monitoring
         tasks_from: viya-monitoring

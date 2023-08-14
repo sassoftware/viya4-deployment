@@ -33,7 +33,7 @@
   tags:
     - onboard
 
-- name: multi-tenant role - onboard offboard
+- name: Multi-tenant role - onboard offboard
   include_tasks: multi-tenant-onboard-offboard.yaml
   tags:
     - onboard

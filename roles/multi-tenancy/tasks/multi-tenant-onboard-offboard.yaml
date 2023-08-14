@@ -218,7 +218,6 @@
     - onboard
     - offboard
 
-# Add 2 mins wait before continuing the play
 - name: Sleep for 120 seconds
   debug:
     msg:
