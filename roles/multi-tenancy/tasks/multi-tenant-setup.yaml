@@ -188,6 +188,7 @@
     - V4_CFG_CADENCE_VERSION is version('2023.03', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
   tags:
     - onboard
+    - offboard
 
 - name: Add env variable for pod templates in sas-tenant-job
   lineinfile:
