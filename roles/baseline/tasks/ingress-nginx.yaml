@@ -2,8 +2,9 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
-- set_fact:
-    INGRESS_NGINX_CONFIG: "{{ INGRESS_NGINX_CONFIG |combine(private_ingress[PROVIDER], recursive=True)}}"
+- name: Update INGRESS_NGINX_CONFIG to add private_ingress
+  set_fact:
+    INGRESS_NGINX_CONFIG: "{{ INGRESS_NGINX_CONFIG | combine(private_ingress[PROVIDER], recursive=True) }}"
   when:
     - V4_CFG_INGRESS_MODE == "private"
     - PROVIDER in private_ingress
@@ -12,28 +13,27 @@
     - update
 
 - name: Set the default INGRESS_NGINX_CHART_VERSION if not specified
-  block:
-    - name: Retreive K8s cluster information
-      kubernetes.core.k8s_cluster_info:
-        kubeconfig: "{{ KUBECONFIG }}"
-      register: cluster_info
-    - name: Set the default INGRESS_NGINX_CHART_VERSION based on K8s server minor version
-      set_fact:
-        INGRESS_NGINX_CHART_VERSION: "{{ ingressVersions.k8sMinorVersionFloor.api.chartVersion
-                                      if cluster_info.version.server.kubernetes.minor is version(ingressVersions.k8sMinorVersionFloor.value, 'ge')
-                                      else ingressVersions.k8sMinorVersionCeiling.api.chartVersion }}"
-    - name: Output INGRESS_NGINX_CHART_VERSION
-      debug:
-        msg: "{{ INGRESS_NGINX_CHART_VERSION }}"
   when:
     - INGRESS_NGINX_CHART_VERSION|length == 0
   tags:
     - install
     - update
+  block:
+    - name: Retrieve K8s cluster information
+      kubernetes.core.k8s_cluster_info:
+        kubeconfig: "{{ KUBECONFIG }}"
+      register: cluster_info
+    - name: Set the default INGRESS_NGINX_CHART_VERSION based on K8s server minor version
+      set_fact:
+        INGRESS_NGINX_CHART_VERSION: "{{ ingressVersions.k8sMinorVersionFloor.api.chartVersion if cluster_info.version.server.kubernetes.minor is version(ingressVersions.k8sMinorVersionFloor.value,
+          'ge') else ingressVersions.k8sMinorVersionCeiling.api.chartVersion }}"
+    - name: Output INGRESS_NGINX_CHART_VERSION
+      debug:
+        msg: "{{ INGRESS_NGINX_CHART_VERSION }}"
 
 - name: Update INGRESS_NGINX_CONFIG to use NLB for AWS
   set_fact:
-    INGRESS_NGINX_CONFIG: "{{ INGRESS_NGINX_CONFIG|combine(INGRESS_NGINX_AWS_NLB_CONFIG, recursive=True)}}"
+    INGRESS_NGINX_CONFIG: "{{ INGRESS_NGINX_CONFIG | combine(INGRESS_NGINX_AWS_NLB_CONFIG, recursive=True) }}"
   when:
     - PROVIDER == "aws"
   tags:
@@ -42,29 +42,29 @@
 
 - name: Update INGRESS_NGINX_CONFIG to add Azure load-balancer health probe request path
   set_fact:
-    INGRESS_NGINX_CONFIG: "{{ INGRESS_NGINX_CONFIG|combine(INGRESS_NGINX_AZURE_LB_HEALTH_PROBE_CONFIG, recursive=True)}}"
+    INGRESS_NGINX_CONFIG: "{{ INGRESS_NGINX_CONFIG | combine(INGRESS_NGINX_AZURE_LB_HEALTH_PROBE_CONFIG, recursive=True) }}"
   when:
     - PROVIDER == "azure"
   tags:
     - install
-    - update    
+    - update
 
 - name: Apply Mitigation for CVE-2021-25742
+  tags:
+    - install
+    - update
   block:
-    - name: Retreive K8s cluster information
+    - name: Retrieve K8s cluster information
       kubernetes.core.k8s_cluster_info:
         kubeconfig: "{{ KUBECONFIG }}"
       register: cluster_info
     - name: Update INGRESS_NGINX_CONFIG
       set_fact:
-        INGRESS_NGINX_CONFIG: "{{ INGRESS_NGINX_CONFIG|combine(INGRESS_NGINX_CVE_2021_25742_PATCH, recursive=True)}}"
+        INGRESS_NGINX_CONFIG: "{{ INGRESS_NGINX_CONFIG | combine(INGRESS_NGINX_CVE_2021_25742_PATCH, recursive=True) }}"
       when:
         - cluster_info.version.server.kubernetes.minor is version(ingressVersions.k8sMinorVersionFloor.value, 'ge')
-        - INGRESS_NGINX_CHART_VERSION is version('4.0.10', ">=") or
-          (INGRESS_NGINX_CHART_VERSION is version('3.40.0', ">=") and INGRESS_NGINX_CHART_VERSION is version('4.0.0', "<"))
-  tags:
-    - install
-    - update
+        - INGRESS_NGINX_CHART_VERSION is version('4.0.10', ">=") or (INGRESS_NGINX_CHART_VERSION is version('3.40.0', ">=") and INGRESS_NGINX_CHART_VERSION is version('4.0.0',
+          "<"))
 
 - name: Deploy ingress-nginx
   kubernetes.core.helm:

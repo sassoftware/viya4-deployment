@@ -1,32 +1,33 @@
 # Copyright © 2020-2023, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+---
 cacerts:
 config:
-    application:
-        sas.identities.providers.ldap.connection:
-            host: ldap-svc
-            password: Password123
-            port: 389
-            url: ldap://${sas.identities.providers.ldap.connection.host}:${sas.identities.providers.ldap.connection.port}
-            userDN: cn=admin,dc=example,dc=com
-        sas.identities.providers.ldap.group:
-            baseDN: dc=example,dc=com
-            accountId: cn
-            member: uniqueMember
-            memberOf: memberOf
-            objectClass: groupOfUniqueNames
-            objectFilter: (objectClass=groupOfUniqueNames)
-            searchFilter: cn={0}
-        sas.identities.providers.ldap.user:
-            baseDN: dc=example,dc=com
-            accountId: uid
-            memberOf: memberOf
-            objectClass: inetOrgPerson
-            objectFilter: (objectClass=inetOrgPerson)
-            searchFilter: ${sas.identities.providers.ldap.user.accountId}={0}
-        sas.identities.providers.ldap.tenancy.userRdn: ou=people
-        sas.logon.initial.password: Password123
-        sas.identities:
-            administrator: viya_admin
-            cache.enabled: false
+  application:
+    sas.identities.providers.ldap.connection:
+      host: ldap-svc
+      password: Password123
+      port: 389
+      url: ldap://${sas.identities.providers.ldap.connection.host}:${sas.identities.providers.ldap.connection.port}
+      userDN: cn=admin,dc=example,dc=com
+    sas.identities.providers.ldap.group:
+      baseDN: dc=example,dc=com
+      accountId: cn
+      member: uniqueMember
+      memberOf: memberOf
+      objectClass: groupOfUniqueNames
+      objectFilter: (objectClass=groupOfUniqueNames)
+      searchFilter: cn={0}
+    sas.identities.providers.ldap.user:
+      baseDN: dc=example,dc=com
+      accountId: uid
+      memberOf: memberOf
+      objectClass: inetOrgPerson
+      objectFilter: (objectClass=inetOrgPerson)
+      searchFilter: ${sas.identities.providers.ldap.user.accountId}={0}
+    sas.identities.providers.ldap.tenancy.userRdn: ou=people
+    sas.logon.initial.password: Password123
+    sas.identities:
+      administrator: viya_admin
+      cache.enabled: false

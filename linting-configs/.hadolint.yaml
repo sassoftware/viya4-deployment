@@ -1,0 +1,6 @@
+---
+ignored:
+  - DL3008 # Specify version with apt-get install -y <package>=<version> : https://github.com/hadolint/hadolint/wiki/DL3008
+  - DL3018 # https://github.com/hadolint/hadolint/wiki/DL3018
+  - DL3042 # https://github.com/hadolint/hadolint/wiki/DL3042 # Using pip cache purge to reduce image size instead
+  - DL4006 # Experiments using -o pipefail option wth bash caused significant slowdown during image build

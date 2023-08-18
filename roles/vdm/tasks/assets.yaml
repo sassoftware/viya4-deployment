@@ -2,9 +2,9 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
-- name: assets - Download viya4-orders-cli
+- name: Assets - Download viya4-orders-cli
   get_url:
-    url: "https://github.com/sassoftware/viya4-orders-cli/releases/download/{{ V4_ORDERS_CLI_VERSION }}/viya4-orders-cli_{{ hostvars[inventory_hostname]['ansible_system']|lower }}_amd64"
+    url: https://github.com/sassoftware/viya4-orders-cli/releases/download/{{ V4_ORDERS_CLI_VERSION }}/viya4-orders-cli_{{ hostvars[inventory_hostname]['ansible_system'] | lower }}_amd64
     dest: "{{ tmpdir.path }}/viya4-orders-cli"
     mode: "0755"
   when:
@@ -14,7 +14,7 @@
     - uninstall
     - update
 
-- name: assets - Set facts
+- name: Assets - Set facts
   set_fact:
     LICENSE_DIRECTORY: "{{ BASE_DIR | regex_replace('\\/$', '') }}/{{ CLUSTER_NAME }}/{{ NAMESPACE }}/license"
   tags:
@@ -24,7 +24,7 @@
     - cas-onboard
     - offboard
 
-- name: assets - create license directory
+- name: Assets - create license directory
   file:
     path: "{{ LICENSE_DIRECTORY }}"
     state: directory
@@ -34,9 +34,10 @@
     - uninstall
     - update
 
-- name: assets - Get License
+- name: Assets - Get License
   command:
-    cmd: "{{ tmpdir.path }}/viya4-orders-cli license --file-path {{ LICENSE_DIRECTORY }} --file-name license {{ V4_CFG_ORDER_NUMBER }} {{ V4_CFG_CADENCE_NAME }} {{ V4_CFG_CADENCE_VERSION }}"
+    cmd: "{{ tmpdir.path }}/viya4-orders-cli license --file-path {{ LICENSE_DIRECTORY }} --file-name license {{ V4_CFG_ORDER_NUMBER }} {{ V4_CFG_CADENCE_NAME }} {{
+      V4_CFG_CADENCE_VERSION }}"
   environment:
     CLIENTCREDENTIALSID: "{{ V4_CFG_SAS_API_KEY | string | b64encode }}"
     CLIENTCREDENTIALSSECRET: "{{ V4_CFG_SAS_API_SECRET | string | b64encode }}"
@@ -47,7 +48,7 @@
     - uninstall
     - update
 
-- name: assets - Get Certificates
+- name: Assets - Get Certificates
   command:
     cmd: "{{ tmpdir.path }}/viya4-orders-cli certificates --file-path {{ LICENSE_DIRECTORY }} --file-name certs {{ V4_CFG_ORDER_NUMBER }}"
   environment:
@@ -60,9 +61,10 @@
     - uninstall
     - update
 
-- name: assets - Download
+- name: Assets - Download
   command:
-    cmd: "{{ tmpdir.path }}/viya4-orders-cli dep --file-path {{ DEPLOY_DIR }} -o json {{ V4_CFG_ORDER_NUMBER }} {{ V4_CFG_CADENCE_NAME }} {{ V4_CFG_CADENCE_VERSION }}"
+    cmd: "{{ tmpdir.path }}/viya4-orders-cli dep --file-path {{ DEPLOY_DIR }} -o json {{ V4_CFG_ORDER_NUMBER }} {{ V4_CFG_CADENCE_NAME }} {{ V4_CFG_CADENCE_VERSION
+      }}"
   environment:
     CLIENTCREDENTIALSID: "{{ V4_CFG_SAS_API_KEY | string | b64encode }}"
     CLIENTCREDENTIALSSECRET: "{{ V4_CFG_SAS_API_SECRET | string | b64encode }}"
@@ -74,9 +76,9 @@
     - update
   register: res
 
-- name: assets - Set assets location
+- name: Assets - Set assets location
   set_fact:
-    order_output: "{{ res.stdout|from_json }}"
+    order_output: "{{ res.stdout | from_json }}"
   when:
     - V4_CFG_DEPLOYMENT_ASSETS is none
   tags:
@@ -84,7 +86,7 @@
     - uninstall
     - update
 
-- name: assets - Remove old files
+- name: Assets - Remove old files
   file:
     path: "{{ item }}"
     state: absent
@@ -97,7 +99,7 @@
     - uninstall
     - update
 
-- name: assets - Extract downloaded assets
+- name: Assets - Extract downloaded assets
   unarchive:
     src: "{{ order_output.assetLocation }}"
     dest: "{{ DEPLOY_DIR }}"
@@ -108,7 +110,7 @@
     - uninstall
     - update
 
-- name: assets - Extract user-provided assets
+- name: Assets - Extract user-provided assets
   unarchive:
     src: "{{ V4_CFG_DEPLOYMENT_ASSETS }}"
     dest: "{{ DEPLOY_DIR }}"
@@ -119,7 +121,7 @@
     - uninstall
     - update
 
-- name: assets - Copy user-provided license file
+- name: Assets - Copy user-provided license file
   copy:
     src: "{{ V4_CFG_LICENSE }}"
     dest: "{{ LICENSE_DIRECTORY }}/license.jwt"
@@ -130,7 +132,7 @@
     - uninstall
     - update
 
-- name: assets - Copy user-provided certs file
+- name: Assets - Copy user-provided certs file
   copy:
     src: "{{ V4_CFG_CERTS }}"
     dest: "{{ LICENSE_DIRECTORY }}/certs.zip"
@@ -141,7 +143,7 @@
     - uninstall
     - update
 
-- name: assets - Set LICENSE_CONTENT
+- name: Assets - Set LICENSE_CONTENT
   set_fact:
     LICENSE_CONTENT: "{{ lookup('file', '{{ LICENSE_DIRECTORY }}/license.jwt') }}"
   tags:

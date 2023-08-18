@@ -1,6 +1,7 @@
 # Copyright © 2020-2023, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+---
 JUMP_SVR_RWX_FILESTORE_PATH: /viya-share
 folder_owner: nobody
 folder_group: nobody

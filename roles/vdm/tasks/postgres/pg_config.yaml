@@ -1,56 +1,57 @@
-- name: pg_config - Check for storage info ConfigMap
-  block:
-  - name: set facts 
-    set_fact:
-      dac_crunchy_storage_cm_found: false
-  - name: pg_config - Look for ConfigMap
-    kubernetes.core.k8s_info:
-      kubeconfig: "{{ KUBECONFIG }}"
-      api_version: v1
-      kind: ConfigMap
-      name: dac-crunchy-storage-info
-      namespace: "{{ NAMESPACE }}"
-    register: cm_info
-  - name: pg_config - set fact that ConfigMap was found
-    set_fact:
-      dac_crunchy_storage_cm_found: true
-    ignore_errors: true
-    when: "cm_info.resources"
-  - name: pg_config - Use previous postgres storage map values
-    debug: 
-      msg:
-      - "The previously found values for the postgres server storage class and access mode will be used."
-      - "The values you have in your ansible vars will be ignored because the storage class is already present in your cluster."
-    when:
-      - dac_crunchy_storage_cm_found
+---
+- name: pg_config - Check for storage info ConfigMap # noqa: name[casing]
   tags:
     - install
     - uninstall
+  block:
+    - name: Set facts
+      set_fact:
+        dac_crunchy_storage_cm_found: false
+    - name: pg_config - Look for ConfigMap # noqa: name[casing]
+      kubernetes.core.k8s_info:
+        kubeconfig: "{{ KUBECONFIG }}"
+        api_version: v1
+        kind: ConfigMap
+        name: dac-crunchy-storage-info
+        namespace: "{{ NAMESPACE }}"
+      register: cm_info
+    - name: pg_config - set fact that ConfigMap was found # noqa: name[casing]
+      set_fact:
+        dac_crunchy_storage_cm_found: true
+      ignore_errors: true
+      when: cm_info.resources
+    - name: pg_config - Use previous postgres storage map values # noqa: name[casing]
+      debug:
+        msg:
+          - The previously found values for the postgres server storage class and access mode will be used.
+          - The values you have in your ansible vars will be ignored because the storage class is already present in your cluster.
+      when:
+        - dac_crunchy_storage_cm_found
 
 # Check for v4 crunchy operator if ConfigMap not found
-- name: pg_config - v4 crunchy operator check
-  block:
-  - name: pg_config - Find v4 crunchy deployment
-    kubernetes.core.k8s_info:
-      kubeconfig: "{{ KUBECONFIG }}"
-      kind: Deployment
-      name: sas-crunchy-data-postgres-operator
-      namespace: "{{ NAMESPACE }}"
-    register: deploy
-  - name: pg_config - v4 crunchy operator found
-    set_fact:
-      v4_crunchy_found: true
-    when: 
-      - deploy.resources is defined
-      - deploy.resources | length != 0
-  - name: pg_config - v4 crunchy operator not found
-    set_fact:
-      v4_crunchy_found: false
-    when: 
-      - deploy.resources is defined
-      - deploy.resources | length == 0
+- name: pg_config - v4 crunchy operator check # noqa: name[casing]
   when:
     - not dac_crunchy_storage_cm_found
   tags:
     - install
     - update
+  block:
+    - name: pg_config - Find v4 crunchy deployment # noqa: name[casing]
+      kubernetes.core.k8s_info:
+        kubeconfig: "{{ KUBECONFIG }}"
+        kind: Deployment
+        name: sas-crunchy-data-postgres-operator
+        namespace: "{{ NAMESPACE }}"
+      register: deploy
+    - name: pg_config - v4 crunchy operator found # noqa: name[casing]
+      set_fact:
+        v4_crunchy_found: true
+      when:
+        - deploy.resources is defined
+        - deploy.resources | length != 0
+    - name: pg_config - v4 crunchy operator not found # noqa: name[casing]
+      set_fact:
+        v4_crunchy_found: false
+      when:
+        - deploy.resources is defined
+        - deploy.resources | length == 0

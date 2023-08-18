@@ -3,7 +3,7 @@
 
 ---
 # Apply the service account role
-- name: apply service account role
+- name: Apply service account role
   ansible.builtin.shell: |
     kubectl --kubeconfig {{ KUBECONFIG }} apply -n {{ NAMESPACE }} -f {{ DEPLOY_DIR }}/site-config/sas-tenant-job/tenant-job-service-account-role.yaml
   register: result
@@ -19,7 +19,7 @@
     - offboard
 
 # create the kustomization.yaml for onboard
-- name: copy - kustomization-onboard yaml
+- name: Copy - kustomization-onboard yaml
   copy:
     src: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/kustomization-onboard.yaml"
     dest: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/kustomization.yaml"
@@ -27,7 +27,7 @@
     - onboard
 
 # create the kustomization.yaml for offboard
-- name: copy - kustomization-offboard yaml
+- name: Copy - kustomization-offboard yaml
   copy:
     src: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/kustomization-offboard.yaml"
     dest: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/kustomization.yaml"
@@ -35,36 +35,37 @@
     - offboard
 
 # Update kustomization files if TLS disabled
-- name: tls disabled - onboard
+- name: TLS disabled - onboard
   replace:
     path: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/kustomization.yaml"
     regexp: "- tenant-onboard-job-tls-transformer.yaml"
     replace: "# - tenant-onboard-job-tls-transformer.yaml"
-  when:
-    V4_CFG_TLS_MODE == "disabled"
+  when: V4_CFG_TLS_MODE == "disabled"
   tags:
     - onboard
 
-- name: tls disabled - offboard
+- name: TLS disabled - offboard
   replace:
     path: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/kustomization.yaml"
     regexp: "- tenant-offboard-job-tls-transformer.yaml"
     replace: "# - tenant-offboard-job-tls-transformer.yaml"
-  when:
-    V4_CFG_TLS_MODE == "disabled"
+  when: V4_CFG_TLS_MODE == "disabled"
   tags:
     - offboard
 
-- name: kustomize - get load restrictor flag
+- name: Kustomize - get load restrictor flag
   set_fact:
-      LOAD_RESTRICTOR_FLAG: "{{ '--load-restrictor LoadRestrictionsNone' if V4_CFG_CADENCE_VERSION is version('2023.02', '>=') or V4_CFG_CADENCE_NAME|lower == 'fast' else '--load_restrictor=none' }}"
+    LOAD_RESTRICTOR_FLAG: "{{ '--load-restrictor LoadRestrictionsNone' if V4_CFG_CADENCE_VERSION is version('2023.02', '>=') or V4_CFG_CADENCE_NAME | lower == 'fast'
+      else '--load_restrictor=none' }}"
   tags:
     - onboard
     - offboard
 
-- name: kustomize - generate onboard manifest
+- name: Kustomize - generate onboard manifest
+  tags:
+    - onboard
   block:
-    - name: kustomize - generate onboard manifest - Ansible
+    - name: Kustomize - generate onboard manifest - Ansible
       ansible.builtin.shell: >
         docker run --rm
         --user="{{ UID_GID }}"
@@ -75,7 +76,7 @@
         build /data/site-config/sas-tenant-job/ {{ LOAD_RESTRICTOR_FLAG }} -o /data/site-config/sas-tenant-job/site-onboard.yaml
       when:
         - deployment_tooling == "ansible"
-    - name: kustomize - generate onboard manifest - Docker
+    - name: Kustomize - generate onboard manifest - Docker
       environment:
         PATH: "{{ ORCHESTRATION_TOOLING_PATH }}"
       command:
@@ -85,12 +86,12 @@
         chdir: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}"
       when:
         - deployment_tooling == "docker"
-  tags:
-    - onboard
 
-- name: kustomize - generate offboard manifest
+- name: Kustomize - generate offboard manifest
+  tags:
+    - offboard
   block:
-    - name: kustomize - generate offboard manifest - Ansible
+    - name: Kustomize - generate offboard manifest - Ansible
       ansible.builtin.shell: >
         docker run --rm
         --user="{{ UID_GID }}"
@@ -101,7 +102,7 @@
         build /data/site-config/sas-tenant-job/ {{ LOAD_RESTRICTOR_FLAG }} -o /data/site-config/sas-tenant-job/site-offboard.yaml
       when:
         - deployment_tooling == "ansible"
-    - name: kustomize - generate offboard manifest - Docker
+    - name: Kustomize - generate offboard manifest - Docker
       environment:
         PATH: "{{ ORCHESTRATION_TOOLING_PATH }}"
       command:
@@ -111,11 +112,9 @@
         chdir: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}"
       when:
         - deployment_tooling == "docker"
-  tags:
-    - offboard
 
 # Get the full name of the sas-image-pull-secrets in current deployment
-- name: get - sas-image-pull-secrets
+- name: Get - sas-image-pull-secrets
   ansible.builtin.shell: |
     kubectl --kubeconfig {{ KUBECONFIG }} get secrets -n {{ NAMESPACE }} | grep sas-image-pull-secrets | awk '{print $1}'
   register: secret_name
@@ -123,30 +122,30 @@
     - onboard
     - offboard
 
-- name: update onboard manifest
+- name: Update onboard manifest
   replace:
     path: "{{ item.path }}"
     regexp: "{{ item.regexp }}"
     replace: "{{ item.replace }}"
   with_items:
-    - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-onboard.yaml', regexp: 'sas-image-pull-secrets.*$', replace: '{{ secret_name.stdout }}' }
-    - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-onboard.yaml', regexp: 'cr.sas.com', replace: '{{ V4_CFG_CR_HOST }}' }
+    - { path: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-onboard.yaml", regexp: sas-image-pull-secrets.*$, replace: "{{ secret_name.stdout }}" }
+    - { path: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-onboard.yaml", regexp: cr.sas.com, replace: "{{ V4_CFG_CR_HOST }}" }
   tags:
     - onboard
 
-- name: update offboard manifest
+- name: Update offboard manifest
   replace:
     path: "{{ item.path }}"
     regexp: "{{ item.regexp }}"
     replace: "{{ item.replace }}"
   with_items:
-    - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-offboard.yaml', regexp: 'sas-image-pull-secrets.*$', replace: '{{ secret_name.stdout }}' }
-    - { path: '{{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-offboard.yaml', regexp: 'cr.sas.com', replace: '{{ V4_CFG_CR_HOST }}' }
+    - { path: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-offboard.yaml", regexp: sas-image-pull-secrets.*$, replace: "{{ secret_name.stdout }}" }
+    - { path: "{{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-offboard.yaml", regexp: cr.sas.com, replace: "{{ V4_CFG_CR_HOST }}" }
   tags:
     - offboard
 
 # Run Onboard job
-- name: run onboarding command
+- name: Run onboarding command
   ansible.builtin.shell: |
     kubectl --kubeconfig {{ KUBECONFIG }} create -n {{ NAMESPACE }} -f {{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-onboard.yaml
   register: result
@@ -159,7 +158,7 @@
     - onboard
 
 # Run Offboard job
-- name: run offboarding command
+- name: Run offboarding command
   ansible.builtin.shell: |
     kubectl --kubeconfig {{ KUBECONFIG }} create -n {{ NAMESPACE }} -f {{ DEPLOY_DIR }}/site-config/sas-tenant-job/site-offboard.yaml
   register: result
@@ -171,14 +170,15 @@
   tags:
     - offboard
 
-- set_fact:
+- name: Initialize pod failure list
+  set_fact:
     pod_fail_list: ["Error", "Init:Error", "CrashLoopBackOff", "Failed", "Unknown"]
   tags:
     - onboard
     - offboard
 
 # Wait for the tenant-onboard pod to be in Completed state
-- name: get sas-tenant-onboard job status
+- name: Get sas-tenant-onboard job status
   ansible.builtin.shell: |
     kubectl --kubeconfig {{ KUBECONFIG }} get pods -n {{ NAMESPACE }} --sort-by=.metadata.creationTimestamp | tac | grep sas-tenant-onboard | awk '{print $3}'
   register: pod_status
@@ -189,7 +189,7 @@
     - onboard
 
 # Wait for the tenant-offboard pod to be in Completed state
-- name: get sas-tenant-offboard job status
+- name: Get sas-tenant-offboard job status
   ansible.builtin.shell: |
     kubectl --kubeconfig {{ KUBECONFIG }} get pods -n {{ NAMESPACE }} --sort-by=.metadata.creationTimestamp | tac | grep sas-tenant-offboard | awk '{print $3}'
   register: pod_status
@@ -199,9 +199,10 @@
   tags:
     - offboard
 
-- name: check for pods failing status
+- name: Check for pods failing status
   ansible.builtin.fail:
-    msg: '{{ ansible_run_tags | select("match", "[on|off].*") | list | first }} job failed with status {{ pod_status.stdout_lines[0] }}. Please check pod log for more details.'
+    msg: '{{ ansible_run_tags | select("match", "[on|off].*") | list | first }} job failed with status {{ pod_status.stdout_lines[0] }}. Please check pod log for
+      more details.'
   when: pod_status.stdout_lines[0] in pod_fail_list
   tags:
     - onboard

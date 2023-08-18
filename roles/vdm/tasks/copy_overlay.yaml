@@ -2,10 +2,10 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
-- name: copy - create VDM {{ resource }} folder
+- name: Copy - create VDM {{ resource }} folder
   file:
     state: directory
-    dest: '{{ DEPLOY_DIR }}/site-config/vdm/{{ resource }}'
+    dest: "{{ DEPLOY_DIR }}/site-config/vdm/{{ resource }}"
     mode: "0770"
   when: overlays|length > 0
   tags:
@@ -13,10 +13,10 @@
     - uninstall
     - update
 
-- name: copy - VDM {{ resource }}
+- name: Copy - VDM {{ resource }}
   template:
-    src: "{{ resource }}/{{ overlay|basename }}"
-    dest: "{{ DEPLOY_DIR }}/{{ overlay |dirname }}/{{ overlay | basename | regex_replace('\\..*\\.yaml$', '.yaml') }}"
+    src: "{{ resource }}/{{ overlay | basename }}"
+    dest: "{{ DEPLOY_DIR }}/{{ overlay | dirname }}/{{ overlay | basename | regex_replace('\\..*\\.yaml$', '.yaml') }}"
     mode: "0660"
   with_items: "{{ overlays }}"
   loop_control:

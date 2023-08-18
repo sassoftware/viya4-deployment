@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
-- name: cluster-monitoring - lookup existing credentials
+- name: cluster-monitoring - lookup existing credentials # noqa: name[casing]
   kubernetes.core.k8s_info:
     api_version: v1
     kind: Secret
@@ -20,25 +20,25 @@
   tags:
     - install
 
-- name: cluster-monitoring - save credentials
+- name: cluster-monitoring - save credentials # noqa: name[casing]
   set_fact:
-    V4M_GRAFANA_PASSWORD: "{{ monitoring_creds.resources[0].data['admin-password']|b64decode }}"
+    V4M_GRAFANA_PASSWORD: "{{ monitoring_creds.resources[0].data['admin-password'] | b64decode }}"
   tags:
     - install
     - update
   when:
     - (monitoring_creds.resources | length) == 1
 
-- name: cluster-monitoring - output credentials
+- name: cluster-monitoring - output credentials # noqa: name[casing]
   debug:
     msg:
       - "Grafana - username: admin, password: {{ V4M_GRAFANA_PASSWORD }}"
   tags:
     - install
 
-- name: cluster-monitoring - host-based user values
+- name: cluster-monitoring - host-based user values # noqa: name[casing]
   template:
-    src: "host-based/user-values-prom-operator.yaml"
+    src: host-based/user-values-prom-operator.yaml
     dest: "{{ tmpdir.path }}/monitoring/user-values-prom-operator.yaml"
     mode: "0660"
   when:
@@ -48,26 +48,26 @@
     - update
     - uninstall
 
-- name: cluster-monitoring - path-based user values
-  block:
-    - name: copy operator yaml
-      template:
-        src: "path-based/user-values-prom-operator.yaml"
-        dest: "{{ tmpdir.path }}/monitoring/user-values-prom-operator.yaml"
-        mode: "0660"
-    - name: copy user env
-      template:
-        src: "path-based/user.env"
-        dest: "{{ tmpdir.path }}/monitoring/user.env"
-        mode: "0660"
+- name: cluster-monitoring - path-based user values # noqa: name[casing]
   when:
     - V4M_ROUTING|lower == 'path-based'
   tags:
     - install
     - update
     - uninstall
+  block:
+    - name: Copy operator yaml
+      template:
+        src: path-based/user-values-prom-operator.yaml
+        dest: "{{ tmpdir.path }}/monitoring/user-values-prom-operator.yaml"
+        mode: "0660"
+    - name: Copy user env
+      template:
+        src: path-based/user.env
+        dest: "{{ tmpdir.path }}/monitoring/user.env"
+        mode: "0660"
 
-- name: cluster-monitoring - deploy
+- name: cluster-monitoring - deploy # noqa: name[casing]
   command:
     cmd: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/monitoring/bin/deploy_monitoring_cluster.sh"
   environment: "{{ monitoring_env }}"

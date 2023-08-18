@@ -1,14 +1,14 @@
 # Copyright © 2020-2023, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-- name: start_stop - validate cadence version
+---
+- name: Start_stop - validate cadence version
   ansible.builtin.fail:
     msg: >
       The schedule-start-stop.yaml transformer is not supported for cadences 2021.1 and older
-      
+
       To continue deploying 2021.1 or older remove 'V4_CFG_VIYA_STOP_SCHEDULE' & 'V4_CFG_VIYA_START_SCHEDULE' from your
-      Ansible vars. Alternatively select a newer 'V4_CFG_CADENCE_VERSION' if you would like to use the 
-      schedule-start-stop.yaml transformer
+      Ansible vars. Alternatively select a newer 'V4_CFG_CADENCE_VERSION' if you would like to use the  schedule-start-stop.yaml transformer
   when:
     - V4_CFG_VIYA_STOP_SCHEDULE is not none or V4_CFG_VIYA_START_SCHEDULE is not none
     - V4_CFG_CADENCE_VERSION is version('2021.1', "<=")
@@ -18,13 +18,13 @@
     - uninstall
     - update
 
-- name: start_stop - add transformer
+- name: Start_stop - add transformer
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { transformers: "schedule-start-stop.yaml", vdm: true, min: "2021.2", priority: 61 }
+      - { transformers: schedule-start-stop.yaml, vdm: true, min: "2021.2", priority: 61 }
   when:
     - V4_CFG_VIYA_STOP_SCHEDULE is not none or V4_CFG_VIYA_START_SCHEDULE is not none
   tags:

@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
-- name: cluster-logging - create userdir
+- name: cluster-logging - create userdir # noqa: name[casing]
   file:
     path: "{{ tmpdir.path }}/logging/"
     state: directory
@@ -12,7 +12,7 @@
     - uninstall
     - update
 
-- name: v4m - cluster logging config vars
+- name: V4M - cluster logging config vars
   include_tasks: cluster-logging.yaml
   when:
     - V4M_CUSTOM_CONFIG_USER_DIR is none
@@ -21,7 +21,7 @@
     - uninstall
     - update
 
-- name: v4m - cluster logging custom config user dir
+- name: V4M - cluster logging custom config user dir
   include_tasks: cluster-logging-custom-config.yaml
   when:
     - V4M_CUSTOM_CONFIG_USER_DIR is not none
@@ -29,7 +29,7 @@
     - install
     - update
 
-- name: cluster-logging - elasticsearch cert
+- name: cluster-logging - elasticsearch cert # noqa: name[casing]
   kubernetes.core.k8s:
     kubeconfig: "{{ KUBECONFIG }}"
     state: present
@@ -37,13 +37,13 @@
       kind: Secret
       apiVersion: v1
       metadata:
-        name: "elasticsearch-ingress-tls-secret"
+        name: elasticsearch-ingress-tls-secret
         namespace: "{{ V4M_LOGGING_NAMESPACE }}"
       data:
         tls.crt: >-
-          {{ lookup('file', V4M_ELASTICSEARCH_CERT ) |b64encode }}
+          {{ lookup('file', V4M_ELASTICSEARCH_CERT) | b64encode }}
         tls.key: >-
-          {{ lookup('file', V4M_ELASTICSEARCH_KEY ) |b64encode }}
+          {{ lookup('file', V4M_ELASTICSEARCH_KEY) | b64encode }}
       type: kubernetes.io/tls
   when:
     - V4M_ELASTICSEARCH_CERT is not none
@@ -52,7 +52,7 @@
     - install
     - update
 
-- name: cluster-logging - kibana cert
+- name: cluster-logging - kibana cert # noqa: name[casing]
   kubernetes.core.k8s:
     kubeconfig: "{{ KUBECONFIG }}"
     state: present
@@ -60,13 +60,13 @@
       kind: Secret
       apiVersion: v1
       metadata:
-        name: "kibana-ingress-tls-secret"
+        name: kibana-ingress-tls-secret
         namespace: "{{ V4M_LOGGING_NAMESPACE }}"
       data:
         tls.crt: >-
-          {{ lookup('file', V4M_KIBANA_CERT ) |b64encode }}
+          {{ lookup('file', V4M_KIBANA_CERT) | b64encode }}
         tls.key: >-
-          {{ lookup('file', V4M_KIBANA_KEY ) |b64encode }}
+          {{ lookup('file', V4M_KIBANA_KEY) | b64encode }}
       type: kubernetes.io/tls
   when:
     - V4M_KIBANA_CERT is not none
@@ -75,14 +75,14 @@
     - install
     - update
 
-- name: cluster-logging - uninstall
+- name: cluster-logging - uninstall # noqa: name[casing]
   command:
     cmd: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/logging/bin/remove_logging.sh"
   environment: "{{ logging_map['env'] }}"
   tags:
     - uninstall
 
-- name: cluster-logging - delete namespace
+- name: cluster-logging - delete namespace # noqa: name[casing]
   kubernetes.core.k8s:
     api_version: v1
     kind: Namespace

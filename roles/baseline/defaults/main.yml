@@ -1,7 +1,8 @@
 # Copyright © 2020-2023, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-V4_CFG_TLS_MODE: "full-stack" # other valid values are front-door, ingress-only, and disabled
+---
+V4_CFG_TLS_MODE: full-stack # other valid values are front-door, ingress-only, and disabled
 V4_CFG_RWX_FILESTORE_PATH: /export
 V4_CFG_INGRESS_TYPE: ingress
 V4_CFG_INGRESS_MODE: public
@@ -38,8 +39,8 @@ ingressVersions:
   k8sMinorVersionFloor:
     value: 24
     api:
-      chartVersion: 4.6.0
-      appVersion: 1.7.0
+      chartVersion: 4.7.1
+      appVersion: 1.8.1
 
 ## Ingress-nginx - Ingress
 ##
@@ -58,18 +59,18 @@ INGRESS_NGINX_CONFIG:
     service:
       externalTrafficPolicy: Local
       sessionAffinity: None
-      loadBalancerSourceRanges: "{{ LOADBALANCER_SOURCE_RANGES |default(['0.0.0.0/0'], -1) }}"
+      loadBalancerSourceRanges: "{{ LOADBALANCER_SOURCE_RANGES | default(['0.0.0.0/0'], -1) }}"
       annotations:
     config:
       use-forwarded-headers: "false"
       hsts-max-age: "63072000"
-      hide-headers: "Server,X-Powered-By"
+      hide-headers: Server,X-Powered-By
     tcp: {}
     udp: {}
     lifecycle:
       preStop:
         exec:
-          command: ["/bin/sh", "-c", "sleep 5; /usr/local/nginx/sbin/nginx -c /etc/nginx/nginx.conf -s quit; while pgrep -x nginx; do sleep 1; done"]
+          command: [/bin/sh, -c, sleep 5; /usr/local/nginx/sbin/nginx -c /etc/nginx/nginx.conf -s quit; while pgrep -x nginx; do sleep 1; done]
     terminationGracePeriodSeconds: 600
 
 # Add annotation to include Azure load-balancer health probe request path
@@ -91,8 +92,8 @@ INGRESS_NGINX_CVE_2021_25742_PATCH:
   controller:
     config:
       allow-snippet-annotations: "true"
-      large-client-header-buffers: "4 32k"
-      annotation-value-word-blocklist: "load_module,lua_package,_by_lua,location,root,proxy_pass,serviceaccount,{,},\\"
+      large-client-header-buffers: 4 32k
+      annotation-value-word-blocklist: load_module,lua_package,_by_lua,location,root,proxy_pass,serviceaccount,{,},\
 
 ## Nfs-subdir-external-provisioner
 NFS_CLIENT_NAME: nfs-subdir-external-provisioner-sas
@@ -107,8 +108,8 @@ NFS_CLIENT_CONFIG:
     mountOptions:
       - noatime
       - nodiratime
-      - 'rsize=262144'
-      - 'wsize=262144'
+      - rsize=262144
+      - wsize=262144
   storageClass:
     archiveOnDelete: "false"
     name: sas
@@ -126,11 +127,11 @@ PG_NFS_CLIENT_CONFIG:
     mountOptions:
       - noatime
       - nodiratime
-      - 'rsize=262144'
-      - 'wsize=262144'
+      - rsize=262144
+      - wsize=262144
   storageClass:
     archiveOnDelete: "false"
-    reclaimPolicy: "Retain"
+    reclaimPolicy: Retain
     name: pg-storage
 
 ## Contour - Ingress
@@ -142,7 +143,7 @@ CONTOUR_CHART_VERSION: 4.3.8
 CONTOUR_CONFIG:
   envoy:
     service:
-      loadBalancerSourceRanges: "{{ LOADBALANCER_SOURCE_RANGES |default(['0.0.0.0/0'], -1) }}"
+      loadBalancerSourceRanges: "{{ LOADBALANCER_SOURCE_RANGES | default(['0.0.0.0/0'], -1) }}"
 
 ## Cluster Autoscaler
 CLUSTER_AUTOSCALER_ENABLED: true
@@ -161,7 +162,7 @@ CLUSTER_AUTOSCALER_CONFIG:
     serviceAccount:
       name: cluster-autoscaler
       annotations:
-        "eks.amazonaws.com/role-arn": "{{ CLUSTER_AUTOSCALER_ACCOUNT }}"
+        eks.amazonaws.com/role-arn: "{{ CLUSTER_AUTOSCALER_ACCOUNT }}"
 
 autoscalerVersions:
   # Supports PodDisruptionBudget policy/v1beta1 default for K8s <=1.24
@@ -172,8 +173,7 @@ autoscalerVersions:
   # Supports PodDisruptionBudget policy/v1beta1 default for K8s >=1.25
   PDBv1Support:
     api:
-      chartVersion: 9.25.0
-      appVersion: 1.24.0
+      chartVersion: 9.29.1
 
 ## EBS CSI Driver
 EBS_CSI_DRIVER_ENABLED: true
@@ -192,8 +192,7 @@ EBS_CSI_DRIVER_CONFIG:
       create: true
       name: ebs-csi-controller-sa
       annotations:
-        "eks.amazonaws.com/role-arn": "{{ EBS_CSI_DRIVER_ACCOUNT }}"
-
+        eks.amazonaws.com/role-arn: "{{ EBS_CSI_DRIVER_ACCOUNT }}"
 
 private_ingress:
   aws:
@@ -211,4 +210,4 @@ private_ingress:
     controller:
       service:
         annotations:
-          networking.gke.io/load-balancer-type: "Internal"
+          networking.gke.io/load-balancer-type: Internal

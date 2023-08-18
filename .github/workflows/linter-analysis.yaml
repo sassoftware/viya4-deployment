@@ -1,0 +1,64 @@
+name: Linter Analysis
+on:
+  push:
+    branches: [ '**' ] # '*' will cause the workflow to run on all commits to all branches.
+
+jobs:
+  # Hadolint: Job-1
+  Hadolint:
+    name: Hadolint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Run Hadolint Action
+        uses: jbergstroem/hadolint-gh-action@v1.11.0
+        with:
+          dockerfile: ./Dockerfile
+          config_file: linting-configs/.hadolint.yaml
+          error_level: 1 # Fail CI based on hadolint output (-1: never, 0: error, 1: warning, 2: info)
+
+  # ShellCheck: Job-2
+  ShellCheck:
+    name: ShellCheck
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+        # .shellcheckrc is read from the current dir
+      - name: Copy Config to Parent Level Directory
+        run: cp $(pwd)/linting-configs/.shellcheckrc .
+
+      - name: Run ShellCheck Action
+        uses: ludeeus/action-shellcheck@master
+        with:
+          severity: error
+
+  # ansible-lint: Job-3
+  Ansible-Lint:
+    name: ansible-lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+        # The latest ansible/ansible-lint-action removed the
+        # ability to specify configs from other dirs
+      - name: Copy Config to Parent Level Directory
+        run: cp $(pwd)/linting-configs/.ansible-lint .
+
+        # ansible-lint does not seem to recognize the .yaml
+        # extension for the requirements file and it is not
+        # configurable
+      - name: Updates requirements extension
+        run: cp $(pwd)/requirements.yaml requirements.yml
+
+      - name: Install requirements.yaml
+        run: ansible-galaxy install -r ./requirements.yaml
+
+      - name: Run ansible-lint Action
+        uses: ansible/ansible-lint-action@v6.17.0
+        env:
+          ANSIBLE_ROLES_PATH: "./roles"

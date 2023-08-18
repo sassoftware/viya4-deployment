@@ -1,26 +1,27 @@
+---
 cacerts:
 config:
-    application:
-        sas.identities.providers.ldap.connection:
-            host: ldap-svc
-            password: Password123
-            port: 389
-            url: ldap://${sas.identities.providers.ldap.connection.host}:${sas.identities.providers.ldap.connection.port}
-            userDN: cn=admin,dc=example,dc=com
-        sas.identities.providers.ldap.group:
-            baseDN: ou=groups,dc=example,dc=com
-            accountId: cn
-            member: uniqueMember
-            memberOf: memberOf
-            objectClass: groupOfUniqueNames
-            objectFilter: (objectClass=groupOfUniqueNames)
-            searchFilter: cn={0}
-        sas.identities.providers.ldap.user:
-            baseDN: ou=people,dc=example,dc=com
-            accountId: uid
-            memberOf: memberOf
-            objectClass: inetOrgPerson
-            objectFilter: (objectClass=inetOrgPerson)
-            searchFilter: uid={0}
-        sas.logon.initial.password: Password123
+  application:
+    sas.identities.providers.ldap.connection:
+      host: ldap-svc
+      password: Password123
+      port: 389
+      url: ldap://${sas.identities.providers.ldap.connection.host}:${sas.identities.providers.ldap.connection.port}
+      userDN: cn=admin,dc=example,dc=com
+    sas.identities.providers.ldap.group:
+      baseDN: ou=groups,dc=example,dc=com
+      accountId: cn
+      member: uniqueMember
+      memberOf: memberOf
+      objectClass: groupOfUniqueNames
+      objectFilter: (objectClass=groupOfUniqueNames)
+      searchFilter: cn={0}
+    sas.identities.providers.ldap.user:
+      baseDN: ou=people,dc=example,dc=com
+      accountId: uid
+      memberOf: memberOf
+      objectClass: inetOrgPerson
+      objectFilter: (objectClass=inetOrgPerson)
+      searchFilter: uid={0}
+    sas.logon.initial.password: Password123
 config/identities/sas.identities/administrator: viya_admin

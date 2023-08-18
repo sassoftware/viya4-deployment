@@ -7,9 +7,10 @@
 # Regardless of type or source of certificates, additional root CA certs can be provided
 # See sas-bases/examples/security/README.md for full details
 ---
-- name: tls - openssl-generator check
+- name: TLS - openssl-generator check
   fail:
-    msg: "When using openssl-generator, and V4_CFG_TLS_MODE is not 'disabled', and your V4_CFG_CADENCE_VERSION is <= 2021.1, you must provide: V4_CFG_TLS_CERT, V4_CFG_TLS_KEY, V4_CFG_TLS_TRUSTED_CA_CERTS"
+    msg: "When using openssl-generator, and V4_CFG_TLS_MODE is not 'disabled', and your V4_CFG_CADENCE_VERSION is <= 2021.1, you must provide: V4_CFG_TLS_CERT, V4_CFG_TLS_KEY,
+      V4_CFG_TLS_TRUSTED_CA_CERTS"
   when:
     - V4_CFG_TLS_MODE != "disabled"
     - V4_CFG_TLS_GENERATOR == "openssl"
@@ -21,24 +22,24 @@
     - uninstall
     - update
 
-- name: tls - base
+- name: TLS - base
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { resources: "overlays/network/{{ V4_CFG_INGRESS_TYPE }}", max: "2021.1.5" }
-      - { resources: "overlays/network/{{ V4_CFG_INGRESS_TYPE }}/security", max: "2021.1.2" }
-      - { resources: "overlays/network/{{ network_name_map[V4_CFG_INGRESS_TYPE] }}", min: "2021.1.6" }
+      - { resources: "overlays/network/{{ V4_CFG_INGRESS_TYPE }}", max: 2021.1.5 }
+      - { resources: "overlays/network/{{ V4_CFG_INGRESS_TYPE }}/security", max: 2021.1.2 }
+      - { resources: "overlays/network/{{ network_name_map[V4_CFG_INGRESS_TYPE] }}", min: 2021.1.6 }
   tags:
     - install
     - uninstall
     - update
 
-- name: tls - http facts
+- name: TLS - http facts
   set_fact:
-    V4_CFG_DEPLOYMENT_URL_PREFIX: 'http://'
-    V4_CFG_DEPLOYMENT_URL_PORT: ':80'
+    V4_CFG_DEPLOYMENT_URL_PREFIX: http://
+    V4_CFG_DEPLOYMENT_URL_PORT: :80
   when:
     - V4_CFG_TLS_MODE == "disabled"
   tags:
@@ -46,38 +47,39 @@
     - uninstall
     - update
 
-- block:
-  - name: tls - https facts
-    set_fact:
-      V4_CFG_DEPLOYMENT_URL_PREFIX: 'https://'
-      V4_CFG_DEPLOYMENT_URL_PORT: ':443'
-  - name: tls - security
-    overlay_facts:
-      cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
-      cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
-      existing: "{{ vdm_overlays }}"
-      add:
-        - { resources: "overlays/cert-manager-issuer" }
-    when:
-      - V4_CFG_TLS_GENERATOR == "cert-manager"
+- name: TLS - cert manager
   when:
     - V4_CFG_TLS_MODE != "disabled"
   tags:
     - install
     - uninstall
     - update
+  block:
+    - name: TLS - https facts
+      set_fact:
+        V4_CFG_DEPLOYMENT_URL_PREFIX: https://
+        V4_CFG_DEPLOYMENT_URL_PORT: :443
+    - name: TLS - security
+      overlay_facts:
+        cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+        cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+        existing: "{{ vdm_overlays }}"
+        add:
+          - { resources: overlays/cert-manager-issuer }
+      when:
+        - V4_CFG_TLS_GENERATOR == "cert-manager"
 
-- name: tls - Full-stack TLS
+- name: TLS - Full-stack TLS
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { transformers: "overlays/network/ingress/security/transformers/ingress-tls-transformers.yaml", max: "2021.1.2", priority: 51 }
-      - { transformers: "overlays/network/ingress/security/transformers/product-tls-transformers.yaml", max: "2021.1.2", priority: 51 }
-      - { transformers: "overlays/network/ingress/security/transformers/backend-tls-transformers.yaml", max: "2021.1.2", priority: 51 }
-      - { components: "components/security/core/base/full-stack-tls", min: "2021.1.3", priority: 51 }
-      - { components: "components/security/network/networking.k8s.io/ingress/nginx.ingress.kubernetes.io/full-stack-tls", min: "2021.1.3", priority: 51 }
+      - { transformers: overlays/network/ingress/security/transformers/ingress-tls-transformers.yaml, max: 2021.1.2, priority: 51 }
+      - { transformers: overlays/network/ingress/security/transformers/product-tls-transformers.yaml, max: 2021.1.2, priority: 51 }
+      - { transformers: overlays/network/ingress/security/transformers/backend-tls-transformers.yaml, max: 2021.1.2, priority: 51 }
+      - { components: components/security/core/base/full-stack-tls, min: 2021.1.3, priority: 51 }
+      - { components: components/security/network/networking.k8s.io/ingress/nginx.ingress.kubernetes.io/full-stack-tls, min: 2021.1.3, priority: 51 }
   when:
     - V4_CFG_TLS_MODE == "full-stack"
   tags:
@@ -85,16 +87,16 @@
     - uninstall
     - update
 
-- name: tls - Front-door TLS
+- name: TLS - Front-door TLS
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { transformers: "overlays/network/ingress/security/transformers/cas-connect-tls-transformers.yaml", max: "2021.1.2", priority: 51 }
-      - { transformers: "overlays/network/ingress/security/transformers/ingress-tls-transformers.yaml", max: "2021.1.2", priority: 51 }
-      - { components: "components/security/core/base/front-door-tls", min: "2021.1.3", priority: 51 }
-      - { components: "components/security/network/networking.k8s.io/ingress/nginx.ingress.kubernetes.io/front-door-tls", min: "2021.1.3", priority: 51 }
+      - { transformers: overlays/network/ingress/security/transformers/cas-connect-tls-transformers.yaml, max: 2021.1.2, priority: 51 }
+      - { transformers: overlays/network/ingress/security/transformers/ingress-tls-transformers.yaml, max: 2021.1.2, priority: 51 }
+      - { components: components/security/core/base/front-door-tls, min: 2021.1.3, priority: 51 }
+      - { components: components/security/network/networking.k8s.io/ingress/nginx.ingress.kubernetes.io/front-door-tls, min: 2021.1.3, priority: 51 }
   when:
     - V4_CFG_TLS_MODE == "front-door"
   tags:
@@ -102,9 +104,9 @@
     - uninstall
     - update
 
-- name: tls - Ingress-only TLS - check cadence
+- name: TLS - Ingress-only TLS - check cadence
   ansible.builtin.fail:
-    msg: "V4_CFG_TLS_MODE=ingress-only is not supported for cadences older than 2021.2.4"
+    msg: V4_CFG_TLS_MODE=ingress-only is not supported for cadences older than 2021.2.4
   when:
     - V4_CFG_TLS_MODE == "ingress-only"
     - V4_CFG_CADENCE_VERSION is version('2021.2.4', "<")
@@ -114,14 +116,14 @@
     - uninstall
     - update
 
-- name: tls - Ingress-only TLS
+- name: TLS - Ingress-only TLS
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { components: "components/security/core/ingress-only-tls", min: "2021.2.4", priority: 51 }
-      - { components: "components/security/network/networking.k8s.io/ingress/nginx.ingress.kubernetes.io/front-door-tls", min: "2021.2.4", priority: 51 }
+      - { components: components/security/core/ingress-only-tls, min: 2021.2.4, priority: 51 }
+      - { components: components/security/network/networking.k8s.io/ingress/nginx.ingress.kubernetes.io/front-door-tls, min: 2021.2.4, priority: 51 }
   when:
     - V4_CFG_TLS_MODE == "ingress-only"
   tags:
@@ -129,14 +131,14 @@
     - uninstall
     - update
 
-- name: tls - Truststores only
+- name: TLS - Truststores only
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { transformers: "overlays/network/ingress/security/transformers/truststore-transformers-without-backend-tls.yaml", max: "2021.1.2", priority: 51 }
-      - { components: "components/security/core/base/truststores-only", min: "2021.1.3", priority: 51 }
+      - { transformers: overlays/network/ingress/security/transformers/truststore-transformers-without-backend-tls.yaml, max: 2021.1.2, priority: 51 }
+      - { components: components/security/core/base/truststores-only, min: 2021.1.3, priority: 51 }
   when:
     - V4_CFG_TLS_MODE == "disabled"
     - V4_CFG_TLS_TRUSTED_CA_CERTS is not none
@@ -145,50 +147,33 @@
     - uninstall
     - update
 
-- name: tls - customer provided ca certificates
-  block:
-    - copy:
-        src: "{{ (V4_CFG_TLS_TRUSTED_CA_CERTS|realpath) + '/' }}"
-        dest: "{{ DEPLOY_DIR }}/site-config/vdm/security/cacerts/"
-        mode: "0660"
-    - find:
-        paths: "{{ DEPLOY_DIR }}/site-config/vdm/security/cacerts/"
-        depth: 2
-      register: V4_CFG_TLS_TRUSTED_CA_CERT_FILES
-    - overlay_facts:
-        cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
-        cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
-        existing: "{{ vdm_overlays }}"
-        add:
-          - { generators: "customer-provided-ca-certificates.yaml", vdm: true }
+- name: TLS - customer provided ca certificates
   when:
     - V4_CFG_TLS_TRUSTED_CA_CERTS is not none
   tags:
     - install
     - uninstall
     - update
-
-- name: tls - customer provided server certificates
   block:
-  - ansible.builtin.file:
-      path: "{{ DEPLOY_DIR }}/site-config/vdm/security"
-      state: directory
-      mode: "0755"
-  - copy:
-      src: "{{ item.src }}"
-      dest: "{{ DEPLOY_DIR }}/site-config/vdm/security/{{ item.dest }}"
-      mode: "0660"
-    with_items:
-      - src: "{{ V4_CFG_TLS_CERT }}"
-        dest: "sas-nginx-ingress.crt"
-      - src: "{{ V4_CFG_TLS_KEY }}"
-        dest: "sas-nginx-ingress.key"
-  - overlay_facts:
-      cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
-      cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
-      existing: "{{ vdm_overlays }}"
-      add:
-        - { generators: "customer-provided-ingress-certificate.yaml", vdm: true }
+    - name: TLS - copy customer provided ca certs
+      copy:
+        src: "{{ (V4_CFG_TLS_TRUSTED_CA_CERTS | realpath) + '/' }}"
+        dest: "{{ DEPLOY_DIR }}/site-config/vdm/security/cacerts/"
+        mode: "0660"
+    - name: TLS - locate ca certs
+      find:
+        paths: "{{ DEPLOY_DIR }}/site-config/vdm/security/cacerts/"
+        depth: 2
+      register: V4_CFG_TLS_TRUSTED_CA_CERT_FILES
+    - name: TLS - add customer provided ca cert generator
+      overlay_facts:
+        cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+        cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+        existing: "{{ vdm_overlays }}"
+        add:
+          - { generators: customer-provided-ca-certificates.yaml, vdm: true }
+
+- name: TLS - customer provided server certificates
   when:
     - V4_CFG_TLS_MODE != "disabled"
     - V4_CFG_TLS_CERT is not none
@@ -197,15 +182,38 @@
     - install
     - uninstall
     - update
+  block:
+    - name: TLS - create security folder
+      ansible.builtin.file:
+        path: "{{ DEPLOY_DIR }}/site-config/vdm/security"
+        state: directory
+        mode: "0755"
+    - name: TLS - copy cert and key
+      copy:
+        src: "{{ item.src }}"
+        dest: "{{ DEPLOY_DIR }}/site-config/vdm/security/{{ item.dest }}"
+        mode: "0660"
+      with_items:
+        - src: "{{ V4_CFG_TLS_CERT }}"
+          dest: sas-nginx-ingress.crt
+        - src: "{{ V4_CFG_TLS_KEY }}"
+          dest: sas-nginx-ingress.key
+    - name: TLS - add customer provided ingress cert generator
+      overlay_facts:
+        cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+        cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+        existing: "{{ vdm_overlays }}"
+        add:
+          - { generators: customer-provided-ingress-certificate.yaml, vdm: true }
 
-- name: tls - Certificate Generation - cert-manager
+- name: TLS - Certificate Generation - cert-manager
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { transformers: "cert-manager-provided-ingress-certificate.yaml", vdm: true, max: "2022.1", priority: 70 }
-      - { transformers: "overlays/cert-manager-provided-ingress-certificate/ingress-annotation-transformer.yaml", min: "2022.1.1", priority: 70 }
+      - { transformers: cert-manager-provided-ingress-certificate.yaml, vdm: true, max: "2022.1", priority: 70 }
+      - { transformers: overlays/cert-manager-provided-ingress-certificate/ingress-annotation-transformer.yaml, min: 2022.1.1, priority: 70 }
   when:
     - V4_CFG_TLS_MODE != "disabled"
     - (V4_CFG_TLS_CERT is none and V4_CFG_TLS_KEY is none and V4_CFG_TLS_GENERATOR == "cert-manager")
@@ -214,13 +222,13 @@
     - uninstall
     - update
 
-- name: tls - Certificate Generation - openssl
+- name: TLS - Certificate Generation - openssl
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { resources: "openssl-generated-ingress-certificate.yaml", vdm: true, min: "2021.2" }
+      - { resources: openssl-generated-ingress-certificate.yaml, vdm: true, min: "2021.2" }
   when:
     - V4_CFG_TLS_MODE != "disabled"
     - (V4_CFG_TLS_CERT is none and V4_CFG_TLS_KEY is none and V4_CFG_TLS_GENERATOR == "openssl")
@@ -228,13 +236,13 @@
     - install
     - update
 
-- name: tls - Configuring Certificate Attributes
+- name: TLS - Configuring Certificate Attributes
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { generators: "customer-provided-merge-sas-certframe-configmap.yaml", vdm: true }
+      - { generators: customer-provided-merge-sas-certframe-configmap.yaml, vdm: true }
   when:
     - V4_CFG_TLS_MODE != "disabled"
     - (V4_CFG_TLS_GENERATOR == "cert-manager" or V4_CFG_TLS_GENERATOR == "openssl")
@@ -243,27 +251,27 @@
     - uninstall
     - update
 
-- name: tls - Consul UI
+- name: TLS - Consul UI
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { resources: "consul-ui.yaml", vdm: true }
-  when: 
+      - { resources: consul-ui.yaml, vdm: true }
+  when:
     - V4_CFG_CONSUL_ENABLE_LOADBALANCER
   tags:
     - install
     - uninstall
     - update
 
-- name: add ingress class
+- name: Add ingress class
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { transformers: "nginx-ingressclass.yaml", vdm: true, max: "2021.1.5" }
+      - { transformers: nginx-ingressclass.yaml, vdm: true, max: 2021.1.5 }
   when:
     - V4_CFG_INGRESS_TYPE == "ingress"
   tags:

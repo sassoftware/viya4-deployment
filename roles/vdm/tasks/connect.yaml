@@ -2,34 +2,23 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
-- name: "connect - Loadbalancer "
+- name: Connect - Loadbalancer
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { resources: "sas-connect-spawner-enable-loadbalancer.yaml", vdm: true }
-  when: 
+      - { resources: sas-connect-spawner-enable-loadbalancer.yaml, vdm: true }
+  when:
     - V4_CFG_CONNECT_ENABLE_LOADBALANCER
   tags:
     - install
     - uninstall
     - update
 
-- block:
-  - name: connect - SAS/CONNECT FQDN to the SAN DNS list for cert-manager
-    set_fact:
-      V4_CFG_TLS_ADDITIONAL_SAN_DNS: "{{ V4_CFG_TLS_ADDITIONAL_SAN_DNS }} {{ V4_CFG_CONNECT_FQDN }}"
-  - name: connect - Configure Customer Provided Server Certificates
-    overlay_facts:
-      cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
-      cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
-      existing: "{{ vdm_overlays }}"
-      add:
-        - { transformers: "sas-connect-customer-provided-ingress-certificate-tls-certframe-transformer.yaml", priority: 60, vdm: true}
-    when:
-      - V4_CFG_TLS_MODE != "disabled"
-      - V4_CFG_TLS_CERT is not none
+- name: Connect - SAS/CONNECT FQDN to the SAN DNS list for cert-manager
+  set_fact:
+    V4_CFG_TLS_ADDITIONAL_SAN_DNS: "{{ V4_CFG_TLS_ADDITIONAL_SAN_DNS }} {{ V4_CFG_CONNECT_FQDN }}"
   when:
     - V4_CFG_CONNECT_FQDN is not none
   tags:

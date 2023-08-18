@@ -1,6 +1,7 @@
 # Copyright © 2020-2023, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+---
 ## Multi-tenant
 
 # Updating HOST to remove https
@@ -13,9 +14,9 @@ V4_CFG_CR_PASSWORD: null
 # Multi-tenant is enabled within SAS Viya deployment
 V4MT_ENABLE: false
 
-# SAS Viya supports two modes of data isolation (schemaPerApplicationTenant and databasePerTenant) for tenant data. 
-# Set V4MT_MODE to either schema or database. schemaPerApplicationTenant Mode is enabled by default. 
-V4MT_MODE: "schema"
+# SAS Viya supports two modes of data isolation (schemaPerApplicationTenant and databasePerTenant) for tenant data.
+# Set V4MT_MODE to either schema or database. schemaPerApplicationTenant Mode is enabled by default.
+V4MT_MODE: schema
 
 V4MT_TENANT_IDS: null
 
@@ -24,7 +25,6 @@ V4MT_PROVIDER_PASSWORD: null
 
 # CAS customization values
 V4MT_TENANT_CAS_CUSTOMIZATION: {}
-
 # Setting values for retry and delay to 60 seconds for Onboard and Offboard job
 V4MT_ONBOARD_RETRY: 60
 V4MT_ONBOARD_DELAY: 60

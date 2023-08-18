@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
-- name: multitenant - folder check
+- name: Multitenant - folder check
   stat:
     path: "{{ DEPLOY_DIR }}/sas-bases/overlays/multi-tenant"
   register: result
@@ -11,13 +11,13 @@
     - uninstall
     - update
 
-- name: multitenant - add overlays
+- name: Multitenant - add overlays
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { transformers: "overlays/multi-tenant/sas-shared-configmap-transformer.yaml" }
+      - { transformers: overlays/multi-tenant/sas-shared-configmap-transformer.yaml }
   when:
     - V4MT_ENABLE
     - result.stat.exists
@@ -26,10 +26,10 @@
     - uninstall
     - update
 
-- name: create site-config/multi-tenant folder
+- name: Create site-config/multi-tenant folder
   file:
     state: directory
-    dest: '{{ DEPLOY_DIR }}/site-config/multi-tenant'
+    dest: "{{ DEPLOY_DIR }}/site-config/multi-tenant"
     mode: "0770"
   when: V4MT_ENABLE
   tags:
@@ -37,7 +37,7 @@
     - uninstall
     - update
 
-- name: copy - site-config/multi-tenant/sasdefault.yaml
+- name: Copy - site-config/multi-tenant/sasdefault.yaml
   template:
     src: "{{ DEPLOY_DIR }}/sas-bases/examples/multi-tenant/sasdefault.yaml"
     dest: "{{ DEPLOY_DIR }}/site-config/multi-tenant"
@@ -49,7 +49,7 @@
     - update
 
 # New update suggests no need to set INGRESS_HOST
-- name: sasdefault - update host
+- name: Sasdefault - update host
   replace:
     path: "{{ DEPLOY_DIR }}/site-config/multi-tenant/sasdefault.yaml"
     regexp: "{INGRESS_HOST}"
@@ -59,10 +59,10 @@
     - uninstall
     - update
 
-- name: db mode - uncomment db-mode
+- name: Db mode - uncomment db-mode
   replace:
     path: "{{ DEPLOY_DIR }}/site-config/multi-tenant/sasdefault.yaml"
-    regexp: '#\s*sas.multi.tenancy.db.mode.*$'
+    regexp: "#\\s*sas.multi.tenancy.db.mode.*$"
     replace: "    sas.multi.tenancy.db.mode: databasePerTenant"
   when: V4MT_MODE|lower == "database"
   tags:

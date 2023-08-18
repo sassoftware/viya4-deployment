@@ -2,14 +2,14 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
-- name: deployment-operator - validate V4_DEPLOYMENT_OPERATOR_SCOPE
+- name: deployment-operator - validate V4_DEPLOYMENT_OPERATOR_SCOPE # noqa: name[casing]
   ansible.builtin.assert:
     that: V4_DEPLOYMENT_OPERATOR_SCOPE is match ('^(cluster|namespace)$')
     msg: >
       V4_DEPLOYMENT_OPERATOR_SCOPE must set to either 'cluster' or 'namespace'.
       See usage documentation at docs/CONFIG-VARS.md
 
-- name: deployment-operator - Set base OPERATOR_DEPLOY_DIRECTORY
+- name: deployment-operator - Set base OPERATOR_DEPLOY_DIRECTORY # noqa: name[casing]
   set_fact:
     OPERATOR_DEPLOY_DIRECTORY: "{{ BASE_DIR | regex_replace('\\/$', '') }}/{{ CLUSTER_NAME }}/{{ NAMESPACE }}/operator-deploy"
   tags:
@@ -17,7 +17,7 @@
     - uninstall
     - update
 
-- name: deployment-operator - Remove old files
+- name: deployment-operator - Remove old files # noqa: name[casing]
   file:
     path: "{{ item }}"
     state: absent
@@ -29,15 +29,15 @@
     - install
     - update
 
-- name: deployment-operator - set scoped OPERATOR_DEPLOY_DIRECTORY
+- name: deployment-operator - set scoped OPERATOR_DEPLOY_DIRECTORY # noqa: name[casing]
   set_fact:
-    OPERATOR_DEPLOY_DIRECTORY: "{{ OPERATOR_DEPLOY_DIRECTORY + '-clusterwide' if V4_DEPLOYMENT_OPERATOR_SCOPE == 'cluster' else OPERATOR_DEPLOY_DIRECTORY + '-namespace'}}"
+    OPERATOR_DEPLOY_DIRECTORY: "{{ OPERATOR_DEPLOY_DIRECTORY + '-clusterwide' if V4_DEPLOYMENT_OPERATOR_SCOPE == 'cluster' else OPERATOR_DEPLOY_DIRECTORY + '-namespace' }}"
   tags:
     - install
     - uninstall
     - update
 
-- name: deployment-operator - create operator-deploy directory
+- name: deployment-operator - create operator-deploy directory # noqa: name[casing]
   file:
     state: directory
     dest: "{{ OPERATOR_DEPLOY_DIRECTORY }}"
@@ -46,12 +46,12 @@
     - install
     - update
 
-- name: deployment-operator - ensure cluster-wide mode namespace is not the same as the SAS Viya namespace
+- name: deployment-operator - ensure cluster-wide mode namespace is not the same as the SAS Viya namespace # noqa: name[casing]
   ansible.builtin.assert:
-    that: '{{ V4_DEPLOYMENT_OPERATOR_NAMESPACE != NAMESPACE}}'
+    that: "{{ V4_DEPLOYMENT_OPERATOR_NAMESPACE != NAMESPACE }}"
     msg: >
       Invalid V4_DEPLOYMENT_OPERATOR_NAMESPACE value: {{ V4_DEPLOYMENT_OPERATOR_NAMESPACE }}
-      
+
       When the V4_DEPLOYMENT_OPERATOR_SCOPE is set to `cluster`, the V4_DEPLOYMENT_OPERATOR_NAMESPACE value cannot be
       the same as NAMESPACE.
   when:
@@ -60,7 +60,7 @@
     - install
     - update
 
-- name: deployment-operator - Set V4_DEPLOYMENT_OPERATOR_NAMESPACE to SAS Viya namespace when using namespace mode
+- name: deployment-operator - Set V4_DEPLOYMENT_OPERATOR_NAMESPACE to SAS Viya namespace when using namespace mode # noqa: name[casing]
   set_fact:
     V4_DEPLOYMENT_OPERATOR_NAMESPACE: "{{ NAMESPACE }}"
   when:
@@ -70,7 +70,7 @@
     - uninstall
     - update
 
-- name: deployment-operator - create namespace
+- name: deployment-operator - create namespace # noqa: name[casing]
   kubernetes.core.k8s:
     api_version: v1
     kind: Namespace
@@ -81,7 +81,7 @@
     - install
     - update
 
-- name: deployment-operator - copy example files
+- name: deployment-operator - copy example files # noqa: name[casing]
   ansible.builtin.copy:
     src: "{{ DEPLOY_DIR }}/sas-bases/examples/deployment-operator/deploy/"
     dest: "{{ OPERATOR_DEPLOY_DIRECTORY }}"
@@ -89,7 +89,7 @@
     - install
     - update
 
-- name: deployment-operator - make transformer.yaml writable
+- name: deployment-operator - make transformer.yaml writable # noqa: name[casing]
   ansible.builtin.file:
     path: "{{ OPERATOR_DEPLOY_DIRECTORY }}/site-config/transformer.yaml"
     state: file
@@ -98,7 +98,7 @@
     - install
     - update
 
-- name: deployment-operator - update namespace in transformer.yaml
+- name: deployment-operator - update namespace in transformer.yaml # noqa: name[casing]
   replace:
     path: "{{ OPERATOR_DEPLOY_DIRECTORY }}/site-config/transformer.yaml"
     regexp: "{% raw %}{{ NAME-OF-NAMESPACE }}{% endraw %}"
@@ -107,7 +107,7 @@
     - install
     - update
 
-- name: deployment-operator - update cluster role binding in transformer.yaml
+- name: deployment-operator - update cluster role binding in transformer.yaml # noqa: name[casing]
   replace:
     path: "{{ OPERATOR_DEPLOY_DIRECTORY }}/site-config/transformer.yaml"
     regexp: "{% raw %}{{ NAME-OF-CLUSTERROLEBINDING }}{% endraw %}"
@@ -116,29 +116,29 @@
     - install
     - update
 
-- name: deployment-operator - determine if required/transformers.yaml overlay required
-  block:
-    - name: deployment-operator - Set required_transformers
-      set_fact:
-        required_transformers: true
-    - name: deployment-operator - Create required directory
-      file:
-        state: directory
-        dest: "{{ OPERATOR_DEPLOY_DIRECTORY }}/site-config/required"
-        mode: "0770"
-    - name: deployment-operator - Copy required/transformers.yaml
-      copy:
-        src: "{{ DEPLOY_DIR }}/sas-bases/overlays/required/transformers.yaml"
-        dest: "{{ OPERATOR_DEPLOY_DIRECTORY }}/site-config/required/transformers.yaml"
-        mode: "0660"
+- name: deployment-operator - determine if required/transformers.yaml overlay required # noqa: name[casing]
   when:
     - V4_CFG_CADENCE_VERSION is version('2021.1.6', "<")
     - V4_CFG_CADENCE_NAME|lower != "fast"
   tags:
     - install
     - update
+  block:
+    - name: deployment-operator - Set required_transformers # noqa: name[casing]
+      set_fact:
+        required_transformers: true
+    - name: deployment-operator - Create required directory # noqa: name[casing]
+      file:
+        state: directory
+        dest: "{{ OPERATOR_DEPLOY_DIRECTORY }}/site-config/required"
+        mode: "0770"
+    - name: deployment-operator - Copy required/transformers.yaml # noqa: name[casing]
+      copy:
+        src: "{{ DEPLOY_DIR }}/sas-bases/overlays/required/transformers.yaml"
+        dest: "{{ OPERATOR_DEPLOY_DIRECTORY }}/site-config/required/transformers.yaml"
+        mode: "0660"
 
-- name: deployment-operator - copy mirror example
+- name: deployment-operator - copy mirror example # noqa: name[casing]
   copy:
     src: "{{ DEPLOY_DIR }}/sas-bases/examples/mirror/mirror.yaml"
     dest: "{{ OPERATOR_DEPLOY_DIRECTORY }}/site-config/mirror.yaml"
@@ -149,7 +149,7 @@
     - install
     - update
 
-- name: deployment-operator - update mirror example
+- name: deployment-operator - update mirror example # noqa: name[casing]
   replace:
     path: "{{ OPERATOR_DEPLOY_DIRECTORY }}/site-config/mirror.yaml"
     regexp: "{% raw %}{{ MIRROR-HOST }}{% endraw %}"
@@ -160,19 +160,19 @@
     - install
     - update
 
-- name: deployment-operator - Determine kustomization content
+- name: deployment-operator - Determine kustomization content # noqa: name[casing]
   set_fact:
     image_pull_secret_patch_target: "{{ 'ServiceAccount'
                                      if (V4_CFG_CR_USER is not none and
                                      V4_CFG_CADENCE_VERSION is version('2021.1.5', '<') and
-                                     V4_CFG_CADENCE_NAME|lower != 'fast') else 'Deployment'}}"
+                                     V4_CFG_CADENCE_NAME | lower != 'fast') else 'Deployment' }}"
     secret_generator_required: "{{ true if (V4_CFG_CADENCE_VERSION is version('2021.1.5', '<') and
-     V4_CFG_CADENCE_NAME|lower != 'fast') else false}}"
+      V4_CFG_CADENCE_NAME | lower != 'fast') else false }}"
   tags:
     - install
     - update
 
-- name: deployment-operator - copy secrets
+- name: deployment-operator - copy secrets # noqa: name[casing]
   copy:
     src: "{{ DEPLOY_DIR }}/sas-bases/base/secrets.yaml"
     dest: "{{ OPERATOR_DEPLOY_DIRECTORY }}/site-config/secrets.yaml"
@@ -181,9 +181,9 @@
     - install
     - update
 
-- name: deployment-operator - copy CR access
+- name: deployment-operator - copy CR access # noqa: name[casing]
   template:
-    src: "cr_access.json"
+    src: cr_access.json
     dest: "{{ OPERATOR_DEPLOY_DIRECTORY }}/site-config/cr_access.json"
     mode: "0660"
   when:
@@ -192,18 +192,21 @@
     - install
     - update
 
-- name: deployment-operator - create kustomization.yaml
+- name: deployment-operator - create kustomization.yaml # noqa: name[casing]
   template:
-    src: "deployment_operator_kustomization.yaml"
+    src: deployment_operator_kustomization.yaml
     dest: "{{ OPERATOR_DEPLOY_DIRECTORY }}/kustomization.yaml"
     mode: "0660"
   tags:
     - install
     - update
 
-- name: deployment-operator - deploy
+- name: deployment-operator - deploy # noqa: name[casing]
+  tags:
+    - install
+    - update
   block:
-    - name: deployment-operator - Generate deployment-operator manifest - Ansible
+    - name: deployment-operator - Generate deployment-operator manifest - Ansible # noqa: name[casing]
       ansible.builtin.shell: >
         docker run --rm
         --user="{{ UID_GID }}"
@@ -214,7 +217,7 @@
         build /data -o /data/SASDeploymentOperator.yaml
       when:
         - deployment_tooling == "ansible"
-    - name: deployment-operator - Generate deployment-operator manifest - Docker
+    - name: deployment-operator - Generate deployment-operator manifest - Docker # noqa: name[casing]
       environment:
         PATH: "{{ ORCHESTRATION_TOOLING_PATH }}"
       command:
@@ -224,7 +227,7 @@
         chdir: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}"
       when:
         - deployment_tooling == "docker"
-    - name: deployment-operator - Apply deployment-operator manifest
+    - name: deployment-operator - Apply deployment-operator manifest # noqa: name[casing]
       kubernetes.core.k8s:
         src: "{{ OPERATOR_DEPLOY_DIRECTORY }}/SASDeploymentOperator.yaml"
         state: present
@@ -232,13 +235,10 @@
         kubeconfig: "{{ KUBECONFIG }}"
       when:
         - DEPLOY
-  tags:
-    - install
-    - update
 
-- name: deployment-operator - create deployment-operator-clusterwide.yaml
+- name: deployment-operator - create deployment-operator-clusterwide.yaml # noqa: name[casing]
   ansible.builtin.template:
-    src: "deployment-operator-clusterwide.yaml"
+    src: deployment-operator-clusterwide.yaml
     dest: "{{ BASE_DIR | regex_replace('\\/$', '') }}/{{ CLUSTER_NAME }}/deployment-operator-clusterwide.yaml"
     mode: "0660"
   when:
@@ -247,7 +247,7 @@
     - install
     - update
 
-- name: deployment-operator - Get a list of all SASDeployments in cluster
+- name: deployment-operator - Get a list of all SASDeployments in cluster # noqa: name[casing]
   kubernetes.core.k8s_info:
     kubeconfig: "{{ KUBECONFIG }}"
     api_version: orchestration.sas.com/v1alpha1
@@ -256,46 +256,46 @@
   tags:
     - uninstall
 
-- name: deployment-operator - Skip deletion if other SASDeployment resources still exist
+- name: deployment-operator - Skip deletion if other SASDeployment resources still exist # noqa: name[casing]
   ansible.builtin.debug:
     msg: >
-     A SAS Viya deployment that relies on the Deployment Operator still exists in cluster in the following namespaces:
-     {{ cluster_sasdeployments.resources | map(attribute='metadata.namespace') | list | join(', ') }}.
-     Skipping Deployment Operator deletion.
+      A SAS Viya deployment that relies on the Deployment Operator still exists in cluster in the following namespaces:
+      {{ cluster_sasdeployments.resources | map(attribute='metadata.namespace') | list | join(', ') }}.
+      Skipping Deployment Operator deletion.
   when:
     - cluster_sasdeployments.resources|length != 0
   tags:
     - uninstall
 
-- name: deployment-operator - uninstall
+- name: deployment-operator - uninstall # noqa: name[casing]
+  when:
+    - cluster_sasdeployments.resources|length == 0
+    - DEPLOY
+  tags:
+    - uninstall
   block:
-    - name: deployment-operator - Uninstall serviceaccounts, roles, rolebindings, deployments, and secrets
+    - name: deployment-operator - Uninstall serviceaccounts, roles, rolebindings, deployments, and secrets # noqa: name[casing]
       environment:
         KUBECONFIG: "{{ KUBECONFIG }}"
       ansible.builtin.shell: >
         kubectl delete serviceaccounts,roles,rolebindings,deployments,secrets
         -n {{ V4_DEPLOYMENT_OPERATOR_NAMESPACE }} --selector "app.kubernetes.io/name=sas-deployment-operator"
-    - name: deployment-operator - Collect clusterrolebindings
+    - name: deployment-operator - Collect clusterrolebindings # noqa: name[casing]
       environment:
         KUBECONFIG: "{{ KUBECONFIG }}"
       ansible.builtin.shell: >
-        kubectl get clusterrolebindings --selector "app.kubernetes.io/name=sas-deployment-operator" 
-        -o jsonpath='{.items[?(@.subjects[0].namespace == "{{ V4_DEPLOYMENT_OPERATOR_NAMESPACE }}")].metadata.name}'
+        kubectl get clusterrolebindings --selector "app.kubernetes.io/name=sas-deployment-operator"  -o jsonpath='{.items[?(@.subjects[0].namespace == "{{ V4_DEPLOYMENT_OPERATOR_NAMESPACE
+        }}")].metadata.name}'
       register: result
-    - name: deployment-operator - Uninstall clusterrolebindings
+    - name: deployment-operator - Uninstall clusterrolebindings # noqa: name[casing]
       environment:
         KUBECONFIG: "{{ KUBECONFIG }}"
       ansible.builtin.shell: >
         kubectl delete clusterrolebindings {{ result.stdout }}
       when:
         - result.stdout|length > 0
-  when:
-    - cluster_sasdeployments.resources|length == 0
-    - DEPLOY
-  tags:
-    - uninstall
 
-- name: deployment-operator - Delete namespace
+- name: deployment-operator - Delete namespace # noqa: name[casing]
   kubernetes.core.k8s:
     api_version: v1
     kind: Namespace
@@ -310,7 +310,7 @@
   tags:
     - uninstall
 
-- name: deployment-operator - remove deployment-operator-clusterwide.yaml
+- name: deployment-operator - remove deployment-operator-clusterwide.yaml # noqa: name[casing]
   file:
     path: "{{ BASE_DIR | regex_replace('\\/$', '') }}/{{ CLUSTER_NAME }}/deployment-operator-clusterwide.yaml"
     state: absent

@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
-- name: cluster-monitoring - create userdir
+- name: cluster-monitoring - create userdir # noqa: name[casing]
   file:
     path: "{{ tmpdir.path }}/monitoring/"
     state: directory
@@ -12,7 +12,7 @@
     - uninstall
     - update
 
-- name: v4m - cluster monitoring config vars
+- name: V4M - cluster monitoring config vars
   include_tasks: cluster-monitoring.yaml
   when:
     - V4M_CUSTOM_CONFIG_USER_DIR is none
@@ -21,7 +21,7 @@
     - uninstall
     - update
 
-- name: v4m - cluster monitoring custom config user dir
+- name: V4M - cluster monitoring custom config user dir
   include_tasks: cluster-monitoring-custom-config.yaml
   when:
     - V4M_CUSTOM_CONFIG_USER_DIR is not none
@@ -29,7 +29,7 @@
     - install
     - update
 
-- name: cluster-monitoring - grafana cert
+- name: cluster-monitoring - grafana cert # noqa: name[casing]
   kubernetes.core.k8s:
     kubeconfig: "{{ KUBECONFIG }}"
     state: present
@@ -37,13 +37,13 @@
       kind: Secret
       apiVersion: v1
       metadata:
-        name: "grafana-ingress-tls-secret"
+        name: grafana-ingress-tls-secret
         namespace: "{{ V4M_MONITORING_NAMESPACE }}"
       data:
         tls.crt: >-
-          {{ lookup('file', V4M_GRAFANA_CERT ) |b64encode }}
+          {{ lookup('file', V4M_GRAFANA_CERT) | b64encode }}
         tls.key: >-
-          {{ lookup('file', V4M_GRAFANA_KEY ) |b64encode }}
+          {{ lookup('file', V4M_GRAFANA_KEY) | b64encode }}
       type: kubernetes.io/tls
   when:
     - V4M_GRAFANA_CERT is not none
@@ -52,7 +52,7 @@
     - install
     - update
 
-- name: cluster-monitoring - prometheus cert
+- name: cluster-monitoring - prometheus cert # noqa: name[casing]
   kubernetes.core.k8s:
     kubeconfig: "{{ KUBECONFIG }}"
     state: present
@@ -60,13 +60,13 @@
       kind: Secret
       apiVersion: v1
       metadata:
-        name: "prometheus-ingress-tls-secret"
+        name: prometheus-ingress-tls-secret
         namespace: "{{ V4M_MONITORING_NAMESPACE }}"
       data:
         tls.crt: >-
-          {{ lookup('file', V4M_PROMETHEUS_CERT ) |b64encode }}
+          {{ lookup('file', V4M_PROMETHEUS_CERT) | b64encode }}
         tls.key: >-
-          {{ lookup('file', V4M_PROMETHEUS_KEY ) |b64encode }}
+          {{ lookup('file', V4M_PROMETHEUS_KEY) | b64encode }}
       type: kubernetes.io/tls
   when:
     - V4M_PROMETHEUS_CERT is not none
@@ -75,7 +75,7 @@
     - install
     - update
 
-- name: cluster-monitoring - alertmanager cert
+- name: cluster-monitoring - alertmanager cert # noqa: name[casing]
   kubernetes.core.k8s:
     kubeconfig: "{{ KUBECONFIG }}"
     state: present
@@ -83,13 +83,13 @@
       kind: Secret
       apiVersion: v1
       metadata:
-        name: "alertmanager-ingress-tls-secret"
+        name: alertmanager-ingress-tls-secret
         namespace: "{{ V4M_MONITORING_NAMESPACE }}"
       data:
         tls.crt: >-
-          {{ lookup('file', V4M_ALERTMANAGER_CERT ) |b64encode }}
+          {{ lookup('file', V4M_ALERTMANAGER_CERT) | b64encode }}
         tls.key: >-
-          {{ lookup('file', V4M_ALERTMANAGER_KEY ) |b64encode }}
+          {{ lookup('file', V4M_ALERTMANAGER_KEY) | b64encode }}
       type: kubernetes.io/tls
   when:
     - V4M_ALERTMANAGER_CERT is not none
@@ -98,14 +98,14 @@
     - install
     - update
 
-- name: cluster-monitoring - uninstall
+- name: cluster-monitoring - uninstall # noqa: name[casing]
   command:
     cmd: "{{ tmpdir.path }}/viya4-monitoring-kubernetes/monitoring/bin/remove_monitoring_cluster.sh"
   environment: "{{ monitoring_env }}"
   tags:
     - uninstall
 
-- name: cluster-monitoring - delete namespace
+- name: cluster-monitoring - delete namespace # noqa: name[casing]
   kubernetes.core.k8s:
     api_version: v1
     kind: Namespace

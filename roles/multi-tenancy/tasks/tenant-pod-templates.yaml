@@ -1,26 +1,29 @@
 ---
 - name: FileGenerator updates for tenant-specific resources
+  when: V4MT_TENANT_IDS is search(tenant)
+  tags:
+    - onboard
   block:
-    - name: delete tenant-specific resource directories if present
+    - name: Delete tenant-specific resource directories if present
       file:
         state: absent
         path: "{{ DEPLOY_DIR }}/site-config/multi-tenant/{{ tenant }}"
-    - name: create a new directory for each tenant under $deploy/site-config/multi-tenant/
+    - name: Create a new directory for each tenant under $deploy/site-config/multi-tenant/
       file:
         state: directory
-        dest: '{{ DEPLOY_DIR }}/site-config/multi-tenant/{{ tenant }}'
+        dest: "{{ DEPLOY_DIR }}/site-config/multi-tenant/{{ tenant }}"
         mode: "0770"
-    - name: copy - sas-programming-environment files
+    - name: Copy - sas-programming-environment files
       copy:
         src: "{{ DEPLOY_DIR }}/sas-bases/examples/multi-tenant/sas-programming-environment/"
         dest: "{{ DEPLOY_DIR }}/site-config/multi-tenant/{{ tenant }}"
         mode: "0770"
-    - name: list all the pod templates to be updated
+    - name: List all the pod templates to be updated
       find:
-        paths: '{{ DEPLOY_DIR }}/site-config/multi-tenant/{{ item }}'
-        recurse: yes
+        paths: "{{ DEPLOY_DIR }}/site-config/multi-tenant/{{ item }}"
+        recurse: true
       register: result
-    - name: replace all occurrences of SAS-TENANT-ID with the ID of the tenant
+    - name: Replace all occurrences of SAS-TENANT-ID with the ID of the tenant
       replace:
         path: "{{ outer_item.path }}"
         regexp: "{% raw %}{{ SAS-TENANT-ID }}{% endraw %}"
@@ -28,6 +31,3 @@
       with_items: "{{ result.files }}"
       loop_control:
         loop_var: outer_item
-  when: V4MT_TENANT_IDS is search(tenant)
-  tags:
-    - onboard
