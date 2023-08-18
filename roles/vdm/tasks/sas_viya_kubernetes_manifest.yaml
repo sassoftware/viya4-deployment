@@ -6,7 +6,7 @@
 # is being used to orchestrate the deployment.
 ---
 
-- name: sasdeployment custom resource - Create SAS Viya namespace
+- name: Create SAS Viya namespace
   kubernetes.core.k8s:
     api_version: v1
     kind: Namespace
@@ -29,6 +29,12 @@
     - offboard
 
 - name: SAS Viya Kubernetes Manifest - generate site.yaml
+  tags:
+    - install
+    - uninstall
+    - update
+    - cas-onboard
+    - offboard
   block:
     - name: SAS Viya Kubernetes Manifest - generate site.yaml - Ansible
       ansible.builtin.shell: >
@@ -51,9 +57,3 @@
         chdir: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}"
       when:
         - deployment_tooling == "docker"
-  tags:
-    - install
-    - uninstall
-    - update
-    - cas-onboard
-    - offboard
