@@ -12,7 +12,6 @@ metadata:
   name: v4m
 parameters:
   skuName: Standard_LRS
-# provisioner: kubernetes.io/azure-disk  ## check if still required for K8s <=1.25
 provisioner: disk.csi.azure.com
 reclaimPolicy: Delete
 # Set binding mode to WaitForFirstConsumer to avoid
