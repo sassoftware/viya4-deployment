@@ -12,7 +12,7 @@ metadata:
   name: v4m
 parameters:
   skuName: Standard_LRS
-provisioner: kubernetes.io/azure-disk
+provisioner: disk.csi.azure.com
 reclaimPolicy: Delete
 # Set binding mode to WaitForFirstConsumer to avoid
 # volume node affinity issues
