@@ -125,6 +125,30 @@
       when:
         - tfstate.location is defined
         - tfstate.location.value|length > 0
+    - name: tfstate - trident csi driver account # noqa: name[casing]
+      set_fact:
+        TRIDENT_CSI_DRIVER_ACCOUNT: "{{ tfstate.fsx_ontap_account.value }}"
+      when:
+        - tfstate.fsx_ontap_account is defined
+        - tfstate.fsx_ontap_account.value|length > 0
+    - name: tfstate - aws fsx ontap fs management endpoint # noqa: name[casing]
+      set_fact:
+        AWS_FSX_ONTAP_FILE_SYSTEM_MANAGEMENT_ENDPOINT: "{{ tfstate.aws_fsx_ontap_file_system_management_endpoint.value }}"
+      when:
+        - tfstate.aws_fsx_ontap_file_system_management_endpoint is defined
+        - tfstate.aws_fsx_ontap_file_system_management_endpoint.value|length > 0
+    - name: tfstate - aws fsx ontap storage virtual machine name # noqa: name[casing]
+      set_fact:
+        AWS_FSX_ONTAP_STORAGE_VIRTUAL_MACHINE_NAME: "{{ tfstate.aws_fsx_ontap_storage_virtual_machine_name.value }}"
+      when:
+        - tfstate.aws_fsx_ontap_storage_virtual_machine_name is defined
+        - tfstate.aws_fsx_ontap_storage_virtual_machine_name.value|length > 0
+    - name: tfstate - aws fsx ontap fsxadmin password # noqa: name[casing]
+      set_fact:
+        AWS_FSX_ONTAP_FSXADMIN_PASSWORD: "{{ tfstate.aws_fsx_ontap_fsxadmin_password.value }}"
+      when:
+        - tfstate.aws_fsx_ontap_fsxadmin_password is defined
+        - tfstate.aws_fsx_ontap_fsxadmin_password.value|length > 0
     - name: tfstate - cluster autoscaler account # noqa: name[casing]
       set_fact:
         CLUSTER_AUTOSCALER_ACCOUNT: "{{ tfstate.autoscaler_account.value }}"

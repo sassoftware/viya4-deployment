@@ -7,6 +7,7 @@ V4_CFG_RWX_FILESTORE_PATH: /export
 V4_CFG_INGRESS_TYPE: ingress
 V4_CFG_INGRESS_MODE: public
 V4_CFG_MANAGE_STORAGE: true
+V4_CFG_STORAGECLASS: sas
 
 ## Cert-manager
 CERT_MANAGER_NAME: cert-manager
@@ -211,3 +212,19 @@ private_ingress:
       service:
         annotations:
           networking.gke.io/load-balancer-type: Internal
+
+## Trident CSI Driver
+TRIDENT_CSI_DRIVER_ENABLED: true
+TRIDENT_CSI_DRIVER_NAME: aws-trident-csi-driver
+TRIDENT_CSI_DRIVER_NAMESPACE: kube-system
+TRIDENT_CSI_DRIVER_CHART_NAME: trident-operator
+TRIDENT_CSI_DRIVER_CHART_URL: https://netapp.github.io/trident-helm-chart
+TRIDENT_CSI_DRIVER_CHART_VERSION: 23.07.0
+TRIDENT_CSI_DRIVER_ACCOUNT: null
+TRIDENT_CSI_DRIVER_LOCATION: us-east-1
+TRIDENT_CSI_DRIVER_CONFIG:
+  nodeSelector:
+
+AWS_FSX_ONTAP_FSXADMIN_PASSWORD: Password123
+AWS_FSX_ONTAP_FILE_SYSTEM_MANAGEMENT_ENDPOINT: null
+AWS_FSX_ONTAP_STORAGE_VIRTUAL_MACHINE_NAME: null

@@ -27,6 +27,7 @@ Supported configuration variables are listed in the table below.  All variables 
   - [Third-Party Tools](#third-party-tools)
     - [Cert-manager](#cert-manager)
     - [Cluster Autoscaler](#cluster-autoscaler)
+    - [FSx ONTAP CSI Driver](#fsx-ontap-csi-driver)
     - [Ingress-nginx](#ingress-nginx)
     - [Metrics Server](#metrics-server)
     - [NFS Client](#nfs-client)
@@ -388,6 +389,15 @@ The EBS CSI driver is currently only used for kubernetes v1.23 or later AWS EKS 
 | EBS_CSI_DRIVER_CONFIG | aws ebs csi driver helm values | string | see [here](../roles/baseline/defaults/main.yml) | false | | baseline |
 | EBS_CSI_DRIVER_ACCOUNT | cluster autoscaler aws role arn | string | | false | Required to enable the aws ebs csi driver on AWS | baseline |
 | EBS_CSI_DRIVER_LOCATION | aws region where kubernetes cluster resides | string | us-east-1 | false | | baseline |
+
+### FSX ONTAP CSI Driver
+
+| <div style="width:50px">Name</div> | <div style="width:150px">Description</div> | <div style="width:35px">Type</div> | <div style="width:50px">Default</div>| <div style="width:60px">Required</div>  | <div style="width:40px">Notes</div> | <div style="width:50px">Tasks</div> |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
+| AWS_FSX_ONTAP_FSXADMIN_PASSWORD | You use the fsxadmin user to access the NetApp ONTAP CLI and REST API to manage your file system resources. For more information, see [Managing resources using NetApp Applicaton](https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/managing-resources-ontap-apps.html). | string |  | false | | baseline |
+| AWS_FSX_ONTAP_FILE_SYSTEM_MANAGEMENT_ENDPOINT |  | string |  | false | | baseline |
+| AWS_FSX_ONTAP_STORAGE_VIRTUAL_MACHINE_NAME |  | string |  | false | | baseline |
+
 
 ### Ingress-nginx
 

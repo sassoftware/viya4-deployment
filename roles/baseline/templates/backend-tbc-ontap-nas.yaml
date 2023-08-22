@@ -1,0 +1,37 @@
+# Copyright © 2020-2023, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: backend-tbc-ontap-nas-secret
+  namespace: "{{ TRIDENT_CSI_DRIVER_NAMESPACE }}"
+type: Opaque
+stringData:
+  username: fsxadmin
+  password: "{{ AWS_FSX_ONTAP_FSXADMIN_PASSWORD }}"
+---
+apiVersion: trident.netapp.io/v1
+kind: TridentBackendConfig
+metadata:
+  name: backend-tbc-ontap-nas
+  namespace: "{{ TRIDENT_CSI_DRIVER_NAMESPACE }}"
+spec:
+  version: 1
+  storageDriverName: ontap-nas
+  managementLIF: "{{ AWS_FSX_ONTAP_FILE_SYSTEM_MANAGEMENT_ENDPOINT }}"
+  dataLIF: "{{ V4_CFG_RWX_FILESTORE_ENDPOINT }}"
+  backendName: tbc-ontap-nas
+  svm: "{{ AWS_FSX_ONTAP_STORAGE_VIRTUAL_MACHINE_NAME }}"
+  credentials:
+    name: backend-tbc-ontap-nas-secret
+---
+# apiVersion: storage.k8s.io/v1
+# kind: StorageClass
+# metadata:
+#   name: "{{ V4_CFG_STORAGECLASS }}"
+# provisioner: csi.trident.netapp.io
+# parameters:
+#   backendType: ontap-nas
+#   fsType: nfs

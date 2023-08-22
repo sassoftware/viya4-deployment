@@ -71,6 +71,16 @@
   tags:
     - baseline
 
+- name: Include trident-csi-driver
+  include_tasks:
+    file: trident-csi-driver.yaml
+  when:
+    - PROVIDER == "aws"
+    - TRIDENT_CSI_DRIVER_ACCOUNT is defined
+    - TRIDENT_CSI_DRIVER_ACCOUNT is not none
+  tags:
+    - baseline
+
 - name: Include cert manager
   include_tasks:
     file: cert-manager.yaml

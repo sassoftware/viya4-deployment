@@ -1,0 +1,57 @@
+# Copyright © 2020-2023, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+---
+- name: Deploy trident-csi-driver
+  kubernetes.core.helm:
+    name: "{{ TRIDENT_CSI_DRIVER_NAME }}"
+    namespace: "{{ TRIDENT_CSI_DRIVER_NAMESPACE }}"
+    chart_repo_url: "{{ TRIDENT_CSI_DRIVER_CHART_URL }}"
+    chart_ref: "{{ TRIDENT_CSI_DRIVER_CHART_NAME }}"
+    chart_version: "{{ TRIDENT_CSI_DRIVER_CHART_VERSION }}"
+    values: "{{ TRIDENT_CSI_DRIVER_CONFIG }}"
+    kubeconfig: "{{ KUBECONFIG }}"
+    wait: true
+  when:
+    - TRIDENT_CSI_DRIVER_ENABLED
+  tags:
+    - install
+    - update
+
+- name: Create trident backend config resource from template
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/backend-tbc-ontap-nas.yaml"
+    dest: "{{ role_path }}/templates/resources/backend-tbc-ontap-nas.yaml"
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: Apply trident backend custom resources
+  kubernetes.core.k8s:
+    kubeconfig: "{{ KUBECONFIG }}"
+    wait: true
+    state: present
+    src: "{{ role_path }}/templates/resources/backend-tbc-ontap-nas.yaml"
+  tags:
+    - install
+    - update
+
+- name: Remove trident backend custom resources
+  kubernetes.core.k8s:
+    kubeconfig: "{{ KUBECONFIG }}"
+    state: absent
+    src: "{{ role_path }}/templates/resources/backend-tbc-ontap-nas.yaml"
+  tags:
+    - uninstall
+
+- name: Remove trident-csi-driver
+  kubernetes.core.helm:
+    name: "{{ TRIDENT_CSI_DRIVER_NAME }}"
+    namespace: "{{ TRIDENT_CSI_DRIVER_NAMESPACE }}"
+    kubeconfig: "{{ KUBECONFIG }}"
+    wait: true
+    values: "{{ TRIDENT_CSI_DRIVER_CONFIG }}"
+    state: absent
+  tags:
+    - uninstall
