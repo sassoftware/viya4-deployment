@@ -3,7 +3,7 @@
 
 ---
 
-- name: Workload Orchestration - Configure SAS Workload Orchestrator Service Account
+- name: Workload Orchestrator - Configure SAS Workload Orchestrator Service Account
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
@@ -17,7 +17,7 @@
     - uninstall
     - update
 
-- name: Workload Orchestration - Disable the SAS Workload Orchestrator Service
+- name: Workload Orchestrator - Disable the SAS Workload Orchestrator Service
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
