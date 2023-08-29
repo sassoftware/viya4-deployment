@@ -30,3 +30,24 @@
     - install
     - uninstall
     - update
+
+- name: Workload Orchestrator - Remove the ClusterRoleBinding and ClusterRole
+  when:
+    - DEPLOY
+    - V4_WORKLOAD_ORCHESTRATOR_ENABLED
+    - V4_CFG_CADENCE_VERSION is version('2023.08', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
+  tags:
+    - uninstall
+  block:
+    - name: Workload Orchestrator - Remove ClusterRoleBinding
+      kubernetes.core.k8s:
+        kind: ClusterRoleBinding
+        name: "sas-workload-orchestrator-{{ NAMESPACE }}"
+        kubeconfig: "{{ KUBECONFIG }}"
+        state: absent
+    - name: Workload Orchestrator - Remove ClusterRole
+      kubernetes.core.k8s:
+        kind: ClusterRole
+        name: "sas-workload-orchestrator"
+        kubeconfig: "{{ KUBECONFIG }}"
+        state: absent
