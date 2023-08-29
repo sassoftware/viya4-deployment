@@ -35,12 +35,10 @@ ingressVersions:
     value: 23
     api:
       chartVersion: 4.3.0
-      appVersion: 1.4.0
   k8sMinorVersionFloor:
     value: 24
     api:
       chartVersion: 4.7.1
-      appVersion: 1.8.1
 
 ## Ingress-nginx - Ingress
 ##
