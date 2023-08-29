@@ -2,6 +2,17 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
+- name: Check tenant pod-templates are created
+  ansible.builtin.shell: |
+    kubectl --kubeconfig {{ KUBECONFIG }} get podtemplate -n {{ NAMESPACE }} | egrep '{{ V4MT_TENANT_IDS | replace(",", "|") | replace(" ", "") }}'
+  register: podtemplate_status
+  until: podtemplate_status.stdout | length > 0
+  failed_when: podtemplate_status.stderr | length > 0
+  retries: 5
+  delay: 90
+  tags:
+    - onboard
+
 # Apply the service account role
 - name: Apply service account role
   ansible.builtin.shell: |
@@ -182,7 +193,7 @@
   ansible.builtin.shell: |
     kubectl --kubeconfig {{ KUBECONFIG }} get pods -n {{ NAMESPACE }} --sort-by=.metadata.creationTimestamp | tac | grep sas-tenant-onboard | awk '{print $3}'
   register: pod_status
-  until: pod_status.stdout_lines[0] == "Completed" or pod_status.stdout_lines[0] in pod_fail_list
+  until: pod_status.stdout_lines[0] == "Running" or pod_status.stdout_lines[0] in pod_fail_list
   retries: "{{ V4MT_ONBOARD_RETRY | int }}"
   delay: "{{ V4MT_ONBOARD_DELAY | int }}"
   tags:
@@ -207,3 +218,16 @@
   tags:
     - onboard
     - offboard
+
+- name: Sleep for 120 seconds
+  debug:
+    msg:
+      - "Sleeping for 120 seconds before continuing with cas-onboard steps"
+  tags:
+    - onboard
+
+- name: Sleep for 120 seconds and continue with cas-onboard steps
+  ansible.builtin.wait_for:
+    timeout: 120
+  tags:
+    - onboard

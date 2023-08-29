@@ -21,6 +21,7 @@
     - install
     - uninstall
     - update
+    - onboard
     - cas-onboard
     - offboard
 
