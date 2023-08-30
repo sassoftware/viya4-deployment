@@ -165,7 +165,7 @@ When V4_CFG_MANAGE_STORAGE is set to `true`, the `sas` and `pg-storage` storage 
 | V4M_NODE_PLACEMENT_ENABLE | Whether to enable workload node placement for viya4-monitoring-kubernetes stack | bool | false | false | | cluster-logging, cluster-monitoring, viya-monitoring |
 | V4M_STORAGECLASS | StorageClass name | string | v4m | false | When V4_CFG_MANAGE_STORAGE is false, set to the name of your pre-existing StorageClass that supports ReadWriteOnce. | cluster-logging, cluster-monitoring, viya-monitoring |
 | V4M_ROUTING | Which routing type to use for viya4-monitoring-kubernetes applications | string | host-based | false | Supported values: [`host-based`, `path-based`] For host-based routing, the application name is part of the host name itself `https://dashboards.host.cluster.example.com/` For path-based routing, the host name is fixed and the application name is appended as a path on the URL `https://host.cluster.example.com/dashboards` | cluster-logging, cluster-monitoring |
-| V4M_CUSTOM_CONFIG_USER_DIR | Path to the viya4-monitoring-kubernetes top-level `USER_DIR` folder on the local file system. The `USER_DIR` folder can contain a top-level `user.env` file and `logging` and `monitoring` folders where your logging and monitoring `user.env` and customization yaml files are located. **NOTE**: viya4-monitoring does not validate `user.env` or yaml file content pointed to by this variable. It is recommended to use file content that has been verified ahead of time. | string | null | false | The following V4M configuration variables are ignored by viya4-monitoring when `V4M_CUSTOM_CONFIG_USER_DIR` is set: [`V4M_ROUTING`, `V4M_BASE_DOMAIN`, all `V4M_*_FQDN` variables,  all `V4M_*_PASSWORD` variables] [Additional documentation](https://go.documentation.sas.com/doc/en/obsrvcdc/v_001/obsrvdply/n0wgd3ju667sa9n1adnxs7hnsqt6.htm) describing the `USER_DIR` folder is available.| cluster-logging, cluster-monitoring
+| V4M_CUSTOM_CONFIG_USER_DIR | Path to the viya4-monitoring-kubernetes top-level `USER_DIR` folder on the local file system. The `USER_DIR` folder can contain a top-level `user.env` file and `logging` and `monitoring` folders where your logging and monitoring `user.env` and customization yaml files are located. **NOTE**: viya4-monitoring does not validate `user.env` or yaml file content pointed to by this variable. It is recommended to use file content that has been verified ahead of time. | string | null | false | The following V4M configuration variables are ignored by viya4-monitoring when `V4M_CUSTOM_CONFIG_USER_DIR` is set: [`V4M_ROUTING`, `V4M_BASE_DOMAIN`, all `V4M_*_FQDN` variables,  all `V4M_*_PASSWORD` variables] [Additional documentation](https://go.documentation.sas.com/doc/en/obsrvcdc/v_001/obsrvdply/n0wgd3ju667sa9n1adnxs7hnsqt6.htm) describing the `USER_DIR` folder is available.| cluster-logging, cluster-monitoring |
 
 #### Open Source Kubernetes
 
@@ -326,6 +326,16 @@ V4_CFG_POSTGRES_SERVERS:
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_CONNECT_ENABLE_LOADBALANCER | Set up LoadBalancer to access SAS/CONNECT | bool | false | false | | viya |
 | V4_CFG_CONNECT_FQDN | FQDN that is assigned to access SAS/CONNECT | string | | false | Required when V4_CFG_TLS_MODE is not disabled and cert-manager is used to issue TLS certificates. This FQDN is added to the SAN DNS list of the issued certificates. | viya |
+
+## Workload Orchestrator
+
+| Name | Description | Type | Default | Required | Notes | Tasks |
+| :--- |------------:| ---: | ---: | ---: | ---: | ---: |
+| V4_WORKLOAD_ORCHESTRATOR_ENABLED | Enables the [SAS Workload Orchestrator](https://go.documentation.sas.com/doc/en/itopscdc/default/dplyml0phy0dkr/n08u2yg8tdkb4jn18u8zsi6yfv3d.htm#p1vo217m7ffso5n11vxwsyycw4tg) service and configures the required ClusterRole and ClusterRoleBinding used by the daemon. Setting this to false will SAS Workload Orchestrator service entirely | bool | true | false | This flag is only applicable for cadences 2023.08 and newer, this flag will perform no action on older cadences. | viya |
+
+The SAS Workload Orchestrator Service is used to manage workload started on demand through the launcher service. As of cadence 2023.08 this feature is now deployed by default. The SAS Workload Orchestrator daemons require information about resources on the nodes that can be used to run jobs. In order to obtain accurate resource information, it requires a ClusterRole and a ClusterRoleBinding to the SAS Workload Orchestrator service account which will be automatically configured by this project if you set `V4_WORKLOAD_ORCHESTRATOR_ENABLED` to true. 
+
+Additional documentation for the SAS Workload Orchestrator Service can be found here in the [SAS Viya Platform Operations documentation](https://go.documentation.sas.com/doc/en/itopscdc/default/dplyml0phy0dkr/n08u2yg8tdkb4jn18u8zsi6yfv3d.htm#p1vo217m7ffso5n11vxwsyycw4tg). 
 
 ## Miscellaneous
 
