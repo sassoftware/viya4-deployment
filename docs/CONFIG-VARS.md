@@ -23,6 +23,7 @@ Supported configuration variables are listed in the table below.  All variables 
   - [PostgreSQL](#postgresql)
   - [CAS](#cas)
   - [CONNECT](#connect)
+  - [Workload Orchestrator](#workload-orchestrator)
   - [Miscellaneous](#miscellaneous)
   - [Third-Party Tools](#third-party-tools)
     - [Cert-manager](#cert-manager)
