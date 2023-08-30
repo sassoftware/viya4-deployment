@@ -331,11 +331,11 @@ V4_CFG_POSTGRES_SERVERS:
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- |------------:| ---: | ---: | ---: | ---: | ---: |
-| V4_WORKLOAD_ORCHESTRATOR_ENABLED | Enables the [SAS Workload Orchestrator](https://go.documentation.sas.com/doc/en/itopscdc/default/dplyml0phy0dkr/n08u2yg8tdkb4jn18u8zsi6yfv3d.htm#p1vo217m7ffso5n11vxwsyycw4tg) service and configures the required ClusterRole and ClusterRoleBinding used by the daemon. Setting this to false will disable SAS Workload Orchestrator service entirely | bool | true | false | This flag is only applicable for cadences 2023.08 and newer, this flag will perform no action on older cadences. | viya |
+| V4_WORKLOAD_ORCHESTRATOR_ENABLED | Enables the [SAS Workload Orchestrator](https://documentation.sas.com/doc/en/itopscdc/default/dplyml0phy0dkr/n08u2yg8tdkb4jn18u8zsi6yfv3d.htm#p1vo217m7ffso5n11vxwsyycw4tg) service and configures the required ClusterRole and ClusterRoleBinding used by the daemon. Setting this to false will disable SAS Workload Orchestrator service entirely | bool | true | false | This flag is only applicable for cadences 2023.08 and newer, this flag will perform no action on older cadences. | viya |
 
 The SAS Workload Orchestrator Service is used to manage workload started on demand through the launcher service. As of cadence 2023.08 this feature is now deployed by default. The SAS Workload Orchestrator daemons require information about resources on the nodes that can be used to run jobs. In order to obtain accurate resource information, it requires a ClusterRole and a ClusterRoleBinding to the SAS Workload Orchestrator service account which will be automatically configured by this project if you set `V4_WORKLOAD_ORCHESTRATOR_ENABLED` to true. 
 
-Additional documentation for the SAS Workload Orchestrator Service can be found here in the [SAS Viya Platform Operations documentation](https://go.documentation.sas.com/doc/en/itopscdc/default/dplyml0phy0dkr/n08u2yg8tdkb4jn18u8zsi6yfv3d.htm#p1vo217m7ffso5n11vxwsyycw4tg). 
+Additional documentation for the SAS Workload Orchestrator Service can be found here in the [SAS Viya Platform Operations documentation](https://documentation.sas.com/doc/en/itopscdc/default/dplyml0phy0dkr/n08u2yg8tdkb4jn18u8zsi6yfv3d.htm#p1vo217m7ffso5n11vxwsyycw4tg). 
 
 ## Miscellaneous
 
