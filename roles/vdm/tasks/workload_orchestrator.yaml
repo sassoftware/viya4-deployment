@@ -1,0 +1,53 @@
+# Copyright © 2020-2023, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+---
+
+- name: Workload Orchestrator - Configure SAS Workload Orchestrator Service Account
+  overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { resources: overlays/sas-workload-orchestrator, min: "2023.08", vdm: false }
+  when:
+    - V4_WORKLOAD_ORCHESTRATOR_ENABLED
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: Workload Orchestrator - Disable the SAS Workload Orchestrator Service
+  overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { transformers: examples/sas-workload-orchestrator/enable-disable/sas-workload-orchestrator-disable-patch-transformer.yaml, min: "2023.08", vdm: false }
+  when:
+    - not V4_WORKLOAD_ORCHESTRATOR_ENABLED
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: Workload Orchestrator - Remove the ClusterRoleBinding and ClusterRole
+  when:
+    - DEPLOY
+    - V4_WORKLOAD_ORCHESTRATOR_ENABLED
+    - V4_CFG_CADENCE_VERSION is version('2023.08', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
+  tags:
+    - uninstall
+  block:
+    - name: Workload Orchestrator - Remove ClusterRoleBinding
+      kubernetes.core.k8s:
+        kind: ClusterRoleBinding
+        name: "sas-workload-orchestrator-{{ NAMESPACE }}"
+        kubeconfig: "{{ KUBECONFIG }}"
+        state: absent
+    - name: Workload Orchestrator - Remove ClusterRole
+      kubernetes.core.k8s:
+        kind: ClusterRole
+        name: "sas-workload-orchestrator"
+        kubeconfig: "{{ KUBECONFIG }}"
+        state: absent
