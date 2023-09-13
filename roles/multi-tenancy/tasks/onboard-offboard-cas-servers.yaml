@@ -35,6 +35,43 @@
   tags:
     - offboard
 
+## Add tenant specific pod templates
+- name: Check if tenant resources are present
+  lineinfile:
+    path: "{{ DEPLOY_DIR }}/kustomization.yaml"
+    line: "- site-config/multi-tenant/{{ item | trim }}"
+    state: present
+  check_mode: true
+  register: result
+  with_items: "{{ V4MT_TENANT_IDS.split(',') }}"
+  when: V4_CFG_CADENCE_VERSION is version('2023.03', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
+  tags:
+    - cas-onboard
+
+- name: Add tenant directories to resources
+  lineinfile:
+    path: "{{ DEPLOY_DIR }}/kustomization.yaml"
+    insertafter: "resources:"
+    line: "- site-config/multi-tenant/{{ item | trim }}"
+    state: present
+  with_items: "{{ V4MT_TENANT_IDS.split(',') }}"
+  when:
+    - result.changed
+    - V4_CFG_CADENCE_VERSION is version('2023.03', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
+  tags:
+    - cas-onboard
+
+# On offboard remove all the tenant pod template resources
+- name: Remove all tenant resources
+  lineinfile:
+    path: "{{ DEPLOY_DIR }}/kustomization.yaml"
+    regexp: .*site-config/multi-tenant/{{ item | trim }}.*$
+    state: absent
+  with_items: "{{ V4MT_TENANT_IDS.split(',') }}"
+  when: V4_CFG_CADENCE_VERSION is version('2023.03', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
+  tags:
+    - offboard
+
 # Offboard CAS servers
 - name: Kubectl delete cas servers for tenants
   ansible.builtin.shell: |

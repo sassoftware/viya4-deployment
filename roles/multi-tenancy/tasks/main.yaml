@@ -15,24 +15,6 @@
     - cas-onboard
     - offboard
 
-# Deploy the Software for tenant pod-templates
-- name: Include Deployment assets - onboard
-  include_tasks: ../../vdm/tasks/assets.yaml
-  tags:
-    - onboard
-
-- name: Include SASDeployment Custom Resource - onboard
-  include_tasks: ../../vdm/tasks/sasdeployment_custom_resource.yaml
-  tags:
-    - onboard
-
-- name: Include Deploy - onboard
-  include_tasks: ../../vdm/tasks/deploy.yaml
-  when:
-    - DEPLOY
-  tags:
-    - onboard
-
 - name: Multi-tenant role - onboard offboard
   include_tasks: multi-tenant-onboard-offboard.yaml
   tags:
@@ -41,27 +23,6 @@
 
 - name: Multi-tenant role - cas
   include_tasks: onboard-offboard-cas-servers.yaml
-  tags:
-    - cas-onboard
-    - offboard
-
-# Deploy the Software for cas-onboard
-- name: Include Deployment assets - cas onboard
-  include_tasks: ../../vdm/tasks/assets.yaml
-  tags:
-    - cas-onboard
-    - offboard
-
-- name: Include SASDeployment Custom Resource - cas onboard
-  include_tasks: ../../vdm/tasks/sasdeployment_custom_resource.yaml
-  tags:
-    - cas-onboard
-    - offboard
-
-- name: Include Deploy - cas onboard
-  include_tasks: ../../vdm/tasks/deploy.yaml
-  when:
-    - DEPLOY
   tags:
     - cas-onboard
     - offboard

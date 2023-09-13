@@ -14,7 +14,6 @@
     - install
     - uninstall
     - update
-    - onboard
     - cas-onboard
     - offboard
 
@@ -23,7 +22,6 @@
     - install
     - uninstall
     - update
-    - onboard
     - cas-onboard
     - offboard
   block:
@@ -44,7 +42,6 @@
     - install
     - uninstall
     - update
-    - onboard
     - cas-onboard
     - offboard
   block:
@@ -80,7 +77,6 @@
   tags:
     - install
     - update
-    - onboard
     - cas-onboard
     - offboard
   block:
@@ -112,7 +108,6 @@
   tags:
     - install
     - update
-    - onboard
     - cas-onboard
     - offboard
   block:
@@ -145,7 +140,6 @@
   tags:
     - install
     - update
-    - onboard
     - cas-onboard
     - offboard
   block:

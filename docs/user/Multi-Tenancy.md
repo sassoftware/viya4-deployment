@@ -106,19 +106,12 @@ Step 3. Onboard tenants. Run the following command:
     -e JUMP_SVR_PRIVATE_KEY=$HOME/.ssh/id_rsa \
     playbooks/playbook.yaml --tags "multi-tenancy,onboard"
   ```
-**Notes:** 
-- As part of the setup in the above `Onboard tenants` step, for every onboarded tenant, 
+**Note:** As part of setup in the above `Onboard tenants` step, for every onboarded tenant, 
 
-  >- A CAS server directory containing the configuration artifacts is created under the `/site-config` folder. 
-For example, if you have tenant with the ID `acme`, then a CAS server directory named `cas-acme-default` will be created.
-  >
-  >- Starting with SAS Viya Platform cadence 2023.03, each tenant will require their own copy of certain Kubernetes resources. Hence a new directory for each tenant containing all the `sas-programming-environment` files will be created under `$deploy/site-config/multi-tenant/`. For example, if you have a tenant with the ID `acme`, then a directory named `$deploy/site-config/multi-tenant/acme` will be created.
-  >
-  >- The base `kustomization.yaml` file will be updated to add a reference to the tenant directories in the resources block. And the changes will be applied to create the tenant-specific resources before running the `sas-tenant-onboard` job. A short delay is introduced here to allow the apply commands to finish.
+- A CAS server directory containing the configuration artifacts is created under the `/site-config` folder. 
+For example,if you have tenant with the ID `acme`, then a CAS server directory named `cas-acme-default` will be created.
 
-- Starting with SAS Viya Platform cadence 2023.07, the `sas-tenant-onboard-job` continues to run until the conclusion of the rolling restart of all SAS Viya services. The `Onboard tenants` command run above does not wait for the conclusion of the rolling restart of all SAS Viya services. The action concludes after the `sas-tenant-onboard-job` has reached `Running` state. User should continue to monitor the status of `sas-tenant-onboard-job` manually.
-
-- It is recommended that User proceeds with the `cas-onboard` command below if it was not applied together with the `multi-tenancy,onboard` action.
+- Starting with SAS Viya Platform cadence 2023.03, each tenant will require their own copy of certain Kubernetes resources. Hence a new directory for each tenant containing all the `sas-programming-environment` files will be created under `$deploy/site-config/multi-tenant/`. For example, if you have a tenant with the ID `acme`, then a directory named `$deploy/site-config/multi-tenant/acme` will be created.
 
 Step 4. Add or update CAS customizations for tenants as needed and then run following command to onboard the CAS servers:
 
@@ -135,7 +128,6 @@ Step 4. Add or update CAS customizations for tenants as needed and then run foll
 **Note:** 
 - If there are no additional CAS customizations required for tenants then run 'onboard' and 'cas-onboard' tags together in Step 3 and skip Step 4.
 - The tenant CAS servers might take several mins to stabilize after the cas-onboard command above has completed successfully.
-- The successful conclusion of the `sas-tenant-onboard-job` is a clear indication that administrators can sign on to the new tenant, or run another instance of the sas-tenant-job.
 
 ## Log In and Validate an Onboarded Tenant
 After the onboard and cas-onboard steps are complete see the steps [here](https://go.documentation.sas.com/doc/en/itopscdc/default/caltenants/p0emzq13c0zbhxn1hktsdlmig934.htm#n05u0e3vmr5lcqn1l5xa2rhkdu6x) to login and validate an onboarded tenant.
