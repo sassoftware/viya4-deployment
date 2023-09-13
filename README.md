@@ -262,7 +262,8 @@ Manual steps are required by the SAS software to update a SAS deployment in an e
 If you have an existing deployment that you performed with the viya4-deployment project, take the following steps in order to update the SAS Viya platform:
 
 - Follow the instructions in [Updating Software](https://go.documentation.sas.com/doc/en/sasadmincdc/default/k8sag/titlepage.htm?fromDefault=) in the SAS Viya Platform Operations Guide.
-- You are expected to modify the steps that are described in the SAS Viya Platform Operations Guide to accommodate the slightly different directory structure 
+- You are expected to modify the steps that are described in the SAS Viya Platform Operations Guide to accommodate the slightly different directory structure
+- Additionally, if you are updating your Software License you will need to remove the `site-config/vdm/generators/sas-license.yaml` line in the kustomization.yaml before manually performing any update
 
 ### Troubleshooting
 
