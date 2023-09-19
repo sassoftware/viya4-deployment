@@ -377,9 +377,3 @@ After downloading the license file perform the following steps:
 Information about licenses from the [SAS Viya Platform Operations Guide](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=k8sag&docsetTarget=n14rkqa3cycmd0n1ub50k47x7lbb.htm)
 
 Note, these steps are only applicable for updating your license file, if you are going to be updating the SAS deployment or including additional products in your order we recommend that your perform your update manually. See this note in the [README](https://github.com/sassoftware/viya4-deployment#updating-sas-viya-manually)
-
-
-
-
-
-
