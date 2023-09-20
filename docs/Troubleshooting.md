@@ -373,6 +373,7 @@ After downloading the license file perform the following steps:
 1. Set `V4_CFG_LICENSE` to path where your license file is located. Note, it is a `.jwt` file.
 2. Using viya4-deployment rerun the `viya,install` tasks to regenerate your `kustomization.yaml` that will now have an updated reference to the new license file, generate the SASDeployment custom resource file, and apply it into your cluster.
 3. You will see your license file referenced in the `kustomization.yaml` as a generator, look for `site-config/vdm/generators/sas-license.yaml`
+   * Note: If you are no longer using viya4-deployment and are updating the license on your own by following the SAS Viya Platform Operations Guide, this would be the line to remove from your `kustomization.yaml`
 
 Information about licenses from the [SAS Viya Platform Operations Guide](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=k8sag&docsetTarget=n14rkqa3cycmd0n1ub50k47x7lbb.htm)
 
