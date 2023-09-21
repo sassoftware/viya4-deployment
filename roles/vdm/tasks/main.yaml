@@ -190,6 +190,13 @@
     - uninstall
     - update
 
+- name: Include Workload Orchestrator
+  include_tasks: workload_orchestrator.yaml
+  tags:
+    - install
+    - uninstall
+    - update
+
 - name: Include Start Stop
   include_tasks: start_stop.yaml
   tags:
