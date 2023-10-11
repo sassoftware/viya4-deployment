@@ -62,6 +62,16 @@
         - tfstate.gke_pod_subnet_cidr is defined
         - tfstate.gke_pod_subnet_cidr.value|length > 0
         - (tfstate.gke_pod_subnet_cidr.value) not in LOADBALANCER_SOURCE_RANGES
+    - name: tfstate - Add AKS pod cidr to LOADBALANCER_SOURCE_RANGES # noqa: name[casing]
+      set_fact:
+        LOADBALANCER_SOURCE_RANGES: "{{ LOADBALANCER_SOURCE_RANGES + [tfstate.aks_pod_cidr.value] }}"
+      when:
+        - tfstate.provider is defined
+        - tfstate.provider.value|length > 0
+        - tfstate.provider.value == "azure"
+        - tfstate.aks_pod_cidr is defined
+        - tfstate.aks_pod_cidr.value|length > 0
+        - (tfstate.aks_pod_cidr.value) not in LOADBALANCER_SOURCE_RANGES
     - name: tfstate - nfs endpoint # noqa: name[casing]
       set_fact:
         V4_CFG_RWX_FILESTORE_ENDPOINT: "{{ tfstate.rwx_filestore_endpoint.value }}"
