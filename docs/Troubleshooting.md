@@ -403,5 +403,5 @@ You had an existing SAS Viya platform deployment that was created using the viya
       ```
       * If as part of your data transfer, you provisioned your PostgreSQL clusters without the use of a Viya 4 IAC projects, then you will need to manually add definitions for each of your PostgreSQL clusters. You can see an example definition here in our [CONFIG-VARS.md documentation](https://github.com/sassoftware/viya4-deployment/blob/main/docs/CONFIG-VARS.md#postgresql)
    2. If your PostgreSQL Cluster requires a certificate for connection, in your `ansible-vars.yaml` ensure that `V4_CFG_TLS_TRUSTED_CA_CERTS` is set and points to either the certificate or a directory containing that certificate.
-   3. In your `ansible-vars.yaml` set `DEPLOY` set to false
+   3. In your `ansible-vars.yaml` set `DEPLOY` to false
    4. Run the ansible-playbook again with the `viya,install` tags. Since `DEPLOY` is set to false, the SAS Viya platform deployment will not be modified, however in your deployment directory you should see an updated kustomization.yaml with generated entries for your PostgreSQL clusters and those files should automatically be present in your site-config directory.
