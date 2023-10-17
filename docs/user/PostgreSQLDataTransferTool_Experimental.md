@@ -1,7 +1,7 @@
 ## PostgreSQL Data Transfer Tool for the SAS Viya Platform - viya4-deployment Post-Transfer Steps (Experimental)
 
 ### Using IAC to create an external PostgreSQL database server
-If you would prefer to use the IAC project used to create your cluster to create an external PostgreSQL database server, refer to IAC project link below corresponding to your cloud environment for PostgreSQL datbase server configuration examples.
+If you would prefer to use the IAC project used to create your cluster to create an external PostgreSQL database server, refer to IAC project link below corresponding to your cloud environment for PostgreSQL database server configuration examples.
 
 [Azure PostgreSQL Server](https://github.com/sassoftware/viya4-iac-azure/blob/main/docs/CONFIG-VARS.md#postgres-servers)
 
