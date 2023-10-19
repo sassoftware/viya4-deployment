@@ -13,6 +13,8 @@
   - [SAS Risk Cirrus Solutions Multi-tenancy onboard failure](#sas-risk-cirrus-solutions-multi-tenancy-onboard-failure)
   - [Applying a New License for your SAS Viya Platform Deployment](#applying-a-new-license-for-your-sas-viya-platform-deployment)
 
+
+
 ## Debug Mode
 Debug mode can be enabled by adding "-vvv" to the end of the docker or ansible commands
 
