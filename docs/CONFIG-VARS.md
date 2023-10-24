@@ -15,6 +15,7 @@ Supported configuration variables are listed in the table below.  All variables 
   - [SAS Software Order](#sas-software-order)
   - [SAS API Access](#sas-api-access)
   - [Container Registry Access](#container-registry-access)
+  - [OCI Container Registry Access](#oci-container-registry-access)
   - [Ingress](#ingress)
   - [Load Balancer](#load-balancer)
   - [Monitoring and Logging](#monitoring-and-logging)
@@ -147,6 +148,11 @@ When V4_CFG_MANAGE_STORAGE is set to `true`, the `sas` and `pg-storage` storage 
 | V4_CFG_CR_USER | Container registry username | string | | false | By default, credentials are included in the downloaded deployment assets. | viya |
 | V4_CFG_CR_PASSWORD | Container registry password | string | | false | By default, credentials are included in the downloaded deployment assets. | viya |
 | V4_CFG_CR_URL | Container registry server | string | https://cr.sas.com | false | | viya |
+
+## OCI Container Registry Access
+| Name | Description | Type | Default | Required | Notes | Tasks |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
+| V4_CFG_OCI_REGISTRY_URI | OCI Container registry URI | string | | false | Container registry housing OCI images used for dark site deployments  | baseline, viya |
 
 ## Ingress
 
@@ -342,9 +348,9 @@ V4_CFG_POSTGRES_SERVERS:
 | :--- |------------:| ---: | ---: | ---: | ---: | ---: |
 | V4_WORKLOAD_ORCHESTRATOR_ENABLED | Enables the [SAS Workload Orchestrator](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=dplyml0phy0dkr&docsetTarget=n08u2yg8tdkb4jn18u8zsi6yfv3d.htm#p1vo217m7ffso5n11vxwsyycw4tg) service and configures the required ClusterRole and ClusterRoleBinding used by the daemon. Setting this to false will disable SAS Workload Orchestrator service entirely | bool | true | false | This flag is only applicable for cadences 2023.08 and newer, this flag will perform no action on older cadences. | viya |
 
-The SAS Workload Orchestrator Service is used to manage workload started on demand through the launcher service. As of cadence 2023.08 this feature is now deployed by default. The SAS Workload Orchestrator daemons require information about resources on the nodes that can be used to run jobs. In order to obtain accurate resource information, it requires a ClusterRole and a ClusterRoleBinding to the SAS Workload Orchestrator service account which will be automatically configured by this project if you set `V4_WORKLOAD_ORCHESTRATOR_ENABLED` to true. 
+The SAS Workload Orchestrator Service is used to manage workload started on demand through the launcher service. As of cadence 2023.08 this feature is now deployed by default. The SAS Workload Orchestrator daemons require information about resources on the nodes that can be used to run jobs. In order to obtain accurate resource information, it requires a ClusterRole and a ClusterRoleBinding to the SAS Workload Orchestrator service account which will be automatically configured by this project if you set `V4_WORKLOAD_ORCHESTRATOR_ENABLED` to true.
 
-Additional documentation for the SAS Workload Orchestrator Service can be found here in the [SAS Viya Platform Operations documentation](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=dplyml0phy0dkr&docsetTarget=n08u2yg8tdkb4jn18u8zsi6yfv3d.htm#p1vo217m7ffso5n11vxwsyycw4tg). 
+Additional documentation for the SAS Workload Orchestrator Service can be found here in the [SAS Viya Platform Operations documentation](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=dplyml0phy0dkr&docsetTarget=n08u2yg8tdkb4jn18u8zsi6yfv3d.htm#p1vo217m7ffso5n11vxwsyycw4tg).
 
 ## Miscellaneous
 
