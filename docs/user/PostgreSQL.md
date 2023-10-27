@@ -1,12 +1,10 @@
 # PostgreSQL
 
-<!-- TOC -->
 * [PostgreSQL](#postgresql)
   * [Use IAC to create an external PostgreSQL database cluster](#use-iac-to-create-an-external-postgresql-database-cluster)
   * [Post Data Transfer Steps for viya4-deployment (Experimental)](#post-data-transfer-steps-for-viya4-deployment-experimental)
     * [Crunchy Data 5](#crunchy-data-5)
-    * [Crunchy Data 4](#crunchy-data-4-)
-<!-- TOC -->
+    * [Crunchy Data 4](#crunchy-data-4)
 
 ## Use IAC to create an external PostgreSQL database cluster
 
@@ -15,11 +13,11 @@ To use the IAC project to create an external PostgreSQL database cluster, refer 
 
 **Note**: Before using IAC to create a new external PostgreSQL database cluster, SAS recommend that you follow the steps to [Stop a SAS Viya Platform Deployment](https://documentation.sas.com/?cdcId=sasadmincdc&cdcVersion=v_044&docsetId=calchkadm&docsetTarget=p17xfmmjjkma1dn1b5dcx3e5ejxq.htm#p0butgo7gtfyi0n14umtfv0voydt). After the external PostgreSQL database cluster has been created by IAC, follow the steps to [Start a SAS Viya Platform Deployment](https://documentation.sas.com/?cdcId=sasadmincdc&cdcVersion=v_044&docsetId=calchkadm&docsetTarget=p17xfmmjjkma1dn1b5dcx3e5ejxq.htm#p0butgo7gtfyi0n14umtfv0voydt).
 
-[Azure PostgreSQL Server](https://github.com/sassoftware/viya4-iac-azure/blob/main/docs/CONFIG-VARS.md#postgres-servers)
+[Azure PostgreSQL Cluster](https://github.com/sassoftware/viya4-iac-azure/blob/main/docs/CONFIG-VARS.md#postgres-servers)
 
-[AWS PostgreSQL Server](https://github.com/sassoftware/viya4-iac-aws/blob/main/docs/CONFIG-VARS.md#postgresql-server)
+[AWS PostgreSQL Cluster](https://github.com/sassoftware/viya4-iac-aws/blob/main/docs/CONFIG-VARS.md#postgresql-server)
 
-[GCP PostgreSQL Server](https://github.com/sassoftware/viya4-iac-gcp/blob/main/docs/CONFIG-VARS.md#postgres-servers)
+[GCP PostgreSQL Cluster](https://github.com/sassoftware/viya4-iac-gcp/blob/main/docs/CONFIG-VARS.md#postgres-servers)
 
 ## Post Data Transfer Steps for viya4-deployment (Experimental)
 
@@ -45,18 +43,18 @@ The final step in the [PostgreSQL Data Transfer Guide](https://documentation.sas
 3. In your `ansible-vars.yaml` file set `DEPLOY` to false.
 4. Run the ansible-playbook again with the `viya,install` tags. Because `DEPLOY` is set to false, the SAS Viya platform deployment will not be modified. However, in your deployment directory you should see an updated `kustomization.yaml` file with generated entries for your PostgreSQL clusters. Those files should automatically be present in your site-config directory.
 
-### Crunchy Data 4 
+### Crunchy Data 4
 
-1. While following the [PostgreSQL Data Transfer Guide](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=pgdatamig&docsetTarget=titlepage.htm) under "Post-transfer Steps for Crunchy Data 4" in Step 5 you are asked to remove all entries in your kustomization.yaml that contain a set of strings that are used for Crunchy 4 Data PostgreSQL configuration. Since the viya4-deployment project automatically manages the configuration and creation of the PostgreSQL related entries in your kustomziation.yaml, you can skip Step 5 from the "Post-transfer Steps for Crunchy Data 4" for now.
-2. You will now need to configure your ansible-vars.yaml to make the switch over from Crunchy Data PostgreSQL to an external PostgreSQL cluster.
-      * If as part of your data transfer, you provisioned your PostgreSQL clusters using any [Viya 4 IAC projects](https://github.com/search?q=org%3Asassoftware+viya4-iac-&type=repositories), then your PostgreSQL configuration and connection information should already be present in the .tfstate file, so you don't need to add those entries in your `ansible-vars.yaml`. You should modify the `V4_CFG_POSTGRES_SERVERS` variable if it's still configured to use an internal Crunchy instance like so:
-      ```yaml
-      # modify as below to use external instance
-      V4_CFG_POSTGRES_SERVERS:
-        default:
-          internal: false
-      ```
-      * If as part of your data transfer, you provisioned your PostgreSQL clusters without the use of a Viya 4 IAC project, then you will need to manually add definitions for each of your PostgreSQL clusters. You can see an example definition here in our [CONFIG-VARS.md documentation](https://github.com/sassoftware/viya4-deployment/blob/main/docs/CONFIG-VARS.md#postgresql)
-3. Going back to the [PostgreSQL Data Transfer Guide](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=pgdatamig&docsetTarget=titlepage.htm) under "Post-transfer Steps for Crunchy Data 4" perform Step 8 and start the operator if your deployment is managed by the SAS Deployment Operator (if `V4_DEPLOYMENT_OPERATOR_ENABLED` was set to true)
-4. Run the ansible-playbook again with the `viya,install` tags. This will update the kustomization.yaml by removing entries related to Crunchy 4 and add entries for your external PostgreSQL cluster, all managed by viya4-deployment. The manifest will be rebuilt and reapplied to the cluster.
-5. Go back to the [PostgreSQL Data Transfer Guide](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=pgdatamig&docsetTarget=titlepage.htm) under "Post-transfer Steps for Crunchy Data 4" and perform Steps 10 and onwards to complete the data transfer.
+1. In the [PostgreSQL Data Transfer Guide](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=pgdatamig&docsetTarget=titlepage.htm) under "Post-transfer Steps for Crunchy Data 4" in Step 5 you are asked to remove all entries in your `kustomization.yaml` file that contain a set of strings that are used for Crunchy Data 4 PostgreSQL configuration. Because the viya4-deployment project automatically manages the configuration and creation of the PostgreSQL related entries in your `kustomization.yaml` file, you can skip Step 5 from the "Post-transfer Steps for Crunchy Data 4".
+2. Configure your `ansible-vars.yaml` to make the switch over from Crunchy Data PostgreSQL to an external PostgreSQL cluster.
+   * If you provisioned your PostgreSQL clusters using any [Viya 4 IAC projects](https://github.com/search?q=org%3Asassoftware+viya4-iac-&type=repositories), then your PostgreSQL configuration and connection information should already be present in the .tfstate file. Therefore, you do not need to add those entries in your `ansible-vars.yaml`. However, you should modify the `V4_CFG_POSTGRES_SERVERS` variable if it's still configured to use an internal Crunchy instance. Here is an example:
+   ```yaml
+   # modify as below to use external instance
+   V4_CFG_POSTGRES_SERVERS:
+     default:
+       internal: false
+   ```
+   * If you provisioned your PostgreSQL clusters without the use of a Viya 4 IAC projects, then you must manually add definitions for each of your PostgreSQL clusters. You can see an example definition at [CONFIG-VARS.md documentation](https://github.com/sassoftware/viya4-deployment/blob/main/docs/CONFIG-VARS.md#postgresql)
+3. Going back to the [PostgreSQL Data Transfer Guide](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=pgdatamig&docsetTarget=titlepage.htm) under "Post-transfer Steps for Crunchy Data 4" perform Step 8 and start the operator if your deployment is managed by the SAS Deployment Operator (if `V4_DEPLOYMENT_OPERATOR_ENABLED` was set to true in your `ansible-vars.yaml`). Otherwise, skip this step.
+4. Run the ansible-playbook again with the `viya,install` tags. This updates the `kustomization.yaml` by removing entries related to Crunchy Data 4 and adding entries for your external PostgreSQL cluster. The manifest will be rebuilt and reapplied to the cluster. This replaces step 9 fom the "Post-transfer Steps for Crunchy Data 4" documentation.
+5. Return to the [PostgreSQL Data Transfer Guide](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=pgdatamig&docsetTarget=titlepage.htm) under "Post-transfer Steps for Crunchy Data 4". Perform Steps 10 and onwards to complete the data transfer.
