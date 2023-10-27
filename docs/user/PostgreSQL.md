@@ -21,10 +21,7 @@ To use the IAC project to create an external PostgreSQL database cluster, refer 
 
 ## Post Data Transfer Steps for viya4-deployment (Experimental)
 
-You had an existing SAS Viya platform deployment that was created using the viya4-deployment project and configured to use Crunchy as the database, and you have now completed the manual steps outlined in the [PostgreSQL Data Transfer Guide](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=pgdatamig&docsetTarget=titlepage.htm) to move your data over to an external PostgreSQL cluster. You now want to use the viya4-deployment project to manage your installation again.
-
 After you complete the steps outlined in the [PostgreSQL Data Transfer Guide](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=pgdatamig&docsetTarget=titlepage.htm) to move your data from an internal PostgreSQL server to an external PostgreSQL cluster, you can use the viya4-deployment project to manage your installation again. 
-
 
 ### Crunchy Data 5
 
