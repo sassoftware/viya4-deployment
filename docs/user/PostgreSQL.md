@@ -1,7 +1,7 @@
 # PostgreSQL
 
 * [PostgreSQL](#postgresql)
-  * [Use IAC to create an external PostgreSQL database cluster](#use-iac-to-create-an-external-postgresql-database-cluster)
+  * [Use IAC To Create an External PostgreSQL Database Cluster](#use-iac-to-create-an-external-postgresql-database-cluster)
   * [Post Data Transfer Steps for viya4-deployment (Experimental)](#post-data-transfer-steps-for-viya4-deployment-experimental)
     * [Crunchy Data 5](#crunchy-data-5)
     * [Crunchy Data 4](#crunchy-data-4)
