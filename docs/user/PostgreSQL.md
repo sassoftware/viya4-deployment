@@ -6,7 +6,7 @@
     * [Crunchy Data 5](#crunchy-data-5)
     * [Crunchy Data 4](#crunchy-data-4)
 
-## Use IAC to create an external PostgreSQL database cluster
+## Use IAC To Create an External PostgreSQL Database Cluster
 
 To use the IAC project to create an external PostgreSQL database cluster, refer to the IAC project link below that corresponds to your cloud environment. Each link goes to provider-specific PostgreSQL database cluster configuration examples.
 
