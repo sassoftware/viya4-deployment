@@ -152,7 +152,7 @@ When V4_CFG_MANAGE_STORAGE is set to `true`, the `sas` and `pg-storage` storage 
 ## OCI Container Registry Access
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_OCI_REGISTRY_URI | OCI Container registry URI | string | | false | Set this value to helm authenticate to the indicated OCI registry using the `V4_CF_CR_USER` and `V4_CFG_CR_PASSWORD` values. Useful when the OCI container registry is used as a source for helm chart installs with dark site deployments. | baseline, viya |
+| V4_CFG_OCI_REGISTRY_URI | OCI Container registry URI | string | | false | Set this value to activate helm authentication to the indicated OCI registry URI using the `V4_CFG_CR_USER` and `V4_CFG_CR_PASSWORD` values. Useful when the OCI container registry is used as a source for helm chart installs with dark site deployments. | baseline, viya |
 
 ## Ingress
 
