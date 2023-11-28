@@ -111,6 +111,17 @@ NFS_CLIENT_CONFIG:
   storageClass:
     archiveOnDelete: "false"
     name: sas
+# EFS best practice NFS mount options for the aws provider
+NFS_EFS_CLIENT_CONFIG:
+  nfs:
+    mountOptions:
+      - noresvport
+      - rsize=1048576
+      - wsize=1048576
+      - hard
+      - timeo=600
+      - retrans=2
+      - _netdev
 
 ## pg-storage storage class config
 PG_NFS_CLIENT_NAME: nfs-subdir-external-provisioner-pg-storage
