@@ -7,6 +7,7 @@
 # Updating HOST to remove https
 V4_CFG_CR_URL: https://cr.sas.com
 V4_CFG_CR_HOST: '{{ V4_CFG_CR_URL | regex_replace("^https?:\/\/(.*)\/?", "\1") }}'
+V4_CFG_URL: https://ses.sas.download/ses
 
 V4_CFG_CR_USER: null
 V4_CFG_CR_PASSWORD: null

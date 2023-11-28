@@ -131,6 +131,7 @@ When V4_CFG_MANAGE_STORAGE is set to `true`, the `sas` and `pg-storage` storage 
 | V4_CFG_DEPLOYMENT_ASSETS | Path to pre-downloaded deployment assets | string | | false | Leave blank to download [deployment assets](https://go.documentation.sas.com/doc/en/sasadmincdc/default/itopscon/n08bpieatgmfd8n192cnnbqc7m5c.htm#n1x7yoeafv23xan1gew0gfipt9e9) | viya |
 | V4_CFG_LICENSE | Path to pre-downloaded license file | string | | false| Leave blank to download the [license file](https://go.documentation.sas.com/doc/en/sasadmincdc/default/itopscon/n08bpieatgmfd8n192cnnbqc7m5c.htm#p1odbfo85cz4r5n1j2tzx9zz9sbi) | viya |
 | V4_CFG_CERTS | Path to pre-downloaded certificates file | string | | false| Leave blank to download the [certificates file](https://go.documentation.sas.com/doc/en/sasadmincdc/default/itopscon/n08bpieatgmfd8n192cnnbqc7m5c.htm#n0pj0ewyle0gfkn1psri3kw5ghha) | viya |
+| V4_CFG_URL | Software order server | string | https://ses.sas.download/ses | false | viya |
 
 ## SAS API Access
 
