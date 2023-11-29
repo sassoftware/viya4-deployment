@@ -118,7 +118,7 @@ NFS_EFS_CLIENT_CONFIG:
       - noresvport
       - rsize=1048576
       - wsize=1048576
-      - hard
+      - soft
       - timeo=600
       - retrans=2
       - _netdev
