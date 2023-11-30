@@ -9,7 +9,7 @@ RUN apt-get update && apt-get upgrade -y \
   && update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
 
 FROM baseline as tool_builder
-ARG kubectl_version=1.26.8
+ARG kubectl_version=1.26.10
 
 WORKDIR /build
 
@@ -17,8 +17,8 @@ RUN curl -sLO https://storage.googleapis.com/kubernetes-release/release/v$kubect
 
 # Installation
 FROM baseline
-ARG helm_version=3.12.0
-ARG aws_cli_version=2.7.22
+ARG helm_version=3.12.2
+ARG aws_cli_version=2.13.33
 ARG gcp_cli_version=440.0.0-0
 
 # Add extra packages
