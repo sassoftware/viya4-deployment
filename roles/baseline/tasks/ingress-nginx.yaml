@@ -49,6 +49,16 @@
     - install
     - update
 
+- name: Update INGRESS_NGINX_CONFIG to add Azure Application Gateway Config changes
+  set_fact:
+    INGRESS_NGINX_CONFIG: "{{ INGRESS_NGINX_CONFIG | combine(INGRESS_NGINX_AZURE_GATEWAY_CONFIG, recursive=True) }}"
+  when:
+    - PROVIDER == "azure"
+    - V4_CFG_APPLICATION_GATEWAY_ENABLED
+  tags:
+    - install
+    - update
+
 - name: Apply Mitigation for CVE-2021-25742
   tags:
     - install

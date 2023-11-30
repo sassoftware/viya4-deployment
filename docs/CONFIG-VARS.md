@@ -34,6 +34,7 @@ Supported configuration variables are listed in the table below.  All variables 
     - [NFS Client](#nfs-client)
     - [Postgres NFS Client](#postgres-nfs-client)
   - [Multi-tenancy](#multi-tenancy)
+  - [Azure Application Gateway with WAF](#azure-application-gateway-with-waf)
 
 ## BASE
 
@@ -498,4 +499,19 @@ V4MT_TENANT_CAS_CUSTOMIZATION:
     cpus: 250m
     worker_count: 1
     backup_controller_enabled: true
+```
+
+## Azure Application Gateway with WAF
+
+| Name | Description | Type | Default | Required | Notes | Tasks |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| V4_CFG_APPLICATION_GATEWAY_ENABLED | Enables Azure Application Gateway | bool | false | false | If not set, the value for this variable will be read from tfstate file | baseline |
+| INGRESS_NGINX_AZURE_DNS_LABEL_NAME | Setting this variable lets user use Azure public DNS by adding DNS label for Ingress loadbalancer  | string | null | false | | baseline |
+
+**Additional setting required for Azure application gateway:**
+
+In your `ansible-vars.yaml` file, the variable `V4_CFG_INGRESS_FQDN` should be setup with hostname of your application gateway. And for secure communication, ingress certificates should be set correctly. Following variables should help setting up the ingress certificate.
+```
+V4_CFG_TLS_CERT: "<Path to ingress certificate file>" ## This file should have all, leaf (server) → intermediate → root certs
+V4_CFG_TLS_KEY: "<Path to ingress key file>"
 ```

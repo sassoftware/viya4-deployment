@@ -274,6 +274,21 @@
         - tfstate.message_broker_primary_key is defined
         - tfstate.message_broker_primary_key.value|length > 0
         - V4_CFG_MESSAGE_BROKER_PASSWORD is not defined
+    - name: tfstate - azure application gateway enabled # noqa: name[casing]
+      set_fact:
+        V4_CFG_APPLICATION_GATEWAY_ENABLED: "{{ tfstate.app_gateway_enabled.value }}"
+      when:
+        - PROVIDER == "azure"
+        - tfstate.app_gateway_enabled is defined
+        - V4_CFG_APPLICATION_GATEWAY_ENABLED is not defined
+    - name: tfstate - Add azure application gateway public ip to LOADBALANCER_SOURCE_RANGES # noqa: name[casing]
+      set_fact:
+        LOADBALANCER_SOURCE_RANGES: "{{ LOADBALANCER_SOURCE_RANGES + [tfstate.app_gateway_frontend_ip.value + '/32'] }}"
+      when:
+        - PROVIDER == "azure"
+        - tfstate.app_gateway_frontend_ip is defined
+        - tfstate.app_gateway_frontend_ip.value|length > 0
+        - V4_CFG_APP_GATEWAY_IP is not defined
     - name: tfstate - set tfstate to empty string # noqa: name[casing]
       set_fact:
         tfstate: ""
