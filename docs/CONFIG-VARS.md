@@ -34,6 +34,8 @@ Supported configuration variables are listed in the table below.  All variables 
     - [Metrics Server](#metrics-server)
     - [NFS Client](#nfs-client)
     - [Postgres NFS Client](#postgres-nfs-client)
+  - [Multi-tenancy](#multi-tenancy)
+  - [Azure Application Gateway with WAF](#azure-application-gateway-with-waf)
 
 ## BASE
 
@@ -88,7 +90,7 @@ Viya4-deployment uses the jump server to interact with the RWX filestore, which 
 ## Storage
 When `V4_CFG_MANAGE_STORAGE` is set to `true`, viya4-deployment creates the `sas` and `pg-storage` storage classes using the nfs-subdir-external-provisioner Helm chart. If a jump server is used, viya4-deployment uses that server to create the folders for the `astores`, `bin`, `data` and `homes` RWX Filestore NFS paths that are outlined below in the [RWX Filestore](#rwx-filestore) section.
 
-When `V4_CFG_MANAGE_STORAGE` is set to `false`, viya4-deployment does not create the `sas` or `pg-storage` storage classes for you. In addition, viya4-deployment does not create or manage the RWX Filestore NFS paths. Before you run the SAS Viya deployment, you must set the values for `V4_CFG_RWX_FILESTORE_DATA_PATH` and `V4_CFG_RWX_FILESTORE_HOMES_PATH` to specify existing NFS folder locations. The viya4-deployment user can create the required NFS folders from the jump server before starting the deployment. Recommended attribute settings for each folder are as follows:
+When `V4_CFG_MANAGE_STORAGE` is set to `false`, viya4-deployment does not create the `sas` or `pg-storage` storage classes for you. In addition, viya4-deployment does not create or manage the RWX Filestore NFS paths. Before you run the SAS Viya deployment, you must set the values for `V4_CFG_RWX_FILESTORE_ASTORES_PATH`, `V4_CFG_RWX_FILESTORE_BIN_PATH`, `V4_CFG_RWX_FILESTORE_DATA_PATH` and `V4_CFG_RWX_FILESTORE_HOMES_PATH` to specify existing NFS folder locations. The viya4-deployment user can create the required NFS folders from the jump server before starting the deployment. Recommended attribute settings for each folder are as follows:
 - **filemode**: `0777`
 - **group**: the equivalent of `nogroup` for your operating system
 - **owner**: `nobody`
@@ -104,6 +106,8 @@ When `V4_CFG_MANAGE_STORAGE` is set to `false`, viya4-deployment does not create
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_RWX_FILESTORE_ENDPOINT | NFS IP address or host name | string | | false | | baseline, viya |
 | V4_CFG_RWX_FILESTORE_PATH | NFS export path | string | /export | false | | baseline, viya |
+| V4_CFG_RWX_FILESTORE_ASTORES_PATH | NFS path to astores directory | string | <V4_CFG_RWX_FILESTORE_PATH>/\<NAMESPACE>/astores | false | | viya |
+| V4_CFG_RWX_FILESTORE_BIN_PATH | NFS path to bin directory | string | <V4_CFG_RWX_FILESTORE_PATH>/\<NAMESPACE>/bin | false | | viya |
 | V4_CFG_RWX_FILESTORE_DATA_PATH | NFS path to data directory | string | <V4_CFG_RWX_FILESTORE_PATH>/\<NAMESPACE>/data | false | | viya |
 | V4_CFG_RWX_FILESTORE_HOMES_PATH | NFS path to homes directory | string | <V4_CFG_RWX_FILESTORE_PATH>/\<NAMESPACE>/homes | false | | viya |
 
@@ -451,3 +455,18 @@ The Postgres NFS client is currently supported by the nfs-subdir-external-provis
 | PG_NFS_CLIENT_CHART_NAME | nfs-subdir-external-provisioner Helm chart name | string | nfs-subdir-external-provisioner | false | | baseline |
 | PG_NFS_CLIENT_CHART_VERSION | nfs-subdir-external-provisioner Helm chart version | string | 4.0.18| false | | baseline |
 | PG_NFS_CLIENT_CONFIG | nfs-subdir-external-provisioner Helm values | string | See [this file](../roles/baseline/defaults/main.yml) for more information. | false | | baseline |
+
+## Azure Application Gateway with WAF
+
+| Name | Description | Type | Default | Required | Notes | Tasks |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| V4_CFG_APPLICATION_GATEWAY_ENABLED | Enables Azure Application Gateway | bool | false | false | If not set, the value for this variable will be read from tfstate file | baseline |
+| INGRESS_NGINX_AZURE_DNS_LABEL_NAME | Setting this variable lets user use Azure public DNS by adding DNS label for Ingress loadbalancer  | string | null | false | | baseline |
+
+**Additional setting required for Azure application gateway:**
+
+In your `ansible-vars.yaml` file, the variable `V4_CFG_INGRESS_FQDN` should be setup with hostname of your application gateway. And for secure communication, ingress certificates should be set correctly. Following variables should help setting up the ingress certificate.
+```
+V4_CFG_TLS_CERT: "<Path to ingress certificate file>" ## This file should have all, leaf (server) → intermediate → root certs
+V4_CFG_TLS_KEY: "<Path to ingress key file>"
+```
