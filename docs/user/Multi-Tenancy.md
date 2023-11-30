@@ -10,24 +10,24 @@ The tenant onboarding and offboarding processes can be run as needed after a suc
 
 1. CAS Server Resources Requirement.
    
-   Each tenant requires a dedicated CAS server. See [CAS Server Resources](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/n0ampbltwqgkjkn1j3qogztsbbu0.htm#p1phbohacgeubcn0zgt2pdlqu0fu) for more details and [plan workload placement](https://go.documentation.sas.com/doc/en/itopscdc/default/dplyml0phy0dkr/p0om33z572ycnan1c1ecfwqntf24.htm#p1ujrdxsdddpdpn1r3xavgwaa0tu) accordingly.
+   Each tenant requires a dedicated CAS server. See [CAS Server Resources](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=itopssr&docsetTarget=n0ampbltwqgkjkn1j3qogztsbbu0.htm#p1phbohacgeubcn0zgt2pdlqu0fu) for more details and [plan workload placement](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=dplyml0phy0dkr&docsetTarget=p0om33z572ycnan1c1ecfwqntf24.htm#p1ujrdxsdddpdpn1r3xavgwaa0tu) accordingly.
 
 2. PostgreSQL Requirement.
 
-   SAS Viya Multi-tenancy requires either an internal PostgreSQL instance, which is the default option that is deployed automatically, or an external PostgreSQL instance that you configure and maintain. For external PostgreSQL, see [Requirements for External PostgreSQL](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/p05lfgkwib3zxbn1t6nyihexp12n.htm#p1wq8ouke3c6ixn1la636df9oa1u). Also for details see [PostgreSQL Requirements for a Multi-tenant Deployment](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/p05lfgkwib3zxbn1t6nyihexp12n.htm#p1r5u2f0yyiql5n11qb61lldcq1j).
+   SAS Viya Multi-tenancy requires either an internal PostgreSQL instance, which is the default option that is deployed automatically, or an external PostgreSQL instance that you configure and maintain. For external PostgreSQL, see [Requirements for External PostgreSQL](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=itopssr&docsetTarget=p05lfgkwib3zxbn1t6nyihexp12n.htm#p1wq8ouke3c6ixn1la636df9oa1u). Also for details see [PostgreSQL Requirements for a Multi-tenant Deployment](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=itopssr&docsetTarget=p05lfgkwib3zxbn1t6nyihexp12n.htm#p1r5u2f0yyiql5n11qb61lldcq1j).
 
    **Note:** Before deployment, when using internal PostgreSQL, be sure to size the total number of tenants that will be onboarded. The variable `V4MT_TENANT_IDS` must list all tenants planned to be onboarded. The list of tenants is used to calculate max_connections in PostgreSQL. After deployment, max_connections cannot be changed without redeploying the SAS Viya platform.
 
-3. TLS certificates. See [TLS Requirements](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/n18dxcft030ccfn1ws2mujww1fav.htm#p0bskqphz9np1ln14ejql9ush824).
+3. TLS certificates. See [TLS Requirements](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=itopssr&docsetTarget=n18dxcft030ccfn1ws2mujww1fav.htm#p0bskqphz9np1ln14ejql9ush824).
 
-4. DNS configuration. See [DNS Requirements for Multi-tenancy](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/n18dxcft030ccfn1ws2mujww1fav.htm#n0mfva3uqvw78nn14s2deu1um3m1).
+4. DNS configuration. See [DNS Requirements for Multi-tenancy](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=itopssr&docsetTarget=n18dxcft030ccfn1ws2mujww1fav.htm#n0mfva3uqvw78nn14s2deu1um3m1).
 
 5. LDAP or SCIM requirements. 
 
-   To configure LDAP see the steps in [OpenLDAP Customizations](#openldap-customizations). For more information on LDAP or SCIM requirements see [Additional LDAP Requirements for Multi-tenancy](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/n18dxcft030ccfn1ws2mujww1fav.htm#p1dr09lqs9w0w7n1iaklneorpy4r) or [Additional SCIM Requirements for Multi-tenancy](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/n18dxcft030ccfn1ws2mujww1fav.htm#n0snw477kspeqln1fmoeq3hu6c4m).
+   To configure LDAP see the steps in [OpenLDAP Customizations](#openldap-customizations). For more information on LDAP or SCIM requirements see [Additional LDAP Requirements for Multi-tenancy](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=itopssr&docsetTarget=n18dxcft030ccfn1ws2mujww1fav.htm#p1dr09lqs9w0w7n1iaklneorpy4r) or [Additional SCIM Requirements for Multi-tenancy](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=itopssr&docsetTarget=n18dxcft030ccfn1ws2mujww1fav.htm#n0snw477kspeqln1fmoeq3hu6c4m).
 
 ## Limitations to Multi-tenancy Support
-Multi-tenancy is not supported in every customer environment. For more information, see [Limitations to Multi-tenancy Support](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/n0jq6u1duu7sqnn13cwzecyt475u.htm#p11lcjg42kzdgjn1obgqb9zlaltw).
+Multi-tenancy is not supported in every customer environment. For more information, see [Limitations to Multi-tenancy Support](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=itopssr&docsetTarget=n0jq6u1duu7sqnn13cwzecyt475u.htm#p11lcjg42kzdgjn1obgqb9zlaltw).
 
 ## Actions
 
@@ -130,14 +130,14 @@ Step 4. Add or update CAS customizations for tenants as needed and then run foll
 - The tenant CAS servers might take several mins to stabilize after the cas-onboard command above has completed successfully.
 
 ## Log In and Validate an Onboarded Tenant
-After the onboard and cas-onboard steps are complete see the steps [here](https://go.documentation.sas.com/doc/en/itopscdc/default/caltenants/p0emzq13c0zbhxn1hktsdlmig934.htm#n05u0e3vmr5lcqn1l5xa2rhkdu6x) to login and validate an onboarded tenant.
+After the onboard and cas-onboard steps are complete see the steps [here](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=caltenants&docsetTarget=p0emzq13c0zbhxn1hktsdlmig934.htm#n05u0e3vmr5lcqn1l5xa2rhkdu6x) to login and validate an onboarded tenant.
 
 ## Offboard Tenants and CAS Servers
 Best practice before running offboard command:
 
-1. Perform a backup as a best-practice task. For more information, see [Backup and Restore: Perform an Ad Hoc Backup](https://go.documentation.sas.com/doc/en/sasadmincdc/default/calbr/p0cw7yuvwc83znn1igjc16zah2se.htm) in SAS Viya: Backup and Restore.
+1. Perform a backup as a best-practice task. For more information, see [Backup and Restore: Perform an Ad Hoc Backup](https://documentation.sas.com/?cdcId=sasadmincdc&cdcVersion=default&docsetId=calbr&docsetTarget=p0cw7yuvwc83znn1igjc16zah2se.htm) in SAS Viya: Backup and Restore.
 
-2. Check for scheduled jobs and suspend all scheduled jobs to prevent them from automatically starting during or after offboarding. The jobs need to remain suspended at least until the offboarding of tenant CAS servers. If your deployment includes SAS Workflow Manager, use the [Workload Orchestrator](https://go.documentation.sas.com/doc/en/sasadmincdc/default/evfun/n15gjfza5o8i6hn1kr8f408c2et3.htm) page in SAS Environment Manager. Otherwise, use the [Jobs](https://go.documentation.sas.com/doc/en/sasadmincdc/default/caljobs/n0x3w4aokfoi1wn1q33jg4yrifge.htm) page in SAS Environment Manager.
+2. Check for scheduled jobs and suspend all scheduled jobs to prevent them from automatically starting during or after offboarding. The jobs need to remain suspended at least until the offboarding of tenant CAS servers. If your deployment includes SAS Workflow Manager, use the [Workload Orchestrator](https://documentation.sas.com/?cdcId=sasadmincdc&cdcVersion=default&docsetId=evfun&docsetTarget=n15gjfza5o8i6hn1kr8f408c2et3.htm) page in SAS Environment Manager. Otherwise, use the [Jobs](https://documentation.sas.com/?cdcId=sasadmincdc&cdcVersion=default&docsetId=caljobs&docsetTarget=n0x3w4aokfoi1wn1q33jg4yrifge.htm) page in SAS Environment Manager.
 
 ### Run the following command to Offboard Tenants and Offboard CAS Servers for tenants
 

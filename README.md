@@ -189,7 +189,7 @@ The SAS Viya platform customizations that are managed by viya4-deployment are lo
 
 #### OpenLDAP Customizations
 
-The OpenLDAP setup that is described here is a temporary solution that enables you to add users and groups and to start using SAS Viya platform applications. The OpenLDAP server that is created using these instructions does not persist. It is created and destroyed within the SAS Viya platform namespace where it is created. To add users or groups that persist, follow the SAS documentation that describes how to [Configure an LDAP Identity Provider](https://go.documentation.sas.com/doc/en/sasadmincdc/default/calids/n1aw4xnkvwcddnn1mv8lxr2e4tu7.htm#p0spae4p1qoto3n1qpuzafcecxhh).
+The OpenLDAP setup that is described here is a temporary solution that enables you to add users and groups and to start using SAS Viya platform applications. The OpenLDAP server that is created using these instructions does not persist. It is created and destroyed within the SAS Viya platform namespace where it is created. To add users or groups that persist, follow the SAS documentation that describes how to [Configure an LDAP Identity Provider](https://documentation.sas.com/?cdcId=sasadmincdc&cdcVersion=default&docsetId=calids&docsetTarget=n1aw4xnkvwcddnn1mv8lxr2e4tu7.htm#p0spae4p1qoto3n1qpuzafcecxhh).
 
 If the embedded OpenLDAP server is enabled, it is possible to change the users and groups that will be created. The required steps are similar to other customizations:
 1. Create the folder structure detailed in the [Customize Deployment Overlays](#customize-deployment-overlays). 
@@ -261,7 +261,7 @@ Manual steps are required by the SAS software to update a SAS deployment in an e
 
 If you have an existing deployment that you performed with the viya4-deployment project, take the following steps in order to update the SAS Viya platform:
 
-- Follow the instructions in [Updating Software](https://go.documentation.sas.com/doc/en/sasadmincdc/default/k8sag/titlepage.htm?fromDefault=) in the SAS Viya Platform Operations Guide.
+- Follow the instructions in [Updating Software](https://documentation.sas.com/?cdcId=sasadmincdc&cdcVersion=default&docsetId=k8sag&docsetTarget=titlepage.htm) in the SAS Viya Platform Operations Guide.
 - You are expected to modify the steps that are described in the SAS Viya Platform Operations Guide to accommodate the slightly different directory structure 
 
 ### Troubleshooting
