@@ -134,7 +134,7 @@
   block:
     - name: Postgres instance - crunchy v4 to crunchy v5 update is required
       fail:
-        msg: A manual update from crunchy v4 to v5 is required, follow these steps https://go.documentation.sas.com/doc/en/itopscdc/default/dplynotes/p1bpcvd3sr8au8n1w9ypcvu31taj.htm
+        msg: A manual update from crunchy v4 to v5 is required, follow these steps https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=dplynotes&docsetTarget=p1bpcvd3sr8au8n1w9ypcvu31taj.htm
       when:
         - v4_crunchy_found is defined
         - v4_crunchy_found

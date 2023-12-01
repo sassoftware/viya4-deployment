@@ -74,7 +74,7 @@ The orchestration task attempted to log into the container registry defined by `
 
 ### Solution:
 
-As of [release 6.0.0](https://github.com/sassoftware/viya4-deployment/releases/tag/6.0.0), it's required that if you are running this project using Ansible directly on your workstation, it needs Docker to be installed and the executing user should be able to access it. This is so that we can consume the [sas-orchestration tool](https://go.documentation.sas.com/doc/en/itopscdc/default/dplyml0phy0dkr/p0nid9gu3x2cvln1pzpcxa68tpom.htm#p1garxk7w4avg2n1hd6e4nt5kks7), which is available as a Docker image to generate the [SASDeployment Custom Resource file](https://go.documentation.sas.com/doc/en/itopscdc/default/dplyml0phy0dkr/p0nid9gu3x2cvln1pzpcxa68tpom.htm#p012wq5dhcqbx8n12abyqe25m4nu)
+As of [release 6.0.0](https://github.com/sassoftware/viya4-deployment/releases/tag/6.0.0), it's required that if you are running this project using Ansible directly on your workstation, it needs Docker to be installed and the executing user should be able to access it. This is so that we can consume the [sas-orchestration tool](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=dplyml0phy0dkr&docsetTarget=p11063ane8wtdtn1ksq12gxzchu8.htm), which is available as a Docker image to generate the [SASDeployment Custom Resource file](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=dplyml0phy0dkr&docsetTarget=p0nid9gu3x2cvln1pzpcxa68tpom.htm#p012wq5dhcqbx8n12abyqe25m4nu)
 
 On your host:
 * Ensure that Docker is installed on your machine, the [Dependency Versions documentation](./user/Dependencies.md) states that you need at least version 20.10.10.
@@ -83,7 +83,7 @@ On your host:
 ## SAS Viya Deployment Operator
 
 ### Symptom:
-When the SAS Viya Platform Deployment Operator is not working as expected, three different sources can be used to diagnose problems. Follow the commands from the [SAS Viya Platform deployment guide](https://go.documentation.sas.com/doc/en/sasadmincdc/default/dplyml0phy0dkr/p127f6y30iimr6n17x2xe9vlt54q.htm#p11o2ghzdkqm6kn1qkxqr2wr3nkh) to check out the SAS Viya Platform Deployment Operator Pod, the SASDeployment Custom Resource, and the Reconcile Job. Remediation steps are also present on that page.
+When the SAS Viya Platform Deployment Operator is not working as expected, three different sources can be used to diagnose problems. Follow the commands from the [SAS Viya Platform deployment guide](https://documentation.sas.com/?cdcId=sasadmincdc&cdcVersion=default&docsetId=dplyml0phy0dkr&docsetTarget=p127f6y30iimr6n17x2xe9vlt54q.htm#p11o2ghzdkqm6kn1qkxqr2wr3nkh) to check out the SAS Viya Platform Deployment Operator Pod, the SASDeployment Custom Resource, and the Reconcile Job. Remediation steps are also present on that page.
 
 ## EKS - Cluster Autoscaler Installation
 
