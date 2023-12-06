@@ -36,6 +36,18 @@
     - uninstall
     - update
 
+- name: Update NFS_CLIENT_CONFIG configurations for EFS
+  set_fact:
+    NFS_CLIENT_CONFIG: "{{ NFS_CLIENT_CONFIG | combine(NFS_EFS_CLIENT_CONFIG, recursive=True) }}"
+    PG_NFS_CLIENT_CONFIG: "{{ PG_NFS_CLIENT_CONFIG | combine(NFS_EFS_CLIENT_CONFIG, recursive=True) }}"
+  when:
+    - PROVIDER == "aws"
+    - STORAGE_TYPE_BACKEND is defined
+    - STORAGE_TYPE_BACKEND == "efs"
+  tags:
+    - install
+    - update
+
 - name: Deploy nfs-subdir-external-provisioner-sas
   kubernetes.core.helm:
     name: "{{ NFS_CLIENT_NAME }}"

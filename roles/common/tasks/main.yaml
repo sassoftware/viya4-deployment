@@ -192,6 +192,12 @@
       when:
         - tfstate.ssh_private_key is defined
         - tfstate.ssh_private_key.value|length > 0
+    - name: tfstate - storage type backend var # noqa: name[casing]
+      set_fact:
+        STORAGE_TYPE_BACKEND: "{{ tfstate.storage_type_backend.value }}"
+      when:
+        - tfstate.storage_type_backend is defined
+        - tfstate.storage_type_backend.value|length > 0
     ### Deprecations
     - name: tfstate - postgres admin # noqa: name[casing]
       set_fact:
