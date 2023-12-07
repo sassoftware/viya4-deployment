@@ -15,7 +15,7 @@ The following list details our dependencies and versions (~ indicates multiple p
 | ~              | rsync            | any         |
 | ~              | kubectl          | 1.25 - 1.27 |
 | ~              | Helm             | 3           |
-| pip3           | ansible          | 8.0.0       |
+| pip3           | ansible          | 8.6.0       |
 | pip3           | openshift        | 0.13.1      |
 | pip3           | kubernetes       | 26.1.0      |
 | pip3           | dnspython        | 2.3.0       |
@@ -48,7 +48,7 @@ As described in the [Docker Installation](./DockerUsage.md) section add addition
 ```bash
 # Override kubectl version
 docker build \
-	--build-arg kubectl_version=1.26.8 \
+	--build-arg kubectl_version=1.26.10 \
 	-t viya4-deployment .
 ```
 
