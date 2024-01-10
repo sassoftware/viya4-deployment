@@ -182,7 +182,7 @@ autoscalerVersions:
   # Supports PodDisruptionBudget policy/v1beta1 default for K8s >=1.25
   PDBv1Support:
     api:
-      chartVersion: 9.29.1
+      chartVersion: 9.34.1
 
 ## EBS CSI Driver
 EBS_CSI_DRIVER_ENABLED: true
