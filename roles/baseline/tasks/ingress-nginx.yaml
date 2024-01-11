@@ -32,7 +32,7 @@
         msg: "{{ INGRESS_NGINX_CHART_VERSION }}"
     - name: Fail when INGRESS_NGINX_CHART_VERSION not set
       fail:
-        msg: "INGRESS_NGINX_CHART_VERSION isn't set when K8s version is < 1.{{ingressVersions.k8sMinorVersion.value}}."
+        msg: "INGRESS_NGINX_CHART_VERSION isn't set when K8s version is < 1.{{ ingressVersions.k8sMinorVersion.value }}."
       when:
         - cluster_info.version.server.kubernetes.minor is version(ingressVersions.k8sMinorVersion.value, 'lt')
         - INGRESS_NGINX_CHART_VERSION == ""
