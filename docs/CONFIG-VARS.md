@@ -378,7 +378,7 @@ Cluster-autoscaler is currently only used for AWS EKS clusters. GCP GKE and Azur
 | CLUSTER_AUTOSCALER_ENABLED | Whether to deploy cluster-autoscaler | bool | true | false | | baseline |
 | CLUSTER_AUTOSCALER_CHART_URL | Cluster-autoscaler Helm chart URL | string | See [this document](https://github.com/kubernetes/autoscaler/tree/master/charts) for more information. | false | | baseline |
 | CLUSTER_AUTOSCALER_CHART_NAME| Cluster-autoscaler Helm chart name | string | cluster-autoscaler | false | | baseline |
-| CLUSTER_AUTOSCALER_CHART_VERSION | Cluster-autoscaler Helm chart version | string | "" | false | If left as "" (empty string), version 9.9.2 is used for Kubernetes clusters whose version is <= 1.21 <br> and version 9.29.1 is used for Kubernetes clusters whose version is >= 1.25 | baseline |
+| CLUSTER_AUTOSCALER_CHART_VERSION | Cluster-autoscaler Helm chart version | string | "" | false | If left as "" (empty string), version 9.9.2 is used for Kubernetes clusters whose version is <= 1.21 <br> and version 9.34.1 is used for Kubernetes clusters whose version is >= 1.25 <br> See [Artifact Hub](https://artifacthub.io/packages/helm/cluster-autoscaler/cluster-autoscaler) to determine application version| baseline |
 | CLUSTER_AUTOSCALER_CONFIG | Cluster-autoscaler Helm values | string | See [this file](../roles/baseline/defaults/main.yml) for more information. | false | | baseline |
 | CLUSTER_AUTOSCALER_ACCOUNT | Cluster autoscaler AWS role ARN | string | | false | Required to enable cluster-autoscaler on AWS | baseline |
 | CLUSTER_AUTOSCALER_LOCATION |AWS region where Kubernetes cluster is running | string | us-east-1 | false | | baseline |
