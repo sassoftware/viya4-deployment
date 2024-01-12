@@ -9,7 +9,7 @@ RUN apt-get update && apt-get upgrade -y \
   && update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
 
 FROM baseline as tool_builder
-ARG kubectl_version=1.26.10
+ARG kubectl_version=1.27.9
 
 WORKDIR /build
 
