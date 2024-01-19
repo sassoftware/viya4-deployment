@@ -25,11 +25,17 @@
       register: cluster_info
     - name: Set the default INGRESS_NGINX_CHART_VERSION based on K8s server minor version
       set_fact:
-        INGRESS_NGINX_CHART_VERSION: "{{ ingressVersions.k8sMinorVersionFloor.api.chartVersion if cluster_info.version.server.kubernetes.minor is version(ingressVersions.k8sMinorVersionFloor.value,
-          'ge') else ingressVersions.k8sMinorVersionCeiling.api.chartVersion }}"
+        INGRESS_NGINX_CHART_VERSION: "{{ ingressVersions.k8sMinorVersion.api.chartVersion if cluster_info.version.server.kubernetes.minor is version(ingressVersions.k8sMinorVersion.value,
+          'ge') else '' }}"
     - name: Output INGRESS_NGINX_CHART_VERSION
       debug:
         msg: "{{ INGRESS_NGINX_CHART_VERSION }}"
+    - name: Fail when INGRESS_NGINX_CHART_VERSION not set
+      fail:
+        msg: "INGRESS_NGINX_CHART_VERSION isn't set when K8s version is < 1.{{ ingressVersions.k8sMinorVersion.value }}."
+      when:
+        - cluster_info.version.server.kubernetes.minor is version(ingressVersions.k8sMinorVersion.value, 'lt')
+        - INGRESS_NGINX_CHART_VERSION == ""
 
 - name: Update INGRESS_NGINX_CONFIG to use NLB for AWS
   set_fact:
@@ -62,7 +68,7 @@
       set_fact:
         INGRESS_NGINX_CONFIG: "{{ INGRESS_NGINX_CONFIG | combine(INGRESS_NGINX_CVE_2021_25742_PATCH, recursive=True) }}"
       when:
-        - cluster_info.version.server.kubernetes.minor is version(ingressVersions.k8sMinorVersionFloor.value, 'ge')
+        - cluster_info.version.server.kubernetes.minor is version(ingressVersions.k8sMinorVersion.value, 'ge')
         - INGRESS_NGINX_CHART_VERSION is version('4.0.10', ">=") or (INGRESS_NGINX_CHART_VERSION is version('3.40.0', ">=") and INGRESS_NGINX_CHART_VERSION is version('4.0.0',
           "<"))
 

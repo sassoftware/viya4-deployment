@@ -24,21 +24,17 @@ METRICS_SERVER_ENABLED: true
 METRICS_SERVER_NAME: metrics-server
 METRICS_SERVER_CHART_NAME: metrics-server
 METRICS_SERVER_CHART_URL: https://charts.bitnami.com/bitnami/
-METRICS_SERVER_CHART_VERSION: 6.2.4
+METRICS_SERVER_CHART_VERSION: 6.6.5
 METRICS_SERVER_CONFIG:
   apiService:
     create: true
 
 ## Ingress-nginx - Defaults
 ingressVersions:
-  k8sMinorVersionCeiling:
-    value: 23
+  k8sMinorVersion:
+    value: 25
     api:
-      chartVersion: 4.3.0
-  k8sMinorVersionFloor:
-    value: 24
-    api:
-      chartVersion: 4.7.1
+      chartVersion: 4.9.0
 
 ## Ingress-nginx - Ingress
 ##
@@ -182,7 +178,7 @@ autoscalerVersions:
   # Supports PodDisruptionBudget policy/v1beta1 default for K8s >=1.25
   PDBv1Support:
     api:
-      chartVersion: 9.29.1
+      chartVersion: 9.34.1
 
 ## EBS CSI Driver
 EBS_CSI_DRIVER_ENABLED: true

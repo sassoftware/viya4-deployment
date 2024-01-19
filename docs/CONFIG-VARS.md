@@ -378,7 +378,7 @@ Cluster-autoscaler is currently only used for AWS EKS clusters. GCP GKE and Azur
 | CLUSTER_AUTOSCALER_ENABLED | Whether to deploy cluster-autoscaler | bool | true | false | | baseline |
 | CLUSTER_AUTOSCALER_CHART_URL | Cluster-autoscaler Helm chart URL | string | See [this document](https://github.com/kubernetes/autoscaler/tree/master/charts) for more information. | false | | baseline |
 | CLUSTER_AUTOSCALER_CHART_NAME| Cluster-autoscaler Helm chart name | string | cluster-autoscaler | false | | baseline |
-| CLUSTER_AUTOSCALER_CHART_VERSION | Cluster-autoscaler Helm chart version | string | "" | false | If left as "" (empty string), version 9.9.2 is used for Kubernetes clusters whose version is <= 1.21 <br> and version 9.29.1 is used for Kubernetes clusters whose version is >= 1.25 | baseline |
+| CLUSTER_AUTOSCALER_CHART_VERSION | Cluster-autoscaler Helm chart version | string | "" | false | If left as "" (empty string), version 9.9.2 is used for Kubernetes clusters whose version is <= 1.24 <br> and version 9.34.1 is used for Kubernetes clusters whose version is >= 1.25 <br> See [Artifact Hub](https://artifacthub.io/packages/helm/cluster-autoscaler/cluster-autoscaler) to determine application version| baseline |
 | CLUSTER_AUTOSCALER_CONFIG | Cluster-autoscaler Helm values | string | See [this file](../roles/baseline/defaults/main.yml) for more information. | false | | baseline |
 | CLUSTER_AUTOSCALER_ACCOUNT | Cluster autoscaler AWS role ARN | string | | false | Required to enable cluster-autoscaler on AWS | baseline |
 | CLUSTER_AUTOSCALER_LOCATION |AWS region where Kubernetes cluster is running | string | us-east-1 | false | | baseline |
@@ -408,7 +408,7 @@ The EBS CSI driver is currently only used for kubernetes v1.23 or later AWS EKS 
 | INGRESS_NGINX_NAMESPACE | NGINX Ingress Helm installation namespace | string | ingress-nginx | false | | baseline |
 | INGRESS_NGINX_CHART_URL | NGINX Ingress Helm chart URL | string | See [this document](https://kubernetes.github.io/ingress-nginx) for more information. | false | | baseline |
 | INGRESS_NGINX_CHART_NAME | NGINX Ingress Helm chart name | string | ingress-nginx | false | | baseline |
-| INGRESS_NGINX_CHART_VERSION | NGINX Ingress Helm chart version | string | "" | false | If left as "" (empty string), version 4.3.0 is used for Kubernetes clusters whose version is <= 1.23.X, and version 4.7.1 is used for Kubernetes clusters whose version is >= 1.24.X. | baseline |
+| INGRESS_NGINX_CHART_VERSION | NGINX Ingress Helm chart version | string | "" | false | If left as "" (empty string), version `4.9.0` is used for Kubernetes clusters whose version is >= 1.25.X, and for Kubernetes clusters whose version is <= 1.24.X please set this variable to avoid errors. See [Supported Versions table](https://github.com/kubernetes/ingress-nginx/?tab=readme-ov-file#supported-versions-table) for the supported versions list. | baseline |
 | INGRESS_NGINX_CONFIG | NGINX Ingress Helm values | string | See [this file](../roles/baseline/defaults/main.yml) for more information. Altering this value will affect the cluster. | false | | baseline |
 
 ### Metrics Server
@@ -420,7 +420,7 @@ Kubernetes Metrics Server installation is currently only applicable for AWS EKS 
 | METRICS_SERVER_ENABLED | Whether to deploy Metrics Server | bool | true | false | | baseline |
 | METRICS_SERVER_CHART_URL | Metrics Server Helm chart url | string | Go [here](https://charts.bitnami.com/bitnami/) for more information. | false | If an existing Metrics Server is installed, these options are ignored. | baseline |
 | METRICS_SERVER_CHART_NAME | Metrics Server Helm chart name | string | metrics-server | false | If an existing Metrics Server is installed, these options are ignored. | baseline |
-| METRICS_SERVER_CHART_VERSION | Metrics Server Helm chart version | string | 6.2.4 | false | If an existing Metrics Server is installed, these options are ignored. | baseline |
+| METRICS_SERVER_CHART_VERSION | Metrics Server Helm chart version | string | 6.6.5 | false | If an existing Metrics Server is installed, these options are ignored. See [Artifact Hub](https://artifacthub.io/packages/helm/bitnami/metrics-server) to determine application version.| baseline |
 | METRICS_SERVER_CONFIG | Metrics Server Helm values | string | See [this file](../roles/baseline/defaults/main.yml) for more information. | false | If an existing Metrics Server is installed, these options are ignored. | baseline |
 
 ### NFS Client
