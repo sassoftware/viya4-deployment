@@ -2,7 +2,7 @@
 
 * [PostgreSQL](#postgresql)
   * [Use IAC To Create an External PostgreSQL Database Cluster](#use-iac-to-create-an-external-postgresql-database-cluster)
-  * [Post Data Transfer Steps for viya4-deployment (Experimental)](#post-data-transfer-steps-for-viya4-deployment-experimental)
+  * [Post Data Transfer Steps for viya4-deployment](#post-data-transfer-steps-for-viya4-deployment)
     * [Crunchy Data 5](#crunchy-data-5)
     * [Crunchy Data 4](#crunchy-data-4)
 
@@ -18,7 +18,7 @@ To use the IAC project to create an external PostgreSQL database cluster, refer 
 
 [GCP PostgreSQL Cluster](https://github.com/sassoftware/viya4-iac-gcp/blob/main/docs/CONFIG-VARS.md#postgres-servers)
 
-## Post Data Transfer Steps for viya4-deployment (Experimental)
+## Post Data Transfer Steps for viya4-deployment
 
 After you complete the steps outlined in the [PostgreSQL Data Transfer Guide](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=pgdatamig&docsetTarget=titlepage.htm) to move your data from an internal PostgreSQL server to an external PostgreSQL cluster, you can use the viya4-deployment project to manage your installation again. 
 
