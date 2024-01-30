@@ -23,4 +23,4 @@ patch: |-
 target:
   group: apps
   kind: StatefulSet
-  annotationSelector: sas.com/component-name notin (sas-risk-cirrus-search,sas-workload-orchestrator,sas-data-agent-server-colocated)
+  annotationSelector: sas.com/component-name notin (sas-airflow,sas-risk-cirrus-search,sas-workload-orchestrator,sas-data-agent-server-colocated)
