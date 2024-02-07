@@ -4,7 +4,7 @@
 ---
 - name: V4M - ensure supported value for V4M_ROUTING
   ansible.builtin.assert:
-    that: '{{ ["host-based", "path-based"] | intersect(V4M_ROUTING) | count == 1 }}'
+    that: '{{ ["host-based", "path-based"] | intersect([V4M_ROUTING]) | count == 1 }}'
     msg: >
       Invalid V4M_ROUTING value: {{ V4M_ROUTING }}
 
