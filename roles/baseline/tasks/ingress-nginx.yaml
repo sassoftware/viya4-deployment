@@ -46,6 +46,16 @@
     - install
     - update
 
+- name: Update INGRESS_NGINX_CONFIG annotations to include INGRESS_NGINX_AWS_LB_SUBNETS
+  set_fact:
+    INGRESS_NGINX_CONFIG: "{{ INGRESS_NGINX_CONFIG | combine(INGRESS_NGINX_AWS_LB_SUBNETS, recursive=True) }}"
+  when:
+    - PROVIDER == "aws"
+    - V4_CFG_AWS_LB_SUBNETS|length != 0
+  tags:
+    - install
+    - update
+
 - name: Update INGRESS_NGINX_CONFIG to add Azure load-balancer health probe request path
   set_fact:
     INGRESS_NGINX_CONFIG: "{{ INGRESS_NGINX_CONFIG | combine(INGRESS_NGINX_AZURE_LB_HEALTH_PROBE_CONFIG, recursive=True) }}"
