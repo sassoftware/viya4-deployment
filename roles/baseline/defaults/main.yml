@@ -7,6 +7,7 @@ V4_CFG_RWX_FILESTORE_PATH: /export
 V4_CFG_INGRESS_TYPE: ingress
 V4_CFG_INGRESS_MODE: public
 V4_CFG_MANAGE_STORAGE: true
+V4_CFG_AWS_LB_SUBNETS: ""
 
 ## Cert-manager
 CERT_MANAGER_NAME: cert-manager
@@ -80,6 +81,13 @@ INGRESS_NGINX_AWS_NLB_CONFIG:
     service:
       annotations:
         service.beta.kubernetes.io/aws-load-balancer-type: nlb
+
+# Update LB for AWS, specify subnets to allocate internal IPs from
+INGRESS_NGINX_AWS_LB_SUBNETS:
+  controller:
+    service:
+      annotations:
+        service.beta.kubernetes.io/aws-load-balancer-subnets: "{{ V4_CFG_AWS_LB_SUBNETS }}"
 
 # Ingress-nginx - CVE-2021-25742 Mitigation
 INGRESS_NGINX_CVE_2021_25742_PATCH:

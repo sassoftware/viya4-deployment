@@ -6,7 +6,7 @@ The following list details our dependencies and versions (~ indicates multiple p
 
 | SOURCE         | NAME             | VERSION     |
 |----------------|------------------|-------------|
-| ~              | python           | >=3.9       |
+| ~              | python           | >=3.10       |
 | ~              | pip              | 3.x         |
 | ~              | unzip            | any         |
 | ~              | tar              | any         |
@@ -14,20 +14,20 @@ The following list details our dependencies and versions (~ indicates multiple p
 | ~              | git              | any         |
 | ~              | rsync            | any         |
 | ~              | kubectl          | 1.26 - 1.28 |
-| ~              | Helm             | 3           |
-| pip3           | ansible          | 8.6.0       |
+| ~              | Helm             | 3.14.0      |
+| pip3           | ansible          | 9.1.0       |
 | pip3           | openshift        | 0.13.1      |
 | pip3           | kubernetes       | 26.1.0      |
 | pip3           | dnspython        | 2.3.0       |
 | pip3           | docker           | 5.0.3       |
-| ansible-galaxy | community.docker | 2.7.0       |
+| ansible-galaxy | community.docker | 2.7.8       |
 | ansible-galaxy | ansible.utils    | 2.3.0       |
 | ansible-galaxy | kubernetes.core  | 2.3.2       |
 
 If you are using a provider based kubeconfig file created by viya4-iac-gcp:4.5.0 or newer, install these dependencies:
 | SOURCE         | NAME                    | VERSION     |
 |----------------|-------------------------|-------------|
-| ~              | gcloud                  | 440.0.0     |
+| ~              | gcloud                  | 460.0.0     |
 | ~              | gcloud-gke-auth-plugin  | >= 0.5.2    |
 
 Required project dependencies are generally pinned to known working or stable versions to ensure users have a smooth initial experience. In some cases it may be required to change the default version of a dependency. In such cases users are welcome to experiment with alternate versions, however compatibility may not be guaranteed.

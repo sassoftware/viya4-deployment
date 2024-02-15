@@ -16,6 +16,7 @@ Supported configuration variables are listed in the table below.  All variables 
   - [SAS API Access](#sas-api-access)
   - [Container Registry Access](#container-registry-access)
   - [Ingress](#ingress)
+  - [Load Balancer](#load-balancer)
   - [Monitoring and Logging](#monitoring-and-logging)
     - [Monitoring](#monitoring)
     - [Logging](#logging)
@@ -154,6 +155,13 @@ When V4_CFG_MANAGE_STORAGE is set to `true`, the `sas` and `pg-storage` storage 
 | V4_CFG_INGRESS_TYPE | The ingress controller to deploy | string | "ingress" | true | Possible values: "ingress" | baseline, viya |
 | V4_CFG_INGRESS_FQDN | FQDN to the ingress for SAS Vya installation | string | | true | | viya |
 | V4_CFG_INGRESS_MODE | Whether to create a public or private Loadbalancer endpoint | string | "public" | false | Possible values: "public", "private". Setting this option to "private" adds options to the ingress controller that create a LoadBalancer with private IP address(es) only. | baseline |
+
+## Load Balancer
+
+| Name | <div style="width:150px">Description</div> | Type | Default | Required | Notes | Tasks |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
+| V4_CFG_AWS_LB_SUBNETS | The AWS subnets and by association the AWS availability zones to deploy the load balancing service to. This variable sets an ingress-nginx annotation which interacts with the [Cloud Controller Manager](https://kubernetes.io/docs/tasks/administer-cluster/developing-cloud-controller-manager/) to set the subnets used by the AWS load balancer. Specifying a subnet value or values for this variable takes precedence over the Subnet Discovery method described in [AWS docs](https://docs.aws.amazon.com/eks/latest/userguide/network-load-balancing.html) that relies on the tags applied to AWS subnets documented in scenario 2 of this [table.](https://github.com/sassoftware/viya4-iac-aws/blob/main/docs/user/BYOnetwork.md#supported-scenarios-and-requirements-for-using-existing-network-resources) This variable can be set with [BYO network scenarios 0-3](https://github.com/sassoftware/viya4-iac-aws/blob/main/docs/user/BYOnetwork.md#supported-scenarios-and-requirements-for-using-existing-network-resources). | string | | false | The value is either a comma separated list of subnet IDs, or a comma separated list of subnet names. Does not affect the subnets used for load balancers enabled with  `V4_CFG_CAS_ENABLE_LOADBALANCER`, `V4_CFG_CONNECT_ENABLE_LOADBALANCER`, or `V4_CFG_CONSUL_ENABLE_LOADBALANCER`. | baseline |
+
 
 ## Monitoring and Logging
 
