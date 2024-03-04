@@ -14,15 +14,16 @@ The following list details our dependencies and versions (~ indicates multiple p
 | ~              | git              | any         |
 | ~              | rsync            | any         |
 | ~              | kubectl          | 1.26 - 1.28 |
-| ~              | Helm             | 3.14.1      |
+| ~              | Helm             | 3.14.2      |
 | pip3           | ansible          | 9.2.0       |
 | pip3           | openshift        | 0.13.2      |
-| pip3           | kubernetes       | 29.0.0      |
+| pip3           | kubernetes       | 27.2.0      |
 | pip3           | dnspython        | 2.6.1       |
 | pip3           | docker           | 7.0.0       |
-| ansible-galaxy | community.docker | 3.7.0       |
+| pip3           | urllib3          | 1.26.18     |
+| ansible-galaxy | community.docker | 3.8.0       |
 | ansible-galaxy | ansible.utils    | 3.1.0       |
-| ansible-galaxy | kubernetes.core  | 3.0.0       |
+| ansible-galaxy | kubernetes.core  | 3.0.1       |
 
 If you are using a provider based kubeconfig file created by viya4-iac-gcp:4.5.0 or newer, install these dependencies:
 | SOURCE         | NAME                    | VERSION     |
@@ -48,7 +49,7 @@ As described in the [Docker Installation](./DockerUsage.md) section add addition
 ```bash
 # Override kubectl version
 docker build \
-	--build-arg kubectl_version=1.27.9 \
+	--build-arg kubectl_version=1.27.11 \
 	-t viya4-deployment .
 ```
 
