@@ -17,7 +17,7 @@ RUN curl -sLO https://storage.googleapis.com/kubernetes-release/release/v$kubect
 
 # Installation
 FROM baseline
-ARG helm_version=3.14.1
+ARG helm_version=3.14.2
 ARG aws_cli_version=2.15.22
 ARG gcp_cli_version=464.0.0
 
