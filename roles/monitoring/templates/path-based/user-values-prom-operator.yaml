@@ -49,6 +49,13 @@ prometheus:
   prometheusSpec:
     routePrefix: /prometheus
     externalUrl: "https://{{ V4M_BASE_DOMAIN }}/prometheus"
+    alertingEndpoints:
+      - name: v4m-alertmanager
+        port: http-web
+        pathPrefix: "/alertmanager"
+        scheme: https
+        tlsConfig:
+          insecureSkipVerify: true
 
 alertmanager:
   # Disable default configuration of NodePort
@@ -72,10 +79,3 @@ alertmanager:
   alertmanagerSpec:
     routePrefix: /alertmanager
     externalUrl: "https://{{ V4M_BASE_DOMAIN }}/alertmanager"
-    alertingEndpoints:
-      - name: v4m-alertmanager
-        port: http-web
-        pathPrefix: "/alertmanager"
-        scheme: https
-        tlsConfig:
-          insecureSkipVerify: true
