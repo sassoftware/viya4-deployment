@@ -24,7 +24,7 @@ grafana:
 
 # Note that Prometheus and Alertmanager do not have any
 # authentication configured by default, exposing an
-# unauthenticated applicaton without other restrictions
+# unauthenticated application without other restrictions
 # in place is insecure.
 
 prometheus:
@@ -49,6 +49,13 @@ prometheus:
   prometheusSpec:
     routePrefix: /prometheus
     externalUrl: "https://{{ V4M_BASE_DOMAIN }}/prometheus"
+    alertingEndpoints:
+      - name: v4m-alertmanager
+        port: http-web
+        pathPrefix: "/alertmanager"
+        scheme: https
+        tlsConfig:
+          insecureSkipVerify: true
 
 alertmanager:
   # Disable default configuration of NodePort

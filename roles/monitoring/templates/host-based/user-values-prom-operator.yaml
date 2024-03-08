@@ -17,6 +17,12 @@ prometheus:
     - {{ V4M_PROMETHEUS_FQDN }}
   prometheusSpec:
     externalUrl: "https://{{ V4M_PROMETHEUS_FQDN }}"
+    alertingEndpoints:
+      - name: v4m-alertmanager
+        port: http-web
+        scheme: https
+        tlsConfig:
+          insecureSkipVerify: true
     storageSpec:
       volumeClaimTemplate:
         spec:
