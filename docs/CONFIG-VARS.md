@@ -351,7 +351,7 @@ Additional documentation for the SAS Workload Orchestrator Service can be found 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_CLUSTER_NODE_POOL_MODE | The mode of cluster node pool to use | string | "standard" | false | [standard, minimal] | viya |
-| V4_CFG_EMBEDDED_LDAP_ENABLE | Deploy OpenLDAP in the namespace for authentication | bool | false | false | [Openldap Config](../roles/vdm/templates/generators/openldap-bootstrap-config.yaml). If you set this value to false, you must set `V4_CFG_SITEDEFAULT` to point to a sitedefault file which containts values applicable for your authentication configuration. | viya |
+| V4_CFG_EMBEDDED_LDAP_ENABLE | Deploy OpenLDAP in the namespace for authentication | bool | false | false | [Openldap Config](../roles/vdm/templates/generators/openldap-bootstrap-config.yaml). If you set this value to false, you must set `V4_CFG_SITEDEFAULT` to point to a sitedefault file which contains values applicable for your authentication configuration. | viya |
 | V4_CFG_CONSUL_ENABLE_LOADBALANCER | Set up LoadBalancer to access the Consul user interface | bool | false | false | Consul UI port is 8500. | viya |
 | V4_CFG_ELASTICSEARCH_ENABLE | Enable search with Open Distro for ElasticSearch | bool | true | false | When deploying LTS earlier than 2020.1 or Stable earlier than 2020.1.2, set to false. | viya |
 | V4_CFG_VIYA_START_SCHEDULE | Configure your SAS Viya platform deployment to start on specific schedules | string |  | false | This variable accepts [CronJob schedule expressions](https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/#cron-schedule-syntax) to create your Viya start job schedule. See note below. | viya |
