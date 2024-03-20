@@ -3,6 +3,22 @@
 
 
 ---
+- name: Authenticate helm to V4_CFG_OCI_REGISTRY_URI
+  when:
+    - V4_CFG_OCI_REGISTRY_URI is defined
+    - V4_CFG_OCI_REGISTRY_URI is not none
+    - V4_CFG_CR_USER is defined
+    - V4_CFG_CR_USER is not none
+    - V4_CFG_CR_PASSWORD is defined
+    - V4_CFG_CR_PASSWORD is not none
+  command:
+    cmd: |
+      helm registry login {{ V4_CFG_OCI_REGISTRY_URI }} -u {{ V4_CFG_CR_USER }} --password-stdin
+  args:
+    stdin: "{{ V4_CFG_CR_PASSWORD }}"
+  tags:
+    - baseline
+
 - name: Include nfs-subdir-external-provisioner
   include_tasks:
     file: nfs-subdir-external-provisioner.yaml

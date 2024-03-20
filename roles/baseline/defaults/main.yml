@@ -8,6 +8,7 @@ V4_CFG_INGRESS_TYPE: ingress
 V4_CFG_INGRESS_MODE: public
 V4_CFG_MANAGE_STORAGE: true
 V4_CFG_AWS_LB_SUBNETS: ""
+V4_CFG_OCI_REGISTRY_URI: null
 
 ## Cert-manager
 CERT_MANAGER_NAME: cert-manager

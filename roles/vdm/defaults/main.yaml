@@ -19,6 +19,8 @@ V4_CFG_CR_PASSWORD: null
 V4_CFG_CR_URL: https://cr.sas.com
 V4_CFG_CR_HOST: '{{ V4_CFG_CR_URL | regex_replace("^https?:\/\/(.*)\/?", "\1") }}'
 
+V4_CFG_OCI_REGISTRY_URI: null
+
 V4_CFG_SAS_API_KEY: null
 V4_CFG_SAS_API_SECRET: null
 
