@@ -35,7 +35,7 @@ ingressVersions:
   k8sMinorVersion:
     value: 25
     api:
-      chartVersion: 4.9.0
+      chartVersion: 4.9.1
 
 ## Ingress-nginx - Ingress
 ##
@@ -178,15 +178,8 @@ CLUSTER_AUTOSCALER_CONFIG:
         eks.amazonaws.com/role-arn: "{{ CLUSTER_AUTOSCALER_ACCOUNT }}"
 
 autoscalerVersions:
-  # Supports PodDisruptionBudget policy/v1beta1 default for K8s <=1.24
-  PDBv1beta1Support:
-    api:
-      chartVersion: 9.9.2
-      appVersion: 1.20.0
-  # Supports PodDisruptionBudget policy/v1beta1 default for K8s >=1.25
-  PDBv1Support:
-    api:
-      chartVersion: 9.34.1
+  api:
+    chartVersion: 9.36.0
 
 ## EBS CSI Driver
 EBS_CSI_DRIVER_ENABLED: true

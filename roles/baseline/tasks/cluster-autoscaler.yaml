@@ -12,8 +12,7 @@
   block:
     - name: Set the default CLUSTER_AUTOSCALER_CHART_VERSION based on K8s server minor version
       set_fact:
-        CLUSTER_AUTOSCALER_CHART_VERSION: "{{ autoscalerVersions.PDBv1Support.api.chartVersion if K8S_VERSION | float >= 1.25 else autoscalerVersions.PDBv1beta1Support.api.chartVersion
-          }}"
+        CLUSTER_AUTOSCALER_CHART_VERSION: "{{ autoscalerVersions.api.chartVersion }}"
 
 - name: Deploy cluster-autoscaler
   kubernetes.core.helm:
