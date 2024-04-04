@@ -2,18 +2,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
-- name: Set the default CLUSTER_AUTOSCALER_CHART_VERSION if not specified
-  when:
-    - CLUSTER_AUTOSCALER_ENABLED
-    - CLUSTER_AUTOSCALER_CHART_VERSION|length == 0
-  tags:
-    - install
-    - update
-  block:
-    - name: Set the default CLUSTER_AUTOSCALER_CHART_VERSION based on K8s server minor version
-      set_fact:
-        CLUSTER_AUTOSCALER_CHART_VERSION: "{{ autoscalerVersions.api.chartVersion }}"
-
 - name: Deploy cluster-autoscaler
   kubernetes.core.helm:
     name: "{{ CLUSTER_AUTOSCALER_NAME }}"

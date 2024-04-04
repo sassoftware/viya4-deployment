@@ -164,7 +164,7 @@ CLUSTER_AUTOSCALER_NAME: cluster-autoscaler
 CLUSTER_AUTOSCALER_NAMESPACE: kube-system
 CLUSTER_AUTOSCALER_CHART_NAME: cluster-autoscaler
 CLUSTER_AUTOSCALER_CHART_URL: https://kubernetes.github.io/autoscaler
-CLUSTER_AUTOSCALER_CHART_VERSION: ""
+CLUSTER_AUTOSCALER_CHART_VERSION: 9.36.0
 CLUSTER_AUTOSCALER_ACCOUNT: null
 CLUSTER_AUTOSCALER_LOCATION: us-east-1
 CLUSTER_AUTOSCALER_CONFIG:
@@ -176,10 +176,6 @@ CLUSTER_AUTOSCALER_CONFIG:
       name: cluster-autoscaler
       annotations:
         eks.amazonaws.com/role-arn: "{{ CLUSTER_AUTOSCALER_ACCOUNT }}"
-
-autoscalerVersions:
-  api:
-    chartVersion: 9.36.0
 
 ## EBS CSI Driver
 EBS_CSI_DRIVER_ENABLED: true
