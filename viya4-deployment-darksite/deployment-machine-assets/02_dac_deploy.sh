@@ -11,15 +11,15 @@ function docker_run() {
   echo "starting $tags job..."
   docker run --rm \
     --group-add root \
-    --user $(id -u):$(id -g) \
-    --volume $(pwd)/infrastructure/ssh/id_rsa:/config/jump_svr_private_key \
-    --volume $(pwd)/infrastructure/terraform.tfstate:/config/tfstate \
+    --user "$(id -u)":"$(id -g)" \
+    --volume "$(pwd)"/infrastructure/ssh/id_rsa:/config/jump_svr_private_key \
+    --volume "$(pwd)"/infrastructure/terraform.tfstate:/config/tfstate \
     --volume /home/ec2-user/.kube/config:/.kube/config \
-    --volume $(pwd)/software/deployments:/data \
-    --volume $(pwd)/software/viya_order_assets:/viya_order_assets \
-    --volume $(pwd)/software/ansible-vars-iac.yaml:/config/config \
-    --volume $(pwd)/software/ingress:/ingress \
-    --volume $(pwd)/software/sitedefault.yaml:/sitedefault/sitedefault.yaml \
+    --volume "$(pwd)"/software/deployments:/data \
+    --volume "$(pwd)"/software/viya_order_assets:/viya_order_assets \
+    --volume "$(pwd)"/software/ansible-vars-iac.yaml:/config/config \
+    --volume "$(pwd)"/software/ingress:/ingress \
+    --volume "$(pwd)"/software/sitedefault.yaml:/sitedefault/sitedefault.yaml \
     viya4-deployment:$DOCKER_TAG --tags "$tags"
 }
 
@@ -64,7 +64,7 @@ done
 
 # check if provided tasks are valid
 for i in "${clean[@]}"; do
-  inarray=$(echo ${TASKS[@]} | grep -ow "$i" | wc -w)
+  inarray=$(echo "${TASKS[@]}" | grep -ow "$i" | wc -w)
   if [ $inarray == 0 ]; then
     echo $i "is not a valid input."
     exit 0
@@ -109,12 +109,20 @@ if [ "$last" == "uninstall" ]; then
 fi
 
 # all checks passed so build the tags string
-tags=$(join_by , ${clean[*]})
+tags=$(join_by , "${clean[@]}")
 
 # run the function
 docker_run
 
 # remove downloaded assets
-if [ -f software/deployments/darksite-lab-eks/viya/SASViyaV4*.tgz ]; then
-    rm software/deployments/darksite-lab-eks/viya/SASViyaV4*.tgz
-fi
+for f in software/deployments/darksite-lab-eks/viya/SASViyaV4*.tgz; do
+    ## Check if the glob gets expanded to existing files.
+    ## If not, f here will be exactly the pattern above
+    ## and the exists test will evaluate to false.
+    [ -f "$f" ] && rm software/deployments/darksite-lab-eks/viya/SASViyaV4*.tgz || echo "SASViyaV4.tgz files do not exist"
+
+    ## If one more files exist, they are all removed at once, so we can break after the first iteration
+    break
+done
+
+
