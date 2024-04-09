@@ -8,7 +8,6 @@
 .pre-commit-config.yaml
 ansible-vars.yml
 ansible-vars.yaml
-ansible-vars-iac.yaml
 
 ## ignore data directory
 data/

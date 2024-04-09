@@ -41,6 +41,7 @@ exclude_paths:
   - roles/istio
   - roles/vdm/tasks/deploy.yaml # TODO schema[tasks] error for a docker 'Deploy BLT - Deploy SAS Viya' task
   - .github/workflows # non ansible files
+  - viya4-deployment-darksite/deployment-machine-assets/software/ansible-vars-iac.yaml # dark site ansible-vars.yaml file template
 
 # Offline mode disables installation of requirements.yml and schema refreshing
 offline: false
