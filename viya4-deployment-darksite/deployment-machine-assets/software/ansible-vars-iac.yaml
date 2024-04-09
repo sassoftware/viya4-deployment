@@ -1,0 +1,200 @@
+## Cluster
+NAMESPACE: viya
+
+## MISC
+DEPLOY: true # Set to false to stop at generating the manifest
+LOADBALANCER_SOURCE_RANGES: ['192.168.8.0/24']
+KUBECONFIG: /.kube/config 
+V4_DEPLOYMENT_OPERATOR_ENABLED: false # sas-orchestration does not phone home for entitlements (set to false for darksite)
+
+## Storage 
+V4_CFG_MANAGE_STORAGE: true
+#V4_CFG_RWX_FILESTORE_PATH: "/" # NOTE: EFS is "/" but NFS is "/export" (for NFS)
+
+## SAS Software Order
+V4_CFG_ORDER_NUMBER:                    # order number
+V4_CFG_CADENCE_NAME:                    # stable or lts
+V4_CFG_CADENCE_VERSION:                 # cadence version
+## Providing the following three variables will bypass DAC using SAS Viya API (DAC 6.2.0+):
+V4_CFG_DEPLOYMENT_ASSETS: /viya_order_assets/               # container path to deployment assets 
+V4_CFG_LICENSE: /viya_order_assets/                         # container path to license file (.jwt)
+V4_CFG_CERTS: /viya_order_assets/                           # container path to viya certs
+
+## Path to sitedefault.yaml
+V4_CFG_SITEDEFAULT: /sitedefault/sitedefault.yaml     # container path to sitedefault.yaml
+
+## CR Access
+V4_CFG_CR_URL: "{{ AWS_ACCT_ID }}.dkr.ecr.{{ AWS_REGION }}.amazonaws.com/viya" # update this for your account and region
+
+## Ingress
+V4_CFG_INGRESS_TYPE: ingress
+V4_CFG_INGRESS_MODE: "private"
+# if no FQDN dns registration, use the DNS of the private NLB, here is a way to get that automatically:
+# V4_CFG_INGRESS_FQDN: $(kubectl get service ingress-nginx-controller -n ingress-nginx -o jsonpath={'.status.loadBalancer.ingress[0].ip'})
+V4_CFG_INGRESS_FQDN: 
+V4_CFG_TLS_MODE: "full-stack" # [full-stack|front-door|ingress-only|disabled]
+
+## Postgres
+V4_CFG_POSTGRES_SERVERS:
+  default:
+    internal: true
+    postgres_pvc_storage_size: 10Gi
+    postgres_pvc_access_mode: ReadWriteOnce
+    postgres_storage_class: sas
+    backrest_storage_class: sas
+
+## LDAP
+V4_CFG_EMBEDDED_LDAP_ENABLE: true   # Note: will require the DaC tool (openldap deployment) to be modded to point to ECR for openldap container image
+
+## Baseline configs are specifically for repos that use OCI for helm charts (like ECR)
+
+## Cert-manager config
+CERT_MANAGER_CHART_URL: "" # yes we want this blank because of how the ansible helm module expects OCI to be passed
+CERT_MANAGER_CHART_NAME: oci://{{ AWS_ACCT_ID }}.dkr.ecr.{{ AWS_REGION }}.amazonaws.com/cert-manager
+CERT_MANAGER_CONFIG: 
+  image:
+    repository: {{ AWS_ACCT_ID }}.dkr.ecr.{{ AWS_REGION }}.amazonaws.com/quay.io/jetstack/cert-manager-controller
+  webhook:
+    image:
+      repository: {{ AWS_ACCT_ID }}.dkr.ecr.{{ AWS_REGION }}.amazonaws.com/quay.io/jetstack/cert-manager-webhook
+  cainjector:
+    image:
+      repository: {{ AWS_ACCT_ID }}.dkr.ecr.{{ AWS_REGION }}.amazonaws.com/quay.io/jetstack/cert-manager-cainjector
+  startupapicheck:
+    image:
+      repository: {{ AWS_ACCT_ID }}.dkr.ecr.{{ AWS_REGION }}.amazonaws.com/quay.io/jetstack/cert-manager-ctl
+  installCRDs: "true"
+  extraArgs:
+    - --enable-certificate-owner-ref=true
+
+## Metrics-server config
+METRICS_SERVER_CHART_URL: "" # yes we want this blank because of how the ansible helm module expects OCI to be passed
+METRICS_SERVER_CHART_NAME: oci://{{ AWS_ACCT_ID }}.dkr.ecr.{{ AWS_REGION }}.amazonaws.com/metrics-server
+METRICS_SERVER_CONFIG:
+  image:
+    registry: {{ AWS_ACCT_ID }}.dkr.ecr.{{ AWS_REGION }}.amazonaws.com
+    repository: metrics-server
+  apiService:
+    create: true
+
+## NGINX config
+INGRESS_NGINX_CHART_URL: "" # yes we want this blank because of how the ansible helm module expects OCI to be passed
+INGRESS_NGINX_CHART_NAME: oci://{{ AWS_ACCT_ID }}.dkr.ecr.{{ AWS_REGION }}.amazonaws.com/ingress-nginx
+INGRESS_NGINX_CONFIG:
+  controller:
+    image:
+      registry: {{ AWS_ACCT_ID }}.dkr.ecr.{{ AWS_REGION }}.amazonaws.com
+      image: ingress-nginx/controller
+      digest: {{ CONTROLLER_ECR_IMAGE_DIGEST }}
+    admissionWebhooks:
+      patch:
+        image:
+          registry: {{ AWS_ACCT_ID }}.dkr.ecr.{{ AWS_REGION }}.amazonaws.com
+          image: ingress-nginx/kube-webhook-certgen
+          digest: {{ WEBHOOK_ECR_IMAGE_DIGEST }}    
+    service: 
+      externalTrafficPolicy: Local
+      sessionAffinity: None
+      loadBalancerSourceRanges: "{{ LOADBALANCER_SOURCE_RANGES |default(['0.0.0.0/0'], -1) }}"
+    config:
+      use-forwarded-headers: "true"
+      hsts-max-age: "63072000"
+    tcp: {}
+    udp: {}
+    lifecycle:
+      preStop:
+        exec:
+          command: ["/bin/sh", "-c", "sleep 5; /usr/local/nginx/sbin/nginx -c /etc/nginx/nginx.conf -s quit; while pgrep -x nginx; do sleep 1; done"]
+    terminationGracePeriodSeconds: 600
+
+# nfs client config
+NFS_CLIENT_CHART_URL: "" # yes we want this blank because of how the ansible helm module expects OCI to be passed
+NFS_CLIENT_CHART_NAME: oci://{{ AWS_ACCT_ID }}.dkr.ecr.{{ AWS_REGION }}.amazonaws.com/nfs-subdir-external-provisioner
+NFS_CLIENT_CONFIG:
+  image:
+    repository: {{ AWS_ACCT_ID }}.dkr.ecr.{{ AWS_REGION }}.amazonaws.com/nfs-subdir-external-provisioner
+  nfs:
+    server: "{{ V4_CFG_RWX_FILESTORE_ENDPOINT }}"
+    path: "{{ V4_CFG_RWX_FILESTORE_PATH | replace('/$', '') }}/pvs"
+    mountOptions: 
+      - noatime
+      - nodiratime
+      - 'rsize=262144'
+      - 'wsize=262144'
+  storageClass:
+    archiveOnDelete: "false"
+    name: sas
+
+# pg-storage class config
+PG_NFS_CLIENT_CHART_URL: "" # yes we want this blank because of how the ansible helm module expects OCI to be passed
+PG_NFS_CLIENT_CHART_NAME: oci://{{ AWS_ACCT_ID }}.dkr.ecr.{{ AWS_REGION }}.amazonaws.com/nfs-subdir-external-provisioner
+PG_NFS_CLIENT_CONFIG:
+  image:
+    repository: {{ AWS_ACCT_ID }}.dkr.ecr.{{ AWS_REGION }}.amazonaws.com/nfs-subdir-external-provisioner
+  nfs:
+    server: "{{ V4_CFG_RWX_FILESTORE_ENDPOINT }}"
+    path: "{{ V4_CFG_RWX_FILESTORE_PATH | replace('/$', '') }}/pvs"
+    mountOptions: 
+      - noatime
+      - nodiratime
+      - 'rsize=262144'
+      - 'wsize=262144'
+  storageClass:
+    archiveOnDelete: "false"
+    reclaimPolicy: "Retain"
+    name: pg-storage
+
+# auto-scaler
+CLUSTER_AUTOSCALER_CHART_URL: "" # yes we want this blank because of how the ansible helm module expects OCI to be passed
+CLUSTER_AUTOSCALER_CHART_NAME: oci://{{ AWS_ACCT_ID }}.dkr.ecr.{{ AWS_REGION }}.amazonaws.com/cluster-autoscaler
+CLUSTER_AUTOSCALER_LOCATION: {{ AWS_REGION }}
+CLUSTER_AUTOSCALER_CONFIG:
+  image:
+    repository: {{ AWS_ACCT_ID }}.dkr.ecr.{{ AWS_REGION }}.amazonaws.com/cluster-autoscaler
+  awsRegion: "{{ CLUSTER_AUTOSCALER_LOCATION }}"
+  autoDiscovery:
+    clusterName: "{{ CLUSTER_NAME }}"
+  rbac:
+    serviceAccount:
+      name: cluster-autoscaler
+      annotations:
+        "eks.amazonaws.com/role-arn": "{{ CLUSTER_AUTOSCALER_ACCOUNT }}"
+        "eks.amazonaws.com/sts-regional-endpoints": “true”
+  extraEnv:
+    AWS_STS_REGIONAL_ENDPOINTS: regional
+  extraArgs:
+    aws-use-static-instance-list: true # this keeps autoscaler from going to the internet for the ec2 list on init, auto-scaler will fail in darksite without this 
+
+# EBS CSI DRIVER
+EBS_CSI_DRIVER_CHART_URL: "" # yes we want this blank because of how the ansible helm module expects OCI to be passed
+EBS_CSI_DRIVER_CHART_NAME: oci://{{ AWS_ACCT_ID }}.dkr.ecr.{{ AWS_REGION }}.amazonaws.com/aws-ebs-csi-driver
+EBS_CSI_DRIVER_LOCATION: {{ AWS_REGION }}
+EBS_CSI_DRIVER_CONFIG:
+  image:
+    repository: {{ AWS_ACCT_ID }}.dkr.ecr.{{ AWS_REGION }}.amazonaws.com/public.ecr.aws/ebs-csi-driver/aws-ebs-csi-driver
+  sidecars:
+    provisioner:
+      image:
+        repository: {{ AWS_ACCT_ID }}.dkr.ecr.{{ AWS_REGION }}.amazonaws.com/k8s.gcr.io/sig-storage/csi-provisioner
+    attacher:
+      image:
+        repository: {{ AWS_ACCT_ID }}.dkr.ecr.{{ AWS_REGION }}.amazonaws.com/k8s.gcr.io/sig-storage/csi-attacher
+    snapshotter:
+      image:
+        repository: {{ AWS_ACCT_ID }}.dkr.ecr.{{ AWS_REGION }}.amazonaws.com/k8s.gcr.io/sig-storage/csi-snapshotter
+    livenessProbe:
+      image:
+        repository: {{ AWS_ACCT_ID }}.dkr.ecr.{{ AWS_REGION }}.amazonaws.com/k8s.gcr.io/sig-storage/livenessprobe
+    resizer:
+      image:
+        repository: {{ AWS_ACCT_ID }}.dkr.ecr.{{ AWS_REGION }}.amazonaws.com/k8s.gcr.io/sig-storage/csi-resizer
+    nodeDriverRegistrar:
+      image:
+        repository: {{ AWS_ACCT_ID }}.dkr.ecr.{{ AWS_REGION }}.amazonaws.com/k8s.gcr.io/sig-storage/csi-node-driver-registrar
+  controller:
+    region: "{{ EBS_CSI_DRIVER_LOCATION }}"
+    serviceAccount:
+      create: true
+      name: ebs-csi-controller-sa
+      annotations:
+        "eks.amazonaws.com/role-arn": "{{ EBS_CSI_DRIVER_ACCOUNT }}"
