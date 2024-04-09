@@ -1,5 +1,11 @@
 # Deploy to AWS EKS in Dark Site or Air-Gapped Site scenario
 
+### Acknowledgments
+
+The following individuals have contributed documentation, helper scripts and yaml templates that provided the basis for this document.
+- Josh Coburn
+- Matthias Ender
+
 This file describes procedures, helper scripts, and example files.  First decide on your deployment scenario:
 
 1. The deployment virtual machine has Internet access but the EKS cluster cannot reach the Internet (dark site) - Follow procedures 1, 2, 4, and 6.
