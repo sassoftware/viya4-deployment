@@ -1,12 +1,12 @@
 # Deploy to AWS EKS in Dark Site or Air-Gapped Site scenario
 
-### Acknowledgments
+### Contributors
 
-The following individuals have contributed documentation, helper scripts and yaml templates that provided the basis for this document.
+Thanks go to the following individuals who have contributed documentation, helper scripts and yaml templates that provided the basis for this document.
 - Josh Coburn
 - Matthias Ender
 
-This file describes procedures, helper scripts, and example files.  First decide on your deployment scenario:
+This file describes procedures, helper scripts, and example files to assist with performing a dark site deployment using the `viya4-deploymemt` GitHub project.  First decide on your deployment scenario:
 
 1. The deployment virtual machine has Internet access but the EKS cluster cannot reach the Internet (dark site) - Follow procedures 1, 2, 4, and 6.
 2. The deployment virtual machine and cluster has no Internet access (air-gapped site) - Follow procedures 1, 2, 5, and 6.  Note: you'll still need to somehow push all the images and Helm charts to ECR from a machine with Internet access, and the deployment machine will use the private ECR endpoint in the VPC to pull these during install, so the deployment virtual machine won't need Internet access.
@@ -25,15 +25,15 @@ This file describes procedures, helper scripts, and example files.  First decide
 
 2. **Push 3rd party images to ECR:**
     - refer to the `baseline-to-ecr` folder in this repo for helper scripts
-    - note: OpenLDAP is only required if you are planning to use OpenLDAP for your deployment.  Script to automate this is located [here](https://github.com/sassoftware/viya4-deployment/blob/main/viya4-deployment-darksite/baseline-to-ecr/openldap.sh).
+    - note: OpenLDAP is only required if you are planning to use OpenLDAP for your deployment.  Script to automate this is located [here](https://github.com/sassoftware/viya4-deployment/blob/feat/iac-1117/viya4-deployment-darksite/baseline-to-ecr/openldap.sh) [here](https://github.com/sassoftware/viya4-deployment/blob/main/viya4-deployment-darksite/baseline-to-ecr/openldap.sh).
 
 3. **(Optional) If OpenLDAP is needed, modfy local viya4-deployment clone**
-    - Refer to the [darksite-openldap-mod](https://github.com/sassoftware/viya4-deployment/blob/main/viya4-aws-darksite/darksite-openldap-mod) folder for procedures.  You can build the container using the script or do it manually.
+    - Refer to the [darksite-openldap-mod](https://github.com/sassoftware/viya4-deployment/blob/feat/iac-1117/viya4-aws-darksite/darksite-openldap-mod) [darksite-openldap-mod](https://github.com/sassoftware/viya4-deployment/blob/main/viya4-aws-darksite/darksite-openldap-mod) folder for procedures.  You can build the container using the script or do it manually.
 
 4. **Deployment machine has Internet access - use viya4-deployment for baseline,install**
 
     1. Use built in variables for baseline configurations in your `ansible-vars.yaml` file:
-        - Example `ansible-vars.yaml` provided [here](https://github.com/sassoftware/viya4-deployment/blob/main/viya4-aws-darksite/deployment-machine-assets/software/ansible-vars-iac.yaml)
+        - Example `ansible-vars.yaml` provided [here](https://github.com/sassoftware/viya4-deployment/blob/feat/iac-1117/viya4-deployment-darksite/deployment-machine-assets/software/ansible-vars-iac.yaml) [here](https://github.com/sassoftware/viya4-deployment/blob/main/viya4-deployment-darksite/deployment-machine-assets/software/ansible-vars-iac.yaml)
         - The goal here is to change the image references to point to ECR versus an Internet facing repo and add cluster subnet ID annotations for the nginx load balancers:
             - Replace `{{ AWS_ACCT_ID }}` with your AWS account ID
             - Replace `{{ AWS_REGION }}` with your AWS region
@@ -45,7 +45,7 @@ This file describes procedures, helper scripts, and example files.  First decide
 
 5. **Deployment machine has no Internet access - install baseline using Helm charts pulled from ECR**
     - Two Options:
-        1. If using OCI type repo (like ECR), we can use `viya4-deployment` but we'll need to make some changes to the baseline items in `ansible-vars.yaml`.  An example provided [here](https://github.com/sassoftware/viya4-deployment/blob/main/viya4-aws-darksite/deployment-machine-assets/software/ansible-vars-iac.yaml) includes the needed variables for OCI Helm support.  Pay close attention to `XXX_CHART_URL` and `XXX_CHART_NAME` variables.
+        1. If using OCI type repo (like ECR), we can use `viya4-deployment` but we'll need to make some changes to the baseline items in `ansible-vars.yaml`.  An example provided [here](https://github.com/sassoftware/viya4-deployment/blob/feat/iac-1117/viya4-deployment-darksite/deployment-machine-assets/software/ansible-vars-iac.yaml) [here](https://github.com/sassoftware/viya4-deployment/blob/main/viya4-deployment-darksite/deployment-machine-assets/software/ansible-vars-iac.yaml) includes the needed variables for OCI Helm support.  Pay close attention to `XXX_CHART_URL` and `XXX_CHART_NAME` variables.
         2. Use Helm directly to "manually" install baseline items.
             - Refer to baseline-helm-install-ecr README.md for instructions.
 
