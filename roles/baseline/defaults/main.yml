@@ -1,4 +1,4 @@
-# Copyright © 2020-2023, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# Copyright © 2020-2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
 ---
@@ -14,7 +14,7 @@ CERT_MANAGER_NAME: cert-manager
 CERT_MANAGER_NAMESPACE: cert-manager
 CERT_MANAGER_CHART_NAME: cert-manager
 CERT_MANAGER_CHART_URL: https://charts.jetstack.io/
-CERT_MANAGER_CHART_VERSION: 1.13.1
+CERT_MANAGER_CHART_VERSION: 1.14.4
 CERT_MANAGER_CONFIG:
   installCRDs: "true"
   extraArgs:
@@ -35,7 +35,7 @@ ingressVersions:
   k8sMinorVersion:
     value: 25
     api:
-      chartVersion: 4.9.0
+      chartVersion: 4.9.1
 
 ## Ingress-nginx - Ingress
 ##
@@ -164,7 +164,7 @@ CLUSTER_AUTOSCALER_NAME: cluster-autoscaler
 CLUSTER_AUTOSCALER_NAMESPACE: kube-system
 CLUSTER_AUTOSCALER_CHART_NAME: cluster-autoscaler
 CLUSTER_AUTOSCALER_CHART_URL: https://kubernetes.github.io/autoscaler
-CLUSTER_AUTOSCALER_CHART_VERSION: ""
+CLUSTER_AUTOSCALER_CHART_VERSION: 9.36.0
 CLUSTER_AUTOSCALER_ACCOUNT: null
 CLUSTER_AUTOSCALER_LOCATION: us-east-1
 CLUSTER_AUTOSCALER_CONFIG:
@@ -176,17 +176,6 @@ CLUSTER_AUTOSCALER_CONFIG:
       name: cluster-autoscaler
       annotations:
         eks.amazonaws.com/role-arn: "{{ CLUSTER_AUTOSCALER_ACCOUNT }}"
-
-autoscalerVersions:
-  # Supports PodDisruptionBudget policy/v1beta1 default for K8s <=1.24
-  PDBv1beta1Support:
-    api:
-      chartVersion: 9.9.2
-      appVersion: 1.20.0
-  # Supports PodDisruptionBudget policy/v1beta1 default for K8s >=1.25
-  PDBv1Support:
-    api:
-      chartVersion: 9.34.1
 
 ## EBS CSI Driver
 EBS_CSI_DRIVER_ENABLED: true

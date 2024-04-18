@@ -371,7 +371,7 @@ Notes:
 | CERT_MANAGER_NAMESPACE | cert-manager Helm installation namespace | string | cert-manager | false | | baseline |
 | CERT_MANAGER_CHART_URL | cert-manager Helm chart URL | string | https://charts.jetstack.io/ | false | | baseline |
 | CERT_MANAGER_CHART_NAME| cert-manager Helm chart name | string | cert-manager| false | | baseline |
-| CERT_MANAGER_CHART_VERSION | cert-manager Helm chart version | string | 1.13.1 | false | | baseline |
+| CERT_MANAGER_CHART_VERSION | cert-manager Helm chart version | string | 1.14.4 | false | | baseline |
 | CERT_MANAGER_CONFIG | cert-manager Helm values | string | See [this file](../roles/baseline/defaults/main.yml) for more information. | false | | baseline |
 
 Notes:
@@ -386,7 +386,7 @@ Cluster-autoscaler is currently only used for AWS EKS clusters. GCP GKE and Azur
 | CLUSTER_AUTOSCALER_ENABLED | Whether to deploy cluster-autoscaler | bool | true | false | | baseline |
 | CLUSTER_AUTOSCALER_CHART_URL | Cluster-autoscaler Helm chart URL | string | See [this document](https://github.com/kubernetes/autoscaler/tree/master/charts) for more information. | false | | baseline |
 | CLUSTER_AUTOSCALER_CHART_NAME| Cluster-autoscaler Helm chart name | string | cluster-autoscaler | false | | baseline |
-| CLUSTER_AUTOSCALER_CHART_VERSION | Cluster-autoscaler Helm chart version | string | "" | false | If left as "" (empty string), version 9.9.2 is used for Kubernetes clusters whose version is <= 1.24 <br> and version 9.34.1 is used for Kubernetes clusters whose version is >= 1.25 <br> See [Artifact Hub](https://artifacthub.io/packages/helm/cluster-autoscaler/cluster-autoscaler) to determine application version| baseline |
+| CLUSTER_AUTOSCALER_CHART_VERSION | Cluster-autoscaler Helm chart version | string | 9.36.0 | false | Version `9.36.0` is used for Kubernetes clusters whose version is >= 1.25. For Kubernetes clusters whose version is <= 1.24 please set this variable to avoid errors. See [Artifact Hub](https://artifacthub.io/packages/helm/cluster-autoscaler/cluster-autoscaler) to determine application version. | baseline |
 | CLUSTER_AUTOSCALER_CONFIG | Cluster-autoscaler Helm values | string | See [this file](../roles/baseline/defaults/main.yml) for more information. | false | | baseline |
 | CLUSTER_AUTOSCALER_ACCOUNT | Cluster autoscaler AWS role ARN | string | | false | Required to enable cluster-autoscaler on AWS | baseline |
 | CLUSTER_AUTOSCALER_LOCATION |AWS region where Kubernetes cluster is running | string | us-east-1 | false | | baseline |
@@ -416,7 +416,7 @@ The EBS CSI driver is currently only used for kubernetes v1.23 or later AWS EKS 
 | INGRESS_NGINX_NAMESPACE | NGINX Ingress Helm installation namespace | string | ingress-nginx | false | | baseline |
 | INGRESS_NGINX_CHART_URL | NGINX Ingress Helm chart URL | string | See [this document](https://kubernetes.github.io/ingress-nginx) for more information. | false | | baseline |
 | INGRESS_NGINX_CHART_NAME | NGINX Ingress Helm chart name | string | ingress-nginx | false | | baseline |
-| INGRESS_NGINX_CHART_VERSION | NGINX Ingress Helm chart version | string | "" | false | If left as "" (empty string), version `4.9.0` is used for Kubernetes clusters whose version is >= 1.25.X, and for Kubernetes clusters whose version is <= 1.24.X please set this variable to avoid errors. See [Supported Versions table](https://github.com/kubernetes/ingress-nginx/?tab=readme-ov-file#supported-versions-table) for the supported versions list. | baseline |
+| INGRESS_NGINX_CHART_VERSION | NGINX Ingress Helm chart version | string | "" | false | If left as "" (empty string), version `4.9.1` is used for Kubernetes clusters whose version is >= 1.25.X, and for Kubernetes clusters whose version is <= 1.24.X please set this variable to avoid errors. See [Supported Versions table](https://github.com/kubernetes/ingress-nginx/?tab=readme-ov-file#supported-versions-table) for the supported versions list. | baseline |
 | INGRESS_NGINX_CONFIG | NGINX Ingress Helm values | string | See [this file](../roles/baseline/defaults/main.yml) for more information. Altering this value will affect the cluster. | false | | baseline |
 
 ### Metrics Server
