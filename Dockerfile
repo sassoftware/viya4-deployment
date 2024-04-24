@@ -19,7 +19,7 @@ RUN curl -sLO https://storage.googleapis.com/kubernetes-release/release/v$kubect
 FROM baseline
 ARG helm_version=3.14.2
 ARG aws_cli_version=2.15.22
-ARG gcp_cli_version=471.0.0-0
+ARG gcp_cli_version=472.0.0-0
 
 # Add extra packages
 RUN apt-get update && apt-get install --no-install-recommends -y gzip wget git jq ssh sshpass skopeo rsync \
