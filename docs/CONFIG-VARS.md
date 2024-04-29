@@ -15,7 +15,6 @@ Supported configuration variables are listed in the table below.  All variables 
   - [SAS Software Order](#sas-software-order)
   - [SAS API Access](#sas-api-access)
   - [Container Registry Access](#container-registry-access)
-  - [OCI Container Registry Access](#oci-container-registry-access)
   - [Ingress](#ingress)
   - [Load Balancer](#load-balancer)
   - [Monitoring and Logging](#monitoring-and-logging)
@@ -149,10 +148,6 @@ When V4_CFG_MANAGE_STORAGE is set to `true`, the `sas` and `pg-storage` storage 
 | V4_CFG_CR_PASSWORD | Container registry password | string | | false | By default, credentials are included in the downloaded deployment assets. | viya |
 | V4_CFG_CR_URL | Container registry server | string | https://cr.sas.com | false | | viya |
 
-## OCI Container Registry Access
-| Name | Description | Type | Default | Required | Notes | Tasks |
-| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_OCI_REGISTRY_URI | OCI Container registry URI | string | | false | Set this value to activate helm authentication to the indicated OCI registry URI using the `V4_CFG_CR_USER` and `V4_CFG_CR_PASSWORD` values. Useful when the OCI container registry is used as a source for helm chart installs with dark site deployments. | baseline, viya |
 
 ## Ingress
 
