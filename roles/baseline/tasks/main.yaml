@@ -3,17 +3,17 @@
 
 
 ---
-- name: Authenticate helm to V4_CFG_OCI_REGISTRY_URI
+- name: Helm authenticate to private repository
   when:
-    - V4_CFG_OCI_REGISTRY_URI is defined
-    - V4_CFG_OCI_REGISTRY_URI is not none
+    - V4_CFG_DARK_SITE_ENABLED is defined
+    - V4_CFG_DARK_SITE_ENABLED
     - V4_CFG_CR_USER is defined
     - V4_CFG_CR_USER is not none
     - V4_CFG_CR_PASSWORD is defined
     - V4_CFG_CR_PASSWORD is not none
   command:
     cmd: |
-      helm registry login {{ V4_CFG_OCI_REGISTRY_URI }} -u {{ V4_CFG_CR_USER }} --password-stdin
+      helm registry login {{ V4_CFG_CR_URL }} -u {{ V4_CFG_CR_USER }} --password-stdin
   args:
     stdin: "{{ V4_CFG_CR_PASSWORD }}"
   tags:
