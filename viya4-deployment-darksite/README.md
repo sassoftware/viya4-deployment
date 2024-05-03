@@ -2,17 +2,23 @@
 
 ### Contributors
 
-Thanks go to the following individuals who have contributed documentation, helper scripts and yaml templates that provided the basis for this document.
+We thank the following individuals for technical assistance and their contributions of documentation, scripts and yaml templates that provided the basis for this document.
 - Josh Coburn
 - Matthias Ender
 
-This file describes procedures, helper scripts, and example files to assist with performing a dark site deployment using the `viya4-deploymemt` GitHub project.  First decide on your deployment scenario:
+### Background
 
-1. The deployment virtual machine has Internet access but the EKS cluster cannot reach the Internet (dark site) - Follow procedures 1, 2, 4, and 6.
+This file describes procedures, helper scripts, and example files to assist with performing a Dark Site deployment using the `viya4-deploymemt` GitHub project.  
+
+### Dark Site Deployment Scenarios
+
+Choose the deployment scenario that describes your Dark Site configuration:
+
+1. The deployment virtual machine has Internet access but the EKS cluster cannot reach the Internet (Dark Site) - Follow procedures 1, 2, 4, and 6.
 2. The deployment virtual machine and cluster has no Internet access (air-gapped site) - Follow procedures 1, 2, 5, and 6.  Note: you'll still need to somehow push all the images and Helm charts to ECR from a machine with Internet access, and the deployment machine will use the private ECR endpoint in the VPC to pull these during install, so the deployment virtual machine won't need Internet access.
 
 **Notes:**
-- The following procedures assume that the `viya4-iac-aws` project was used to deploy the EKS infrastructure.  Refer to the `viya4-iac-aws-darksite` folder within the `viya4-iac-aws` [github repo](https://github.com/sassoftware/viya4-iac-aws) for the procedures to follow pertaining to IaC use with an AWS dark site configuration.
+- The following procedures assume that the `viya4-iac-aws` project was used to deploy the EKS infrastructure.  Refer to the `viya4-iac-aws-darksite` folder within the `viya4-iac-aws` [github repo](https://github.com/sassoftware/viya4-iac-aws) for the procedures to follow pertaining to IaC use with an AWS Dark Site configuration.
 - Helper shell scripts under the `viya4-deployment-darksite` folder in this project assume that the deployment virtual machine is properly configured, confirm that:
     - kubeconfig file for the EKS cluster has been installed and tested (EKS cluster admin access is verified as working)
     - AWS CLI is configured
@@ -50,7 +56,7 @@ This file describes procedures, helper scripts, and example files to assist with
             - Refer to baseline-helm-install-ecr README.md for instructions.
 
 6. **viya4-deployment viya,install**
-    - **Note:** As of `viya4-deployment` v6.0.0, the project uses the Deployment Operator as the default.  The deployment operator has additional considerations in a dark site deployment because the repository warehouse for the metadata will not be available without Internet access (as it is pulled from ses.sas.com).  
+    - **Note:** As of `viya4-deployment` v6.0.0, the project uses the Deployment Operator as the default.  The deployment operator has additional considerations in a Dark Site deployment because the repository warehouse for the metadata will not be available without Internet access (as it is pulled from ses.sas.com).  
     
     - There are multiple options to mitigate the issue created by using the Deployment operator:
 
