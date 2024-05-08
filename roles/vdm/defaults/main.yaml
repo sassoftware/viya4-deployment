@@ -26,6 +26,8 @@ V4_CFG_RWX_FILESTORE_ENDPOINT: null
 V4_CFG_RWX_FILESTORE_PATH: /export
 V4_CFG_RWX_FILESTORE_DATA_PATH: "{{ V4_CFG_RWX_FILESTORE_PATH | replace('/$', '') }}/{{ NAMESPACE }}/data"
 V4_CFG_RWX_FILESTORE_HOMES_PATH: "{{ V4_CFG_RWX_FILESTORE_PATH | replace('/$', '') }}/{{ NAMESPACE }}/homes"
+# The two variables below are not used in updating any template files or used in any ansible tasks
+# They have been removed from CONFIG-VARS.md, if they are used in the future add them back.
 V4_CFG_RWX_FILESTORE_ASTORES_PATH: "{{ V4_CFG_RWX_FILESTORE_PATH | replace('/$', '') }}/{{ NAMESPACE }}/astores"
 V4_CFG_RWX_FILESTORE_BIN_PATH: "{{ V4_CFG_RWX_FILESTORE_PATH | replace('/$', '') }}/{{ NAMESPACE }}/bin"
 
