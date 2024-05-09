@@ -2,7 +2,6 @@
 
 source 00_vars.sh
 
-
 ## get chart version from viya4-deployment repo
 echo "**** cert-manager ****"
 CHART_VERSION=$(curl -s https://raw.githubusercontent.com/sassoftware/viya4-deployment/$DEPLOYMENT_VERSION/roles/baseline/defaults/main.yml | yq '.CERT_MANAGER_CHART_VERSION')
@@ -17,13 +16,11 @@ IMG_STARTUP=$(helm show values jetstack/cert-manager --version=$CHART_VERSION | 
 echo "controller repo: $IMG_CONTROLLER" && echo "webhook repo: $IMG_WEBHOOK" && echo "cainject repo: $IMG_CAINJECTOR" && echo "startupapicheck repo: $IMG_STARTUP"
 echo "*********************"
 
-
 ## pull the images
 $DOCKER_SUDO docker pull $IMG_CONTROLLER:v$CHART_VERSION
 $DOCKER_SUDO docker pull $IMG_WEBHOOK:v$CHART_VERSION
 $DOCKER_SUDO docker pull $IMG_CAINJECTOR:v$CHART_VERSION
 $DOCKER_SUDO docker pull $IMG_STARTUP:v$CHART_VERSION
-
 
 # create ECR repos
 aws ecr create-repository --no-cli-pager --repository-name cert-manager # this repo is used to store the helm chart

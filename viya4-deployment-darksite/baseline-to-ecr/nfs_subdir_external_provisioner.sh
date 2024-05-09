@@ -15,7 +15,6 @@ echo "*****************************************"
 ## pull the image
 $DOCKER_SUDO docker pull $REPOSITORY:$TAG
 
-
 # create ECR repo
 aws ecr create-repository --no-cli-pager --repository-name nfs-subdir-external-provisioner
 
@@ -28,10 +27,8 @@ aws ecr get-login-password \
 helm push nfs-subdir-external-provisioner-$CHART_VERSION.tgz oci://$AWS_ACCT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/
 rm nfs-subdir-external-provisioner-$CHART_VERSION.tgz
 
-
 # ## update local image tag appropriately
 $DOCKER_SUDO docker tag $REPOSITORY:$TAG $AWS_ACCT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/nfs-subdir-external-provisioner:$TAG
-
 
 # # ## auth local $DOCKER_SUDO docker to ecr
 aws ecr get-login-password --region $AWS_REGION |  $DOCKER_SUDO docker login --username AWS --password-stdin $AWS_ACCT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
