@@ -4,9 +4,9 @@ source 00_vars.sh
 
 # account for v6.3.0+ changes - autoscaler now supports k8s 1.25
 DV=$(echo $DEPLOYMENT_VERSION | sed 's/\.//g')
-if [ $DEPLOYMENT_VERSION == "main" ] && [ $K8S_minor_version -ge 25 ]; then 
+if [ $DEPLOYMENT_VERSION == "main" ] && [ $K8S_minor_version -ge 25 ]; then
      CHART_VERSION=$(curl -s https://raw.githubusercontent.com/sassoftware/viya4-deployment/$DEPLOYMENT_VERSION/roles/baseline/defaults/main.yml | yq '.autoscalerVersions.PDBv1Support.api.chartVersion')
-elif [ $DEPLOYMENT_VERSION == "main" ] && [ $K8S_minor_version -le 24 ]; then 
+elif [ $DEPLOYMENT_VERSION == "main" ] && [ $K8S_minor_version -le 24 ]; then
      CHART_VERSION=$(curl -s https://raw.githubusercontent.com/sassoftware/viya4-deployment/$DEPLOYMENT_VERSION/roles/baseline/defaults/main.yml | yq '.autoscalerVersions.PDBv1beta1Support.api.chartVersion')
 elif [ $DV -ge 630 ] && [ $K8S_minor_version -ge 25 ]; then
      CHART_VERSION=$(curl -s https://raw.githubusercontent.com/sassoftware/viya4-deployment/$DEPLOYMENT_VERSION/roles/baseline/defaults/main.yml | yq '.autoscalerVersions.PDBv1Support.api.chartVersion')
