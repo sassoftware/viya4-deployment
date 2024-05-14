@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Copyright © 2020-2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 source 00_vars.sh
 
 # account for v6.3.0+ changes - autoscaler now supports k8s 1.25

@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Copyright © 2020-2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 ## set variables
 AWS_ACCT_ID=
 AWS_REGION=

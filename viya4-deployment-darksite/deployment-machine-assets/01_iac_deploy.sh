@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Copyright © 2020-2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 # what is the tag
 read -p "What is the tag for your viya4-iac-aws container? " -r TAG
 # what is the job

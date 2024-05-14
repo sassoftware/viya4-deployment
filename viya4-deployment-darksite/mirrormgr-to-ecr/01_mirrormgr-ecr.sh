@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Copyright © 2020-2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 ## mirrormgr must be installed and in $PATH prior to running this script
 ## aws cli should be configured prior to running this script
 ## place your downloaded assets in the assets/ folder

@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Copyright © 2020-2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 # helper script to easily mod viya4-deployment when using openldap in a darksite
 
 

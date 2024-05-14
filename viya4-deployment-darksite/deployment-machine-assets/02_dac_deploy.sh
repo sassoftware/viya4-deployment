@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Copyright © 2020-2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 # get viya4-deployment container tag
 echo -e "\n"
 read -p "What is your viya4-deployment container tag? " -r DOCKER_TAG
