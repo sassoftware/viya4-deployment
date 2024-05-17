@@ -28,7 +28,7 @@ The following list details our dependencies and versions (~ indicates multiple p
 If you are using a provider based kubeconfig file created by viya4-iac-gcp:4.5.0 or newer, install these dependencies:
 | SOURCE         | NAME                    | VERSION     |
 |----------------|-------------------------|-------------|
-| ~              | gcloud                  | 471.0.0     |
+| ~              | gcloud                  | 472.0.0     |
 | ~              | gcloud-gke-auth-plugin  | >= 0.5.2    |
 
 Required project dependencies are generally pinned to known working or stable versions to ensure users have a smooth initial experience. In some cases it may be required to change the default version of a dependency. In such cases users are welcome to experiment with alternate versions, however compatibility may not be guaranteed.
