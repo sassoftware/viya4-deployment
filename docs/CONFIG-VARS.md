@@ -34,7 +34,6 @@ Supported configuration variables are listed in the table below.  All variables 
     - [Metrics Server](#metrics-server)
     - [NFS Client](#nfs-client)
     - [Postgres NFS Client](#postgres-nfs-client)
-  - [Multi-tenancy](#multi-tenancy)
 
 ## BASE
 
@@ -452,56 +451,3 @@ The Postgres NFS client is currently supported by the nfs-subdir-external-provis
 | PG_NFS_CLIENT_CHART_NAME | nfs-subdir-external-provisioner Helm chart name | string | nfs-subdir-external-provisioner | false | | baseline |
 | PG_NFS_CLIENT_CHART_VERSION | nfs-subdir-external-provisioner Helm chart version | string | 4.0.18| false | | baseline |
 | PG_NFS_CLIENT_CONFIG | nfs-subdir-external-provisioner Helm values | string | See [this file](../roles/baseline/defaults/main.yml) for more information. | false | | baseline |
-
-
-## Multi-tenancy
-
-| Name | Description | Type | Default | Required | Notes | Tasks |
-| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4MT_ENABLE | Enables multi-tenancy in the SAS Viya platform deployment | bool | false | false || viya, multi-tenancy |
-| V4MT_MODE | Set V4MT_MODE to either schema or database | string | schema | false | Two modes of data isolation (schemaPerApplicationTenant, databasePerTenant) are supported for tenant data. The default is schemaPerApplicationTenant.  | viya, multi-tenancy |
-| V4MT_TENANT_IDS | Maps to SAS_TENANT_IDS. One or more tenant IDs to onboard or offboard | string | | false | Example: Single tenant ID: "acme" or Multiple tenant IDs: "acme, cyberdyne, intech". Tenant IDs have a few naming restrictions, See the details [here](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=caltenants&docsetTarget=p0emzq13c0zbhxn1hktsdlmig934.htm#n1fptbibrh96r8n1jy317onpjd8r) | viya, multi-tenancy |
-| V4MT_PROVIDER_PASSWORD | Optional: The password that is applied to the tenant administrator on each onboarded tenant | string | | false | Maps to SAS_PROVIDER_PASSWORD. When V4MT_PROVIDER_PASSWORD is specified, V4MT_PROVIDER_PASSWORD_{{TENANT-ID}} cannot be used. See details [here](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=caltenants&docsetTarget=p0emzq13c0zbhxn1hktsdlmig934.htm#p1ghvmezrb3cvxn1h7vg4uguqct6). | multi-tenancy |
-| V4MT_PROVIDER_PASSWORD_{{TENANT-ID}} | Optional: Unique sasprovider password for each tenant being onboarded. {{TENANT-ID}} must be in uppercase. | string | | false | Maps to SAS_PROVIDER_PASSWORD_{{TENANT-ID}}. When V4MT_PROVIDER_PASSWORD_{{TENANT-ID}} is specified, V4MT_PROVIDER_PASSWORD cannot be used. See details [here](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=caltenants&docsetTarget=p0emzq13c0zbhxn1hktsdlmig934.htm#p1ghvmezrb3cvxn1h7vg4uguqct6). | multi-tenancy |
-| V4MT_TENANT_CAS_CUSTOMIZATION | Map of objects with all tenant CAS customization variables. See the format below. | | | false | | multi-tenancy |
-
-### Tenant CAS Customization
-
-Some of the tenant CAS customizations can be defined with the V4MT_TENANT_CAS_CUSTOMIZATION variable, which is a map of objects. The variable has the following format:
-
-```bash
-V4MT_TENANT_CAS_CUSTOMIZATION:
-  <tenant-id1>:
-    ...
-  <tenant-id2>:
-    ...
-  ...
-```
-Below is the list of parameters each element can contain.
-
-| Name | Description | Type | Default | Required | Notes | Tasks |
-| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| memory | Amount of RAM to allocate to per CAS node | string | | false | Numeric value followed by the units, such as 32Gi for 32 gibibytes. In Kubernetes, the unit  is Gi. | multi-tenancy |
-| cpus | Number of CPU cores to allocate per CAS node | string | | false | Either a whole number, representing that number of cores, or a number followed by m, indicating that number of milli-cores. | multi-tenancy |
-| loadbalancer_enabled | Set up LoadBalancer to access CAS binary ports | bool | false | false | | multi-tenancy |
-| loadbalancer_source_ranges | LoadBalancer source ranges specific to the tenant | list | false | false | | multi-tenancy |
-| worker_count | The number of CAS worker nodes for tenants. Default is 0 (SMP) | int | 0 | false | | multi-tenancy |
-| backup_controller_enabled | Enable backup CAS controller | bool | false | false | | multi-tenancy |
-
-Example:
-
-```bash
-V4MT_TENANT_CAS_CUSTOMIZATION:
-  acme:
-    memory: 3Gi
-    cpus: 300m
-    loadbalancer_enabled: true
-    loadbalancer_source_ranges: ['0.0.0.0/0']
-    worker_count: 0
-    backup_controller_enabled: false
-  intech:
-    memory: 2Gi
-    cpus: 250m
-    worker_count: 1
-    backup_controller_enabled: true
-```
