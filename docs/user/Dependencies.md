@@ -19,9 +19,9 @@ The following list details our dependencies and versions (~ indicates multiple p
 | pip3           | openshift        | 0.13.2      |
 | pip3           | kubernetes       | 27.2.0      |
 | pip3           | dnspython        | 2.6.1       |
-| pip3           | docker           | 7.0.0       |
+| pip3           | docker           | 7.1.0       |
 | pip3           | urllib3          | 1.26.18     |
-| ansible-galaxy | community.docker | 3.8.0       |
+| ansible-galaxy | community.docker | 3.10.3      |
 | ansible-galaxy | ansible.utils    | 3.1.0       |
 | ansible-galaxy | kubernetes.core  | 3.0.0       |
 
