@@ -63,7 +63,7 @@
     - uninstall
 
 - name: V4M - storageclass uninstall status
-  debug:
+  ansible.builtin.debug:
     msg: "{{ sc_users.stdout }} Persistent Volumes still referring to the v4m Storage Class, skipping deletion"
   when:
     - PROVIDER is not none
