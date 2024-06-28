@@ -81,7 +81,7 @@
     src: "{{ role_path }}/files/{{ PROVIDER }}-storageclass.yaml"
   when:
     - PROVIDER is not none
-    - PROVIDER == "azure"
+    - PROVIDER in ["azure","aws","gcp"]
     - V4_CFG_MANAGE_STORAGE is not none
     - V4_CFG_MANAGE_STORAGE|bool
     - sc_users.stdout | int == 0
