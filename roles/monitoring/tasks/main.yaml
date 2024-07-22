@@ -50,6 +50,30 @@
   tags:
     - cluster-logging
 
+- name: V4M - check if storage class is being used
+  ansible.builtin.shell: |
+    kubectl --kubeconfig {{ KUBECONFIG }} get pv --output=custom-columns='PORT:.spec.storageClassName' | grep -o v4m | wc -l
+  register: sc_users
+  when:
+    - PROVIDER is not none
+    - PROVIDER in ["azure","aws","gcp"]
+    - V4_CFG_MANAGE_STORAGE is not none
+    - V4_CFG_MANAGE_STORAGE|bool
+  tags:
+    - uninstall
+
+- name: V4M - storageclass uninstall status
+  ansible.builtin.debug:
+    msg: "Persistent Volumes still referring to the v4m Storage Class, skipping deletion"
+  when:
+    - PROVIDER is not none
+    - PROVIDER in ["azure","aws","gcp"]
+    - V4_CFG_MANAGE_STORAGE is not none
+    - V4_CFG_MANAGE_STORAGE|bool
+    - sc_users.stdout | int > 0
+  tags:
+    - uninstall
+
 - name: V4M - remove storageclass
   kubernetes.core.k8s:
     kubeconfig: "{{ KUBECONFIG }}"
@@ -57,8 +81,9 @@
     src: "{{ role_path }}/files/{{ PROVIDER }}-storageclass.yaml"
   when:
     - PROVIDER is not none
-    - PROVIDER == "azure"
+    - PROVIDER in ["azure","aws","gcp"]
     - V4_CFG_MANAGE_STORAGE is not none
     - V4_CFG_MANAGE_STORAGE|bool
+    - sc_users.stdout | int == 0
   tags:
     - uninstall
