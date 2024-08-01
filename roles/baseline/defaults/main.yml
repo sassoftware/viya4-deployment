@@ -213,3 +213,6 @@ private_ingress:
       service:
         annotations:
           networking.gke.io/load-balancer-type: Internal
+
+## NIST Features
+V4_CFG_NIST_FEATURES_ENABLED: false
