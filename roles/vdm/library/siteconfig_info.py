@@ -6,6 +6,7 @@ from ansible.module_utils.basic import *
 import glob
 import yaml
 import os
+import re
 from enum import Enum, auto
 
 class Overlay(Enum):
@@ -16,15 +17,17 @@ class Overlay(Enum):
   TRANSFORMER = "transformers"
 
 class siteConfig(object):
-  def __init__(self, basedir):
-    self._overlays = dict()
+  def __init__(self, basedir, _overlays):
+    self._overlays = _overlays
     self._basedir = os.path.join(basedir, '')
 
   def add_overlays(self, overlay_type: Overlay, config: str):
-    if overlay_type.value in self._overlays:
-      self._overlays[overlay_type.value].append(self.remove_basedir(config))
-    else:
-      self._overlays[overlay_type.value] = [self.remove_basedir(config)]
+    match = re.search(r"^(\d{1,2})", os.path.basename(config))
+    priority = match.group(1) if match else 50
+
+    self._overlays.setdefault(overlay_type.value, {})
+    self._overlays[overlay_type.value].setdefault(priority, [])
+    self._overlays[overlay_type.value][priority].append(self.remove_basedir(config))
 
   def get_overlays(self) -> dict:
     return self._overlays
@@ -104,10 +107,11 @@ def main():
   fields = {
     "path": {"required": True, "type": "str"},
     "exclude": {"default": [], "type": list},
+    "existing": {"default": {}, "type": dict}
   }
   module = AnsibleModule(argument_spec=fields)
   try:
-    sc = siteConfig(module.params['path'])
+    sc = siteConfig(module.params['path'], module.params['existing'])
     scFolder = os.path.join(module.params['path'], 'site-config')
     _, folders, _ = next(os.walk(scFolder))
     for folder in folders:
