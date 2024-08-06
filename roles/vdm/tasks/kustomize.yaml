@@ -54,7 +54,7 @@
   include_tasks: copy_overlay.yaml
   vars:
     resource: "{{ item.key }}"
-    overlays: "{{ item.value | default([], true) }}"
+    overlays: "{{ item.value.values() | default([], true) }}"
   with_dict: "{{ unified_overlays['overlays'] }}"
   tags:
     - install
