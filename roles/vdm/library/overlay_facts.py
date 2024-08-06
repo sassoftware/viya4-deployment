@@ -13,6 +13,7 @@ def main():
     "existing": {"required": True, "type": dict},
     "cadence_number": {"default": "0.0.0", "type": str},
     "cadence_name": {"default": "lts", "type": str},
+    "customizations": {"default": {}, "type": dict}
 }
 
   results = dict(
@@ -42,8 +43,7 @@ def main():
         if ((existingVersion < minVersion) and module.params["cadence_name"].lower() != "fast") or (existingVersion > maxVersion):
           continue
 
-        priority = str(overlay.setdefault("priority", 1))
-        phase = "pre" if int(priority) < 50 else "post"
+        priority = str(overlay.setdefault("priority", 10))
         overlay.pop("priority", None)
         overlay_type = list(overlay.keys())[0]
 
@@ -52,24 +52,18 @@ def main():
         overlay_path = os.path.join(folderPath, overlay[overlay_type])
         
         module.params['existing'].setdefault(overlay_type, {})
-        module.params['existing'][overlay_type].setdefault(phase, {})
+        module.params['existing'][overlay_type].setdefault(priority, [])
 
-        if priority in module.params['existing'][overlay_type][phase]:
-          if overlay_path not in module.params['existing'][overlay_type][phase][priority]:
-            module.params['existing'][overlay_type][phase][priority].append(overlay_path)
-        else:
-          module.params['existing'][overlay_type][phase].update({priority: [overlay_path]})
+        # duplicate check
+        if overlay_path not in module.params['existing'][overlay_type][priority]:
+          module.params['existing'][overlay_type][priority].append(overlay_path)
 
       results['ansible_facts'] = {"vdm_overlays": module.params['existing']}
       module.exit_json(**results)
-    else:
-      for resource_type, phases in module.params['existing'].items():
-        results['result'][resource_type] = {}
-        for phase in phases:
-          results['result'][resource_type][phase] = []
-          for priority in sorted(module.params['existing'][resource_type][phase]):
-            results['result'][resource_type][phase] += module.params['existing'][resource_type][phase][priority]
-      module.exit_json(**results)
+    # else:
+    #   results['result'] = set(module.params['existing']).union(module.params['customizations']['overlays'])
+    #   module.fail_json(results)
+    #   module.exit_json(**results)
   except Exception as e:
     module.fail_json(error=e, msg="Error occurred")
     raise

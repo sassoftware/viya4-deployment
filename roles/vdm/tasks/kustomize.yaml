@@ -37,22 +37,14 @@
 
 - name: Kustomize - Get user's customizations
   siteconfig_info:
+    existing: "{{ vdm_overlays }}"
     path: "{{ DEPLOY_DIR }}"
     exclude:
       - vdm
       - multi-tenant
       - sas-tenant-job
       - operator-deploy
-  register: user_customizations
-  tags:
-    - install
-    - uninstall
-    - update
-
-- name: Kustomize - Ordered overlays
-  overlay_facts:
-    existing: "{{ vdm_overlays }}"
-  register: ordered_overlays
+  register: unified_overlays
   tags:
     - install
     - uninstall
@@ -62,8 +54,8 @@
   include_tasks: copy_overlay.yaml
   vars:
     resource: "{{ item.key }}"
-    overlays: "{{ item.value.pre | default([], true) + item.value.post | default([], true) }}"
-  with_dict: "{{ ordered_overlays.result }}"
+    overlays: "{{ item.value | default([], true) }}"
+  with_dict: "{{ unified_overlays['overlays'] }}"
   tags:
     - install
     - uninstall
