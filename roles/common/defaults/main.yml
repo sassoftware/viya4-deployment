@@ -4,3 +4,6 @@
 ---
 V4_CFG_POSTGRES_SERVERS:
   default: {}
+
+## NIST Features
+V4_CFG_NIST_FEATURES_ENABLED: false
