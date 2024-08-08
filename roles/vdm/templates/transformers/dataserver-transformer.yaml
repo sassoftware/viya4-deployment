@@ -5,6 +5,10 @@ kind: PatchTransformer
 metadata:
   name: {{ dataserver_name }}-dataserver-transformer
 patch: |-
+  - op: add
+    path: "/metadata/annotations/sas.com~1database-server-location"
+    value: external # Identifies that database server is external
+
   - op: replace
     path: /spec/databases/0/name
     value: {{ db }}
