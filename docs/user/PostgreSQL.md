@@ -5,6 +5,7 @@
   * [Post Data Transfer Steps for viya4-deployment](#post-data-transfer-steps-for-viya4-deployment)
     * [Crunchy Data 5](#crunchy-data-5)
     * [Crunchy Data 4](#crunchy-data-4)
+  * [2024.06 SharedServices Database Updated Behavior](#202406-sharedservices-database-updated-behavior)
 
 ## Use IAC To Create an External PostgreSQL Database Cluster
 
@@ -55,3 +56,11 @@ The final step in the [PostgreSQL Data Transfer Guide](https://documentation.sas
 4. Going back to the [PostgreSQL Data Transfer Guide](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=pgdatamig&docsetTarget=titlepage.htm) under "Post-transfer Steps for Crunchy Data 4" perform Step 8 and start the operator if your deployment is managed by the SAS Deployment Operator (if `V4_DEPLOYMENT_OPERATOR_ENABLED` was set to true in your `ansible-vars.yaml` file). Otherwise, skip this step.
 5. Run the ansible-playbook again with the `viya,install` tags. This updates the `kustomization.yaml` by removing entries related to Crunchy Data 4 and adding entries for your external PostgreSQL cluster. The manifest will be rebuilt and reapplied to the cluster. This replaces step 9 from the "Post-transfer Steps for Crunchy Data 4" documentation.
 6. Return to the [PostgreSQL Data Transfer Guide](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=pgdatamig&docsetTarget=titlepage.htm) under "Post-transfer Steps for Crunchy Data 4". Perform Steps 10 and the remainder of the steps to complete the data transfer.
+
+
+## 2024.06 SharedServices Database Updated Behavior
+Due to changes in the sas-data-server-operator, the SharedServices database is not created automatically during the initial deployment of the SAS Viya platform. Instead, you must manually create it before you start the SAS Viya platform deployment
+
+Deployments performed on cadence versions before 2024.06 will not be impacted.
+
+For more information, please refer to the [External Postgres Requirements](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=itopssr&docsetTarget=p05lfgkwib3zxbn1t6nyihexp12n.htm#p1wq8ouke3c6ixn1la636df9oa1u) documentation.

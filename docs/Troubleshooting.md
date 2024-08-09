@@ -400,3 +400,18 @@ Based on this [Network Load Balancing documentation](https://docs.aws.amazon.com
         terminationGracePeriodSeconds: 600
     ```
 3. When the `baseline,install` ansible tasks are run and `ingress-nginx` is installed, the EC2 Load Balancer that gets provisioned by AWS will have those tags you specified.
+
+
+## sas-data-server-operator failure 
+
+### Symptom
+
+```yaml
+pod logs go here
+
+```
+
+### Solution
+
+Please refer to [this section](https://github.com/sassoftware/viya4-deployment/blob/main/docs/user/PostgreSQL.md##202406-sharedservices-database-updated-behavior
+) in the PostgreSQL.md documentation
