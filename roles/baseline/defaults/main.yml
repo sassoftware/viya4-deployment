@@ -33,9 +33,9 @@ METRICS_SERVER_CONFIG:
 ## Ingress-nginx - Defaults
 ingressVersions:
   k8sMinorVersion:
-    value: 25
+    value: 26
     api:
-      chartVersion: 4.9.1
+      chartVersion: 4.11.1
 
 ## Ingress-nginx - Ingress
 ##
