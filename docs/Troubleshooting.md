@@ -12,6 +12,7 @@
   - [Deploying with the SAS Orchestration Tool using a Provider Based Kubernetes Configuration File](#deploying-with-the-sas-orchestration-tool-using-a-provider-based-kubernetes-configuration-file)
   - [Applying a New License for your SAS Viya Platform Deployment](#applying-a-new-license-for-your-sas-viya-platform-deployment)
   - [Tagging the AWS EC2 Load Balancers](#tagging-the-aws-ec2-load-balancers)
+  - [Deploying with cadence versions > 2024.06 without creating the external PostgreSQL SharedServices database](#deploying-with-cadence-versions--202406-without-creating-the-external-postgresql-sharedservices-database)
 
 ## Debug Mode
 Debug mode can be enabled by adding "-vvv" to the end of the docker or ansible commands
