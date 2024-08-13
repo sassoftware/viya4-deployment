@@ -12,6 +12,7 @@
   - [Deploying with the SAS Orchestration Tool using a Provider Based Kubernetes Configuration File](#deploying-with-the-sas-orchestration-tool-using-a-provider-based-kubernetes-configuration-file)
   - [Applying a New License for your SAS Viya Platform Deployment](#applying-a-new-license-for-your-sas-viya-platform-deployment)
   - [Tagging the AWS EC2 Load Balancers](#tagging-the-aws-ec2-load-balancers)
+  - [Deploying with cadence versions > 2024.06 without creating the external PostgreSQL SharedServices database](#deploying-with-cadence-versions--202406-without-creating-the-external-postgresql-sharedservices-database)
 
 ## Debug Mode
 Debug mode can be enabled by adding "-vvv" to the end of the docker or ansible commands
@@ -400,3 +401,51 @@ Based on this [Network Load Balancing documentation](https://docs.aws.amazon.com
         terminationGracePeriodSeconds: 600
     ```
 3. When the `baseline,install` ansible tasks are run and `ingress-nginx` is installed, the EC2 Load Balancer that gets provisioned by AWS will have those tags you specified.
+
+
+## Deploying with cadence versions > 2024.06 without creating the external PostgreSQL SharedServices database
+
+### Symptom
+
+While deploying with a cadence version >= 2024.06 AND:
+
+* you are targeting an IaC-provisioned cluster with an External PostgreSQL Database Server
+* you didn't create the SharedServices database prior to running viya4-deployment
+
+most pods will fail to initialize. The following error message can be found in the sas-data-server-operator pod:
+
+```bash
+$ kubectl logs deployment/sas-data-server-operator
+{
+  "level":"error",
+  "source":"sas-data-server-operator-65c874585-xwzgr",
+  "messageParameters":{
+    "p1":"failed to connect to `host=example-default-flexpsql.postgres.database.azure.com user=pgadmin database=SharedServices`: server error (FATAL: database \"SharedServices\" does not exist (SQLSTATE 3D000))"
+  },
+  "messageKey":"failed to initialize database, got error %v",
+  "message":"failed to initialize database, got error %v"
+}
+{
+  "level":"error",
+  "source":"sas-data-server-operator-65c874585-xwzgr",
+  "messageKey":"Reconciler error",
+  "properties":{
+    "error":"database server is external and cannot connect to the SAS database",
+    "caller":"logr/logr.go:49"
+  },
+  "attributes":{
+    "DataServer":{
+      "name":"sas-platform-postgres",
+      "namespace":"deploy"
+    },
+  },
+  "message":"Reconciler error"
+}
+
+```
+
+### Solution
+
+Due to changes in the sas-data-server-operator, the SharedServices database is not created automatically during the initial deployment of the SAS Viya platform. Instead, you must manually create it before you start the SAS Viya platform deployment
+
+For more information, please refer to the [External Postgres Requirements](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=itopssr&docsetTarget=p05lfgkwib3zxbn1t6nyihexp12n.htm#p1wq8ouke3c6ixn1la636df9oa1u) documentation.
