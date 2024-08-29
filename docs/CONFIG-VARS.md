@@ -248,6 +248,12 @@ V4_CFG_POSTGRES_SERVERS:
 ```
 Several SAS Viya platform offerings require a second internal Postgres instance referred to as SAS Common Data Store or CDS PostgreSQL. See details [here](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=dplyml0phy0dkr&docsetTarget=n08u2yg8tdkb4jn18u8zsi6yfv3d.htm#p0wkxxi9s38zbzn19ukjjaxsc0kl). The list of software offerings that include CDS PostgreSQL is located at [SAS Common Data Store Requirements (for SAS Planning and Retail Offerings)](https://documentation.sas.com/?cdcId=sasadmincdc&cdcVersion=default&docsetId=itopssr&docsetTarget=p05lfgkwib3zxbn1t6nyihexp12n.htm#n03wzanutmc6gon1val5fykas9aa) in System Requirements for the SAS Viya platform. To deploy and configure a CDS PostgreSQL instance in addition to the default internal platform Postgres instance, specify "cds-postgres" for your second Postgres instance as shown in the example below:
 
+**Note**: Starting with 2024.06, the SharedServices database is not created automatically during the initial deployment of the SAS Viya platform. Instead, you must manually create it before you start the SAS Viya platform deployment.
+Please refer to [this section](https://github.com/sassoftware/viya4-deployment/blob/main/docs/user/PostgreSQL.md##202406-sharedservices-database-updated-behavior
+) in the PostgreSQL.md documentation
+
+
+
 ```bash
 V4_CFG_POSTGRES_SERVERS:
   default:
@@ -413,7 +419,7 @@ The EBS CSI driver is currently only used for kubernetes v1.23 or later AWS EKS 
 | INGRESS_NGINX_NAMESPACE | NGINX Ingress Helm installation namespace | string | ingress-nginx | false | | baseline |
 | INGRESS_NGINX_CHART_URL | NGINX Ingress Helm chart URL | string | See [this document](https://kubernetes.github.io/ingress-nginx) for more information. | false | | baseline |
 | INGRESS_NGINX_CHART_NAME | NGINX Ingress Helm chart name | string | ingress-nginx | false | | baseline |
-| INGRESS_NGINX_CHART_VERSION | NGINX Ingress Helm chart version | string | "" | false | If left as "" (empty string), version `4.9.1` is used for Kubernetes clusters whose version is >= 1.25.X, and for Kubernetes clusters whose version is <= 1.24.X please set this variable to avoid errors. See [Supported Versions table](https://github.com/kubernetes/ingress-nginx/?tab=readme-ov-file#supported-versions-table) for the supported versions list. | baseline |
+| INGRESS_NGINX_CHART_VERSION | NGINX Ingress Helm chart version | string | "" | false | If left as "" (empty string), version `4.11.1` is used for Kubernetes clusters whose version is >= 1.26.X, and for Kubernetes clusters whose version is <= 1.25.X please set this variable to avoid errors. See [Supported Versions table](https://github.com/kubernetes/ingress-nginx/?tab=readme-ov-file#supported-versions-table) for the supported versions list. | baseline |
 | INGRESS_NGINX_CONFIG | NGINX Ingress Helm values | string | See [this file](../roles/baseline/defaults/main.yml) for more information. Altering this value will affect the cluster. | false | | baseline |
 
 ### Metrics Server
