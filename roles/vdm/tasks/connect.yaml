@@ -8,7 +8,7 @@
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { resources: sas-connect-spawner-enable-loadbalancer.yaml, vdm: true }
+      - { resources: sas-connect-spawner-enable-loadbalancer.yaml }
   when:
     - V4_CFG_CONNECT_ENABLE_LOADBALANCER
   tags:

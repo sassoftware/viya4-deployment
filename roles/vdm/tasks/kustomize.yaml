@@ -29,7 +29,7 @@
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { resources: sas-deployment-buildinfo.yaml, vdm: true }
+      - { resources: sas-deployment-buildinfo.yaml }
   tags:
     - install
     - uninstall
@@ -51,7 +51,7 @@
     - update
 
 - name: Kustomize - Copy VDM overlays
-  include_tasks: copy_overlay.yaml
+  include_tasks: helpers/copy_overlay.yaml
   vars:
     resource: "{{ item.key }}"
     overlays: "{{ item.value.values() | default([], true) }}"

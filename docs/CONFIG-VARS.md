@@ -26,6 +26,7 @@ Supported configuration variables are listed in the table below.  All variables 
   - [CONNECT](#connect)
   - [Workload Orchestrator](#workload-orchestrator)
   - [Miscellaneous](#miscellaneous)
+  - [Openshift](#openshift)
   - [Third-Party Tools](#third-party-tools)
     - [Cert-manager](#cert-manager)
     - [Cluster Autoscaler](#cluster-autoscaler)
@@ -34,6 +35,7 @@ Supported configuration variables are listed in the table below.  All variables 
     - [Metrics Server](#metrics-server)
     - [NFS Client](#nfs-client)
     - [Postgres NFS Client](#postgres-nfs-client)
+
 
 ## BASE
 
@@ -364,6 +366,29 @@ Notes:
   - With the two Viya scheduling variables, `V4_CFG_VIYA_START_SCHEDULE` and `V4_CFG_VIYA_STOP_SCHEDULE`. If you define one and not the other, it will result in a suspended cronjob for the variable that was not defined.
     - For example, defining `V4_CFG_VIYA_STOP_SCHEDULE` and not `V4_CFG_VIYA_START_SCHEDULE` will result in a Viya stop job that runs on a schedule and a suspended Viya start job that you will be able to manually trigger.
   - Defining both `V4_CFG_VIYA_START_SCHEDULE` and `V4_CFG_VIYA_STOP_SCHEDULE` will result in a non-suspended Viya start and stop job that runs on the schedule you defined.
+
+## Openshift
+
+This tool has basic support for Openshift. It will configure routes, TLS, remove seccomp profile, and can **optionally** setup SecurityContextConstraints (SCC) and dependant RBAC permissions. 
+
+Notes:
+  - <V4_CFG_INGRESS_TYPE> must be set to "route"
+  - This tool does **not** handle the configurations needed for sas-opendistro or OpenSearch needed when running on Openshift.
+
+| Name | Description | Type | Default | Required | Notes | Tasks |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
+| V4_CFG_OPENSHIFT_SCC_RBAC_ENABLED | Globally setting to enable SCC configuration and dependent RBAC creation | bool | false | false | Can be overridden with individual settings below | viya |
+| V4_CFG_OPENSHIFT_SCC_CAS_SERVER_MODE | CAS server mode | string | standard | false | Supported values: [`standard`, `sssd`, `host`] | viya |
+| V4_CFG_OPENSHIFT_SCC_AIRFLOW | Configure SCC and dependent RBAC for sas-airflow | bool | <V4_CFG_OPENSHIFT_SCC_RBAC_ENABLED> | false | Only applicable if deployment includes SAS Airflow | viya |
+| V4_CFG_OPENSHIFT_SCC_ESP_PROJECT | Configure SCC and dependent RBAC for sas-esp-project | bool | <V4_CFG_OPENSHIFT_SCC_RBAC_ENABLED> | false | Only applicable if deployment includes SAS Event Stream Processing | viya |
+| V4_CFG_OPENSHIFT_SCC_MICROANALYTIC_SCORE | Configure SCC and dependent RBAC for sas-microanalytic-score | bool | <V4_CFG_OPENSHIFT_SCC_RBAC_ENABLED> | false | Only applicable if deployment includes SAS Microanalytic Score | viya |
+| V4_CFG_OPENSHIFT_SCC_MODEL_PUBLISH_KANIKO | Configure SCC and dependent RBAC for sas-model-publish-kaniko | bool | <V4_CFG_OPENSHIFT_SCC_RBAC_ENABLED> | false | Required to be set to **true** if you plan to publish models with SAS Model Manager or SAS Intelligent Decisioning to containers using kaniko | viya |
+| V4_CFG_OPENSHIFT_SCC_MODEL_REPOSITORY | Configure SCC and dependent RBAC for sas-model-repository | bool | <V4_CFG_OPENSHIFT_SCC_RBAC_ENABLED> | false | Only applicable if deployment includes SAS Model Repository | viya |
+| V4_CFG_OPENSHIFT_SCC_PYCONFIG | Configure SCC and dependent RBAC for sas-pyconfig | bool | <V4_CFG_OPENSHIFT_SCC_RBAC_ENABLED> | false | | viya |
+| V4_CFG_OPENSHIFT_SCC_PROGRAMMING_ENVIRONMENT | Configure SCC and dependent RBAC for sas-programming-environment | bool | <V4_CFG_OPENSHIFT_SCC_RBAC_ENABLED> | false | This or <V4_CFG_OPENSHIFT_SCC_WATCHDOG> should be set true but not both | viya |
+| V4_CFG_OPENSHIFT_SCC_PROGRAMMING_ENVIRONMENT_HOSTPATH | Does this deployment use hostPath volume mounts | bool | false | false | | viya |
+| V4_CFG_OPENSHIFT_SCC_CONNECT_SPAWNER | Configure SCC and dependent RBAC for sas-connect-spawner | bool | <V4_CFG_OPENSHIFT_SCC_RBAC_ENABLED> | false | Required to be set to **true** only if you intend to launch your SAS/CONNECT servers in the Spawner pod, rather than in their own pods | viya |
+| V4_CFG_OPENSHIFT_SCC_WATCHDOG | Configure SCC and dependent RBAC for sas-watchdog | bool | false | false | This or <V4_CFG_OPENSHIFT_SCC_PROGRAMMING_ENVIRONMENT> should be set true but not both. <br>Required to be set to **true** if you are deploying SAS Watchdog | viya |
 
 ## Third-Party Tools
 

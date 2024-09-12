@@ -1,0 +1,14 @@
+{% set glob = {} %}
+
+{% for k, v in item.items() %}
+{% if k == 'priority' %}
+{% set _ = glob.update({'priority':  v}) %}
+{% else %}
+{% set _ = glob.update({'res':  k}) %}
+{% set _ = glob.update({'path':  v}) %}
+{% endif %}
+{% endfor %}
+type: {{ glob.res }}
+path: {{ glob.path }}
+priority: {{ glob.priority|default(10) }}
+filename: {{ glob.path if glob.path.startswith('overlays') else (glob.path|basename) }}
