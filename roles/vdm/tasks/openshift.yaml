@@ -8,7 +8,7 @@
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { transformers: overlays/security/container-security/remove-seccomp-transformer.yaml, priority: 99 }
+      - { transformers: overlays/security/container-security/remove-seccomp-transformer.yaml, priority: 90 }
   tags:
     - install
     - uninstall
