@@ -11,7 +11,7 @@ Supported configuration variables are listed in the table below.  All variables 
     - [RWX Filestore](#rwx-filestore)
     - [Azure](#azure)
     - [AWS](#aws)
-    - [GCP](#gcp)
+    - [Google Cloud](#google-cloud)
   - [SAS Software Order](#sas-software-order)
   - [SAS API Access](#sas-api-access)
   - [Container Registry Access](#container-registry-access)
@@ -115,7 +115,7 @@ When V4_CFG_MANAGE_STORAGE is set to `true`, the `sas` and `pg-storage` storage 
 
 When V4_CFG_MANAGE_STORAGE is set to `true`, the efs-provisioner is deployed, the `sas` and `pg-storage` storage classes are created (EFS or NFS).
 
-### GCP
+### Google Cloud
 
 When V4_CFG_MANAGE_STORAGE is set to `true`, the `sas` and `pg-storage` storage classes are created (Google Filestore or NFS).
 
@@ -275,9 +275,9 @@ V4_CFG_POSTGRES_SERVERS:
 | password | External postgres password | string | | false | Required for external postgres servers | viya |
 | fqdn | External postgres ip/fqdn | string | | false | Required for external postgres servers | viya |
 | server_port | External postgres port | string | 5432 | false | | viya |
-| ssl_enforcement_enabled | Require ssl connection to external postgres | bool | | false | Required for external postgres servers. Ignored on GCP when using cloud sql | viya |
-| connection_name | External postgres database connection name | string | | false | Required for using cloud-sql-proxy on gcp. See [ansible cloud authentication](user/AnsibleCloudAuthentication.md) | viya |
-| service_account | External service account for postgres connectivity | string | | false | Required for using cloud-sql-proxy on gcp. See [ansible cloud authentication](user/AnsibleCloudAuthentication.md) | viya |
+| ssl_enforcement_enabled | Require ssl connection to external postgres | bool | | false | Required for external postgres servers. Ignored on Google Cloud when using cloud sql | viya |
+| connection_name | External postgres database connection name | string | | false | Required for using cloud-sql-proxy on Google Cloud. See [ansible cloud authentication](user/AnsibleCloudAuthentication.md) | viya |
+| service_account | External service account for postgres connectivity | string | | false | Required for using cloud-sql-proxy on Google Cloud. See [ansible cloud authentication](user/AnsibleCloudAuthentication.md) | viya |
 | postgres_pvc_storage_size | Size of the internal postgreSQL PVCs | string | 128Gi | false |This value can be changed but not decreased after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
 | backrest_pvc_storage_size | Size of the internal pgBackrest PVCs | string | 128Gi | false | This value can be changed but not decreased after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
 | postgres_pvc_access_mode | Access mode for the PostgreSQL PVCs | string | ReadWriteOnce | false | Supported values: [`ReadWriteOnce`,`ReadWriteMany`]. This value cannot be changed after the initial deployment. Supported for cadence versions 2022.10 and later. Only for internal databases.| viya |
@@ -382,7 +382,7 @@ Notes:
 
 ### Cluster Autoscaler
 
-Cluster-autoscaler is currently only used for AWS EKS clusters. GCP GKE and Azure AKS already have autoscaling features enabled by default.
+Cluster-autoscaler is currently only used for AWS EKS clusters. Google GKE and Azure AKS already have autoscaling features enabled by default.
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -424,7 +424,7 @@ The EBS CSI driver is currently only used for kubernetes v1.23 or later AWS EKS 
 
 ### Metrics Server
 
-Kubernetes Metrics Server installation is currently only applicable for AWS EKS clusters. GCP GKE and Azure AKS already have a metric server provided by default.
+Kubernetes Metrics Server installation is currently only applicable for AWS EKS clusters. Google GKE and Azure AKS already have a metric server provided by default.
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |

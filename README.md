@@ -50,7 +50,7 @@ The viya4-deployment playbook requires some infrastructure.
 You can either bring your own Kubernetes cluster or use one of the SAS Viya 4 IaC projects to create a cluster using Terraform scripts:
   - [SAS Viya 4 IaC for AWS](https://github.com/sassoftware/viya4-iac-aws)
   - [SAS Viya 4 IaC for Microsoft Azure](https://github.com/sassoftware/viya4-iac-azure)
-  - [SAS Viya 4 IaC for Google Cloud Platform](https://github.com/sassoftware/viya4-iac-gcp)
+  - [SAS Viya 4 IaC for Google Cloud](https://github.com/sassoftware/viya4-iac-gcp)
 
 
 #### Storage
@@ -100,7 +100,7 @@ cd viya4-deployment
 
 See [Ansible Cloud Authentication](./docs/user/AnsibleCloudAuthentication.md) for details.
 
-**NOTE:** At this time, additional setup is only required for GCP with external PostgreSQL.
+**NOTE:** At this time, additional setup is only required for Google Cloud with external PostgreSQL.
 
 ### Customize Input Values
 
@@ -118,7 +118,7 @@ The value is the path to a standard SAS Viya platform sitedefault file. If none 
 
 The Kubernetes access configuration file. If you used one of the SAS Viya 4 IaC projects to provision your cluster, this value is not required.
 
-If you used the [viya4-iac-gcp](https://github.com/sassoftware/viya4-iac-gcp) project to create a provider based kubeconfig file to access your GKE cluster, refer to [kubernetes configuration file types](./docs/user/Kubeconfig.md) for instructions on using a GCP provider based kubeconfig file with the viya4-deployment project.
+If you used the [viya4-iac-gcp](https://github.com/sassoftware/viya4-iac-gcp) project to create a provider based kubeconfig file to access your GKE cluster, refer to [kubernetes configuration file types](./docs/user/Kubeconfig.md) for instructions on using a Google Cloud provider based kubeconfig file with the viya4-deployment project.
 
 #### Terraform State File
 
@@ -278,6 +278,6 @@ See the [Troubleshooting](./docs/Troubleshooting.md) page.
 - [SAS Viya Resource Guide](https://github.com/sassoftware/viya4-resource-guide)
 - [SAS Viya 4 Infrastructure as Code (IaC) for Amazon Web Services (AWS)](https://github.com/sassoftware/viya4-iac-aws)
 - [SAS Viya 4 Infrastructure as Code (IaC) for Microsoft Azure](https://github.com/sassoftware/viya4-iac-azure)
-- [SAS Viya 4 Infrastructure as Code (IaC) for Google Cloud Platform (GCP)](https://github.com/sassoftware/viya4-iac-gcp)
+- [SAS Viya 4 Infrastructure as Code (IaC) for Google Cloud](https://github.com/sassoftware/viya4-iac-gcp)
 - [SAS Viya Monitoring for Kubernetes](https://github.com/sassoftware/viya4-monitoring-kubernetes)
 - [SAS Viya Orders CLI](https://github.com/sassoftware/viya4-orders-cli)

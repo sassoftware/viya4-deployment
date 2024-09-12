@@ -148,7 +148,7 @@ Note: If you used viya4-iac-aws:5.6.0 or newer to create your infrastructure, th
       * Once you are on the Roles page search for "cluster-autoscaler" and choose the one for your cluster.
       * Under the "Permissions" tab expand the "eks-worker-autoscaling" policy
       * Update the `eksWorkerAutoscalingAll` & `eksWorkerAutoscalingOwn` Sids so that it matches the IAM policy as recommend by the [kubernetes/autoscaler documentation](https://github.com/kubernetes/autoscaler/blob/cluster-autoscaler-chart-9.25.0/cluster-autoscaler/cloudprovider/aws/README.md). Make sure to leave the `Condition` block as is.
-        * Switch the repo to the tag of the version of the cluster-autoscaler you are deploying, so that you are viewing the correct documentation.
+        * Switch the repository to the tag of the version of the cluster-autoscaler you are deploying, so that you are viewing the correct documentation.
 2. Scale the `cluster-autoscaler-aws-cluster-autoscaler` deployment back to 1
       ```bash
       kubectl scale --replicas=1 deployment/cluster-autoscaler-aws-cluster-autoscaler
@@ -290,9 +290,9 @@ INGRESS_NGINX_CONFIG:
 ## Deploying with the SAS Orchestration Tool using a Provider Based Kubernetes Configuration File
 
 ### Symptom:
-While deploying the SAS Viya platform into a GCP OR AWS cluster using a provider based kubernetes configuration file and setting `V4_DEPLOYMENT_OPERATOR_ENABLED: false` in your `ansible-vars.yaml`, the following error message is encountered:
+While deploying the SAS Viya platform into Google Cloud OR AWS cluster using a provider based kubernetes configuration file and setting `V4_DEPLOYMENT_OPERATOR_ENABLED: false` in your `ansible-vars.yaml`, the following error message is encountered:
 
-In GCP:
+In Google Cloud:
   ```bash
 Error: Cannot create client for namespace 'deploy'
  Caused by:
@@ -321,7 +321,7 @@ Error: Cannot create client for namespace 'deploy'
 
 ### Diagnosis:
 
-If you are using a provider based kubernetes configuration file; one that relies on external binaries from the cloud provider to authenticate into the kubernetes cluster ([AWS](https://docs.aws.amazon.com/eks/latest/userguide/cluster-auth.html) & [GCP](https://cloud.google.com/kubernetes-engine/docs/how-to/api-server-authentication)), there are deployment constraints you need to consider when planning your SAS Viya platform deployment when using this project. If you are using a "kubernetes service account and cluster role binding" or "static" based kubernetes configuration file it will be compatible will all SAS Viya platform deployment methods as well as ways to execute this project, and the statements below are not applicable.
+If you are using a provider based kubernetes configuration file; one that relies on external binaries from the cloud provider to authenticate into the kubernetes cluster ([AWS](https://docs.aws.amazon.com/eks/latest/userguide/cluster-auth.html) & [Google Cloud](https://cloud.google.com/kubernetes-engine/docs/how-to/api-server-authentication)), there are deployment constraints you need to consider when planning your SAS Viya platform deployment when using this project. If you are using a "kubernetes service account and cluster role binding" or "static" based kubernetes configuration file it will be compatible will all SAS Viya platform deployment methods as well as ways to execute this project, and the statements below are not applicable.
 
 Some background information, using the `V4_DEPLOYMENT_OPERATOR_ENABLED` flag  in your `ansible-vars.yaml` you are able to control the method of deployment that this project will use to deploy SAS Viya.
 * `V4_DEPLOYMENT_OPERATOR_ENABLED: true`, the [SAS Viya Platform Deployment Operator](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=itopscon&docsetTarget=p0839p972nrx25n1dq264egtgrcq.htm) will be installed into the cluster and used to deploy the SAS Viya platform
@@ -335,7 +335,7 @@ The combination of setting `V4_DEPLOYMENT_OPERATOR_ENABLED: false` and running d
 
 When the `sas-orchestration` tooling is run (as a Docker container) to deploy SAS Viya into the cluster, the required binaries from the cloud provider for authentication are not present, meaning that the tooling will not be able to connect to the cluster to perform the deployment.
 
-When running the viya4-deployment project as a Docker container the `sas-orchestration` tooling is run in a slightly different manner to get around this limitation. We make use of `skopeo` to exact the contents of the `sas-orchestration` tooling image directly into our running viya4-deployment container. Since in our Dockerfile we include the installation of the required authentications binaries for GCP and AWS, the `sas-orchestration` tooling is able to make use of them and successfully connect to the kubernetes cluster.
+When running the viya4-deployment project as a Docker container the `sas-orchestration` tooling is run in a slightly different manner to get around this limitation. We make use of `skopeo` to exact the contents of the `sas-orchestration` tooling image directly into our running viya4-deployment container. Since in our Dockerfile we include the installation of the required authentications binaries for Google Cloud and AWS, the `sas-orchestration` tooling is able to make use of them and successfully connect to the kubernetes cluster.
 
 ### Solution:
 

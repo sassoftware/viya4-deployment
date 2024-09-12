@@ -17,7 +17,7 @@ The Docker image `viya4-deployment` will contain ansible, cloud provider cli's a
 
 ### Cloud Authentication
 
-The docker container includes the necessary cloud clis for interacting with the cloud providers. See [ansible cloud authentication](AnsibleCloudAuthentication.md) when deploying to GCP with external postgres
+The docker container includes the necessary cloud clis for interacting with the cloud providers. See [ansible cloud authentication](AnsibleCloudAuthentication.md) when deploying to Google Cloud with external postgres
 
 ### Docker Volume Mounts
 
