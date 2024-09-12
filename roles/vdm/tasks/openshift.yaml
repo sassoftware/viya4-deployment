@@ -134,7 +134,7 @@
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { resources: sas-programming-environment.yaml }
+      - { resources: scc-sas-programming-environment.yaml }
   when: V4_CFG_OPENSHIFT_SCC_PROGRAMMING_ENVIRONMENT
   tags:
     - install
