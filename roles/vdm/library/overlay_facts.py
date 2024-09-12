@@ -46,7 +46,7 @@ def main():
       overlay_type = list(overlay.keys())[0]
 
       # set correct path for vdm or sas-bases patches
-      folderPath = os.path.join("site-config/vdm", overlay_type) if bool(overlay.setdefault("vdm", False)) else "sas-bases/"
+      folderPath = "sas-bases/" if ("/" in overlay[overlay_type] or overlay[overlay_type] == "base") else os.path.join("site-config/vdm", overlay_type)
       overlay_path = os.path.join(folderPath, overlay[overlay_type])
       
       module.params['existing'].setdefault(overlay_type, {})

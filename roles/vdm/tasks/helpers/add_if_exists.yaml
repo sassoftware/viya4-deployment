@@ -1,0 +1,56 @@
+# Copyright © 2020-2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+---
+- name: Check if file exists - {{ resource }}
+  stat:
+    path: "{{ DEPLOY_DIR }}/sas-bases/{{ resource }}"
+  register: resource_check
+  tags:
+    - install
+    - uninstall
+    - update
+
+- block:
+  - set_fact:
+      copy_overlay_item: "{{ lookup('template', 'copy_if_exists.yaml.j2') | from_yaml }}"
+    loop : "{{ overlays |flatten(levels=1) }}"
+    register: copy_overlay_result
+
+  - set_fact: 
+      copy_overlays: "{{ copy_overlay_result.results | map(attribute='ansible_facts.copy_overlay_item') | list }}"
+    tags:
+      - install
+      - uninstall
+      - update
+
+  - copy:
+      src: "{{ DEPLOY_DIR }}/sas-bases/{{ item.path }}"
+      dest: "{{ role_path }}/templates/{{ item.type }}/"
+      mode: "0660"
+    with_items:
+      - "{{ copy_overlays }}"
+    when: "item.path.startswith('examples')"
+    tags:
+      - install
+      - uninstall
+      - update
+
+  - overlay_facts:
+      cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+      cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+      existing: "{{ vdm_overlays }}"
+      add:
+        - "{{ [[item.type, item.filename], ['priority', item.priority]] | community.general.dict  }}"
+    with_items:
+      - "{{ copy_overlays }}"
+    tags:
+      - install
+      - uninstall
+      - update
+
+  when: resource_check.stat.exists
+  tags:
+    - install
+    - uninstall
+    - update

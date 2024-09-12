@@ -1,0 +1,41 @@
+---
+allowHostDirVolumePlugin: false
+allowHostIPC: false
+allowHostNetwork: false
+allowHostPID: false
+allowHostPorts: false
+allowPrivilegeEscalation: false
+allowPrivilegedContainer: false
+apiVersion: security.openshift.io/v1
+defaultAddCapabilities: []
+fsGroup:
+  ranges:
+  - max: 1001
+    min: 1001
+  type: MustRunAs
+groups:
+kind: SecurityContextConstraints
+metadata:
+  annotations:
+    kubernetes.io/description: scc for sas-pyconfig service account
+  name: sas-pyconfig
+priority: 0
+readOnlyRootFilesystem: true
+runAsUser:
+  type: MustRunAs
+  uid: 1001
+seLinuxContext:
+  type: RunAsAny
+seccompProfiles:
+- runtime/default
+supplementalGroups:
+  type: RunAsAny
+users:
+volumes:
+- configMap
+- downwardAPI
+- emptyDir
+- persistentVolumeClaim
+- projected
+- secret
+- nfs

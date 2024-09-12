@@ -1,0 +1,28 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: sas-cas-server{{ openshift_cas_scc_map[V4_CFG_OPENSHIFT_SCC_CAS_SERVER_MODE]["suffix"] }}-scc
+rules:
+- apiGroups:
+  - security.openshift.io 
+  resourceNames:
+  - sas-cas-server
+  resources:
+  - securitycontextconstraints 
+  verbs: 
+  - use
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: sas-cas-server{{ openshift_cas_scc_map[V4_CFG_OPENSHIFT_SCC_CAS_SERVER_MODE]["suffix"] }}-scc
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: sas-cas-server{{ openshift_cas_scc_map[V4_CFG_OPENSHIFT_SCC_CAS_SERVER_MODE]["suffix"] }}-scc
+subjects:
+- apiGroup: ""
+  kind: ServiceAccount
+  name: sas-cas-server{{ openshift_cas_scc_map[V4_CFG_OPENSHIFT_SCC_CAS_SERVER_MODE]["suffix"] }}
+  namespace: "{{ NAMESPACE }}"

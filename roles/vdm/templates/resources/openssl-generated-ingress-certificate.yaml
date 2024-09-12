@@ -58,6 +58,7 @@ spec:
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
+            add: []
             drop:
             - ALL
           privileged: false
@@ -68,6 +69,10 @@ spec:
         - mountPath: /security
           name: security
       restartPolicy: OnFailure
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
       volumes:
       - name: certframe-token
         secret:
