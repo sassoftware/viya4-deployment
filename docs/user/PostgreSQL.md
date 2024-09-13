@@ -17,7 +17,7 @@ To use the IAC project to create an external PostgreSQL database cluster, refer 
 
 [AWS PostgreSQL Cluster](https://github.com/sassoftware/viya4-iac-aws/blob/main/docs/CONFIG-VARS.md#postgresql-server)
 
-[GCP PostgreSQL Cluster](https://github.com/sassoftware/viya4-iac-gcp/blob/main/docs/CONFIG-VARS.md#postgres-servers)
+[Google Cloud PostgreSQL Cluster](https://github.com/sassoftware/viya4-iac-gcp/blob/main/docs/CONFIG-VARS.md#postgres-servers)
 
 ## Post Data Transfer Steps for viya4-deployment
 

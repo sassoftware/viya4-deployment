@@ -8,7 +8,7 @@ When using the Ansible CLI, make sure you have all the necessary tools [installe
 
 ### Cloud Authentication
 
-See [ansible cloud authentication](AnsibleCloudAuthentication.md) when deploying to GCP with external postgres
+See [ansible cloud authentication](AnsibleCloudAuthentication.md) when deploying to Google Cloud with external postgres
 
 ### Variable Definitions (ansible-vars.yaml) File
 
