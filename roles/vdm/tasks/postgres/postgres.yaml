@@ -56,8 +56,8 @@
           - { resources: overlays/internal-postgres }
           - { resources: overlays/crunchydata }
           - { transformers: overlays/internal-postgres/internal-postgres-transformer.yaml }
-          - { transformers: postgres-storage-transformer.yaml, vdm: true, max: 2020.1.3 }
-          - { transformers: postgres-storage-transformer.v2.yaml, vdm: true, min: 2020.1.3 }
+          - { transformers: postgres-storage-transformer.yaml, max: 2020.1.3 }
+          - { transformers: postgres-storage-transformer.v2.yaml, min: 2020.1.3 }
       when:
         - internal_postgres
     - name: Postgres - external
@@ -67,10 +67,10 @@
         existing: "{{ vdm_overlays }}"
         add:
           - { transformers: overlays/external-postgres/external-postgres-transformer.yaml }
-          - { generators: postgres-sas-user.yaml, vdm: true }
-          - { generators: sas-go-config.yaml, vdm: true }
-          - { generators: sas-postgres-config.yaml, max: 2020.0.4, vdm: true }
-          - { generators: sas-postgres-config.v2.yaml, min: 2020.0.5, vdm: true }
+          - { generators: postgres-sas-user.yaml }
+          - { generators: sas-go-config.yaml }
+          - { generators: sas-postgres-config.yaml, max: 2020.0.4 }
+          - { generators: sas-postgres-config.v2.yaml, min: 2020.0.5 }
       when:
         - not internal_postgres
 
@@ -89,7 +89,7 @@
         cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
         existing: "{{ vdm_overlays }}"
         add:
-          - { transformers: postgres-storage-transformer.v3.yaml, vdm: true }
+          - { transformers: postgres-storage-transformer.v3.yaml }
       when:
         - internal_postgres
     - name: Postgres - external

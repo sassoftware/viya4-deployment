@@ -78,7 +78,7 @@
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { transformers: "rabbitmq-node-count.yaml", vdm: true}
+      - { transformers: "rabbitmq-node-count.yaml"}
   when: rabbitmq_config.stat.exists
   tags:
     - install

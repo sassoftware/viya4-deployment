@@ -1,0 +1,142 @@
+# Copyright © 2020-2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+---
+- name: Openshift - seccomp
+  overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { transformers: overlays/security/container-security/remove-seccomp-transformer.yaml, priority: 90 }
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: Openshift SCC - airflow
+  include_tasks: helpers/add_if_exists.yaml
+  vars:
+    resource: "examples/sas-airflow/README.md"
+    overlays:
+      - { resources: scc-sas-airflow-create-user-job.yaml }
+  when: V4_CFG_OPENSHIFT_SCC_AIRFLOW
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: Openshift SCC - cas-server
+  include_tasks: helpers/add_if_exists.yaml
+  vars:
+    resource: "examples/cas/configure/cas-server-scc{{ openshift_cas_scc_map[V4_CFG_OPENSHIFT_SCC_CAS_SERVER_MODE]['filesuffix'] }}.yaml"
+    overlays:
+      - { resources: "examples/cas/configure/cas-server-scc{{ openshift_cas_scc_map[V4_CFG_OPENSHIFT_SCC_CAS_SERVER_MODE]['filesuffix'] }}.yaml" }
+      - { resources: scc-sas-cas-server.yaml }
+  when: V4_CFG_OPENSHIFT_SCC_RBAC_ENABLED
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: Openshift SCC - sas-connect-spawner
+  include_tasks: helpers/add_if_exists.yaml
+  vars:
+    resource: "examples/sas-connect-spawner/openshift/sas-connect-spawner-scc.yaml"
+    overlays:
+      - { resources: examples/sas-connect-spawner/openshift/sas-connect-spawner-scc.yaml }
+      - { resources: scc-sas-connect-spawner.yaml }
+  when: V4_CFG_OPENSHIFT_SCC_CONNECT_SPAWNER
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: Openshift SCC - sas-esp-project
+  include_tasks: helpers/add_if_exists.yaml
+  vars:
+    resource: "examples/sas-esp-operator/README.md"
+    overlays:
+      - { resources: scc-esp-project.yaml }
+  when: V4_CFG_OPENSHIFT_SCC_ESP_PROJECT
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: Openshift SCC - sas-microanalytic-score
+  include_tasks: helpers/add_if_exists.yaml
+  vars:
+    resource: "overlays/sas-microanalytic-score/service-account/README.md"
+    overlays:
+      - { resources: overlays/sas-microanalytic-score/service-account/sas-microanalytic-score-scc.yaml }
+      - { resources: scc-sas-microanalytic-score.yaml }
+  when: V4_CFG_OPENSHIFT_SCC_MICROANALYTIC_SCORE
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: Openshift SCC - sas-model-publish-kaniko
+  include_tasks: helpers/add_if_exists.yaml
+  vars:
+    resource: "examples/sas-model-publish/kaniko/README.md"
+    overlays:
+      - { resources: scc-sas-model-publish-kaniko.yaml }
+  when: V4_CFG_OPENSHIFT_SCC_MODEL_PUBLISH_KANIKO
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: Openshift SCC - sas-model-repository
+  include_tasks: helpers/add_if_exists.yaml
+  vars:
+    resource: "overlays/sas-model-repository/service-account/README.md"
+    overlays:
+      - { resources: overlays/sas-model-repository/service-account/sas-model-repository-scc.yaml }
+      - { resources: scc-sas-model-repository.yaml }
+  when: V4_CFG_OPENSHIFT_SCC_MODEL_REPOSITORY
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: Openshift SCC - pyconfig
+  include_tasks: helpers/add_if_exists.yaml
+  vars:
+    resource: "examples/sas-pyconfig/pyconfig-scc.yaml"
+    overlays:
+      - { resources: examples/sas-pyconfig/pyconfig-scc.yaml }
+      - { resources: scc-sas-pyconfig.yaml }
+  when: V4_CFG_OPENSHIFT_SCC_PYCONFIG
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: Openshift SCC - sas-watchdog
+  include_tasks: helpers/add_if_exists.yaml
+  vars:
+    resource: "overlays/sas-programming-environment/watchdog/README.md"
+    overlays:
+      - { resources: examples/sas-programming-environment/watchdog/sas-watchdog-scc.yaml }
+      - { resources: scc-sas-watchdog.yaml }
+  when: V4_CFG_OPENSHIFT_SCC_WATCHDOG
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: Openshift SCC - sas-programming-environment
+  overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { resources: scc-sas-programming-environment.yaml }
+  when: V4_CFG_OPENSHIFT_SCC_PROGRAMMING_ENVIRONMENT
+  tags:
+    - install
+    - uninstall
+    - update

@@ -1,0 +1,28 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: sas-connect-spawner-scc
+rules:
+- apiGroups:
+  - security.openshift.io 
+  resourceNames:
+  - sas-connect-spawner
+  resources:
+  - securitycontextconstraints 
+  verbs: 
+  - use
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: sas-connect-spawner-scc
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: sas-connect-spawner-scc
+subjects:
+- apiGroup: ""
+  kind: ServiceAccount
+  name: sas-connect-spawner
+  namespace: "{{ NAMESPACE }}"

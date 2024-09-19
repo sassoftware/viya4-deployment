@@ -24,7 +24,7 @@
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { transformers: schedule-start-stop.yaml, vdm: true, min: "2021.2", priority: 61 }
+      - { transformers: schedule-start-stop.yaml, min: "2021.2", priority: 61 }
   when:
     - V4_CFG_VIYA_STOP_SCHEDULE is not none or V4_CFG_VIYA_START_SCHEDULE is not none
   tags:

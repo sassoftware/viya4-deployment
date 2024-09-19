@@ -29,7 +29,7 @@
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { resources: sas-deployment-buildinfo.yaml, vdm: true }
+      - { resources: sas-deployment-buildinfo.yaml }
   tags:
     - install
     - uninstall
@@ -37,33 +37,25 @@
 
 - name: Kustomize - Get user's customizations
   siteconfig_info:
+    existing: "{{ vdm_overlays }}"
     path: "{{ DEPLOY_DIR }}"
     exclude:
       - vdm
       - multi-tenant
       - sas-tenant-job
       - operator-deploy
-  register: user_customizations
-  tags:
-    - install
-    - uninstall
-    - update
-
-- name: Kustomize - Ordered overlays
-  overlay_facts:
-    existing: "{{ vdm_overlays }}"
-  register: ordered_overlays
+  register: unified_overlays
   tags:
     - install
     - uninstall
     - update
 
 - name: Kustomize - Copy VDM overlays
-  include_tasks: copy_overlay.yaml
+  include_tasks: helpers/copy_overlay.yaml
   vars:
     resource: "{{ item.key }}"
-    overlays: "{{ item.value.pre | default([], true) + item.value.post | default([], true) }}"
-  with_dict: "{{ ordered_overlays.result }}"
+    overlays: "{{ item.value.values() | default([], true) }}"
+  with_dict: "{{ unified_overlays['overlays'] }}"
   tags:
     - install
     - uninstall

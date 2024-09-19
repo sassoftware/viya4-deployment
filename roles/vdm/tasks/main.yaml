@@ -53,11 +53,11 @@
       - { resources: overlays/update-checker }
       - { configurations: overlays/required/kustomizeconfig.yaml, priority: 51 }
       - { transformers: overlays/required/transformers.yaml, priority: 60 }
-      - { generators: sas-license.yaml, vdm: true }
-      - { generators: sas-shared-config.yaml, vdm: true }
-      - { generators: sas-consul-config.yaml, vdm: true, max: "2021.1" }
-      - { generators: sas-consul-config-secret.yaml, vdm: true, min: 2021.1.1 }
-      - { generators: ingress-input.yaml, vdm: true }
+      - { generators: sas-license.yaml }
+      - { generators: sas-shared-config.yaml }
+      - { generators: sas-consul-config.yaml, max: "2021.1" }
+      - { generators: sas-consul-config-secret.yaml, min: 2021.1.1 }
+      - { generators: ingress-input.yaml }
   tags:
     - install
     - uninstall
@@ -82,11 +82,20 @@
         cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
         existing: "{{ vdm_overlays }}"
         add:
-          - { generators: sas-image-pull-secrets.yaml, vdm: true }
+          - { generators: sas-image-pull-secrets.yaml }
 
 - name: Include Mirror
   include_tasks: mirror.yaml
   when: V4_CFG_CR_HOST != "cr.sas.com"
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: Include Openshift
+  include_tasks: openshift.yaml
+  when:
+    - V4_CFG_INGRESS_TYPE == "route"
   tags:
     - install
     - uninstall
@@ -120,9 +129,9 @@
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { resources: openldap.yaml, vdm: true }
-      - { transformers: openldap.yaml, vdm: true }
-      - { generators: openldap-bootstrap-config.yaml, vdm: true }
+      - { resources: openldap.yaml }
+      - { transformers: openldap.yaml }
+      - { generators: openldap-bootstrap-config.yaml }
   when:
     - not V4MT_ENABLE
     - V4_CFG_EMBEDDED_LDAP_ENABLE
@@ -137,9 +146,9 @@
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { resources: openldap.yaml, vdm: true }
-      - { transformers: openldap.yaml, vdm: true }
-      - { generators: openldap-bootstrap-mt-config.yaml, vdm: true }
+      - { resources: openldap.yaml }
+      - { transformers: openldap.yaml }
+      - { generators: openldap-bootstrap-mt-config.yaml }
   when:
     - V4MT_ENABLE
     - V4_CFG_EMBEDDED_LDAP_ENABLE

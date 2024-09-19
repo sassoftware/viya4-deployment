@@ -195,7 +195,7 @@
         cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
         existing: "{{ vdm_overlays }}"
         add:
-          - { transformers: "{{ role }}-crunchy-storage-transformer.yaml", min: "2022.10", vdm: true }
+          - { transformers: "{{ role }}-crunchy-storage-transformer.yaml", min: "2022.10" }
     - name: Postgres instance - set immutable storage transformer values
       block:
         - name: Postgres instance - save role storage map values
@@ -300,8 +300,8 @@
         cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
         existing: "{{ vdm_overlays }}"
         add:
-          - { transformers: "{{ role }}-dataserver-transformer.yaml", min: "2022.10", vdm: true }
-          - { generators: "postgres-{{ role }}-secrets.yaml", min: "2022.10", vdm: true }
+          - { transformers: "{{ role }}-dataserver-transformer.yaml", min: "2022.10" }
+          - { generators: "postgres-{{ role }}-secrets.yaml", min: "2022.10" }
 
 - name: Postgres instance - external post 2022.10 - additional servers
   when:
@@ -325,7 +325,7 @@
         cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
         existing: "{{ vdm_overlays }}"
         add:
-          - { resources: "platform-postgres-{{ role }}-dataserver.yaml", min: "2022.10", vdm: true }
+          - { resources: "platform-postgres-{{ role }}-dataserver.yaml", min: "2022.10" }
 
 # TODO Fix Logic for tasks below
 
@@ -349,7 +349,7 @@
         cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
         existing: "{{ vdm_overlays }}"
         add:
-          - { resources: "postgres-{{ role }}-instance.yaml", vdm: true }
+          - { resources: "postgres-{{ role }}-instance.yaml" }
 
 - name: Postgres instance - external pre 2022.10
   when:
@@ -372,4 +372,4 @@
         cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
         existing: "{{ vdm_overlays }}"
         add:
-          - { resources: "postgres-{{ role }}-instance.yaml", vdm: true }
+          - { resources: "postgres-{{ role }}-instance.yaml" }

@@ -78,8 +78,8 @@
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { transformers: "sas-{{ 'postgres' if role == 'default' else role }}-custom-config-transformer.yaml", vdm: true, priority: 65 }
-      - { resources: "sas-{{ 'postgres' if role == 'default' else role }}-custom-config.yaml", vdm: true }
+      - { transformers: "sas-{{ 'postgres' if role == 'default' else role }}-custom-config-transformer.yaml", priority: 65 }
+      - { resources: "sas-{{ 'postgres' if role == 'default' else role }}-custom-config.yaml" }
   when:
     - custom_config_folder.stat.exists
     - settings.internal
@@ -167,7 +167,7 @@
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { transformers: "{{ 'platform-postgres' if role == 'default' else role }}-crunchy-tuning-transformer.yaml", vdm: true, priority: 65 }
+      - { transformers: "{{ 'platform-postgres' if role == 'default' else role }}-crunchy-tuning-transformer.yaml", priority: 65 }
   when:
     - not V4_CFG_CADENCE_NAME|lower == "fast" and V4_CFG_CADENCE_VERSION is version('2023.03', "<")
     - crunchy_tuning_folder.stat.exists
@@ -277,8 +277,7 @@
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - transformers: "{{ 'platform-postgres' if role == 'default' else role }}-crunchy-tuning-connection-params-transformer.yaml"
-        vdm: true
+      - transformers: "{{ 'platform-postgres' if role == 'default' else role }}-crunchy-tuning-connection-params-transformer.yaml"     
         priority: 65
   when:
     - V4_CFG_CADENCE_VERSION is version('2023.03', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
@@ -295,8 +294,7 @@
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - transformers: "{{ 'platform-postgres' if role == 'default' else role }}-crunchy-tuning-pg-hba-no-tls-transformer.yaml"
-        vdm: true
+      - transformers: "{{ 'platform-postgres' if role == 'default' else role }}-crunchy-tuning-pg-hba-no-tls-transformer.yaml"   
         priority: 65
   when:
     - V4_CFG_CADENCE_VERSION is version('2023.03', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"

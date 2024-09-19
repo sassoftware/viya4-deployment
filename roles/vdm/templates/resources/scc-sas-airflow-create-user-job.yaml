@@ -1,0 +1,126 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: sas-anyuid
+rules:
+- apiGroups:
+  - security.openshift.io 
+  resourceNames:
+  - anyuid
+  resources:
+  - securitycontextconstraints 
+  verbs: 
+  - use
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: "sas-airflow-create-user-job"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: sas-anyuid
+subjects:
+- apiGroup: ""
+  kind: ServiceAccount
+  name: sas-airflow-create-user-job
+  namespace: "{{ NAMESPACE }}"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: "sas-airflow-migrate-database-job"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: sas-anyuid
+subjects:
+- apiGroup: ""
+  kind: ServiceAccount
+  name: sas-airflow-migrate-database-job
+  namespace: "{{ NAMESPACE }}"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: "sas-airflow-redis"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: sas-anyuid
+subjects:
+- apiGroup: ""
+  kind: ServiceAccount
+  name: sas-airflow-redis
+  namespace: "{{ NAMESPACE }}"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: "sas-airflow-scheduler"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: sas-anyuid
+subjects:
+- apiGroup: ""
+  kind: ServiceAccount
+  name: sas-airflow-scheduler
+  namespace: "{{ NAMESPACE }}"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: "sas-airflow-triggerer"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: sas-anyuid
+subjects:
+- apiGroup: ""
+  kind: ServiceAccount
+  name: sas-airflow-triggerer
+  namespace: "{{ NAMESPACE }}"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: "sas-airflow-webserver"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: sas-anyuid
+subjects:
+- apiGroup: ""
+  kind: ServiceAccount
+  name: sas-airflow-webserver
+  namespace: "{{ NAMESPACE }}"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: "sas-airflow-worker"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: sas-anyuid
+subjects:
+- apiGroup: ""
+  kind: ServiceAccount
+  name: sas-airflow-worker
+  namespace: "{{ NAMESPACE }}"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: "sas-process-orchestration"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: sas-anyuid
+subjects:
+- apiGroup: ""
+  kind: ServiceAccount
+  name: sas-process-orchestration
+  namespace: "{{ NAMESPACE }}"

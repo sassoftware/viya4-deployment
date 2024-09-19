@@ -8,7 +8,7 @@
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { transformers: sas-storageclass.yaml, vdm: true, priority: 49 }
+      - { transformers: sas-storageclass.yaml, priority: 49 }
   tags:
     - install
     - uninstall
@@ -20,11 +20,11 @@
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { transformers: cas-add-nfs-mount.yaml, vdm: true }
-      - { transformers: compute-server-add-nfs-mount.yaml, max: 2021.1.6, vdm: true }
-      - { transformers: compute-server-add-nfs-mount.v2.yaml, min: "2021.2", vdm: true }
-      - { transformers: launcher-service-add-nfs.yaml, max: 2021.1.6, vdm: true }
-      - { transformers: launcher-nfs-mount.yaml, min: "2021.2", vdm: true }
+      - { transformers: cas-add-nfs-mount.yaml }
+      - { transformers: compute-server-add-nfs-mount.yaml, max: 2021.1.6 }
+      - { transformers: compute-server-add-nfs-mount.v2.yaml, min: "2021.2" }
+      - { transformers: launcher-service-add-nfs.yaml, max: 2021.1.6 }
+      - { transformers: launcher-nfs-mount.yaml, min: "2021.2" }
   when:
     - V4_CFG_RWX_FILESTORE_ENDPOINT is not none
     - V4_CFG_RWX_FILESTORE_PATH is not none

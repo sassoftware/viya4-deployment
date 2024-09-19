@@ -39,8 +39,8 @@
         existing: "{{ vdm_overlays }}"
         add:
           - { transformers: overlays/cas-server/cas-sssd-sidecar.yaml, priority: 0 }
-          - { transformers: cas-sssd.yaml, vdm: true }
-          - { generators: sas-sssd-config.yaml, vdm: true }
+          - { transformers: cas-sssd.yaml }
+          - { generators: sas-sssd-config.yaml }
 
 - name: CAS - backup controller
   overlay_facts:
@@ -48,7 +48,7 @@
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { transformers: cas-manage-backup.yaml, vdm: true }
+      - { transformers: cas-manage-backup.yaml }
   when:
     - V4_CFG_CAS_ENABLE_BACKUP_CONTROLLER
   tags:
@@ -77,7 +77,7 @@
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { transformers: cas-manage-cpu-and-memory.yaml, vdm: true }
+      - { transformers: cas-manage-cpu-and-memory.yaml }
   when:
     - V4_CFG_CAS_RAM is not none
     - V4_CFG_CAS_CORES is not none
@@ -92,7 +92,7 @@
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { transformers: cas-manage-workers.yaml, vdm: true }
+      - { transformers: cas-manage-workers.yaml }
   when:
     - V4_CFG_CAS_WORKER_COUNT |int > 1
   tags:
@@ -106,7 +106,7 @@
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { transformers: cas-enable-external-services.yaml, vdm: true }
+      - { transformers: cas-enable-external-services.yaml }
   when:
     - V4_CFG_CAS_ENABLE_LOADBALANCER
   tags:
@@ -120,7 +120,7 @@
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { transformers: cas-auto-restart.yaml, vdm: true, min: "2021.2" }
+      - { transformers: cas-auto-restart.yaml, min: "2021.2" }
   when:
     - V4_DEPLOYMENT_OPERATOR_ENABLED
     - V4_CFG_CAS_ENABLE_AUTO_RESTART

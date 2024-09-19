@@ -22,7 +22,35 @@ pg_cluster_name_map: {
 }
 # TODO - Fix once 2021.1.6 is ready and the kustomization files have been updated
 network_name_map: {
-  ingress: networking.k8s.io,
-  contour: projectcountour.io,
-  route: route.openshift.io
+  ingress: {
+    name: networking.k8s.io,
+    component: ingess/nginx.ingress.kubernetes.io
+  },
+  contour: {
+    name: projectcountour.io,
+    component: httpproxy
+  },
+  route: {
+    name: route.openshift.io,
+    component: route
+  },
+  istio: {
+    name: networking.istio.io,
+    component: virtualservice
+  }
+}
+
+openshift_cas_scc_map: {
+  standard: {
+    filesuffix: "",
+    suffix: ""
+  },
+  host: {
+    filesuffix: "-host-launch",
+    suffix: "-host"
+  },
+  sssd: {
+    filesuffix: "-sssd",
+    suffix: "-sssd"
+  },
 }
