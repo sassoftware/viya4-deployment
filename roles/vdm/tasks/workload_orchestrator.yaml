@@ -23,7 +23,8 @@
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { transformers: examples/sas-workload-orchestrator/enable-disable/sas-workload-orchestrator-disable-patch-transformer.yaml, min: "2023.08", vdm: false }
+      - { transformers: examples/sas-workload-orchestrator/enable-disable/sas-workload-orchestrator-disable-patch-transformer.yaml, min: "2023.08", max: "2024.06", vdm: false }
+      - { transformers: overlays/sas-workload-orchestrator/enable-disable/sas-workload-orchestrator-disable-patch-transformer.yaml, min: "2024.07", vdm: false }
   when:
     - not V4_WORKLOAD_ORCHESTRATOR_ENABLED
   tags:
