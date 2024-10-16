@@ -5,6 +5,7 @@
 .galaxy_install_info
 
 ## ignore ansible-vars.yml
+.pre-commit-config.yaml
 ansible-vars.yml
 ansible-vars.yaml
 
