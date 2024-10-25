@@ -26,7 +26,6 @@ The following list details our dependencies and versions (~ indicates multiple p
 | ansible-galaxy | kubernetes.core  | 5.0.0        |
 
 If you are using a provider based kubeconfig file created by viya4-iac-gcp:4.5.0 or newer, install these dependencies:
-<< MIGHT NEED TO UPDATE GCP VERSION ^^ >>
 | SOURCE         | NAME                    | VERSION     |
 |----------------|-------------------------|-------------|
 | ~              | gcloud                  | 496.0.0     |

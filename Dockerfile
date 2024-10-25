@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:experimental
-FROM ubuntu:22.04 as baseline
+FROM ubuntu:22.04 AS baseline
 
 RUN apt-get update && apt-get upgrade -y \
   && apt-get install --no-install-recommends -y python3 python3-dev python3-pip curl unzip apt-transport-https ca-certificates gnupg \
@@ -8,7 +8,7 @@ RUN apt-get update && apt-get upgrade -y \
   && update-alternatives --install /usr/bin/python python /usr/bin/python3 1 \
   && update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
 
-FROM baseline as tool_builder
+FROM baseline AS tool_builder
 ARG kubectl_version=1.29.8
 
 WORKDIR /build
