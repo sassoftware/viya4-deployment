@@ -4,31 +4,31 @@ If your environment requires validated support for a specific version or range o
 
 The following list details our dependencies and versions (~ indicates multiple possible sources):
 
-| SOURCE         | NAME             | VERSION     |
-|----------------|------------------|-------------|
-| ~              | python           | >=3.10      |
-| ~              | pip              | 3.x         |
-| ~              | unzip            | any         |
-| ~              | tar              | any         |
-| ~              | docker           | >=25.0.3    |
-| ~              | git              | any         |
-| ~              | rsync            | any         |
-| ~              | kubectl          | 1.28 - 1.30 |
-| ~              | Helm             | 3.14.2      |
-| pip3           | ansible          | 9.2.0       |
-| pip3           | openshift        | 0.13.2      |
-| pip3           | kubernetes       | 27.2.0      |
-| pip3           | dnspython        | 2.6.1       |
-| pip3           | docker           | 7.1.0       |
-| pip3           | urllib3          | 1.26.18     |
-| ansible-galaxy | community.docker | 3.10.3      |
-| ansible-galaxy | ansible.utils    | 3.1.0       |
-| ansible-galaxy | kubernetes.core  | 3.0.0       |
+| SOURCE         | NAME             | VERSION      |
+|----------------|------------------|--------------|
+| ~              | python           | >=3.10       |
+| ~              | pip              | 3.x          |
+| ~              | unzip            | any          |
+| ~              | tar              | any          |
+| ~              | docker           | >=25.0.3     |
+| ~              | git              | any          |
+| ~              | rsync            | any          |
+| ~              | kubectl          | 1.28 - 1.30  |
+| ~              | Helm             | 3.16.2       |
+| pip3           | ansible          | 10.5.0       |
+| pip3           | openshift        | 0.13.2       |
+| pip3           | kubernetes       | 29.0.0       |
+| pip3           | dnspython        | 2.7.0        |
+| pip3           | docker           | 7.1.0        |
+| pip3           | urllib3          | 2.2.3        |
+| ansible-galaxy | community.docker | 3.13.0       |
+| ansible-galaxy | ansible.utils    | 5.1.2        |
+| ansible-galaxy | kubernetes.core  | 5.0.0        |
 
 If you are using a provider based kubeconfig file created by viya4-iac-gcp:4.5.0 or newer, install these dependencies:
 | SOURCE         | NAME                    | VERSION     |
 |----------------|-------------------------|-------------|
-| ~              | gcloud                  | 472.0.0     |
+| ~              | gcloud                  | 496.0.0     |
 | ~              | gcloud-gke-auth-plugin  | >= 0.5.2    |
 
 Required project dependencies are generally pinned to known working or stable versions to ensure users have a smooth initial experience. In some cases it may be required to change the default version of a dependency. In such cases users are welcome to experiment with alternate versions, however compatibility may not be guaranteed.
@@ -49,7 +49,7 @@ As described in the [Docker Installation](./DockerUsage.md) section add addition
 ```bash
 # Override kubectl version
 docker build \
-	--build-arg kubectl_version=1.29.7 \
+	--build-arg kubectl_version=1.29.8 \
 	-t viya4-deployment .
 ```
 

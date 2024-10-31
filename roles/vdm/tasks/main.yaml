@@ -204,16 +204,6 @@
     - uninstall
     - update
 
-- name: Include Message broker
-  include_tasks: message_broker.yaml
-  when:
-    - PROVIDER == "azure"
-    - V4_CFG_MESSAGE_BROKER_ENABLE
-  tags:
-    - install
-    - uninstall
-    - update
-
 - name: Include Kustomize
   include_tasks: kustomize.yaml
   tags:
