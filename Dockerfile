@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:experimental
-FROM ubuntu:22.04 as baseline
+FROM ubuntu:22.04 AS baseline
 
 RUN apt-get update && apt-get upgrade -y \
   && apt-get install --no-install-recommends -y python3 python3-dev python3-pip curl unzip apt-transport-https ca-certificates gnupg \
@@ -8,8 +8,8 @@ RUN apt-get update && apt-get upgrade -y \
   && update-alternatives --install /usr/bin/python python /usr/bin/python3 1 \
   && update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
 
-FROM baseline as tool_builder
-ARG kubectl_version=1.29.7
+FROM baseline AS tool_builder
+ARG kubectl_version=1.29.8
 
 WORKDIR /build
 
@@ -17,9 +17,9 @@ RUN curl -sLO https://storage.googleapis.com/kubernetes-release/release/v$kubect
 
 # Installation
 FROM baseline
-ARG helm_version=3.15.2
-ARG aws_cli_version=2.16.5
-ARG gcp_cli_version=479.0.0-0
+ARG helm_version=3.16.2
+ARG aws_cli_version=2.17.58
+ARG gcp_cli_version=496.0.0-0
 
 # Add extra packages
 RUN apt-get update && apt-get install --no-install-recommends -y gzip wget git jq ssh sshpass skopeo rsync \
