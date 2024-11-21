@@ -9,11 +9,11 @@ RUN apt-get update && apt-get upgrade -y \
   && update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
 
 FROM baseline AS tool_builder
-ARG kubectl_version=1.29.8
+ARG kubectl_version=1.30.6
 
 WORKDIR /build
 
-RUN curl -sLO https://storage.googleapis.com/kubernetes-release/release/v$kubectl_version/bin/linux/amd64/kubectl && chmod 755 ./kubectl
+RUN curl -sLO https://dl.k8s.io/release/v$kubectl_version/bin/linux/amd64/kubectl && chmod 755 ./kubectl
 
 # Installation
 FROM baseline
