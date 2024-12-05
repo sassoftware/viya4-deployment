@@ -15,6 +15,12 @@ WORKDIR /build
 
 RUN curl -sLO https://dl.k8s.io/release/v$kubectl_version/bin/linux/amd64/kubectl && chmod 755 ./kubectl
 
+FROM golang:1.23 AS golang
+ARG SKOPEO_VERSION=release-1.16
+RUN apt-get update && apt-get install --no-install-recommends -y libgpgme-dev libassuan-dev libbtrfs-dev pkg-config \
+  && git clone https://github.com/containers/skopeo.git -b release-1.16 \
+  && DISABLE_DOCS=1 make -C skopeo/
+
 # Installation
 FROM baseline
 ARG helm_version=3.16.2
@@ -22,7 +28,7 @@ ARG aws_cli_version=2.17.58
 ARG gcp_cli_version=496.0.0-0
 
 # Add extra packages
-RUN apt-get update && apt-get install --no-install-recommends -y gzip wget git jq ssh sshpass skopeo rsync \
+RUN apt-get update && apt-get install --no-install-recommends -y gzip wget git jq ssh sshpass rsync libgpgme-dev \
   && rm -f /etc/ssh/ssh_host_rsa_key && rm -f /etc/ssh/ssh_host_ecdsa_key && rm -f /etc/ssh/ssh_host_ed25519_key \
   && curl -ksLO https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 && chmod 755 get-helm-3 \
   && ./get-helm-3 --version v$helm_version --no-sudo \
@@ -40,7 +46,10 @@ RUN apt-get update && apt-get install --no-install-recommends -y gzip wget git j
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
+
+
 COPY --from=tool_builder /build/kubectl /usr/local/bin/kubectl
+COPY --from=golang /go/skopeo/bin/skopeo /usr/local/bin/skopeo
 
 WORKDIR /viya4-deployment/
 COPY . /viya4-deployment/
