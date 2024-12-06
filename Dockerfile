@@ -15,11 +15,12 @@ WORKDIR /build
 
 RUN curl -sLO https://dl.k8s.io/release/v$kubectl_version/bin/linux/amd64/kubectl && chmod 755 ./kubectl
 
-FROM golang:1.23 AS golang
-ARG SKOPEO_VERSION=release-1.16
-RUN apt-get update && apt-get install --no-install-recommends -y libgpgme-dev libassuan-dev libbtrfs-dev pkg-config \
-  && git clone https://github.com/containers/skopeo.git -b release-1.16 \
-  && DISABLE_DOCS=1 make -C skopeo/
+# Build Skopeo from source 
+# FROM golang:1.23 AS golang
+# ARG SKOPEO_VERSION=release-1.16
+# RUN apt-get update && apt-get install --no-install-recommends -y libgpgme-dev libassuan-dev libbtrfs-dev pkg-config \
+#   && git clone https://github.com/containers/skopeo.git -b release-1.16 \
+#   && DISABLE_DOCS=1 make -C skopeo/
 
 # Installation
 FROM baseline
@@ -43,13 +44,16 @@ RUN apt-get update && apt-get install --no-install-recommends -y gzip wget git j
   && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add - \
   && apt-get update && apt-get install --no-install-recommends -y google-cloud-cli:amd64=${gcp_cli_version} \
   && apt-get install --no-install-recommends -y google-cloud-sdk-gke-gcloud-auth-plugin \
+  # Skopeo
+  && echo "deb [signed-by=/usr/share/keyrings/ubuntu-archive-keyring.gpg] http://archive.ubuntu.com/ubuntu noble noble-updates main universe" | tee -a /etc/apt/sources.list.d/ubuntu-noble.list \
+  && apt-get update && apt-get install -y skopeo -t noble \    
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
 
 
 COPY --from=tool_builder /build/kubectl /usr/local/bin/kubectl
-COPY --from=golang /go/skopeo/bin/skopeo /usr/local/bin/skopeo
+# COPY --from=golang /go/skopeo/bin/skopeo /usr/local/bin/skopeo
 
 WORKDIR /viya4-deployment/
 COPY . /viya4-deployment/
