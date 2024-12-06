@@ -75,7 +75,7 @@
 # if the parsed creds contain symbols. This is expected and required to avoid Jinja2 templating issues.
 - name: Orchestration tooling - Download orchestration tooling image
   command: |
-    skopeo copy docker://{{ V4_CFG_CR_HOST }}/{{ ORCHESTRATION_IMAGE }} oci-archive:{{ ORCHESTRATION_TOOLING_ARCHIVE }} --src-creds {{ ORCHESTRATION_CR_USER | string }}:{{ ORCHESTRATION_CR_PASSWORD | string }}
+    skopeo copy docker://{{ V4_CFG_CR_HOST }}/{{ ORCHESTRATION_IMAGE }} oci-archive:{{ ORCHESTRATION_TOOLING_ARCHIVE }} --src-creds {{ ORCHESTRATION_CR_USER | string }}:{{ ORCHESTRATION_CR_PASSWORD | string }} --insecure-policy
   when:
     - deployment_tooling == "docker"
   tags:
