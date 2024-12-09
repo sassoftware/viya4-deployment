@@ -18,7 +18,7 @@ RUN curl -sLO https://dl.k8s.io/release/v$kubectl_version/bin/linux/amd64/kubect
 # Build Skopeo from source since the version in the apt repository is outdated
 FROM golang:alpine3.20 AS golang
 ARG SKOPEO_VERSION=release-1.16
-RUN apk update && apk add git build-base containers-common bash btrfs-progs-dev glib-dev go go-md2man gpgme-dev libselinux-dev linux-headers lvm2-dev ostree-dev \
+RUN apk add --no-cache git build-base containers-common bash btrfs-progs-dev glib-dev go go-md2man gpgme-dev libselinux-dev linux-headers lvm2-dev ostree-dev \
   && git clone https://github.com/containers/skopeo.git -b $SKOPEO_VERSION \
   && DISABLE_DOCS=1 make -C skopeo bin/skopeo.linux.386
 
