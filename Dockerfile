@@ -47,7 +47,6 @@ RUN apt-get update && apt-get install --no-install-recommends -y gzip wget git j
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
-
 COPY --from=tool_builder /build/kubectl /usr/local/bin/kubectl
 COPY --from=golang /go/skopeo/bin/skopeo.linux.386 /usr/local/bin/skopeo
 
