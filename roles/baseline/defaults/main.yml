@@ -61,6 +61,8 @@ INGRESS_NGINX_CONFIG:
       use-forwarded-headers: "false"
       hsts-max-age: "63072000"
       hide-headers: Server,X-Powered-By
+      annotations-risk-level: "Critical"
+      strict-validate-path-type: "false"
     tcp: {}
     udp: {}
     lifecycle:
