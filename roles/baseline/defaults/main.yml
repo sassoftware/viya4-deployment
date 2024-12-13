@@ -61,8 +61,6 @@ INGRESS_NGINX_CONFIG:
       use-forwarded-headers: "false"
       hsts-max-age: "63072000"
       hide-headers: Server,X-Powered-By
-      annotations-risk-level: "Critical"
-      strict-validate-path-type: "false"
     tcp: {}
     udp: {}
     lifecycle:
@@ -99,6 +97,18 @@ INGRESS_NGINX_CVE_2021_25742_PATCH:
       allow-snippet-annotations: "true"
       large-client-header-buffers: 4 32k
       annotation-value-word-blocklist: load_module,lua_package,_by_lua,location,root,proxy_pass,serviceaccount,{,},\
+
+# Ingress-nginx - Required for <= 2024.11 with v1.12+
+INGRESS_NGINX_STRICT_VALIDATE_PATH_TYPE:
+  controller:
+    config:
+      strict-validate-path-type: "false"
+
+# Ingress-nginx - Required for 2024.12 or later with v1.12+ but OK for any ingress-nginx version
+INGRESS_NGINX_ANNOTATIONS_RISK_LEVEL:
+  controller:
+    config:
+      annotations-risk-level: "Critical"
 
 ## Nfs-subdir-external-provisioner
 NFS_CLIENT_NAME: nfs-subdir-external-provisioner-sas
