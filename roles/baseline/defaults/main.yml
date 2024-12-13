@@ -104,7 +104,7 @@ INGRESS_NGINX_STRICT_VALIDATE_PATH_TYPE:
     config:
       strict-validate-path-type: "false"
 
-# Ingress-nginx - Required for 2024.12 or later with v1.12+ but OK for any ingress-nginx version
+# Ingress-nginx - Required for ingress-nginx v1.12+
 INGRESS_NGINX_ANNOTATIONS_RISK_LEVEL:
   controller:
     config:
