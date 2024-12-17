@@ -82,6 +82,22 @@
         - INGRESS_NGINX_CHART_VERSION is version('4.0.10', ">=") or (INGRESS_NGINX_CHART_VERSION is version('3.40.0', ">=") and INGRESS_NGINX_CHART_VERSION is version('4.0.0',
           "<"))
 
+- name: Disable strict_validate_path_type in INGRESS_NGINX_CONFIG
+  set_fact:
+    INGRESS_NGINX_CONFIG: "{{ INGRESS_NGINX_CONFIG | combine(INGRESS_NGINX_STRICT_VALIDATE_PATH_TYPE, recursive=True) }}"
+  when: (V4_CFG_CADENCE_VERSION is version('2024.11', "<=") and V4_CFG_CADENCE_NAME|lower != "fast") and INGRESS_NGINX_CHART_VERSION is version('4.12.0', ">=")
+  tags:
+    - install
+    - update
+
+- name: Add annotations_risk_level to INGRESS_NGINX_CONFIG
+  set_fact:
+    INGRESS_NGINX_CONFIG: "{{ INGRESS_NGINX_CONFIG | combine(INGRESS_NGINX_ANNOTATIONS_RISK_LEVEL, recursive=True) }}"
+  when: INGRESS_NGINX_CHART_VERSION is version('4.12.0', ">=")
+  tags:
+    - install
+    - update
+
 - name: Deploy ingress-nginx
   kubernetes.core.helm:
     name: "{{ INGRESS_NGINX_NAME }}"

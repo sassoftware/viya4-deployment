@@ -98,6 +98,18 @@ INGRESS_NGINX_CVE_2021_25742_PATCH:
       large-client-header-buffers: 4 32k
       annotation-value-word-blocklist: load_module,lua_package,_by_lua,location,root,proxy_pass,serviceaccount,{,},\
 
+# Ingress-nginx - Required for <= 2024.11 with v1.12+
+INGRESS_NGINX_STRICT_VALIDATE_PATH_TYPE:
+  controller:
+    config:
+      strict-validate-path-type: "false"
+
+# Ingress-nginx - Required for ingress-nginx v1.12+
+INGRESS_NGINX_ANNOTATIONS_RISK_LEVEL:
+  controller:
+    config:
+      annotations-risk-level: "Critical"
+
 ## Nfs-subdir-external-provisioner
 NFS_CLIENT_NAME: nfs-subdir-external-provisioner-sas
 NFS_CLIENT_NAMESPACE: nfs-client
