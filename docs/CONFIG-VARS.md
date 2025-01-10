@@ -407,7 +407,7 @@ The EBS CSI driver is currently only used for kubernetes v1.23 or later AWS EKS 
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | EBS_CSI_DRIVER_CHART_URL | aws ebs csi driver helm chart url | string | https://kubernetes-sigs.github.io/aws-ebs-csi-driver | false | | baseline |
 | EBS_CSI_DRIVER_CHART_NAME| aws ebs csi driver helm chart name | string | aws-ebs-csi-driver | false | | baseline |
-| EBS_CSI_DRIVER_CHART_VERSION | aws ebs csi driver helm chart version | string | 2.11.1 | false | | baseline |
+| EBS_CSI_DRIVER_CHART_VERSION | aws ebs csi driver helm chart version | string | 2.38.1 | false | | baseline |
 | EBS_CSI_DRIVER_CONFIG | aws ebs csi driver helm values | string | see [here](../roles/baseline/defaults/main.yml) | false | | baseline |
 | EBS_CSI_DRIVER_ACCOUNT | cluster autoscaler aws role arn | string | | false | Required to enable the aws ebs csi driver on AWS | baseline |
 | EBS_CSI_DRIVER_LOCATION | aws region where kubernetes cluster resides | string | us-east-1 | false | | baseline |
