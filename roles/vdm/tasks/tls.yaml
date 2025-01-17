@@ -164,6 +164,7 @@
       find:
         paths: "{{ DEPLOY_DIR }}/site-config/vdm/security/cacerts/"
         depth: 2
+        hidden: true
       register: V4_CFG_TLS_TRUSTED_CA_CERT_FILES
     - name: TLS - add customer provided ca cert generator
       overlay_facts:
