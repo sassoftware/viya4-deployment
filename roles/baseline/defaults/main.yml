@@ -208,6 +208,25 @@ EBS_CSI_DRIVER_CONFIG:
       name: ebs-csi-controller-sa
       annotations:
         eks.amazonaws.com/role-arn: "{{ EBS_CSI_DRIVER_ACCOUNT }}"
+  storageClasses:
+    - name: io2-vol-mq
+      parameters:
+        type: io2
+        fstype: ext4
+        iopsPerGB: "300"
+        throughput: "100"
+      reclaimPolicy: Delete
+      volumeBindingMode: WaitForFirstConsumer
+      allowVolumeExpansion: true
+    - name: io2-vol-pg
+      parameters:
+        type: io2
+        fstype: ext4
+        iopsPerGB: "50"
+        throughput: "100"
+      reclaimPolicy: Delete
+      volumeBindingMode: WaitForFirstConsumer
+      allowVolumeExpansion: true
 
 private_ingress:
   aws:
