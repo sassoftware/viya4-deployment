@@ -7,7 +7,8 @@ Supported configuration variables are listed in the table below.  All variables 
   - [Cloud](#cloud)
     - [Authentication](#authentication)
   - [Jump Server](#jump-server)
-  - [Storage](#storage)
+  - [Storage for AWS](#storage-for-aws)
+  - [Storage for Azure and Google Cloud](#storage-for-azure-and-google-cloud)
     - [RWX Filestore](#rwx-filestore)
     - [Azure](#azure)
     - [AWS](#aws)
@@ -85,7 +86,11 @@ Viya4-deployment uses the jump server to interact with the RWX filestore, which 
 | JUMP_SVR_PRIVATE_KEY | Path to the SSH user's private key to access the jump server host | string |  | true | | baseline, viya |
 | JUMP_SVR_RWX_FILESTORE_PATH | Path on the jump server to the NFS mount | string | /viya-share | false | | viya |
 
-## Storage
+## Storage for AWS
+When `V4_CFG_MANAGE_STORAGE` is set to `true`, viya4-deployment uses the [EBS CSI driver](#ebs-csi-driver) to create two elastic block storage based storage classes with the default names of `io2-vol-mq` and `io2-vol-pg`. The volume type for both storage classes defaults to `io2`. For EKS clusters, RabbitMQ makes PVC requests to create block storage persistent volumes using the `io2-vol-mq` storage class while Crunchy Postgres makes PVC requests to create block storage persistent volumes using the `io2-vol-pg` storage class. Viya4-deployment also creates the `sas` storage class using the nfs-subdir-external-provisioner Helm chart. If a jump server is used, viya4-deployment uses that server to create the folders for the `astores`, `bin`, `data` and `homes` RWX Filestore NFS paths that are outlined below in the [RWX Filestore](#rwx-filestore) section.
+
+
+## Storage for Azure and Google Cloud
 When `V4_CFG_MANAGE_STORAGE` is set to `true`, viya4-deployment creates the `sas` and `pg-storage` storage classes using the nfs-subdir-external-provisioner Helm chart. If a jump server is used, viya4-deployment uses that server to create the folders for the `astores`, `bin`, `data` and `homes` RWX Filestore NFS paths that are outlined below in the [RWX Filestore](#rwx-filestore) section.
 
 When `V4_CFG_MANAGE_STORAGE` is set to `false`, viya4-deployment does not create the `sas` or `pg-storage` storage classes for you. In addition, viya4-deployment does not create or manage the RWX Filestore NFS paths. Before you run the SAS Viya deployment, you must set the values for `V4_CFG_RWX_FILESTORE_DATA_PATH` and `V4_CFG_RWX_FILESTORE_HOMES_PATH` to specify existing NFS folder locations. The viya4-deployment user can create the required NFS folders from the jump server before starting the deployment. Recommended attribute settings for each folder are as follows:
@@ -401,7 +406,7 @@ If you used [viya4-iac-aws:5.6.0](https://github.com/sassoftware/viya4-iac-aws/r
 
 ### EBS CSI Driver
 
-The EBS CSI driver is currently only used for kubernetes v1.23 or later AWS EKS clusters.
+The EBS CSI driver is only used for kubernetes v1.23 or later AWS EKS clusters.
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -411,6 +416,16 @@ The EBS CSI driver is currently only used for kubernetes v1.23 or later AWS EKS 
 | EBS_CSI_DRIVER_CONFIG | aws ebs csi driver helm values | string | see [here](../roles/baseline/defaults/main.yml) | false | | baseline |
 | EBS_CSI_DRIVER_ACCOUNT | cluster autoscaler aws role arn | string | | false | Required to enable the aws ebs csi driver on AWS | baseline |
 | EBS_CSI_DRIVER_LOCATION | aws region where kubernetes cluster resides | string | us-east-1 | false | | baseline |
+|EBS_CSI_RABBITMQ_STORAGE_CLASS_NAME| The EBS CSI storage class name for RabbitMQ | string | io2-vol-mq | false | | baseline |
+|EBS_CSI_RABBITMQ_STORAGE_CLASS_VOLUME_TYPE| The EBS CSI volume type to use for RabbitMQ volumes| string | io2 | false | Supported values: [`io2`, `io1`, `gp3`]  | baseline |
+|EBS_CSI_RABBITMQ_STORAGE_CLASS_IOPSPERGB | IOPs per GB parameter for the `EBS_CSI_RABBITMQ_STORAGE_CLASS_NAME` storage class|string|1250|false |Multiply this value by the volume size in GiB to obtain total IOPS per volume  | baseline |
+|EBS_CSI_RABBITMQ_STORAGE_CLASS_THROUGHPUT| Maximum volume throughput in MiB/s for the `EBS_CSI_RABBITMQ_STORAGE_CLASS_NAME` storage class| string| 400 | false | The maximum value for io2, io1 and gp3 volume types is 1000.| baseline |
+|EBS_CSI_POSTGRES_STORAGE_CLASS_NAME| The EBS CSI storage class name for Crunchy Postgres use| string| io2-vol-pg | false | | baseline |
+|EBS_CSI_POSTGRES_STORAGE_CLASS_VOLUME_TYPE| The EBS CSI volume type to use for Crunchy Postgres volumes | string | io2 | false | Supported values: [`io2`, `io1`, `gp3`] | baseline |
+|EBS_CSI_POSTGRES_STORAGE_CLASS_IOPSPERGB | IOPs per GB parameter for the `EBS_CSI_POSTGRES_STORAGE_CLASS_NAME` storage class | string | 40 | false |Multiply this value by the volume size in GiB to obtain total IOPS per volume | baseline |
+|EBS_CSI_POSTGRES_STORAGE_CLASS_THROUGHPUT | Maximum volume throughput in MiB/s for the `EBS_CSI_POSTGRES_STORAGE_CLASS_NAME` storage class | string| 400 | false | The maximum value for io2, io1 and gp3 volume types is 1000.| baseline |
+|EBS_CSI_POSTGRES_STORAGE_CLASS_RECLAIM_POLICY | The ReclaimPolicy for the `EBS_CSI_POSTGRES_STORAGE_CLASS_NAME` storage class | string | Delete | false | Supported values: [`Delete`, `Retain`] | baseline |
+
 
 ### Ingress-nginx
 

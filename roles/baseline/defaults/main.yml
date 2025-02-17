@@ -199,6 +199,17 @@ EBS_CSI_DRIVER_CHART_URL: https://kubernetes-sigs.github.io/aws-ebs-csi-driver
 EBS_CSI_DRIVER_CHART_VERSION: 2.38.1
 EBS_CSI_DRIVER_ACCOUNT: null
 EBS_CSI_DRIVER_LOCATION: us-east-1
+EBS_CSI_RABBITMQ_STORAGE_CLASS_NAME: io2-vol-mq
+EBS_CSI_RABBITMQ_STORAGE_CLASS_VOLUME_TYPE: io2
+EBS_CSI_RABBITMQ_STORAGE_CLASS_IOPSPERGB: 1250
+EBS_CSI_RABBITMQ_STORAGE_CLASS_THROUGHPUT: 400
+
+EBS_CSI_POSTGRES_STORAGE_CLASS_NAME: io2-vol-pg
+EBS_CSI_POSTGRES_STORAGE_CLASS_VOLUME_TYPE: io2
+EBS_CSI_POSTGRES_STORAGE_CLASS_IOPSPERGB: 40
+EBS_CSI_POSTGRES_STORAGE_CLASS_THROUGHPUT: 400
+EBS_CSI_POSTGRES_STORAGE_CLASS_RECLAIM_POLICY: Delete
+
 EBS_CSI_DRIVER_CONFIG:
   controller:
     k8sTagClusterId: "{{ CLUSTER_NAME }}"
@@ -209,22 +220,22 @@ EBS_CSI_DRIVER_CONFIG:
       annotations:
         eks.amazonaws.com/role-arn: "{{ EBS_CSI_DRIVER_ACCOUNT }}"
   storageClasses:
-    - name: io2-vol-mq
+    - name: "{{ EBS_CSI_RABBITMQ_STORAGE_CLASS_NAME }}"
       parameters:
-        type: io2
+        type: "{{ EBS_CSI_RABBITMQ_STORAGE_CLASS_VOLUME_TYPE }}"
         fstype: ext4
-        iopsPerGB: "300"
-        throughput: "100"
+        iopsPerGB: "{{ EBS_CSI_RABBITMQ_STORAGE_CLASS_IOPSPERGB | int }}"
+        throughput: "{{ EBS_CSI_RABBITMQ_STORAGE_CLASS_THROUGHPUT | int }}"
       reclaimPolicy: Delete
       volumeBindingMode: WaitForFirstConsumer
       allowVolumeExpansion: true
-    - name: io2-vol-pg
+    - name: "{{ EBS_CSI_POSTGRES_STORAGE_CLASS_NAME }}"
       parameters:
-        type: io2
+        type: "{{ EBS_CSI_POSTGRES_STORAGE_CLASS_VOLUME_TYPE }}"
         fstype: ext4
-        iopsPerGB: "50"
-        throughput: "100"
-      reclaimPolicy: Delete
+        iopsPerGB: "{{ EBS_CSI_POSTGRES_STORAGE_CLASS_IOPSPERGB | int }}"
+        throughput: "{{ EBS_CSI_POSTGRES_STORAGE_CLASS_THROUGHPUT | int }}"
+      reclaimPolicy: "{{ EBS_CSI_POSTGRES_STORAGE_CLASS_RECLAIM_POLICY }}"
       volumeBindingMode: WaitForFirstConsumer
       allowVolumeExpansion: true
 
