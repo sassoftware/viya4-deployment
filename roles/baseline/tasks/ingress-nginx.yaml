@@ -65,6 +65,16 @@
     - install
     - update
 
+- name: Update INGRESS_NGINX_CONFIG to set service ipFamily to IPv6
+  set_fact:
+    INGRESS_NGINX_CONFIG: "{{ INGRESS_NGINX_CONFIG | combine(INGRESS_NGINX_IPV6_CONFIG, recursive=True) }}"
+  when:
+    - PROVIDER == "aws"
+    - V4_CFG_ENABLE_IPV6
+  tags:
+    - install
+    - update
+
 - name: Apply Mitigation for CVE-2021-25742
   tags:
     - install

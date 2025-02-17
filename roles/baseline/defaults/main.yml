@@ -8,6 +8,7 @@ V4_CFG_INGRESS_TYPE: ingress
 V4_CFG_INGRESS_MODE: public
 V4_CFG_MANAGE_STORAGE: true
 V4_CFG_AWS_LB_SUBNETS: ""
+V4_CFG_ENABLE_IPV6: false
 
 ## Cert-manager
 CERT_MANAGER_NAME: cert-manager
@@ -89,6 +90,12 @@ INGRESS_NGINX_AWS_LB_SUBNETS:
     service:
       annotations:
         service.beta.kubernetes.io/aws-load-balancer-subnets: "{{ V4_CFG_AWS_LB_SUBNETS }}"
+
+# Update ipFamily for ingress-nginx service for IPv6 support
+INGRESS_NGINX_IPV6_CONFIG:
+  controller:
+    service:
+      ipFamilies: ["IPv6"]
 
 # Ingress-nginx - CVE-2021-25742 Mitigation
 INGRESS_NGINX_CVE_2021_25742_PATCH:
