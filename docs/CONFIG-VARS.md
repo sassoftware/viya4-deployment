@@ -420,11 +420,11 @@ The EBS CSI driver is only used for kubernetes v1.23 or later AWS EKS clusters.
 |EBS_CSI_RABBITMQ_STORAGE_CLASS_VOLUME_TYPE| The EBS CSI volume type to use for RabbitMQ persistent volumes| string | io2 | false | Supported values: [`io2`, `io1`, `gp3`]  | baseline |
 |EBS_CSI_RABBITMQ_STORAGE_CLASS_IOPSPERGB | IOPs per GB parameter for the `EBS_CSI_RABBITMQ_STORAGE_CLASS_NAME` storage class|string|1250|false |Multiply this value by the volume size in GiB to obtain total IOPS per volume  | baseline |
 |EBS_CSI_RABBITMQ_STORAGE_CLASS_THROUGHPUT| Maximum volume throughput in MiB/s for the `EBS_CSI_RABBITMQ_STORAGE_CLASS_NAME` storage class| string| 400 | false | The maximum value for io2, io1 and gp3 volume types is 1000.| baseline |
-|EBS_CSI_POSTGRES_STORAGE_CLASS_NAME| The EBS CSI storage class name for Crunchy Postgres use| string| io2-vol-pg | false | | baseline |
-|EBS_CSI_POSTGRES_STORAGE_CLASS_VOLUME_TYPE| The EBS CSI volume type to use for Crunchy Postgres persistent volumes | string | io2 | false | Supported values: [`io2`, `io1`, `gp3`] | baseline |
-|EBS_CSI_POSTGRES_STORAGE_CLASS_IOPSPERGB | IOPs per GB parameter for the `EBS_CSI_POSTGRES_STORAGE_CLASS_NAME` storage class | string | 40 | false |Multiply this value by the volume size in GiB to obtain total IOPS per volume | baseline |
-|EBS_CSI_POSTGRES_STORAGE_CLASS_THROUGHPUT | Maximum volume throughput in MiB/s for the `EBS_CSI_POSTGRES_STORAGE_CLASS_NAME` storage class | string| 400 | false | The maximum value for io2, io1 and gp3 volume types is 1000.| baseline |
-|EBS_CSI_POSTGRES_STORAGE_CLASS_RECLAIM_POLICY | The ReclaimPolicy for the `EBS_CSI_POSTGRES_STORAGE_CLASS_NAME` storage class | string | Delete | false | Supported values: [`Delete`, `Retain`] | baseline |
+|EBS_CSI_CRUNCHY_STORAGE_CLASS_NAME| The EBS CSI storage class name for Crunchy Postgres use| string| io2-vol-pg | false | | baseline |
+|EBS_CSI_CRUNCHY_STORAGE_CLASS_VOLUME_TYPE| The EBS CSI volume type to use for Crunchy Postgres persistent volumes | string | io2 | false | Supported values: [`io2`, `io1`, `gp3`] | baseline |
+|EBS_CSI_CRUNCHY_STORAGE_CLASS_IOPSPERGB | IOPs per GB parameter for the `EBS_CSI_CRUNCHY_STORAGE_CLASS_NAME` storage class | string | 40 | false |Multiply this value by the volume size in GiB to obtain total IOPS per volume | baseline |
+|EBS_CSI_CRUNCHY_STORAGE_CLASS_THROUGHPUT | Maximum volume throughput in MiB/s for the `EBS_CSI_CRUNCHY_STORAGE_CLASS_NAME` storage class | string| 400 | false | The maximum value for io2, io1 and gp3 volume types is 1000.| baseline |
+|EBS_CSI_CRUNCHY_STORAGE_CLASS_RECLAIM_POLICY | The ReclaimPolicy for the `EBS_CSI_CRUNCHY_STORAGE_CLASS_NAME` storage class | string | Delete | false | Supported values: [`Delete`, `Retain`] | baseline |
 
 
 ### Ingress-nginx
