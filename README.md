@@ -184,6 +184,46 @@ For example:
 
 The SAS Viya platform customizations that are managed by viya4-deployment are located under the [templates](https://github.com/sassoftware/viya4-deployment/tree/main/roles/vdm/templates) directory. These are purposely templatized and included there since they contain a set of customizations that are common or required for a functioning SAS Viya platform deployment. These particular files are configured via exposed variables that are documented within [CONFIG-VARS.md](docs/CONFIG-VARS.md) and do not need to be manually placed under `/site-config`.
 
+#### Base kustomization.yaml ConfigMap and Secret Generators
+
+In some scenarios, documentation instructs you to add a `configMapGenerator` or `secretGenerator` entry to the base `kustomization.yaml` (also known as `$deploy/kustomization.yaml`). For example:
+
+```yaml
+configMapGenerator:
+...
+- name: sas-risk-cirrus-core-parameters
+  behavior: merge
+  envs:
+    - site-config/sas-risk-cirrus-rcc/configuration.env
+...
+```
+
+In that scenario, copy the `configuration.env` file into the appropriate site-config subdirectory, and create a peer `-configmap.yaml` (or `-secret.yaml`) file:
+
+```bash
+  /deployments                                  <- parent directory
+    /demo-cluster                               <- folder per cluster
+      /demo-ns                                  <- folder per namespace
+        /site-config                            <- location for all customizations
+          /sas-risk-cirrus-rcc                  <- folder containing user defined customizations
+            /configuration.env                  <- env file
+            /sas-risk-cirrus-rcc-configmap.yaml <- individual generator file
+ ```
+
+In the `-configmap.yaml` (or `-secret.yaml`) file, create a `ConfigMapGenerator` (or `SecretGenerator`) that corresponds with the documented `configMapGenerator` (or `secretGenerator`) entry:
+
+```yaml
+apiVersion: builtin
+kind: ConfigMapGenerator
+metadata:
+  name: sas-risk-cirrus-core-parameters
+behavior: merge
+envs:
+  - site-config/sas-risk-cirrus-rcc/configuration.env 
+```
+
+This approach is needed only when the documented location is the base `kustomization.yaml`.
+
 #### OpenLDAP Customizations
 
 The OpenLDAP setup that is described here is a temporary solution that enables you to add users and groups and to start using SAS Viya platform applications. The OpenLDAP server that is created using these instructions does not persist. It is created and destroyed within the SAS Viya platform namespace where it is created. To add users or groups that persist, follow the SAS documentation that describes how to [Configure an LDAP Identity Provider](https://documentation.sas.com/?cdcId=sasadmincdc&cdcVersion=default&docsetId=calids&docsetTarget=n1aw4xnkvwcddnn1mv8lxr2e4tu7.htm#p0spae4p1qoto3n1qpuzafcecxhh).
