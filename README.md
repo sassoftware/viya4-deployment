@@ -222,8 +222,6 @@ envs:
   - site-config/sas-risk-cirrus-rcc/configuration.env 
 ```
 
-This approach is needed only when the documented location is the base `kustomization.yaml`.
-
 #### OpenLDAP Customizations
 
 The OpenLDAP setup that is described here is a temporary solution that enables you to add users and groups and to start using SAS Viya platform applications. The OpenLDAP server that is created using these instructions does not persist. It is created and destroyed within the SAS Viya platform namespace where it is created. To add users or groups that persist, follow the SAS documentation that describes how to [Configure an LDAP Identity Provider](https://documentation.sas.com/?cdcId=sasadmincdc&cdcVersion=default&docsetId=calids&docsetTarget=n1aw4xnkvwcddnn1mv8lxr2e4tu7.htm#p0spae4p1qoto3n1qpuzafcecxhh).
