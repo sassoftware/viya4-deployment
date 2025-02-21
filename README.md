@@ -186,7 +186,7 @@ The SAS Viya platform customizations that are managed by viya4-deployment are lo
 
 #### Base kustomization.yaml ConfigMap and Secret Generators
 
-In some scenarios, documentation instructs you to add a `configMapGenerator` or `secretGenerator` entry to the base `kustomization.yaml` (also known as `$deploy/kustomization.yaml`). For example:
+In some scenarios, a README or the deployment documentation instructs you to add a `configMapGenerator` or `secretGenerator` entry to the base `kustomization.yaml` (also known as `$deploy/kustomization.yaml`). For example:
 
 ```yaml
 configMapGenerator:
