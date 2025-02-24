@@ -33,10 +33,6 @@ V4_CFG_CONSUL_ENABLE_LOADBALANCER: false
 ## SAS/CONNECT
 V4_CFG_CONNECT_ENABLE_LOADBALANCER: false
 
-## Monitoring and Logging
-## uncomment and update the below values when deploying the viya4-monitoring-kubernetes stack
-# V4M_BASE_DOMAIN: <base_domain>
-
 ## Viya Start and Stop Schedule
 ## uncomment and update the values below with CronJob schedule expressions if you would
 ## like to start and stop your Viya Deployment on a schedule
