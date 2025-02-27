@@ -18,9 +18,6 @@ Supported configuration variables are listed in the table below.  All variables 
   - [Container Registry Access](#container-registry-access)
   - [Ingress](#ingress)
   - [Load Balancer](#load-balancer)
-  - [Monitoring and Logging](#monitoring-and-logging)
-    - [Monitoring](#monitoring)
-    - [Logging](#logging)
   - [TLS](#tls)
   - [PostgreSQL](#postgresql)
   - [CAS](#cas)
@@ -67,7 +64,7 @@ Supported configuration variables are listed in the table below.  All variables 
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | PROVIDER | Cloud provider | string | | true | [aws,azure,gcp,custom] | baseline, viya |
 | CLUSTER_NAME | Name of the Kubernetes cluster | string | | true | | baseline, viya |
-| NAMESPACE | Kubernetes namespace in which to deploy | string | | true | | baseline, viya, viya-monitoring |
+| NAMESPACE | Kubernetes namespace in which to deploy | string | | true | | baseline, viya |
 
 ### Authentication
 
@@ -165,66 +162,13 @@ When V4_CFG_MANAGE_STORAGE is set to `true`, the `sas` and `pg-storage` storage 
 | V4_CFG_AWS_LB_SUBNETS | The AWS subnets and by association the AWS availability zones to deploy the load balancing service to. This variable sets an ingress-nginx annotation which interacts with the [Cloud Controller Manager](https://kubernetes.io/docs/tasks/administer-cluster/developing-cloud-controller-manager/) to set the subnets used by the AWS load balancer. Specifying a subnet value or values for this variable takes precedence over the Subnet Discovery method described in [AWS docs](https://docs.aws.amazon.com/eks/latest/userguide/network-load-balancing.html) that relies on the tags applied to AWS subnets documented in scenario 2 of this [table.](https://github.com/sassoftware/viya4-iac-aws/blob/main/docs/user/BYOnetwork.md#supported-scenarios-and-requirements-for-using-existing-network-resources) This variable can be set with [BYO network scenarios 0-3](https://github.com/sassoftware/viya4-iac-aws/blob/main/docs/user/BYOnetwork.md#supported-scenarios-and-requirements-for-using-existing-network-resources). | string | | false | The value is either a comma separated list of subnet IDs, or a comma separated list of subnet names. Does not affect the subnets used for load balancers enabled with  `V4_CFG_CAS_ENABLE_LOADBALANCER`, `V4_CFG_CONNECT_ENABLE_LOADBALANCER`, or `V4_CFG_CONSUL_ENABLE_LOADBALANCER`. | baseline |
 
 
-## Monitoring and Logging
-
-| Name | Description | Type | Default | Required | Notes | Tasks |
-| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4M_VERSION | Branch or tag of [viya4-monitoring-kubernetes](https://github.com/sassoftware/viya4-monitoring-kubernetes) | string | stable | false | | cluster-logging, cluster-monitoring, viya-monitoring |
-| V4M_BASE_DOMAIN | Base domain in which subdomains for search, dashboards, Grafana, Prometheus, and Alertmanager are created | string | | false | This parameter or the per-service FQDNs must be set. | cluster-logging, cluster-monitoring, viya-monitoring |
-| V4M_CERT | Path to TLS certificate to use for all monitoring/logging services | string | | false | As an alternative, you can set the per-service certificate. | cluster-logging, cluster-monitoring, viya-monitoring |
-| V4M_KEY | Path to TLS key to use for all monitoring/logging services | string | | false | As an alternative, you can set the per-service certificate. | cluster-logging, cluster-monitoring, viya-monitoring |
-| V4M_NODE_PLACEMENT_ENABLE | Whether to enable workload node placement for viya4-monitoring-kubernetes stack | bool | false | false | | cluster-logging, cluster-monitoring, viya-monitoring |
-| V4M_STORAGECLASS | StorageClass name | string | v4m | false | When V4_CFG_MANAGE_STORAGE is false, set to the name of your pre-existing StorageClass that supports ReadWriteOnce. | cluster-logging, cluster-monitoring, viya-monitoring |
-| V4M_ROUTING | Which routing type to use for viya4-monitoring-kubernetes applications | string | host-based | false | Supported values: [`host-based`, `path-based`] For host-based routing, the application name is part of the host name itself `https://dashboards.host.cluster.example.com/` For path-based routing, the host name is fixed and the application name is appended as a path on the URL `https://host.cluster.example.com/dashboards` | cluster-logging, cluster-monitoring |
-| V4M_CUSTOM_CONFIG_USER_DIR | Path to the viya4-monitoring-kubernetes top-level `USER_DIR` folder on the local file system. The `USER_DIR` folder can contain a top-level `user.env` file and `logging` and `monitoring` folders where your logging and monitoring `user.env` and customization yaml files are located. **NOTE**: viya4-monitoring does not validate `user.env` or yaml file content pointed to by this variable. It is recommended to use file content that has been verified ahead of time. | string | null | false | The following V4M configuration variables are ignored by viya4-monitoring when `V4M_CUSTOM_CONFIG_USER_DIR` is set: [`V4M_ROUTING`, `V4M_BASE_DOMAIN`, all `V4M_*_FQDN` variables,  all `V4M_*_PASSWORD` variables] [Additional documentation](https://documentation.sas.com/?cdcId=obsrvcdc&cdcVersion=v_001&docsetId=obsrvdply&docsetTarget=n0wgd3ju667sa9n1adnxs7hnsqt6.htm) describing the `USER_DIR` folder is available.| cluster-logging, cluster-monitoring |
-
-#### Open Source Kubernetes
-
-When deploying `cluster-logging` or `cluster-monitoring` applications to kubernetes cluster infrastructure provisioned with the [Open Source Kubernetes viya4-iac-k8s](https://github.com/sassoftware/viya4-iac-k8s) project, you must explicitly set the value for `V4M_STORAGECLASS` to a pre-existing Storage Class (for example: `local-storage`)  regardless of the value set for `V4_CFG_MANAGE_STORAGE`. While other storage classes can be used, the `local-storage` class is **recommended** for the Viya Monitoring and Loggging tools.
-
-### Monitoring
-
-| Name | Description | Type | Default | Required | Notes | Tasks |
-| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4M_MONITORING_NAMESPACE | Namespace for the monitoring resources | string | monitoring | false | | cluster-monitoring |
-| V4M_PROMETHEUS_FQDN | FQDN to use for Prometheus ingress | string | prometheus.<V4M_BASE_DOMAIN> | false | | cluster-monitoring |
-| V4M_PROMETHEUS_CERT | Path to TLS certificate to use for Prometheus ingress | string |<V4M_CERT> | false | If neither this variable nor V4M_CERT is set, a self-signed certificate is used. | cluster-monitoring |
-| V4M_PROMETHEUS_KEY | Path to TLS key to use for Prometheus ingress | string | <V4M_KEY> | false | If neither this variable nor V4M_KEY is set, a self-signed certificate is used. | cluster-monitoring |
-| | | | | | | |
-| V4M_GRAFANA_FQDN | FQDN to use for Grafana ingress | string | grafana.<V4M_BASE_DOMAIN> | false | | cluster-monitoring |
-| V4M_GRAFANA_CERT | Path to TLS certificate to use for Grafana ingress | string |<V4M_CERT> | false | If neither this variable nor V4M_CERT is set, a self-signed certificate is used. | cluster-monitoring |
-| V4M_GRAFANA_KEY | Path to TLS key to use for Grafana ingress | string | <V4M_KEY> | false | If neither this variable nor V4M_KEY is set, a self-signed certificate is used. | cluster-monitoring |
-| V4M_GRAFANA_PASSWORD | Grafana administrator password | string | randomly generated | false | If not provided, a random password is generated and written to the log output. | cluster-monitoring |
-| | | | | | | |
-| V4M_ALERTMANAGER_FQDN | FQDN to use for Alertmanager ingress | string | alertmanager.<V4M_BASE_DOMAIN> | false | | cluster-monitoring |
-| V4M_ALERTMANAGER_CERT | Path to TLS certificate to use for Alertmanager ingress | string |<V4M_CERT> | false | If neither this variable nor V4M_CERT is set, a self-signed certificate is used. | cluster-monitoring |
-| V4M_ALERTMANAGER_KEY | Path to TLS key to use for Alertmanager ingress | string | <V4M_KEY> | false | If neither this variable nor V4M_KEY is set, a self-signed certificate is used. | cluster-monitoring |
-
-### Logging
-
-| Name | Description | Type | Default | Required | Notes | Tasks |
-| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4M_LOGGING_NAMESPACE | Namespace for the logging resources | string | logging | false | | cluster-logging |
-| V4M_KIBANA_FQDN | FQDN to use for OpenSearch Dashboards ingress | string | dashboards.<V4M_BASE_DOMAIN> | false | | cluster-logging |
-| V4M_KIBANA_CERT | Path to TLS certificate to use for OpenSearch Dashboards ingress | string |<V4M_CERT> | false | If neither this variable nor V4M_CERT is set, a self-signed certificate is used. | cluster-logging |
-| V4M_KIBANA_KEY | Path to TLS key to use for OpenSearch Dashboards ingress | string | <V4M_KEY> | false | If neither this variable nor V4M_KEY is set, a self-signed certificate is used. | cluster-logging |
-| V4M_KIBANA_PASSWORD | OpenSearch Dashboards administrator password | string | randomly generated | false | If not provided, a random password is generated and written to the log output. | cluster-logging |
-| V4M_KIBANA_LOGADM_PASSWORD | OpenSearch Dashboards logadm user's password | string | randomly generated | false | If not provided, and if V4M_KIBANA_PASSWORD is not set, a random password is generated and written to the log output. | cluster-logging |
-| V4M_KIBANASERVER_PASSWORD | OpenSearch Dashboards server password | string | randomly generated | false | If not provided, a random password is generated and written to the log output | cluster-logging |
-| V4M_LOGCOLLECTOR_PASSWORD | Logcollector password | string | randomly generated | false | If not provided, a random password is generated and written to the log output | cluster-logging |
-| V4M_METRICGETTER_PASSWORD | Metricgetter password | string | randomly generated | false | If not provided, a random password is generated and written to the log output | cluster-logging |
-| | | | | | | |
-| V4M_ELASTICSEARCH_FQDN | FQDN to use for OpenSearch ingress  | string | search.<V4M_BASE_DOMAIN> | false | | cluster-logging |
-| V4M_ELASTICSEARCH_CERT | Path to TLS certificate to use for OpenSearch ingress | string |<V4M_CERT> | false | If both this and V4M_CERT are not set a self-signed certificate is used. | cluster-logging |
-| V4M_ELASTICSEARCH_KEY | Path to TLS key to use for OpenSearch ingress | string | <V4M_KEY> | false | If neither this variable nor V4M_KEY is set, a self-signed certificate is used. | cluster-logging |
-
 ## TLS
 
 The SAS Viya platform supports two certificate generators: cert-manager and openssl.
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_TLS_GENERATOR | Which SAS-provided tool to use for certificate generation | string | openssl | false | Supported values: [`cert-manager`,`openssl`]. If set to `cert-manager`, `cert-manager` will be installed during baselining. | baseline, viya, cluster-logging, cluster-monitoring |
+| V4_CFG_TLS_GENERATOR | Which SAS-provided tool to use for certificate generation | string | openssl | false | Supported values: [`cert-manager`,`openssl`]. If set to `cert-manager`, `cert-manager` will be installed during baselining. | baseline, viya |
 | V4_CFG_TLS_MODE | Which TLS mode to configure | string | front-door | false | Supported values: [`full-stack`,`front-door`,`disabled.`] When deploying full-stack you must set V4_CFG_TLS_TRUSTED_CA_CERTS to trust external postgres server ca. | all |
 | V4_CFG_TLS_CERT | Path to ingress certificate file | string | | false | If specified, used instead of cert-manager issued certificates | viya |
 | V4_CFG_TLS_KEY | Path to ingress key file | string | | false | Required when V4_CFG_TLS_CERT is specified | viya |

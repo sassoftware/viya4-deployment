@@ -6,16 +6,24 @@
   tags:
     - always
   block:
+    - name: Task validation - Unsupported tasks
+      ansible.builtin.assert:
+        that: '{{ ["cluster-logging", "cluster-monitoring", "viya-monitoring"] | intersect(ansible_run_tags) | count == 0 }}'
+        msg: >
+          Invalid tags: {{ ansible_run_tags | join(',') }}
+
+          The 'cluster-logging', 'cluster-monitoring', and 'viya-monitoring' task tags are not supported.
+          See usage documentation at docs/user/AnsibleUsage.md
+
     - name: Task validation - ensure at least one action tag is used
       ansible.builtin.assert:
         that: '{{ ["install", "uninstall", "onboard", "cas-onboard", "offboard"] | intersect(ansible_run_tags) | count > 0 }}'
         msg: >
           Invalid tags: {{ ansible_run_tags | join(',') }}
 
-          You must define at least one action tag during execution. For the 'baseline', 'viya', 'cluster-logging',
-          'cluster-monitoring', or 'viya-monitoring' tasks either 'install' or 'uninstall'. For the 'multi-tenancy' task
-          either 'onboard', 'cas-onboard', or 'offboard'. See usage documentation at docs/user/AnsibleUsage.md and
-          docs/user/Multi-Tenancy.md
+          You must define at least one action tag during execution. For the 'baseline', or 'viya', tasks
+          either 'install' or 'uninstall'.
+          See usage documentation at docs/user/AnsibleUsage.md
 
     - name: Task validation - ensure the viya and multi-tenancy tasks are not run simultaneously
       ansible.builtin.assert:
@@ -52,9 +60,9 @@
         msg: >
           Invalid tags: {{ ansible_run_tags | join(',') }}
 
-          The 'baseline', 'cluster-logging', 'cluster-monitoring', and 'viya-monitoring' tasks require either the
+          The 'baseline' task requires either the
           'install' or 'uninstall' actions. See usage documentation at docs/user/AnsibleUsage.md
-      when: '["baseline", "cluster-logging", "cluster-monitoring", "viya-monitoring"] | intersect(ansible_run_tags) | count > 0'
+      when: '["baseline"] | intersect(ansible_run_tags) | count > 0'
 
     - name: Task validation - ensure the install and uninstall tasks are not run simultaneously
       ansible.builtin.assert:
