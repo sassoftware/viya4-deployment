@@ -11,6 +11,37 @@ patch: |-
     storageClassName: "{{ V4_CFG_STORAGECLASS }}"
 target:
   kind: PersistentVolumeClaim
+{% if PROVIDER == "aws" %}
+---
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: sas-ss-storageclass
+patch: |-
+  - op: add
+    path: /spec/volumeClaimTemplates/0/spec/storageClassName
+    value: {{ V4_CFG_STORAGECLASS }}
+target:
+  group: apps
+  kind: StatefulSet
+  annotationSelector: sas.com/component-name notin (sas-rabbitmq-server,sas-airflow,sas-risk-cirrus-search,sas-workload-orchestrator,sas-data-agent-server-colocated)
+---
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: sas-ebs-storageclass
+patch: |-
+  - op: add
+    path: /spec/volumeClaimTemplates/0/spec/storageClassName
+    value: io2-vol-mq
+  - op: replace
+    path: /spec/volumeClaimTemplates/0/spec/resources/requests/storage
+    value: 4Gi
+target:
+  group: apps
+  kind: StatefulSet
+  annotationSelector: sas.com/component-name in (sas-rabbitmq-server)
+{% else %}
 ---
 apiVersion: builtin
 kind: PatchTransformer
@@ -24,3 +55,4 @@ target:
   group: apps
   kind: StatefulSet
   annotationSelector: sas.com/component-name notin (sas-airflow,sas-risk-cirrus-search,sas-workload-orchestrator,sas-data-agent-server-colocated)
+{% endif %}
