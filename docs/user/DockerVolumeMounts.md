@@ -25,37 +25,6 @@ Ansible vars to docker volume mounts mappings. For full listing of config vars s
 | V4_CFG_LICENSE | `--volume <desired_path>:/config/v4_cfg_license `|
 | V4_CFG_CERTS | `--volume <desired_path>:/config/v4_cfg_certs `|
 
-## Monitoring and Logging
-
-| Ansible Var | Docker Mount |
-| :--- | ---: |
-| V4M_CERT | `--volume <desired_path>:/config/v4m_cert `|
-| V4M_KEY | `--volume <desired_path>:/config/v4m_key `|
-| V4M_CUSTOM_CONFIG_USER_DIR | `--volume <desired_path>:/config/v4m_custom_config_user_dir `|
-
-### Monitoring
-
-| Ansible Var | Docker Mount |
-| :--- | ---: |
-| V4M_PROMETHEUS_CERT | `--volume <desired_path>:/config/v4m_prometheus_cert `|
-| V4M_PROMETHEUS_KEY | `--volume <desired_path>:/config/v4m_prometheus_key `|
-| | | | | | | |
-| V4M_GRAFANA_CERT | `--volume <desired_path>:/config/v4m_grafana_cert `|
-| V4M_GRAFANA_KEY | `--volume <desired_path>:/config/v4m_grafana_key `|
-| | | | | | | |
-| V4M_ALERTMANAGER_CERT | `--volume <desired_path>:/config/v4m_alertmanager_cert `|
-| V4M_ALERTMANAGER_KEY | `--volume <desired_path>:/config/v4m_alertmanager_key `|
-
-### Logging
-
-| Ansible Var | Docker Mount |
-| :--- | ---: |
-| V4M_KIBANA_CERT | `--volume <desired_path>:/config/v4m_kibana_cert `|
-| V4M_KIBANA_KEY | `--volume <desired_path>:/config/v4m_kibana_key `|
-| | | | | | | |
-| V4M_ELASTICSEARCH_CERT | `--volume <desired_path>:/config/v4m_elasticsearch_cert `|
-| V4M_ELASTICSEARCH_KEY | `--volume <desired_path>:/config/v4m_elasticsearch_key `|
-
 ## TLS
 
 | Ansible Var | Docker Mount |

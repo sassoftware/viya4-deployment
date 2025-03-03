@@ -57,15 +57,12 @@ Actions are used to install or uninstall software. One must be set when running 
 
 ### Tasks
 
-Any number of tasks can be run at the same time. An action can run against a single task or all tasks.
+More than one task can be run at the same time. An action can run against a single task or all tasks.
 
 | Name | Description |
 | :--- | :--- |
 | baseline | Installs cluster level tooling needed for all SAS Viya platform deployments. These may include, cert-manager, ingress-nginx, nfs-client-provisioners and more. |
 | viya | Deploys the SAS Viya platform |
-| cluster-logging | Installs cluster-wide logging using the [viya4-monitoring-kubernetes](https://github.com/sassoftware/viya4-monitoring-kubernetes) project. |
-| cluster-monitoring | Installs cluster-wide monitoring using the [viya4-monitoring-kubernetes](https://github.com/sassoftware/viya4-monitoring-kubernetes) project. |
-| viya-monitoring | Installs viya namespace level monitoring using the [viya4-monitoring-kubernetes](https://github.com/sassoftware/viya4-monitoring-kubernetes) project. |
 
 ### Examples
 
@@ -79,10 +76,10 @@ Any number of tasks can be run at the same time. An action can run against a sin
     --volume $HOME/deployments/dev-cluster/dev-namespace/ansible-vars.yaml:/config/config \
     --volume $HOME/deployments/dev-cluster/terraform.tfstate:/config/tfstate \
     --volume $HOME/.ssh/id_rsa:/config/jump_svr_private_key \
-    viya4-deployment --tags "baseline,viya,cluster-logging,cluster-monitoring,viya-monitoring,install"
+    viya4-deployment --tags "baseline,viya,install"
   ```
 
-- I have a custom built cluster and want to baseline and deploy viya only
+- I have a custom built cluster and want to install baseline dependencies only
 
   ```bash
   docker run --rm \
@@ -92,7 +89,7 @@ Any number of tasks can be run at the same time. An action can run against a sin
     --volume $HOME/deployments/dev-cluster/.kube/config:/config/kubeconfig \
     --volume $HOME/deployments/dev-cluster/dev-namespace/ansible-vars.yaml:/config/config \
     --volume $HOME/.ssh/id_rsa:/config/jump_svr_private_key \
-    viya4-deployment --tags "baseline,viya,install"
+    viya4-deployment --tags "baseline,install"
   ```
 
 - I want to modify a customization under site-config for an existing viya deployment and reapply the manifest. I wish to continue to use the same deployment assets rather than pull the latest copy.
@@ -109,7 +106,7 @@ Any number of tasks can be run at the same time. An action can run against a sin
     viya4-deployment --tags "viya,install"
   ```
 
-- I have an existing cluster with viya installed and want to install another viya instance in a different namespace with monitoring
+- I have an existing cluster with viya installed and want to install another viya instance in a different namespace
 
   ```bash
   docker run --rm \
@@ -119,10 +116,10 @@ Any number of tasks can be run at the same time. An action can run against a sin
     --volume $HOME/deployments/dev-cluster/test-namespace/ansible-vars.yaml:/config/config \
     --volume $HOME/deployments/dev-cluster/.ssh/id_rsa:/config/jump_svr_private_key \
     --volume $HOME/deployments/dev-cluster/.kube/config:/config/kubeconfig \
-    viya4-deployment --tags "viya,viya-monitoring,install"
+    viya4-deployment --tags "viya,install"
   ```
 
-- I have a cluster with a single viya install as well as the monitoring and logging stack. I want to uninstall everything
+- I have a cluster with a single viya install. I want to uninstall everything
 
   ```bash
   docker run --rm \
@@ -131,5 +128,10 @@ Any number of tasks can be run at the same time. An action can run against a sin
     --volume $HOME/deployments:/data \
     --volume $HOME/deployments/dev-cluster/dev-namespace/ansible-vars.yaml:/config/config \
     --volume $HOME/deployments/dev-cluster/terraform.tfstate:/config/tfstate \
-    viya4-deployment --tags "baseline,viya,cluster-logging,cluster-monitoring,viya-monitoring,uninstall"
+    viya4-deployment --tags "baseline,viya,uninstall"
   ```
+
+### Monitoring and Logging
+
+To install SAS Viya Monitoring for Kubernetes, see the GitHub project https://github.com/sassoftware/viya4-monitoring-kubernetes for scripts and customization options 
+to deploy metric monitoring, alerts and log-message aggregation for SAS Viya.
