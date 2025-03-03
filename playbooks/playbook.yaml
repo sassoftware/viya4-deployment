@@ -50,12 +50,6 @@
       when: ('baseline' in ansible_run_tags) and ('install' in ansible_run_tags)
       tags:
         - baseline
-    - name: Monitoring role - cluster
-      include_role:
-        name: monitoring
-      tags:
-        - cluster-monitoring
-        - cluster-logging
     - name: Multi-tenancy role
       include_role:
         name: multi-tenancy
@@ -68,12 +62,6 @@
       tags:
         - viya
         - multi-tenancy
-    - name: Monitoring role - namespace
-      include_role:
-        name: monitoring
-        tasks_from: viya-monitoring
-      tags:
-        - viya-monitoring
     - name: baseline role uninstall # noqa: name[casing]
       include_role:
         name: baseline
