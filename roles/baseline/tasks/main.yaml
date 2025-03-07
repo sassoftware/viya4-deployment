@@ -71,6 +71,14 @@
   tags:
     - baseline
 
+- name: Include StorageClasses
+  include_tasks:
+    file: storage-classes.yaml
+  when:
+    - PROVIDER == "azure"
+  tags:
+    - baseline
+
 - name: Include cert manager
   include_tasks:
     file: cert-manager.yaml
