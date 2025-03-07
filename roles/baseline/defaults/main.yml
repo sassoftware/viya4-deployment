@@ -259,3 +259,45 @@ private_ingress:
 
 ## NIST Features
 V4_CFG_NIST_FEATURES_ENABLED: false
+
+## Azure StorageClass config
+CREATE_AZURE_RABBITMQ_STORAGE_CLASS: true
+AZURE_RABBITMQ_STORAGE_CLASS_NAME: managed-csi-premium-v2-mq
+AZURE_RABBITMQ_STORAGE_CLASS_SKU_NAME: PremiumV2_LRS
+AZURE_RABBITMQ_STORAGE_CLASS_DISKIOPS: 3000
+AZURE_RABBITMQ_STORAGE_CLASS_THROUGHPUT: 400
+AZURE_RABBITMQ_STORAGE_CLASS:
+  allowVolumeExpansion: true
+  apiVersion: storage.k8s.io/v1
+  kind: StorageClass
+  metadata:
+    name: "{{ AZURE_RABBITMQ_STORAGE_CLASS_NAME }}"
+  parameters:
+    skuname: "{{ AZURE_RABBITMQ_STORAGE_CLASS_SKU_NAME }}"
+    fstype: ext4
+    DiskIOPSReadWrite: "{{ AZURE_RABBITMQ_STORAGE_CLASS_DISKIOPS | int }}"
+    DiskMBpsReadWrite: "{{ AZURE_RABBITMQ_STORAGE_CLASS_THROUGHPUT | int }}"
+  provisioner: disk.csi.azure.com
+  reclaimPolicy: Delete
+  volumeBindingMode: WaitForFirstConsumer
+
+CREATE_AZURE_CRUNCHY_STORAGE_CLASS: true
+AZURE_CRUNCHY_STORAGE_CLASS_NAME: managed-csi-premium-v2-pg
+AZURE_CRUNCHY_STORAGE_CLASS_SKU_NAME: PremiumV2_LRS
+AZURE_CRUNCHY_STORAGE_CLASS_DISKIOPS: 5000
+AZURE_CRUNCHY_STORAGE_CLASS_THROUGHPUT: 400
+AZURE_CRUNCHY_STORAGE_CLASS_RECLAIM_POLICY: Delete
+AZURE_CRUNCHY_STORAGE_CLASS:
+  allowVolumeExpansion: true
+  apiVersion: storage.k8s.io/v1
+  kind: StorageClass
+  metadata:
+    name: "{{ AZURE_CRUNCHY_STORAGE_CLASS_NAME }}"
+  parameters:
+    skuname: "{{ AZURE_CRUNCHY_STORAGE_CLASS_SKU_NAME }}"
+    fstype: ext4
+    DiskIOPSReadWrite: "{{ AZURE_CRUNCHY_STORAGE_CLASS_DISKIOPS | int }}"
+    DiskMBpsReadWrite: "{{ AZURE_CRUNCHY_STORAGE_CLASS_THROUGHPUT | int }}"
+  provisioner: disk.csi.azure.com
+  reclaimPolicy: "{{ AZURE_CRUNCHY_STORAGE_CLASS_RECLAIM_POLICY }}"
+  volumeBindingMode: WaitForFirstConsumer
