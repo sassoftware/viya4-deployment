@@ -9,7 +9,7 @@ RUN apt-get update && apt-get upgrade -y \
   && update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
 
 FROM baseline AS tool_builder
-ARG kubectl_version=1.30.6
+ARG kubectl_version=1.30.10
 
 WORKDIR /build
 
@@ -24,9 +24,9 @@ RUN apk add --no-cache git build-base containers-common bash btrfs-progs-dev gli
 
 # Installation
 FROM baseline
-ARG helm_version=3.16.2
-ARG aws_cli_version=2.17.58
-ARG gcp_cli_version=496.0.0-0
+ARG helm_version=3.17.1
+ARG aws_cli_version=2.24.16
+ARG gcp_cli_version=513.0.0-0
 
 # Add extra packages
 RUN apt-get update && apt-get install --no-install-recommends -y gzip wget git jq ssh sshpass rsync \
