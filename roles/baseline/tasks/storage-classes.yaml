@@ -1,0 +1,55 @@
+- name: Create Azure storage class for RabbitMQ
+  kubernetes.core.k8s:
+    api_version: v1
+    definition: "{{ AZURE_RABBITMQ_STORAGE_CLASS }}"
+    wait: true
+    wait_timeout: 600
+    state: present
+    kubeconfig: "{{ KUBECONFIG }}"
+  when:
+    - PROVIDER == "azure"
+    - CREATE_AZURE_RABBITMQ_STORAGE_CLASS
+  tags:
+    - install
+
+- name: Create Azure storage class for Postgres
+  kubernetes.core.k8s:
+    api_version: v1
+    definition: "{{ AZURE_CRUNCHY_STORAGE_CLASS }}"
+    wait: true
+    wait_timeout: 600
+    state: present
+    kubeconfig: "{{ KUBECONFIG }}"
+  when:
+    - PROVIDER == "azure"
+    - CREATE_AZURE_CRUNCHY_STORAGE_CLASS
+  tags:
+    - install
+
+- name: Remove Azure storage class for RabbitMQ
+  kubernetes.core.k8s:
+    api_version: v1
+    definition: "{{ AZURE_RABBITMQ_STORAGE_CLASS }}"
+    wait: true
+    wait_timeout: 600
+    state: absent
+    kubeconfig: "{{ KUBECONFIG }}"
+  when:
+    - PROVIDER == "azure"
+    - CREATE_AZURE_RABBITMQ_STORAGE_CLASS
+  tags:
+    - uninstall
+
+- name: Remove Azure storage class for Postgres
+  kubernetes.core.k8s:
+    api_version: v1
+    definition: "{{ AZURE_CRUNCHY_STORAGE_CLASS }}"
+    wait: true
+    wait_timeout: 600
+    state: absent
+    kubeconfig: "{{ KUBECONFIG }}"
+  when:
+    - PROVIDER == "azure"
+    - CREATE_AZURE_CRUNCHY_STORAGE_CLASS
+  tags:
+    - uninstall
