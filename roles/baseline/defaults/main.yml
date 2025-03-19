@@ -199,6 +199,17 @@ EBS_CSI_DRIVER_CHART_URL: https://kubernetes-sigs.github.io/aws-ebs-csi-driver
 EBS_CSI_DRIVER_CHART_VERSION: 2.38.1
 EBS_CSI_DRIVER_ACCOUNT: null
 EBS_CSI_DRIVER_LOCATION: us-east-1
+EBS_CSI_RABBITMQ_STORAGE_CLASS_NAME: io2-vol-mq
+EBS_CSI_RABBITMQ_STORAGE_CLASS_VOLUME_TYPE: io2
+EBS_CSI_RABBITMQ_STORAGE_CLASS_IOPSPERGB: 1250
+EBS_CSI_RABBITMQ_STORAGE_CLASS_THROUGHPUT: 400
+
+EBS_CSI_CRUNCHY_STORAGE_CLASS_NAME: io2-vol-pg
+EBS_CSI_CRUNCHY_STORAGE_CLASS_VOLUME_TYPE: io2
+EBS_CSI_CRUNCHY_STORAGE_CLASS_IOPSPERGB: 40
+EBS_CSI_CRUNCHY_STORAGE_CLASS_THROUGHPUT: 400
+EBS_CSI_CRUNCHY_STORAGE_CLASS_RECLAIM_POLICY: Delete
+
 EBS_CSI_DRIVER_CONFIG:
   controller:
     k8sTagClusterId: "{{ CLUSTER_NAME }}"
@@ -208,6 +219,25 @@ EBS_CSI_DRIVER_CONFIG:
       name: ebs-csi-controller-sa
       annotations:
         eks.amazonaws.com/role-arn: "{{ EBS_CSI_DRIVER_ACCOUNT }}"
+  storageClasses:
+    - name: "{{ EBS_CSI_RABBITMQ_STORAGE_CLASS_NAME }}"
+      parameters:
+        type: "{{ EBS_CSI_RABBITMQ_STORAGE_CLASS_VOLUME_TYPE }}"
+        fstype: ext4
+        iopsPerGB: "{{ EBS_CSI_RABBITMQ_STORAGE_CLASS_IOPSPERGB | int }}"
+        throughput: "{{ EBS_CSI_RABBITMQ_STORAGE_CLASS_THROUGHPUT | int }}"
+      reclaimPolicy: Delete
+      volumeBindingMode: WaitForFirstConsumer
+      allowVolumeExpansion: true
+    - name: "{{ EBS_CSI_CRUNCHY_STORAGE_CLASS_NAME }}"
+      parameters:
+        type: "{{ EBS_CSI_CRUNCHY_STORAGE_CLASS_VOLUME_TYPE }}"
+        fstype: ext4
+        iopsPerGB: "{{ EBS_CSI_CRUNCHY_STORAGE_CLASS_IOPSPERGB | int }}"
+        throughput: "{{ EBS_CSI_CRUNCHY_STORAGE_CLASS_THROUGHPUT | int }}"
+      reclaimPolicy: "{{ EBS_CSI_CRUNCHY_STORAGE_CLASS_RECLAIM_POLICY }}"
+      volumeBindingMode: WaitForFirstConsumer
+      allowVolumeExpansion: true
 
 private_ingress:
   aws:
@@ -229,3 +259,45 @@ private_ingress:
 
 ## NIST Features
 V4_CFG_NIST_FEATURES_ENABLED: false
+
+## Azure StorageClass config
+CREATE_AZURE_RABBITMQ_STORAGE_CLASS: true
+AZURE_RABBITMQ_STORAGE_CLASS_NAME: managed-csi-premium-v2-mq
+AZURE_RABBITMQ_STORAGE_CLASS_SKU_NAME: PremiumV2_LRS
+AZURE_RABBITMQ_STORAGE_CLASS_DISKIOPS: 3000
+AZURE_RABBITMQ_STORAGE_CLASS_THROUGHPUT: 400
+AZURE_RABBITMQ_STORAGE_CLASS:
+  allowVolumeExpansion: true
+  apiVersion: storage.k8s.io/v1
+  kind: StorageClass
+  metadata:
+    name: "{{ AZURE_RABBITMQ_STORAGE_CLASS_NAME }}"
+  parameters:
+    skuname: "{{ AZURE_RABBITMQ_STORAGE_CLASS_SKU_NAME }}"
+    fstype: ext4
+    DiskIOPSReadWrite: "{{ AZURE_RABBITMQ_STORAGE_CLASS_DISKIOPS | int }}"
+    DiskMBpsReadWrite: "{{ AZURE_RABBITMQ_STORAGE_CLASS_THROUGHPUT | int }}"
+  provisioner: disk.csi.azure.com
+  reclaimPolicy: Delete
+  volumeBindingMode: WaitForFirstConsumer
+
+CREATE_AZURE_CRUNCHY_STORAGE_CLASS: true
+AZURE_CRUNCHY_STORAGE_CLASS_NAME: managed-csi-premium-v2-pg
+AZURE_CRUNCHY_STORAGE_CLASS_SKU_NAME: PremiumV2_LRS
+AZURE_CRUNCHY_STORAGE_CLASS_DISKIOPS: 5000
+AZURE_CRUNCHY_STORAGE_CLASS_THROUGHPUT: 400
+AZURE_CRUNCHY_STORAGE_CLASS_RECLAIM_POLICY: Delete
+AZURE_CRUNCHY_STORAGE_CLASS:
+  allowVolumeExpansion: true
+  apiVersion: storage.k8s.io/v1
+  kind: StorageClass
+  metadata:
+    name: "{{ AZURE_CRUNCHY_STORAGE_CLASS_NAME }}"
+  parameters:
+    skuname: "{{ AZURE_CRUNCHY_STORAGE_CLASS_SKU_NAME }}"
+    fstype: ext4
+    DiskIOPSReadWrite: "{{ AZURE_CRUNCHY_STORAGE_CLASS_DISKIOPS | int }}"
+    DiskMBpsReadWrite: "{{ AZURE_CRUNCHY_STORAGE_CLASS_THROUGHPUT | int }}"
+  provisioner: disk.csi.azure.com
+  reclaimPolicy: "{{ AZURE_CRUNCHY_STORAGE_CLASS_RECLAIM_POLICY }}"
+  volumeBindingMode: WaitForFirstConsumer

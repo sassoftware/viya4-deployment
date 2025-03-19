@@ -206,10 +206,12 @@
           block:
             - name: Postgres instance - save default role map values
               set_fact:
-                default_postgres_storage_class: "{{ settings.postgres_storage_class | default('pg-storage', true) }}"
                 default_postgres_pvc_access_mode: "{{ settings.postgres_pvc_access_mode | default('ReadWriteOnce', true) }}"
-                default_backrest_storage_class: "{{ settings.backrest_storage_class | default('pg-storage', true) }}"
                 default_backrest_pvc_access_mode: "{{ settings.backrest_pvc_access_mode | default('ReadWriteOnce', true) }}"
+            - name: Postgres instance - save default role map values
+              set_fact:
+                default_postgres_storage_class: "{{ settings.postgres_storage_class | default(V4_CFG_CRUNCHY_STORAGECLASS, true) }}"
+                default_backrest_storage_class: "{{ settings.backrest_storage_class | default(V4_CFG_CRUNCHY_STORAGECLASS, true) }}"
             - name: Postgres instance - Create deployment namespace
               kubernetes.core.k8s:
                 kubeconfig: "{{ KUBECONFIG }}"
@@ -240,10 +242,12 @@
           block:
             - name: Postgres instance - save cds role map values
               set_fact:
-                cds_postgres_storage_class: "{{ settings.postgres_storage_class | default('pg-storage', true) }}"
                 cds_postgres_pvc_access_mode: "{{ settings.postgres_pvc_access_mode | default('ReadWriteOnce', true) }}"
-                cds_backrest_storage_class: "{{ settings.backrest_storage_class | default('pg-storage', true) }}"
                 cds_backrest_pvc_access_mode: "{{ settings.backrest_pvc_access_mode | default('ReadWriteOnce', true) }}"
+            - name: Postgres instance - save cds role map values
+              set_fact:
+                cds_postgres_storage_class: "{{ settings.postgres_storage_class | default(V4_CFG_CRUNCHY_STORAGECLASS, true) }}"
+                cds_backrest_storage_class: "{{ settings.backrest_storage_class | default(V4_CFG_CRUNCHY_STORAGECLASS, true) }}"
             - name: Postgres instance - Update ConfigMap
               kubernetes.core.k8s:
                 kubeconfig: "{{ KUBECONFIG }}"

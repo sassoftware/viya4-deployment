@@ -64,6 +64,9 @@
     - update
 
 - name: Deploy nfs-subdir-external-provisioner-pg-storage
+  when:
+    - PROVIDER != "aws"
+    - PROVIDER != "azure"
   kubernetes.core.helm:
     name: "{{ PG_NFS_CLIENT_NAME }}"
     namespace: "{{ PG_NFS_CLIENT_NAMESPACE }}"
@@ -89,6 +92,9 @@
     - uninstall
 
 - name: Remove nfs-subdir-external-provisioner-pg-storage
+  when:
+    - PROVIDER != "aws"
+    - PROVIDER != "azure"
   kubernetes.core.helm:
     name: "{{ PG_NFS_CLIENT_NAME }}"
     namespace: "{{ NFS_CLIENT_NAMESPACE }}"

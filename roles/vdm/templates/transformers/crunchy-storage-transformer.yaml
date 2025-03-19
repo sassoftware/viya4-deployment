@@ -32,12 +32,12 @@ patch: |-
   # This value cannot be changed after the initial deployment
   - op: replace
     path: /spec/instances/0/dataVolumeClaimSpec/storageClassName
-    value: {{ default_postgres_storage_class if (default_postgres_storage_class is defined) else settings.postgres_storage_class|default('pg-storage', true) }}
+    value: {{ default_postgres_storage_class if (default_postgres_storage_class is defined) else settings.postgres_storage_class|default(V4_CFG_CRUNCHY_STORAGECLASS, true) }}
 
   # This value cannot be changed after the initial deployment
   - op: replace
     path: /spec/backups/pgbackrest/repos/0/volume/volumeClaimSpec/storageClassName
-    value: {{ default_backrest_storage_class if (default_backrest_storage_class is defined) else settings.backrest_storage_class|default('pg-storage', true) }}
+    value: {{ default_backrest_storage_class if (default_backrest_storage_class is defined) else settings.backrest_storage_class|default(V4_CFG_CRUNCHY_STORAGECLASS, true) }}
 
 {% elif role == "cds-postgres" %}
   # This value cannot be changed after the initial deployment
@@ -55,12 +55,12 @@ patch: |-
   # This value cannot be changed after the initial deployment
   - op: replace
     path: /spec/instances/0/dataVolumeClaimSpec/storageClassName
-    value: {{ cds_postgres_storage_class if (cds_postgres_storage_class is defined) else settings.postgres_storage_class|default('pg-storage', true) }}
+    value: {{ cds_postgres_storage_class if (cds_postgres_storage_class is defined) else settings.postgres_storage_class|default(V4_CFG_CRUNCHY_STORAGECLASS, true) }}
 
   # This value cannot be changed after the initial deployment
   - op: replace
     path: /spec/backups/pgbackrest/repos/0/volume/volumeClaimSpec/storageClassName
-    value: {{ cds_backrest_storage_class if (cds_backrest_storage_class is defined) else settings.backrest_storage_class|default('pg-storage', true) }}
+    value: {{ cds_backrest_storage_class if (cds_backrest_storage_class is defined) else settings.backrest_storage_class|default(V4_CFG_CRUNCHY_STORAGECLASS, true) }}
 
 {% endif %}
 target:

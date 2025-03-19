@@ -32,6 +32,8 @@ V4_CFG_RWX_FILESTORE_ASTORES_PATH: "{{ V4_CFG_RWX_FILESTORE_PATH | replace('/$',
 V4_CFG_RWX_FILESTORE_BIN_PATH: "{{ V4_CFG_RWX_FILESTORE_PATH | replace('/$', '') }}/{{ NAMESPACE }}/bin"
 
 V4_CFG_STORAGECLASS: sas
+V4_CFG_RABBITMQ_STORAGECLASS: "{{ 'io2-vol-mq' if PROVIDER == 'aws' else ('managed-csi-premium-v2-mq' if PROVIDER == 'azure' else V4_CFG_STORAGECLASS) }}"
+V4_CFG_CRUNCHY_STORAGECLASS: "{{ 'io2-vol-pg' if PROVIDER == 'aws' else ('managed-csi-premium-v2-pg' if PROVIDER == 'azure' else 'pg-storage') }}"
 V4_CFG_MANAGE_STORAGE: true
 
 V4_CFG_DEPLOYMENT_URL_PREFIX: null

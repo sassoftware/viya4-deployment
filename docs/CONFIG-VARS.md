@@ -7,7 +7,10 @@ Supported configuration variables are listed in the table below.  All variables 
   - [Cloud](#cloud)
     - [Authentication](#authentication)
   - [Jump Server](#jump-server)
-  - [Storage](#storage)
+  - [Storage for AWS](#storage-for-aws)
+  - [Storage for Azure](#storage-for-azure)
+  - [Storage for Google Cloud](#storage-for-google-cloud)
+  - [NFS Storage](#nfs-storage)
     - [RWX Filestore](#rwx-filestore)
     - [Azure](#azure)
     - [AWS](#aws)
@@ -17,9 +20,6 @@ Supported configuration variables are listed in the table below.  All variables 
   - [Container Registry Access](#container-registry-access)
   - [Ingress](#ingress)
   - [Load Balancer](#load-balancer)
-  - [Monitoring and Logging](#monitoring-and-logging)
-    - [Monitoring](#monitoring)
-    - [Logging](#logging)
   - [TLS](#tls)
   - [PostgreSQL](#postgresql)
   - [CAS](#cas)
@@ -66,7 +66,7 @@ Supported configuration variables are listed in the table below.  All variables 
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | PROVIDER | Cloud provider | string | | true | [aws,azure,gcp,custom] | baseline, viya |
 | CLUSTER_NAME | Name of the Kubernetes cluster | string | | true | | baseline, viya |
-| NAMESPACE | Kubernetes namespace in which to deploy | string | | true | | baseline, viya, viya-monitoring |
+| NAMESPACE | Kubernetes namespace in which to deploy | string | | true | | baseline, viya |
 
 ### Authentication
 
@@ -76,6 +76,7 @@ Supported configuration variables are listed in the table below.  All variables 
 | V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH | Full path to service account credentials file | string | | false | See [Ansible Cloud Authentication](user/AnsibleCloudAuthentication.md) for more information. | viya |
 
 ## Jump Server
+
 Viya4-deployment uses the jump server to interact with the RWX filestore, which must be pre-mounted to `JUMP_SVR_RWX_FILESTORE_PATH` when `V4_CFG_MANAGE_STORAGE` is set to `true`.
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
@@ -86,7 +87,25 @@ Viya4-deployment uses the jump server to interact with the RWX filestore, which 
 | JUMP_SVR_RWX_FILESTORE_PATH | Path on the jump server to the NFS mount | string | /viya-share | false | | viya |
 
 ## Storage
+
+### Storage for AWS
+
+When `V4_CFG_MANAGE_STORAGE` is set to `true`, viya4-deployment uses the [EBS CSI driver](#ebs-csi-driver) to create two elastic block storage based storage classes with the default names of `io2-vol-mq` and `io2-vol-pg`. The volume type for both storage classes defaults to `io2`. For EKS clusters, RabbitMQ makes PVC requests to create block storage persistent volumes using the `io2-vol-mq` storage class while Crunchy Postgres makes PVC requests to create block storage persistent volumes using the `io2-vol-pg` storage class. Viya4-deployment also creates the `sas` storage class using the nfs-subdir-external-provisioner Helm chart. If a jump server is used, viya4-deployment uses that server to create the folders for the `astores`, `bin`, `data` and `homes` RWX Filestore NFS paths that are outlined below in the [RWX Filestore](#rwx-filestore) section.
+
+### Storage for Azure
+
+By default, viya4-deployment uses the [Azure managed disks CSI driver](#azure-managed-disk-csi-driver) to create two elastic block storage based storage classes with the default names of `managed-csi-premium-v2-mq` and `managed-csi-premium-v2-pg`. The disk SKU for both storage classes defaults to `PremiumV2_LRS`. For AKS clusters, RabbitMQ makes PVC requests to create block storage persistent volumes using the `managed-csi-premium-v2-mq` storage class while Crunchy Postgres makes PVC requests to create block storage persistent volumes using the `managed-csi-premium-v2-pg` storage class. To use a different StorageClass for RabbitMQ, set the `V4_CFG_RABBITMQ_STORAGECLASS` property to the name of the StorageClass to use. To use a different StorageClass for Crunchy Postgres, set the `V4_CFG_CRUNCHY_STORAGECLASS` property to the name of the StorageClass to use.
+
+**NOTE**: The Azure managed disk CSI Driver can only be included at AKS cluster creation time. It is included in all AKS clusters by default, and any AKS clusters created with viya4-iac-azure will have the driver installed. If you did not use the viya4-iac-azure project to create your AKS cluster, ensure that you have enabled the Azure disk CSI driver prior to using this project or disable the creation of the StorageClasses.
+
+viya4-deployment also creates the `sas` storage class using the nfs-subdir-external-provisioner Helm chart. If a jump server is used, viya4-deployment uses that server to create the folders for the `astores`, `bin`, `data` and `homes` RWX Filestore NFS paths that are outlined below in the [RWX Filestore](#rwx-filestore) section.
+
+### Storage for Google Cloud
 When `V4_CFG_MANAGE_STORAGE` is set to `true`, viya4-deployment creates the `sas` and `pg-storage` storage classes using the nfs-subdir-external-provisioner Helm chart. If a jump server is used, viya4-deployment uses that server to create the folders for the `astores`, `bin`, `data` and `homes` RWX Filestore NFS paths that are outlined below in the [RWX Filestore](#rwx-filestore) section.
+
+### NFS Storage
+
+When `V4_CFG_MANAGE_STORAGE` is set to `true`, viya4-deployment creates NFS-based storage classes using the nfs-subdir-external-provisioner Helm chart.
 
 When `V4_CFG_MANAGE_STORAGE` is set to `false`, viya4-deployment does not create the `sas` or `pg-storage` storage classes for you. In addition, viya4-deployment does not create or manage the RWX Filestore NFS paths. Before you run the SAS Viya deployment, you must set the values for `V4_CFG_RWX_FILESTORE_DATA_PATH` and `V4_CFG_RWX_FILESTORE_HOMES_PATH` to specify existing NFS folder locations. The viya4-deployment user can create the required NFS folders from the jump server before starting the deployment. Recommended attribute settings for each folder are as follows:
 - **filemode**: `0777`
@@ -98,7 +117,7 @@ When `V4_CFG_MANAGE_STORAGE` is set to `false`, viya4-deployment does not create
 | V4_CFG_MANAGE_STORAGE | Whether viya4-deployment should manage the StorageClass | bool | true | false | Set to false if you want to manage the StorageClass yourself. | all |
 | V4_CFG_STORAGECLASS | StorageClass name | string | "sas" | false | When V4_CFG_MANAGE_STORAGE is false, set to the name of your preexisting StorageClass that supports ReadWriteMany. | baseline, viya |
 
-### RWX Filestore
+#### RWX Filestore
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -107,15 +126,15 @@ When `V4_CFG_MANAGE_STORAGE` is set to `false`, viya4-deployment does not create
 | V4_CFG_RWX_FILESTORE_DATA_PATH | NFS path to data directory | string | <V4_CFG_RWX_FILESTORE_PATH>/\<NAMESPACE>/data | false | | viya |
 | V4_CFG_RWX_FILESTORE_HOMES_PATH | NFS path to homes directory | string | <V4_CFG_RWX_FILESTORE_PATH>/\<NAMESPACE>/homes | false | | viya |
 
-### Azure
+#### Azure
 
-When V4_CFG_MANAGE_STORAGE is set to `true`, the `sas` and `pg-storage` storage classes are created (Azure NetApp or NFS).
+When V4_CFG_MANAGE_STORAGE is set to `true`, the `sas` storage class is created (Azure NetApp or NFS).
 
-### AWS
+#### AWS
 
-When V4_CFG_MANAGE_STORAGE is set to `true`, the efs-provisioner is deployed, the `sas` and `pg-storage` storage classes are created (EFS or NFS).
+When V4_CFG_MANAGE_STORAGE is set to `true`, the efs-provisioner is deployed, and the `sas` storage class is created (EFS or NFS).
 
-### Google Cloud
+#### Google Cloud
 
 When V4_CFG_MANAGE_STORAGE is set to `true`, the `sas` and `pg-storage` storage classes are created (Google Filestore or NFS).
 
@@ -159,67 +178,13 @@ When V4_CFG_MANAGE_STORAGE is set to `true`, the `sas` and `pg-storage` storage 
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_AWS_LB_SUBNETS | The AWS subnets and by association the AWS availability zones to deploy the load balancing service to. This variable sets an ingress-nginx annotation which interacts with the [Cloud Controller Manager](https://kubernetes.io/docs/tasks/administer-cluster/developing-cloud-controller-manager/) to set the subnets used by the AWS load balancer. Specifying a subnet value or values for this variable takes precedence over the Subnet Discovery method described in [AWS docs](https://docs.aws.amazon.com/eks/latest/userguide/network-load-balancing.html) that relies on the tags applied to AWS subnets documented in scenario 2 of this [table.](https://github.com/sassoftware/viya4-iac-aws/blob/main/docs/user/BYOnetwork.md#supported-scenarios-and-requirements-for-using-existing-network-resources) This variable can be set with [BYO network scenarios 0-3](https://github.com/sassoftware/viya4-iac-aws/blob/main/docs/user/BYOnetwork.md#supported-scenarios-and-requirements-for-using-existing-network-resources). | string | | false | The value is either a comma separated list of subnet IDs, or a comma separated list of subnet names. Does not affect the subnets used for load balancers enabled with  `V4_CFG_CAS_ENABLE_LOADBALANCER`, `V4_CFG_CONNECT_ENABLE_LOADBALANCER`, or `V4_CFG_CONSUL_ENABLE_LOADBALANCER`. | baseline |
 
-
-## Monitoring and Logging
-
-| Name | Description | Type | Default | Required | Notes | Tasks |
-| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4M_VERSION | Branch or tag of [viya4-monitoring-kubernetes](https://github.com/sassoftware/viya4-monitoring-kubernetes) | string | stable | false | | cluster-logging, cluster-monitoring, viya-monitoring |
-| V4M_BASE_DOMAIN | Base domain in which subdomains for search, dashboards, Grafana, Prometheus, and Alertmanager are created | string | | false | This parameter or the per-service FQDNs must be set. | cluster-logging, cluster-monitoring, viya-monitoring |
-| V4M_CERT | Path to TLS certificate to use for all monitoring/logging services | string | | false | As an alternative, you can set the per-service certificate. | cluster-logging, cluster-monitoring, viya-monitoring |
-| V4M_KEY | Path to TLS key to use for all monitoring/logging services | string | | false | As an alternative, you can set the per-service certificate. | cluster-logging, cluster-monitoring, viya-monitoring |
-| V4M_NODE_PLACEMENT_ENABLE | Whether to enable workload node placement for viya4-monitoring-kubernetes stack | bool | false | false | | cluster-logging, cluster-monitoring, viya-monitoring |
-| V4M_STORAGECLASS | StorageClass name | string | v4m | false | When V4_CFG_MANAGE_STORAGE is false, set to the name of your pre-existing StorageClass that supports ReadWriteOnce. | cluster-logging, cluster-monitoring, viya-monitoring |
-| V4M_ROUTING | Which routing type to use for viya4-monitoring-kubernetes applications | string | host-based | false | Supported values: [`host-based`, `path-based`] For host-based routing, the application name is part of the host name itself `https://dashboards.host.cluster.example.com/` For path-based routing, the host name is fixed and the application name is appended as a path on the URL `https://host.cluster.example.com/dashboards` | cluster-logging, cluster-monitoring |
-| V4M_CUSTOM_CONFIG_USER_DIR | Path to the viya4-monitoring-kubernetes top-level `USER_DIR` folder on the local file system. The `USER_DIR` folder can contain a top-level `user.env` file and `logging` and `monitoring` folders where your logging and monitoring `user.env` and customization yaml files are located. **NOTE**: viya4-monitoring does not validate `user.env` or yaml file content pointed to by this variable. It is recommended to use file content that has been verified ahead of time. | string | null | false | The following V4M configuration variables are ignored by viya4-monitoring when `V4M_CUSTOM_CONFIG_USER_DIR` is set: [`V4M_ROUTING`, `V4M_BASE_DOMAIN`, all `V4M_*_FQDN` variables,  all `V4M_*_PASSWORD` variables] [Additional documentation](https://documentation.sas.com/?cdcId=obsrvcdc&cdcVersion=v_001&docsetId=obsrvdply&docsetTarget=n0wgd3ju667sa9n1adnxs7hnsqt6.htm) describing the `USER_DIR` folder is available.| cluster-logging, cluster-monitoring |
-
-#### Open Source Kubernetes
-
-When deploying `cluster-logging` or `cluster-monitoring` applications to kubernetes cluster infrastructure provisioned with the [Open Source Kubernetes viya4-iac-k8s](https://github.com/sassoftware/viya4-iac-k8s) project, you must explicitly set the value for `V4M_STORAGECLASS` to a pre-existing Storage Class (for example: `local-storage`)  regardless of the value set for `V4_CFG_MANAGE_STORAGE`. While other storage classes can be used, the `local-storage` class is **recommended** for the Viya Monitoring and Loggging tools.
-
-### Monitoring
-
-| Name | Description | Type | Default | Required | Notes | Tasks |
-| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4M_MONITORING_NAMESPACE | Namespace for the monitoring resources | string | monitoring | false | | cluster-monitoring |
-| V4M_PROMETHEUS_FQDN | FQDN to use for Prometheus ingress | string | prometheus.<V4M_BASE_DOMAIN> | false | | cluster-monitoring |
-| V4M_PROMETHEUS_CERT | Path to TLS certificate to use for Prometheus ingress | string |<V4M_CERT> | false | If neither this variable nor V4M_CERT is set, a self-signed certificate is used. | cluster-monitoring |
-| V4M_PROMETHEUS_KEY | Path to TLS key to use for Prometheus ingress | string | <V4M_KEY> | false | If neither this variable nor V4M_KEY is set, a self-signed certificate is used. | cluster-monitoring |
-| | | | | | | |
-| V4M_GRAFANA_FQDN | FQDN to use for Grafana ingress | string | grafana.<V4M_BASE_DOMAIN> | false | | cluster-monitoring |
-| V4M_GRAFANA_CERT | Path to TLS certificate to use for Grafana ingress | string |<V4M_CERT> | false | If neither this variable nor V4M_CERT is set, a self-signed certificate is used. | cluster-monitoring |
-| V4M_GRAFANA_KEY | Path to TLS key to use for Grafana ingress | string | <V4M_KEY> | false | If neither this variable nor V4M_KEY is set, a self-signed certificate is used. | cluster-monitoring |
-| V4M_GRAFANA_PASSWORD | Grafana administrator password | string | randomly generated | false | If not provided, a random password is generated and written to the log output. | cluster-monitoring |
-| | | | | | | |
-| V4M_ALERTMANAGER_FQDN | FQDN to use for Alertmanager ingress | string | alertmanager.<V4M_BASE_DOMAIN> | false | | cluster-monitoring |
-| V4M_ALERTMANAGER_CERT | Path to TLS certificate to use for Alertmanager ingress | string |<V4M_CERT> | false | If neither this variable nor V4M_CERT is set, a self-signed certificate is used. | cluster-monitoring |
-| V4M_ALERTMANAGER_KEY | Path to TLS key to use for Alertmanager ingress | string | <V4M_KEY> | false | If neither this variable nor V4M_KEY is set, a self-signed certificate is used. | cluster-monitoring |
-
-### Logging
-
-| Name | Description | Type | Default | Required | Notes | Tasks |
-| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4M_LOGGING_NAMESPACE | Namespace for the logging resources | string | logging | false | | cluster-logging |
-| V4M_KIBANA_FQDN | FQDN to use for OpenSearch Dashboards ingress | string | dashboards.<V4M_BASE_DOMAIN> | false | | cluster-logging |
-| V4M_KIBANA_CERT | Path to TLS certificate to use for OpenSearch Dashboards ingress | string |<V4M_CERT> | false | If neither this variable nor V4M_CERT is set, a self-signed certificate is used. | cluster-logging |
-| V4M_KIBANA_KEY | Path to TLS key to use for OpenSearch Dashboards ingress | string | <V4M_KEY> | false | If neither this variable nor V4M_KEY is set, a self-signed certificate is used. | cluster-logging |
-| V4M_KIBANA_PASSWORD | OpenSearch Dashboards administrator password | string | randomly generated | false | If not provided, a random password is generated and written to the log output. | cluster-logging |
-| V4M_KIBANA_LOGADM_PASSWORD | OpenSearch Dashboards logadm user's password | string | randomly generated | false | If not provided, and if V4M_KIBANA_PASSWORD is not set, a random password is generated and written to the log output. | cluster-logging |
-| V4M_KIBANASERVER_PASSWORD | OpenSearch Dashboards server password | string | randomly generated | false | If not provided, a random password is generated and written to the log output | cluster-logging |
-| V4M_LOGCOLLECTOR_PASSWORD | Logcollector password | string | randomly generated | false | If not provided, a random password is generated and written to the log output | cluster-logging |
-| V4M_METRICGETTER_PASSWORD | Metricgetter password | string | randomly generated | false | If not provided, a random password is generated and written to the log output | cluster-logging |
-| | | | | | | |
-| V4M_ELASTICSEARCH_FQDN | FQDN to use for OpenSearch ingress  | string | search.<V4M_BASE_DOMAIN> | false | | cluster-logging |
-| V4M_ELASTICSEARCH_CERT | Path to TLS certificate to use for OpenSearch ingress | string |<V4M_CERT> | false | If both this and V4M_CERT are not set a self-signed certificate is used. | cluster-logging |
-| V4M_ELASTICSEARCH_KEY | Path to TLS key to use for OpenSearch ingress | string | <V4M_KEY> | false | If neither this variable nor V4M_KEY is set, a self-signed certificate is used. | cluster-logging |
-
 ## TLS
 
 The SAS Viya platform supports two certificate generators: cert-manager and openssl.
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_TLS_GENERATOR | Which SAS-provided tool to use for certificate generation | string | openssl | false | Supported values: [`cert-manager`,`openssl`]. If set to `cert-manager`, `cert-manager` will be installed during baselining. | baseline, viya, cluster-logging, cluster-monitoring |
+| V4_CFG_TLS_GENERATOR | Which SAS-provided tool to use for certificate generation | string | openssl | false | Supported values: [`cert-manager`,`openssl`]. If set to `cert-manager`, `cert-manager` will be installed during baselining. | baseline, viya |
 | V4_CFG_TLS_MODE | Which TLS mode to configure | string | front-door | false | Supported values: [`full-stack`,`front-door`,`disabled.`] When deploying full-stack you must set V4_CFG_TLS_TRUSTED_CA_CERTS to trust external postgres server ca. | all |
 | V4_CFG_TLS_CERT | Path to ingress certificate file | string | | false | If specified, used instead of cert-manager issued certificates | viya |
 | V4_CFG_TLS_KEY | Path to ingress key file | string | | false | Required when V4_CFG_TLS_CERT is specified | viya |
@@ -398,10 +363,9 @@ Cluster-autoscaler is currently only used for AWS EKS clusters. Google GKE and A
 
 If you used [viya4-iac-aws:5.6.0](https://github.com/sassoftware/viya4-iac-aws/releases) or newer to create your infrastructure, a cluster autoscaler account should have been created for you with a policy that is compatible with both our default versions for the `CLUSTER_AUTOSCALER_CHART_VERSION` variable. If you choose an alternative version ensure that your autoscaler account has a policy that matches the recommendation from the [kubernetes/autoscaler documentation](https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/cloudprovider/aws/README.md#iam-policy). This note is only applicable for EKS clusters.
 
-
 ### EBS CSI Driver
 
-The EBS CSI driver is currently only used for kubernetes v1.23 or later AWS EKS clusters.
+The EBS CSI driver is only used for kubernetes v1.23 or later AWS EKS clusters.
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -411,6 +375,37 @@ The EBS CSI driver is currently only used for kubernetes v1.23 or later AWS EKS 
 | EBS_CSI_DRIVER_CONFIG | aws ebs csi driver helm values | string | see [here](../roles/baseline/defaults/main.yml) | false | | baseline |
 | EBS_CSI_DRIVER_ACCOUNT | cluster autoscaler aws role arn | string | | false | Required to enable the aws ebs csi driver on AWS | baseline |
 | EBS_CSI_DRIVER_LOCATION | aws region where kubernetes cluster resides | string | us-east-1 | false | | baseline |
+|EBS_CSI_RABBITMQ_STORAGE_CLASS_NAME| The EBS CSI storage class name for RabbitMQ | string | io2-vol-mq | false | | baseline |
+|EBS_CSI_RABBITMQ_STORAGE_CLASS_VOLUME_TYPE| The EBS CSI volume type to use for RabbitMQ persistent volumes| string | io2 | false | Supported values: [`io2`, `io1`, `gp3`]  | baseline |
+|EBS_CSI_RABBITMQ_STORAGE_CLASS_IOPSPERGB | IOPs per GB parameter for the `EBS_CSI_RABBITMQ_STORAGE_CLASS_NAME` storage class|string|1250|false |Multiply this value by the volume size in GiB to obtain total IOPS per volume  | baseline |
+|EBS_CSI_RABBITMQ_STORAGE_CLASS_THROUGHPUT| Maximum volume throughput in MiB/s for the `EBS_CSI_RABBITMQ_STORAGE_CLASS_NAME` storage class| string| 400 | false | The maximum value for io2, io1 and gp3 volume types is 1000.| baseline |
+|EBS_CSI_CRUNCHY_STORAGE_CLASS_NAME| The EBS CSI storage class name for Crunchy Postgres use| string| io2-vol-pg | false | | baseline |
+|EBS_CSI_CRUNCHY_STORAGE_CLASS_VOLUME_TYPE| The EBS CSI volume type to use for Crunchy Postgres persistent volumes | string | io2 | false | Supported values: [`io2`, `io1`, `gp3`] | baseline |
+|EBS_CSI_CRUNCHY_STORAGE_CLASS_IOPSPERGB | IOPs per GB parameter for the `EBS_CSI_CRUNCHY_STORAGE_CLASS_NAME` storage class | string | 40 | false |Multiply this value by the volume size in GiB to obtain total IOPS per volume | baseline |
+|EBS_CSI_CRUNCHY_STORAGE_CLASS_THROUGHPUT | Maximum volume throughput in MiB/s for the `EBS_CSI_CRUNCHY_STORAGE_CLASS_NAME` storage class | string| 400 | false | The maximum value for io2, io1 and gp3 volume types is 1000.| baseline |
+|EBS_CSI_CRUNCHY_STORAGE_CLASS_RECLAIM_POLICY | The ReclaimPolicy for the `EBS_CSI_CRUNCHY_STORAGE_CLASS_NAME` storage class. | string | Delete | false | Supported values: [`Delete`, `Retain`] **Note**: If set to `Retain`, manual deletion of the Crunchy Persistent Volumes is required after deleting the PostgresCluster.| baseline |
+
+### Azure managed disk CSI Driver
+
+The Azure managed disk CSI Driver can only be included at AKS cluster creation time. It is included in all AKS clusters by default, and any AKS clusters created with viya4-iac-azure will have the driver installed. If you did not use the viya4-iac-azure project to create your AKS cluster, ensure that you have enabled the Azure disk CSI driver prior to using this project or disable the creation of the StorageClasses.
+
+By default, two block storage StorageClasses are created using the driver, one for RabbitMQ and one for Crunchy Postgres. The defaults for these StorageClasses are listed below. 
+
+**Note**: The StorageClasses created by viya4-deployment are intended for the Premium SSD v2 or Ultra Disk types. If you would like to use the Premium SSD v1 type or lower, disable creation of the StorageClasses in this project and use one of the default StorageClasses provided by the CSI driver.
+
+| Name | Description | Type | Default | Required | Notes | Tasks |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
+|CREATE_AZURE_RABBITMQ_STORAGE_CLASS| Whether to create an Azure files StorageClass for RabbitMQ | bool | true | false | | baseline |
+|AZURE_RABBITMQ_STORAGE_CLASS_NAME| The StorageClass name for RabbitMQ | string | managed-csi-premium-v2-mq | false | | baseline |
+|AZURE_RABBITMQ_STORAGE_CLASS_SKU_NAME| The disk type SKU name to use for RabbitMQ persistent volumes | string | PremiumV2_LRS | false | Supported values: [`PremiumV2_LRS`, `UltraSSD_LRS`]  | baseline |
+|AZURE_RABBITMQ_STORAGE_CLASS_DISKIOPS | Disk total IOPS parameter for the `AZURE_RABBITMQ_STORAGE_CLASS_NAME` storage class|string|3000|false | Refer to the [Azure documentation](https://learn.microsoft.com/en-us/azure/virtual-machines/disks-types) for IOPS limits considerations | baseline |
+|AZURE_RABBITMQ_STORAGE_CLASS_THROUGHPUT| Maximum volume throughput in MiB/s for the `AZURE_RABBITMQ_STORAGE_CLASS_NAME` storage class| string| 400 | false | Refer to the [Azure documentation](https://learn.microsoft.com/en-us/azure/virtual-machines/disks-types) for throughput limits considerations | baseline |
+|CREATE_AZURE_CRUNCHY_STORAGE_CLASS| Whether to create an Azure files StorageClass for Crunchy Postgres | bool | true | false | | baseline |
+|AZURE_CRUNCHY_STORAGE_CLASS_NAME| The StorageClass name for Crunchy Postgres | string| managed-csi-premium-v2-pg | false | | baseline |
+|AZURE_CRUNCHY_STORAGE_CLASS_SKU_NAME| The disk type SKU name to use for Crunchy Postgres persistent volumes | string | PremiumV2_LRS | false | Supported values: [`PremiumV2_LRS`, `UltraSSD_LRS`] | baseline |
+|AZURE_CRUNCHY_STORAGE_CLASS_DISKIOPS | Disk total IOPS parameter for the `AZURE_CRUNCHY_STORAGE_CLASS_NAME` storage class | string | 5000 | false | Refer to the [Azure documentation](https://learn.microsoft.com/en-us/azure/virtual-machines/disks-types) for IOPS limits considerations | baseline |
+|AZURE_CRUNCHY_STORAGE_CLASS_THROUGHPUT | Maximum volume throughput in MiB/s for the `AZURE_CRUNCHY_STORAGE_CLASS_NAME` storage class | string| 400 | false | Refer to the [Azure documentation](https://learn.microsoft.com/en-us/azure/virtual-machines/disks-types) for throughput limits considerations | baseline |
+|AZURE_CRUNCHY_STORAGE_CLASS_RECLAIM_POLICY | The ReclaimPolicy for the `AZURE_CRUNCHY_STORAGE_CLASS_NAME` storage class | string | Delete | false | Supported values: [`Delete`, `Retain`] **Note**: If set to `Retain`, manual deletion of the Crunchy Persistent Volumes is required after deleting the PostgresCluster. | baseline |
 
 ### Ingress-nginx
 

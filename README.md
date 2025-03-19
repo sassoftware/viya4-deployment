@@ -19,7 +19,6 @@ This project contains Ansible code that creates a baseline cluster in an existin
   - Create affinity rules such that processes are targeted to appropriately labeled nodes
   - Create pod disruption budgets for each service such that cluster maintenance will not let the last instance of a service go down (during a node maintenance operation, for example)
   - Use kustomize to mount user private (home) directories and data directories on CAS nodes and on compute server instances
-  - Deploy [SAS Viya Monitoring for Kubernetes](https://github.com/sassoftware/viya4-monitoring-kubernetes)
   - Deploy MPP or SMP CAS servers
 
 - Manage SAS Viya Platform Deployments
@@ -260,7 +259,7 @@ Create and manage deployments using one of the following methods:
   
 ### DNS
 
-During the installation, an ingress load balancer can be installed for the SAS Viya platform and for the monitoring and logging stack. The host name for these services must be registered with your DNS provider in order to resolve to the LoadBalancer endpoint. This can be done by creating a record for each unique ingress controller host. 
+During the installation, an ingress load balancer can be installed for the SAS Viya platform. The host name for these services must be registered with your DNS provider in order to resolve to the LoadBalancer endpoint. This can be done by creating a record for each unique ingress controller host. 
 
 However, when you are managing multiple SAS Viya platform deployments, creating these records can be time-consuming. In such a case, SAS recommends creating a DNS record that points to the ingress controller's endpoint. The endpoint might be an IP address or FQDN, depending on the cloud provider. Take these steps:
 
