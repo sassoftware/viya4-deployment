@@ -22,8 +22,6 @@ RUN apk add --no-cache git build-base containers-common bash btrfs-progs-dev gli
   && git clone https://github.com/containers/skopeo.git -b $SKOPEO_VERSION \
   && DISABLE_DOCS=1 make -C skopeo bin/skopeo.linux.386
 
-FROM public.ecr.aws/aws-cli/aws-cli:2.24.16 AS aws
-
 # Installation
 FROM baseline
 ARG helm_version=3.17.1
@@ -36,9 +34,10 @@ RUN apt-get update && apt-get install --no-install-recommends -y gzip wget git j
   && curl -ksLO https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 && chmod 755 get-helm-3 \
   && ./get-helm-3 --version v$helm_version --no-sudo \
   # AWS
-  # && curl "https://awscli.amazonaws.com/awscli-exe-linux-*-${aws_cli_version}.zip" -o "awscliv2.zip" \
-  # && unzip awscliv2.zip \
-  # && ./aws/install \
+  && architecture=$(uname -m) \
+  && curl "https://awscli.amazonaws.com/awscli-exe-linux-${architecture}-${aws_cli_version}.zip" -o "awscliv2.zip" \
+  && unzip awscliv2.zip \
+  && ./aws/install \
   # AZURE
   && curl -sL https://aka.ms/InstallAzureCLIDeb | bash \
   # GCP
@@ -51,7 +50,6 @@ RUN apt-get update && apt-get install --no-install-recommends -y gzip wget git j
 
 COPY --from=tool_builder /build/kubectl /usr/local/bin/kubectl
 COPY --from=golang /go/skopeo/bin/skopeo.linux.386 /usr/local/bin/skopeo
-COPY --from=aws /usr/local/bin/aws /usr/local/bin/aws
 
 WORKDIR /viya4-deployment/
 COPY . /viya4-deployment/
