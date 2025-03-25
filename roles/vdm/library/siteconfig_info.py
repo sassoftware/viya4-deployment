@@ -1,5 +1,5 @@
 #
-# Copyright © 2020-2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 from ansible.module_utils.basic import *
@@ -55,8 +55,30 @@ class siteConfig(object):
       elif "nameReference" in yamlblocks[0]:
         self.add_overlays(Overlay.CONFIGURATION, yamlfile)
 
+  def processSasBasesOverlays(self, folder):
+    sasBasesOverlaysPath = os.path.join(folder, "inject-sas-bases-overlays.yaml")
+    if os.path.exists(sasBasesOverlaysPath):
+      with open(sasBasesOverlaysPath) as file:
+        try:
+          yamlblock = yaml.safe_load(file)
+          for blockName, entries in yamlblock.items():
+            if isinstance(entries, list):
+              try:
+                overlay = Overlay(blockName)
+              except ValueError:
+                continue
+              requiredPrefix = "sas-bases/overlays/"
+              for entry in entries:
+                if entry.startswith(requiredPrefix):
+                  self.add_overlays(overlay, entry)
+                else:
+                  raise ValueError(f"Invalid {blockName} entry in {sasBasesOverlaysPath}: '{entry}'. Valid entries must start with '{requiredPrefix}'")
+        except yaml.YAMLError as exc:
+          raise RuntimeError(f"Error parsing {sasBasesOverlaysPath} as yaml") from exc
 
   def traverse(self, folder):
+    self.processSasBasesOverlays(folder)
+
     if os.path.exists(os.path.join(folder, "kustomization.yaml")) or os.path.exists(os.path.join(folder, "kustomization.yml")):
       kustomizefile = "kustomization.yaml" if os.path.exists(os.path.join(folder, "kustomization.yaml")) else "kustomization.yml"
       kustomizefilefullpath = os.path.join(folder, kustomizefile)
