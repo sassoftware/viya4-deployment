@@ -1,0 +1,33 @@
+version: 2
+updates:
+  # Terraform dependencies
+  - package-ecosystem: "terraform"
+    directory: "/"  # The directory where your Terraform files are located
+    schedule:
+      interval: "weekly"
+    target-branch: "staging"
+    open-pull-requests-limit: 2
+
+  # Docker dependencies
+  - package-ecosystem: "docker"
+    directory: "/"  # The directory where your Dockerfile is located
+    schedule:
+      interval: "weekly"
+    target-branch: "staging"
+    open-pull-requests-limit: 2
+
+  # GitHub Actions dependencies
+  - package-ecosystem: "github-actions"
+    directory: "/"  # The directory where your GitHub Actions workflows are located
+    schedule:
+      interval: "weekly"
+    target-branch: "staging"
+    open-pull-requests-limit: 2
+
+  # Python dependencies (from requirements.txt)
+  - package-ecosystem: "pip"
+    directory: "/"  # The directory where your requirements.txt is located
+    schedule:
+      interval: "weekly"
+    target-branch: "staging"
+    open-pull-requests-limit: 2
