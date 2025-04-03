@@ -12,6 +12,31 @@
     - install
     - update
 
+# Perform some ingress_nginx version assessments and print necessary warnings
+- name: Warn when INGRESS_NGINX_CHART_VERSION < ingressVersions.k8sMinorVersion.api.chartVersionMin
+  warning:
+    msg: >
+      INGRESS_NGINX_CHART_VERSION < {{ ingressVersions.k8sMinorVersion.api.chartVersionMin }}.
+      Earlier versions may not be supported.
+  when:
+    - INGRESS_NGINX_CHART_VERSION is defined
+    - INGRESS_NGINX_CHART_VERSION is version(ingressVersions.k8sMinorVersion.api.chartVersionMin, "<")
+  tags:
+    - install
+    - update
+
+- name: Warn when INGRESS_NGINX_CHART_VERSION < ingressVersions.k8sMinorVersion.api.chartVersion
+  warning:
+    msg: >
+      INGRESS_NGINX_CHART_VERSION < {{ ingressVersions.k8sMinorVersion.api.chartVersion }}.
+      Earlier versions may have unresolved CVEs.
+  when:
+    - INGRESS_NGINX_CHART_VERSION is defined
+    - INGRESS_NGINX_CHART_VERSION is version(ingressVersions.k8sMinorVersion.api.chartVersion, "<")
+  tags:
+    - install
+    - update
+
 - name: Set the default INGRESS_NGINX_CHART_VERSION if not specified
   when:
     - INGRESS_NGINX_CHART_VERSION|length == 0
@@ -78,8 +103,7 @@
       set_fact:
         INGRESS_NGINX_CONFIG: "{{ INGRESS_NGINX_CONFIG | combine(INGRESS_NGINX_CVE_2021_25742_PATCH, recursive=True) }}"
       when:
-        - INGRESS_NGINX_CHART_VERSION is version('4.0.10', ">=") or (INGRESS_NGINX_CHART_VERSION is version('3.40.0', ">=") and INGRESS_NGINX_CHART_VERSION is version('4.0.0',
-          "<"))
+        - INGRESS_NGINX_CHART_VERSION is version(ingressVersions.k8sMinorVersion.api.chartVersionMin, ">=")
 
 - name: Disable strict_validate_path_type in INGRESS_NGINX_CONFIG
   set_fact:
