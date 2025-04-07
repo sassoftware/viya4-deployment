@@ -34,7 +34,8 @@ RUN apt-get update && apt-get install --no-install-recommends -y gzip wget git j
   && curl -ksLO https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 && chmod 755 get-helm-3 \
   && ./get-helm-3 --version v$helm_version --no-sudo \
   # AWS
-  && curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-${aws_cli_version}.zip" -o "awscliv2.zip" \
+  && architecture=$(uname -m) \
+  && curl "https://awscli.amazonaws.com/awscli-exe-linux-${architecture}-${aws_cli_version}.zip" -o "awscliv2.zip" \
   && unzip awscliv2.zip \
   && ./aws/install \
   # AZURE
@@ -42,7 +43,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y gzip wget git j
   # GCP
   && echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list \
   && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add - \
-  && apt-get update && apt-get install --no-install-recommends -y google-cloud-cli:amd64=${gcp_cli_version} \
+  && apt-get update && apt-get install --no-install-recommends -y google-cloud-cli:*=${gcp_cli_version} \
   && apt-get install --no-install-recommends -y google-cloud-sdk-gke-gcloud-auth-plugin \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*

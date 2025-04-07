@@ -78,9 +78,7 @@
       set_fact:
         INGRESS_NGINX_CONFIG: "{{ INGRESS_NGINX_CONFIG | combine(INGRESS_NGINX_CVE_2021_25742_PATCH, recursive=True) }}"
       when:
-        - cluster_info.version.server.kubernetes.minor is version(ingressVersions.k8sMinorVersion.value, 'ge')
-        - INGRESS_NGINX_CHART_VERSION is version('4.0.10', ">=") or (INGRESS_NGINX_CHART_VERSION is version('3.40.0', ">=") and INGRESS_NGINX_CHART_VERSION is version('4.0.0',
-          "<"))
+        - INGRESS_NGINX_CHART_VERSION is version(ingressVersions.k8sMinorVersion.api.chartVersionMin, ">=")
 
 - name: Disable strict_validate_path_type in INGRESS_NGINX_CONFIG
   set_fact:

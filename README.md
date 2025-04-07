@@ -185,7 +185,7 @@ The SAS Viya platform customizations that are managed by viya4-deployment are lo
 
 #### Base kustomization.yaml ConfigMap and Secret Generators
 
-In some scenarios, a README or the deployment documentation instructs you to add a `configMapGenerator` or `secretGenerator` entry to the base `kustomization.yaml` (also known as `$deploy/kustomization.yaml`). For example:
+In some scenarios, a README or the deployment documentation instructs you to add a `configMapGenerator` or `secretGenerator` entry to the base `kustomization.yaml` (`$deploy/kustomization.yaml`). For example:
 
 ```yaml
 configMapGenerator:
@@ -220,6 +220,26 @@ behavior: merge
 envs:
   - site-config/sas-risk-cirrus-rcc/configuration.env 
 ```
+
+#### Base kustomization.yaml additions from sas-bases/overlays
+
+In some scenarios, a README or the deployment documentation instructs you to add an entry to the base `kustomization.yaml` (`$deploy/kustomization.yaml`). For example:
+
+```yaml
+transformers:
+...
+- sas-bases/overlays/backup/sas-scheduled-backup-incr-job-enable.yaml
+...
+```
+
+In that scenario, create an `inject-sas-bases-overlays.yaml` file in a subdirectory under site-config. In the file, create the necessary category and add the entry to it:
+
+```yaml
+transformers:
+- sas-bases/overlays/backup/sas-scheduled-backup-incr-job-enable.yaml
+```
+
+Supported categories are `resources`, `components`, `transformers`, `generators`, and `configurations`. Multiple categories may appear in the file, and multiple entries may appear for each category.
 
 #### OpenLDAP Customizations
 
