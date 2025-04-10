@@ -13,14 +13,14 @@ The following list details our dependencies and versions (~ indicates multiple p
 | ~              | docker           | >=25.0.3     |
 | ~              | git              | any          |
 | ~              | rsync            | any          |
-| ~              | kubectl          | 1.29 - 1.31  |
+| ~              | kubectl          | 1.30 - 1.32  |
 | ~              | Helm             | 3.16.2       |
 | pip3           | ansible          | 10.5.0       |
 | pip3           | openshift        | 0.13.2       |
-| pip3           | kubernetes       | 29.0.0       |
+| pip3           | kubernetes       | 32.0.1       |
 | pip3           | dnspython        | 2.7.0        |
 | pip3           | docker           | 7.1.0        |
-| pip3           | urllib3          | 2.2.3        |
+| pip3           | urllib3          | 2.3.0        |
 | ansible-galaxy | community.docker | 3.13.0       |
 | ansible-galaxy | ansible.utils    | 5.1.2        |
 | ansible-galaxy | kubernetes.core  | 5.0.0        |
@@ -49,7 +49,7 @@ As described in the [Docker Installation](./DockerUsage.md) section add addition
 ```bash
 # Override kubectl version
 docker build \
-	--build-arg kubectl_version=1.30.6 \
+	--build-arg kubectl_version=1.31.7 \
 	-t viya4-deployment .
 ```
 
