@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:experimental
-FROM ubuntu:22.04 AS baseline
+FROM ubuntu:24.04 AS baseline
 
 RUN apt-get update && apt-get upgrade -y \
   && apt-get install --no-install-recommends -y python3 python3-dev python3-pip curl unzip apt-transport-https ca-certificates gnupg \
