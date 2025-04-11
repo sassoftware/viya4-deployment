@@ -1,5 +1,37 @@
 # SAS Viya 4 Deployment
 
+## Table of Contents
+
+- [Overview](#overview)
+- [Prerequisites](#prerequisites)
+  - [Technical Prerequisites](#technical-prerequisites)
+  - [Infrastructure Prerequisites](#infrastructure-prerequisites)
+    - [Kubernetes Cluster](#kubernetes-cluster)
+    - [Storage](#storage)
+    - [Jump Box Virtual Machine](#jump-box-virtual-machine)
+- [Getting Started](#getting-started)
+  - [Clone this Project](#clone-this-project)
+  - [Authenticating Ansible to Access Cloud Provider](#authenticating-ansible-to-access-cloud-provider)
+  - [Customize Input Values](#customize-input-values)
+    - [Ansible Vars File](#ansible-vars-file)
+    - [Sitedefault File](#optional-sitedefault-file)
+    - [Kubeconfig File](#kubeconfig-file)
+    - [Terraform State File](#terraform-state-file)
+  - [Customize Deployment Overlays](#customize-deployment-overlays)
+    - [SAS Viya Platform Customizations](#sas-viya-platform-customizations)
+    - [Base kustomization.yaml ConfigMap and Secret Generators](#base-kustomizationyaml-configmap-and-secret-generators)
+    - [Base kustomization.yaml additions from sas-bases/overlays](#base-kustomizationyaml-additions-from-sas-basesoverlays)
+    - [OpenLDAP Customizations](#openldap-customizations)
+- [Creating and Managing Deployments](#creating-and-managing-deployments)
+  - [DNS](#dns)
+    - [SAS/CONNECT](#sasconnect)
+  - [Updating SAS Viya Manually](#updating-sas-viya-manually)
+- [Troubleshooting](#troubleshooting)
+- [Contributing](#contributing)
+- [License](#license)
+- [Additional Resources](#additional-resources)
+
+
 ## Overview
 
 This project contains Ansible code that creates a baseline cluster in an existing Kubernetes environment for use with the SAS Viya platform, generates the manifest for a SAS Viya platform software order, and then deploys that order into the specified Kubernetes environment. Here is a list of tasks that this tool can perform: 
