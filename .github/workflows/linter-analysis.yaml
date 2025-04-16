@@ -10,10 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Run Hadolint Action
-        uses: jbergstroem/hadolint-gh-action@v1.11.0
+        uses: jbergstroem/hadolint-gh-action@v1.12.2
         with:
           dockerfile: ./Dockerfile
           config_file: linting-configs/.hadolint.yaml
@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
         # .shellcheckrc is read from the current dir
       - name: Copy Config to Parent Level Directory
@@ -42,7 +42,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
         # The latest ansible/ansible-lint-action removed the
         # ability to specify configs from other dirs
