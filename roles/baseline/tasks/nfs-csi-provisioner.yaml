@@ -1,0 +1,116 @@
+# Copyright © 2020-2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+---
+- name: Remove deprecated nfs-client-provisioner
+  kubernetes.core.helm:
+    name: nfs-client
+    namespace: nfs-client
+    kubeconfig: "{{ KUBECONFIG }}"
+    state: absent
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: Remove deprecated efs-provisioner
+  kubernetes.core.helm:
+    name: efs-provisioner
+    namespace: efs-provisioner
+    kubeconfig: "{{ KUBECONFIG }}"
+    state: absent
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: Remove deprecated efs-provisioner namespace
+  kubernetes.core.k8s:
+    api_version: v1
+    kind: Namespace
+    name: efs-provisioner
+    state: absent
+    kubeconfig: "{{ KUBECONFIG }}"
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: Update csi-driver-nfs configurations for EFS
+  set_fact:
+    NFS_CLIENT_CONFIG: "{{ CSI_DRIVER_NFS_CONFIG | combine(CSI_DRIVER_NFS_EFS_CONFIG, recursive=True) }}"
+    PG_NFS_CLIENT_CONFIG: "{{ CSI_DRIVER_NFS_PG_CONFIG | combine(CSI_DRIVER_NFS_EFS_CONFIG, recursive=True) }}"
+  when:
+    - PROVIDER == "aws"
+    - STORAGE_TYPE_BACKEND is defined
+    - STORAGE_TYPE_BACKEND == "efs"
+  tags:
+    - install
+    - update
+
+- name: Deploy csi-driver-nfs-sas
+  kubernetes.core.helm:
+    name: "{{ CSI_DRIVER_NFS_NAME }}"
+    namespace: "{{ CSI_DRIVER_NFS_NAMESPACE }}"
+    chart_repo_url: "{{ CSI_DRIVER_NFS_CHART_URL }}"
+    chart_ref: "{{ CSI_DRIVER_NFS_CHART_NAME }}"
+    chart_version: "{{ CSI_DRIVER_NFS_CHART_VERSION }}"
+    values: "{{ CSI_DRIVER_NFS_CONFIG }}"
+    kubeconfig: "{{ KUBECONFIG }}"
+    create_namespace: true
+    wait: true
+  tags:
+    - install
+    - update
+
+- name: Deploy csi-driver-nfs-pg-storage
+  when:
+    - PROVIDER != "aws"
+    - PROVIDER != "azure"
+  kubernetes.core.helm:
+    name: "{{ CSI_DRIVER_NFS_PG_NAME }}"
+    namespace: "{{ CSI_DRIVER_NFS_PG_NAMESPACE }}"
+    chart_repo_url: "{{ CSI_DRIVER_NFS_PG_CHART_URL }}"
+    chart_ref: "{{ CSI_DRIVER_NFS_PG_CHART_NAME }}"
+    chart_version: "{{ CSI_DRIVER_NFS_PG_CHART_VERSION }}"
+    values: "{{ CSI_DRIVER_NFS_PG_CONFIG }}"
+    kubeconfig: "{{ KUBECONFIG }}"
+    create_namespace: true
+    wait: true
+  tags:
+    - install
+    - update
+
+- name: Remove csi-driver-nfs-sas
+  kubernetes.core.helm:
+    name: "{{ CSI_DRIVER_NFS_NAME }}"
+    namespace: "{{ CSI_DRIVER_NFS_NAMESPACE }}"
+    kubeconfig: "{{ KUBECONFIG }}"
+    wait: true
+    state: absent
+  tags:
+    - uninstall
+
+- name: Remove csi-driver-nfs-pg-storage
+  when:
+    - PROVIDER != "aws"
+    - PROVIDER != "azure"
+  kubernetes.core.helm:
+    name: "{{ CSI_DRIVER_NFS_PG_NAME }}"
+    namespace: "{{ CSI_DRIVER_NFS_NAMESPACE }}"
+    kubeconfig: "{{ KUBECONFIG }}"
+    wait: true
+    state: absent
+  tags:
+    - uninstall
+
+- name: Remove {{ CSI_DRIVER_NFS_NAMESPACE }} namespace
+  kubernetes.core.k8s:
+    api_version: v1
+    kind: Namespace
+    name: "{{ CSI_DRIVER_NFS_NAMESPACE }}"
+    wait: true
+    state: absent
+    kubeconfig: "{{ KUBECONFIG }}"
+  tags:
+    - uninstall
