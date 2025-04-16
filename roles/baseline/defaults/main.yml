@@ -111,6 +111,44 @@ INGRESS_NGINX_ANNOTATIONS_RISK_LEVEL:
     config:
       annotations-risk-level: "Critical"
 
+## Csi-driver-provisioner
+CSI_DRIVER_NFS_NAME: csi-driver-nfs-sas
+CSI_DRIVER_NFS_NAMESPACE: nfs-client
+CSI_DRIVER_NFS_CHART_NAME: csi-driver-nfs
+CSI_DRIVER_NFS_CHART_URL: https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts
+CSI_DRIVER_NFS_CHART_VERSION: 4.11.0
+CSI_DRIVER_NFS_CONFIG:
+  driver:
+    mountPermissions: "0777"
+  storageClass:
+    reclaimPolicy: Delete
+    volumeBindingMode: Immediate
+    create: true
+    name: sas
+    annotations:
+    parameters:
+      server: "{{ V4_CFG_RWX_FILESTORE_ENDPOINT }}"
+      share: "{{ V4_CFG_RWX_FILESTORE_PATH | replace('/$', '') }}/pvs"
+      subDir: ${pvc.metadata.namespace}/${pvc.metadata.name}/${pv.metadata.name}
+      mountPermissions: "0777"
+    mountOptions:
+      - vers=4.1
+      - noatime
+      - nodiratime
+      - rsize=262144
+      - wsize=262144
+# EFS best practice NFS mount options for the aws provider
+CSI_DRIVER_NFS_EFS_CONFIG:
+  storageClass:
+    mountOptions:
+      - noresvport
+      - rsize=1048576
+      - wsize=1048576
+      - soft
+      - timeo=600
+      - retrans=2
+      - _netdev
+
 ## Nfs-subdir-external-provisioner
 NFS_CLIENT_NAME: nfs-subdir-external-provisioner-sas
 NFS_CLIENT_NAMESPACE: nfs-client
