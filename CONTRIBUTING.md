@@ -6,19 +6,12 @@ We just ask that you follow our contribution guidelines when you do.
 Contributions to this project must be accompanied by a signed [Contributor Agreement](ContributorAgreement.txt).
 You (or your employer) retain the copyright to your contribution; this simply grants us permission to use and redistribute your contributions as part of the project.
 
+## Code Reviews
+All submissions to this project—including submissions from project members—require
+review. Our review process typically involves performing unit tests, development
+tests, integration tests, and security scans.
+
 ## Pull Request Requirement
-
-## Code reviews
-All submissions to this project—including submissions from project members—require review.
-Our review process typically involves performing unit tests, development tests, integration tests, and security scans using internal SAS infrastructure.
-For this reason, we don’t often merge pull requests directly from GitHub.
-
-Instead, we work with submissions internally first, vetting them to ensure they meet our security and quality standards.
-We’ll do our best to work with contributors in public issues and pull requests; however, to ensure our code meets our internal compliance standards, we may need to incorporate your submission into a solution we push ourselves.
-
-This does not mean we don’t value or appreciate your contribution.
-We simply need to review your code internally before merging it.
-We work to ensure all contributors receive appropriate recognition for their contributions, at least by acknowledging them in our release notes.
 
 ### Conventional Commits
 All pull requests must follow the [Conventional Commit](https://www.conventionalcommits.org/en/v1.0.0/)
@@ -52,3 +45,10 @@ merged. These checks include:
 - **Hadolint** – for Dockerfile best practices
 - **ShellCheck** – for shell script issues
 - **Ansible-lint** – for Ansible playbook and role validation
+
+## Security Scans
+To ensure that all submissions meet our security and quality standards, we perform
+security scans using internal SAS infrastructure. Contributions might be subjected
+to security scans before they can be accepted. Reporting of any Common Vulnerabilities
+and Exposures (CVEs) that are detected is not available in this project at this
+time.
