@@ -34,3 +34,6 @@ monitoring_env:
   VIYA_NS: "{{ NAMESPACE }}"
   MON_NS: "{{ V4M_MONITORING_NAMESPACE }}"
   CERT_GENERATOR: "{{ 'openssl' if (V4_CFG_TLS_GENERATOR is not defined or V4_CFG_TLS_GENERATOR == None) else V4_CFG_TLS_GENERATOR }}"
+  # TODO Make sure to only set this in path based
+  MON_TLS_PATH_INGRESS: true
+  ROUTING: "{{ V4M_ROUTING }}"
