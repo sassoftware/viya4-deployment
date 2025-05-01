@@ -1,33 +1,33 @@
-# Copyright © 2020-2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
 ---
-- name: cluster-logging - create userdir # noqa: name[casing]
-  file:
-    path: "{{ tmpdir.path }}/logging/"
-    state: directory
-    mode: "0770"
-  tags:
-    - install
-    - uninstall
-    - update
+# - name: cluster-logging - create userdir # noqa: name[casing]
+#   file:
+#     path: "{{ tmpdir.path }}/logging/"
+#     state: directory
+#     mode: "0770"
+#   tags:
+#     - install
+#     - uninstall
+#     - update
 
 - name: V4M - cluster logging config vars
   include_tasks: cluster-logging.yaml
-  when:
-    - V4M_CUSTOM_CONFIG_USER_DIR is none
+  # when:
+  #   - V4M_CUSTOM_CONFIG_USER_DIR is none
   tags:
     - install
     - uninstall
     - update
 
-- name: V4M - cluster logging custom config user dir
-  include_tasks: cluster-logging-custom-config.yaml
-  when:
-    - V4M_CUSTOM_CONFIG_USER_DIR is not none
-  tags:
-    - install
-    - update
+# - name: V4M - cluster logging custom config user dir
+#   include_tasks: cluster-logging-custom-config.yaml
+#   when:
+#     - V4M_CUSTOM_CONFIG_USER_DIR is not none
+#   tags:
+#     - install
+#     - update
 
 - name: cluster-logging - elasticsearch cert # noqa: name[casing]
   kubernetes.core.k8s:

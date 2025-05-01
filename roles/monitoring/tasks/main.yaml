@@ -1,14 +1,15 @@
-# Copyright © 2020-2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
 ---
+# TODO check with Greg on this. Is it ok to support both host-based and host?
 - name: V4M - ensure supported value for V4M_ROUTING
   ansible.builtin.assert:
-    that: '{{ ["host-based", "path-based"] | intersect([V4M_ROUTING]) | count == 1 }}'
+    that: '{{ ["host-based", "path-based", "host", "path"] | intersect([V4M_ROUTING]) | count == 1 }}'
     msg: >
       Invalid V4M_ROUTING value: {{ V4M_ROUTING }}
 
-      Supported values for V4M_ROUTING are `host-based` or `path-based`
+      Supported values for V4M_ROUTING are `host` or `path`
   when:
     - V4M_CUSTOM_CONFIG_USER_DIR is none
   tags:

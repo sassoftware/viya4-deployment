@@ -1,33 +1,35 @@
-# Copyright © 2020-2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
 ---
-- name: cluster-monitoring - create userdir # noqa: name[casing]
-  file:
-    path: "{{ tmpdir.path }}/monitoring/"
-    state: directory
-    mode: "0770"
-  tags:
-    - install
-    - uninstall
-    - update
+# remove because we are only using env vars to handle it
+# - name: cluster-monitoring - create userdir # noqa: name[casing]
+#   file:
+#     path: "{{ tmpdir.path }}/monitoring/"
+#     state: directory
+#     mode: "0770"
+#   tags:
+#     - install
+#     - uninstall
+#     - update
 
 - name: V4M - cluster monitoring config vars
   include_tasks: cluster-monitoring.yaml
-  when:
-    - V4M_CUSTOM_CONFIG_USER_DIR is none
+  # when:
+  #   - V4M_CUSTOM_CONFIG_USER_DIR is none
   tags:
     - install
     - uninstall
     - update
 
-- name: V4M - cluster monitoring custom config user dir
-  include_tasks: cluster-monitoring-custom-config.yaml
-  when:
-    - V4M_CUSTOM_CONFIG_USER_DIR is not none
-  tags:
-    - install
-    - update
+# remove because we are not supporting custom configs
+# - name: V4M - cluster monitoring custom config user dir
+#   include_tasks: cluster-monitoring-custom-config.yaml
+#   when:
+#     - V4M_CUSTOM_CONFIG_USER_DIR is not none
+#   tags:
+#     - install
+#     - update
 
 - name: cluster-monitoring - grafana cert # noqa: name[casing]
   kubernetes.core.k8s:
@@ -52,51 +54,51 @@
     - install
     - update
 
-- name: cluster-monitoring - prometheus cert # noqa: name[casing]
-  kubernetes.core.k8s:
-    kubeconfig: "{{ KUBECONFIG }}"
-    state: present
-    definition:
-      kind: Secret
-      apiVersion: v1
-      metadata:
-        name: prometheus-ingress-tls-secret
-        namespace: "{{ V4M_MONITORING_NAMESPACE }}"
-      data:
-        tls.crt: >-
-          {{ lookup('file', V4M_PROMETHEUS_CERT) | b64encode }}
-        tls.key: >-
-          {{ lookup('file', V4M_PROMETHEUS_KEY) | b64encode }}
-      type: kubernetes.io/tls
-  when:
-    - V4M_PROMETHEUS_CERT is not none
-    - V4M_PROMETHEUS_KEY is not none
-  tags:
-    - install
-    - update
+# - name: cluster-monitoring - prometheus cert # noqa: name[casing]
+#   kubernetes.core.k8s:
+#     kubeconfig: "{{ KUBECONFIG }}"
+#     state: present
+#     definition:
+#       kind: Secret
+#       apiVersion: v1
+#       metadata:
+#         name: prometheus-ingress-tls-secret
+#         namespace: "{{ V4M_MONITORING_NAMESPACE }}"
+#       data:
+#         tls.crt: >-
+#           {{ lookup('file', V4M_PROMETHEUS_CERT) | b64encode }}
+#         tls.key: >-
+#           {{ lookup('file', V4M_PROMETHEUS_KEY) | b64encode }}
+#       type: kubernetes.io/tls
+#   when:
+#     - V4M_PROMETHEUS_CERT is not none
+#     - V4M_PROMETHEUS_KEY is not none
+#   tags:
+#     - install
+#     - update
 
-- name: cluster-monitoring - alertmanager cert # noqa: name[casing]
-  kubernetes.core.k8s:
-    kubeconfig: "{{ KUBECONFIG }}"
-    state: present
-    definition:
-      kind: Secret
-      apiVersion: v1
-      metadata:
-        name: alertmanager-ingress-tls-secret
-        namespace: "{{ V4M_MONITORING_NAMESPACE }}"
-      data:
-        tls.crt: >-
-          {{ lookup('file', V4M_ALERTMANAGER_CERT) | b64encode }}
-        tls.key: >-
-          {{ lookup('file', V4M_ALERTMANAGER_KEY) | b64encode }}
-      type: kubernetes.io/tls
-  when:
-    - V4M_ALERTMANAGER_CERT is not none
-    - V4M_ALERTMANAGER_KEY is not none
-  tags:
-    - install
-    - update
+# - name: cluster-monitoring - alertmanager cert # noqa: name[casing]
+#   kubernetes.core.k8s:
+#     kubeconfig: "{{ KUBECONFIG }}"
+#     state: present
+#     definition:
+#       kind: Secret
+#       apiVersion: v1
+#       metadata:
+#         name: alertmanager-ingress-tls-secret
+#         namespace: "{{ V4M_MONITORING_NAMESPACE }}"
+#       data:
+#         tls.crt: >-
+#           {{ lookup('file', V4M_ALERTMANAGER_CERT) | b64encode }}
+#         tls.key: >-
+#           {{ lookup('file', V4M_ALERTMANAGER_KEY) | b64encode }}
+#       type: kubernetes.io/tls
+#   when:
+#     - V4M_ALERTMANAGER_CERT is not none
+#     - V4M_ALERTMANAGER_KEY is not none
+#   tags:
+#     - install
+#     - update
 
 - name: cluster-monitoring - uninstall # noqa: name[casing]
   command:
