@@ -137,7 +137,7 @@ NFS_CLIENT_CONFIG:
       # e.g. For Openstack: /data01/ifs/kubernetes
       #          AKS: /export/pvs
       #          GKE, AWS: /pvs
-      share: /export/pvs
+      share: "{{ V4_CFG_NFS_DRIVER_SHARE }}"
 
       # Specifying a hard subdirectory value consolidates all PVCs under that
       # folder on the NFS share, which may lead to data corruption.
@@ -156,13 +156,7 @@ NFS_CLIENT_CONFIG:
     reclaimPolicy: Delete
     volumeBindingMode: Immediate
   
-    mountOptions:
-    - vers=4.1
-    # below options were used in nfs-subdir-provisioner config that can be carried forward.
-    - noatime
-    - nodiratime
-    - rsize=262144
-    - wsize=262144
+    mountOptions: "{{ V4_CFG_NFS_DRIVER_MOUNT_OPTIONS }}"
 # EFS best practice NFS mount options for the aws provider
 NFS_EFS_CLIENT_CONFIG:
   nfs:

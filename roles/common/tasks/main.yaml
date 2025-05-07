@@ -262,6 +262,60 @@
         - tfstate.cluster_api_mode is defined
         - tfstate.cluster_api_mode.value|length > 0
         - V4_CFG_INGRESS_MODE is not defined
+    - name: tfstate - Set Azure NFS driver options # noqa: name[casing]
+      set_fact:
+         V4_CFG_NFS_DRIVER_SHARE: /export/pvs
+         V4_CFG_NFS_DRIVER_MOUNT_OPTIONS:
+          - vers=4.1
+          - noatime
+          - nodiratime
+          - rsize=262144
+          - wsize=262144
+      when:
+        - tfstate.provider is defined
+        - tfstate.provider.value|length > 0
+        - tfstate.provider.value == "azure"
+    - name: tfstate - Set AWS NFS driver options # noqa: name[casing]
+      set_fact:
+         V4_CFG_NFS_DRIVER_SHARE: /pvs
+         V4_CFG_NFS_DRIVER_MOUNT_OPTIONS:
+          - vers=4.1
+          - noatime
+          - nodiratime
+          - rsize=262144
+          - wsize=262144
+      when:
+        - tfstate.provider is defined
+        - tfstate.provider.value|length > 0
+        - tfstate.provider.value == "aws"
+    - name: tfstate - Set GCP NFS driver options # noqa: name[casing]
+      set_fact:
+         V4_CFG_NFS_DRIVER_SHARE: /export/pvs
+         V4_CFG_NFS_DRIVER_MOUNT_OPTIONS:
+          - vers=4.1
+          - noatime
+          - nodiratime
+          - rsize=262144
+          - wsize=262144
+      when:
+        - tfstate.provider is defined
+        - tfstate.provider.value|length > 0
+        - tfstate.provider.value == "gcp"
+        - tfstate.storage_type.value == "standard"
+    - name: tfstate - Set GCP NFS driver options for Google Filestore # noqa: name[casing]
+      set_fact:
+         V4_CFG_NFS_DRIVER_SHARE: /export/pvs
+         V4_CFG_NFS_DRIVER_MOUNT_OPTIONS:
+          - nolock
+          - noatime
+          - nodiratime
+          - rsize=262144
+          - wsize=262144
+      when:
+        - tfstate.provider is defined
+        - tfstate.provider.value|length > 0
+        - tfstate.provider.value == "gcp"
+        - tfstate.storage_type.value == "ha"
     - name: tfstate - set tfstate to empty string # noqa: name[casing]
       set_fact:
         tfstate: ""
