@@ -159,8 +159,8 @@
 
 - name: Remove csi-driver-nfs-sas
   kubernetes.core.helm:
-    name: "{{ NFS_CLIENT_NAME }}"
-    namespace: "{{ NFS_CLIENT_NAMESPACE }}"
+    name: "{{ CSI_DRIVER_NFS_NAME }}"
+    namespace: "{{ CSI_DRIVER_NFS_NAMESPACE }}"
     kubeconfig: "{{ KUBECONFIG }}"
     wait: true
     state: absent
@@ -203,11 +203,11 @@
         kubeconfig: "{{ KUBECONFIG }}"
         definition: "{{ storageclass_definition }}"
 
-- name: Remove {{ NFS_CLIENT_NAMESPACE }} namespace
+- name: Remove {{ CSI_DRIVER_NFS_NAMESPACE }} namespace
   kubernetes.core.k8s:
     api_version: v1
     kind: Namespace
-    name: "{{ NFS_CLIENT_NAMESPACE }}"
+    namespace: "{{ CSI_DRIVER_NFS_NAMESPACE }}"
     wait: true
     state: absent
     kubeconfig: "{{ KUBECONFIG }}"

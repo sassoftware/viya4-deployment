@@ -114,7 +114,7 @@ INGRESS_NGINX_ANNOTATIONS_RISK_LEVEL:
 
 ## Csi-driver-provisioner
 CSI_DRIVER_NFS_NAME: csi-driver-nfs-sas
-CSI_DRIVER_NFS_NAMESPACE: kube-system
+CSI_DRIVER_NFS_NAMESPACE: nfs-client
 CSI_DRIVER_NFS_CHART_NAME: csi-driver-nfs
 CSI_DRIVER_NFS_CHART_URL: https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts
 CSI_DRIVER_NFS_CHART_VERSION: 4.11.0
