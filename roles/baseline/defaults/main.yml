@@ -129,8 +129,7 @@ NFS_CLIENT_CONFIG:
       # storageclass.kubernetes.io/is-default-class: "true"
     parameters:
       server: "{{ V4_CFG_NFS_PRIVATE_IP }}" # e.g. nda-m1.rd-eng-arch.sashq-d.openstack.sas.com
-      # server: 192.168.2.4 # e.g. nda-m1.rd-eng-arch.sashq-d.openstack.sas.com
-  
+
       # Should be one of the exports listed in NFS server.
       # showmount -e <nfs-server>
       # e.g. on openstack cluster showmount -e  nda-m1.rd-eng-arch.sashq-d.openstack.sas.com
@@ -145,17 +144,16 @@ NFS_CLIENT_CONFIG:
       # See: https://github.com/kubernetes-csi/csi-driver-nfs/blob/master/docs/driver-parameters.md#tips
       # Note: With this configuration, the driver deletes only the ${pv.metadata.name} directory during cleanup.
       subDir: ${pvc.metadata.namespace}/${pvc.metadata.name}/${pv.metadata.name}
-      
-  
+
       mountPermissions: "0777"
-  
+
       # csi.storage.k8s.io/provisioner-secret is only needed for providing mountOptions in DeleteVolume
       # csi.storage.k8s.io/provisioner-secret-name: "mount-options"
       # csi.storage.k8s.io/provisioner-secret-namespace: "default"
-  
+
     reclaimPolicy: Delete
     volumeBindingMode: Immediate
-  
+
     mountOptions: "{{ V4_CFG_NFS_DRIVER_MOUNT_OPTIONS }}"
 # EFS best practice NFS mount options for the aws provider
 NFS_EFS_CLIENT_CONFIG:
