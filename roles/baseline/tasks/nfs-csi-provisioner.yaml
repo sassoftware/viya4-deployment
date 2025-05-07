@@ -38,12 +38,70 @@
 
 - name: Update csi-driver-nfs configurations for EFS
   set_fact:
-    NFS_CLIENT_CONFIG: "{{ CSI_DRIVER_NFS_CONFIG | combine(CSI_DRIVER_NFS_EFS_CONFIG, recursive=True) }}"
+    CSI_DRIVER_NFS_CONFIG: "{{ CSI_DRIVER_NFS_CONFIG | combine(CSI_DRIVER_NFS_EFS_CONFIG, recursive=True) }}"
     PG_NFS_CLIENT_CONFIG: "{{ CSI_DRIVER_NFS_PG_CONFIG | combine(CSI_DRIVER_NFS_EFS_CONFIG, recursive=True) }}"
   when:
     - PROVIDER == "aws"
     - STORAGE_TYPE_BACKEND is defined
     - STORAGE_TYPE_BACKEND == "efs"
+  tags:
+    - install
+    - update
+
+- name: Update csi-driver-nfs configuration for Google Filestore
+  set_fact:
+    CSI_DRIVER_NFS_CONFIG: 
+      driver:
+        mountPermissions: "0777"
+      storageClass:
+        reclaimPolicy: Delete
+        volumeBindingMode: Immediate
+        create: true
+        name: sas
+        annotations:
+        parameters:
+          server: "{{ V4_CFG_RWX_FILESTORE_ENDPOINT }}"
+          share: "/volumes/pvs"
+          subDir: ${pvc.metadata.namespace}/${pvc.metadata.name}/${pv.metadata.name}
+          mountPermissions: "0777"
+        mountOptions:
+          - nolock
+          - noatime
+          - nodiratime
+          - rsize=262144
+          - wsize=262144
+  when:
+    - PROVIDER == "gcp"
+    - V4_CFG_RWX_FILESTORE_PATH == "/volumes"
+  tags:
+    - install
+    - update
+
+- name: Update csi-driver-nfs configuration for Google Netapp
+  set_fact:
+    CSI_DRIVER_NFS_CONFIG: 
+      driver:
+        mountPermissions: "0777"
+      storageClass:
+        reclaimPolicy: Delete
+        volumeBindingMode: Immediate
+        create: true
+        name: sas
+        annotations:
+        parameters:
+          server: "{{ V4_CFG_RWX_FILESTORE_ENDPOINT }}"
+          share: "{{ V4_CFG_RWX_FILESTORE_PATH }}"
+          subDir: ${pvc.metadata.namespace}/${pvc.metadata.name}/${pv.metadata.name}
+          mountPermissions: "0777"
+        mountOptions:
+          - nolock
+          - noatime
+          - nodiratime
+          - rsize=262144
+          - wsize=262144
+  when:
+    - PROVIDER == "gcp"
+    - "'-export' in V4_CFG_RWX_FILESTORE_PATH"
   tags:
     - install
     - update
@@ -63,25 +121,105 @@
     - install
     - update
 
-- name: Deploy csi-driver-nfs-pg-storage
+# Create a storageClass for pg-storage
+- name: Create csi-driver-nfs-pg-storage storageClass
   when:
     - PROVIDER != "aws"
     - PROVIDER != "azure"
-  kubernetes.core.helm:
-    name: "{{ CSI_DRIVER_NFS_PG_NAME }}"
-    namespace: "{{ CSI_DRIVER_NFS_PG_NAMESPACE }}"
-    chart_repo_url: "{{ CSI_DRIVER_NFS_PG_CHART_URL }}"
-    chart_ref: "{{ CSI_DRIVER_NFS_PG_CHART_NAME }}"
-    chart_version: "{{ CSI_DRIVER_NFS_PG_CHART_VERSION }}"
-    values: "{{ CSI_DRIVER_NFS_PG_CONFIG }}"
-    kubeconfig: "{{ KUBECONFIG }}"
-    create_namespace: true
-    wait: true
+  block:
+    - name: Define csi-driver-nfs-pg-storage storageClass
+      set_fact:
+        storageclass_definition:
+          apiVersion: storage.k8s.io/v1
+          kind: StorageClass
+          metadata:
+            name: pg-storage
+          provisioner: nfs.csi.k8s.io
+          parameters:
+            server: "{{ V4_CFG_RWX_FILESTORE_ENDPOINT }}"
+            share: "{{ V4_CFG_RWX_FILESTORE_PATH if '-export' in V4_CFG_RWX_FILESTORE_PATH else ('/pvs' if V4_CFG_RWX_FILESTORE_PATH != '/volumes' else '/volumes/pvs') }}"
+            # csi.storage.k8s.io/provisioner-secret is only needed for providing mountOptions in DeleteVolume
+            # csi.storage.k8s.io/provisioner-secret-name: "mount-options"
+            # csi.storage.k8s.io/provisioner-secret-namespace: "default"
+          reclaimPolicy: Delete
+          volumeBindingMode: Immediate
+          allowVolumeExpansion: true
+          mountOptions:
+            - "{{ 'nfsvers=4.1' if ( V4_CFG_RWX_FILESTORE_PATH != '/volumes' and '-export' not in V4_CFG_RWX_FILESTORE_PATH ) else 'nolock' }}"
+            - noatime
+            - nodiratime
+            - rsize=262144
+            - wsize=262144
+    - name: Create sc
+      kubernetes.core.k8s:
+        api_version: storage.k8s.io/v1
+        kind: StorageClass
+        state: present
+        kubeconfig: "{{ KUBECONFIG }}"
+        definition: "{{ storageclass_definition }}"
   tags:
     - install
     - update
 
-- name: Remove csi-driver-nfs-sas
+
+# Remove storageClass for pg-storage
+- name: Remove pg-storage storageClass
+  when:
+    - PROVIDER != "aws"
+    - PROVIDER != "azure"
+  block:
+    - name: Redefine csi-driver-nfs-pg-storage storageClass
+      set_fact:
+        storageclass_definition:
+          apiVersion: storage.k8s.io/v1
+          kind: StorageClass
+          metadata:
+            name: pg-storage
+          provisioner: nfs.csi.k8s.io
+          parameters:
+            server: "{{ V4_CFG_RWX_FILESTORE_ENDPOINT }}"
+            share: /pvs
+            # csi.storage.k8s.io/provisioner-secret is only needed for providing mountOptions in DeleteVolume
+            # csi.storage.k8s.io/provisioner-secret-name: "mount-options"
+            # csi.storage.k8s.io/provisioner-secret-namespace: "default"
+          reclaimPolicy: Delete
+          volumeBindingMode: Immediate
+          allowVolumeExpansion: true
+          mountOptions:
+            - nfsvers=4.1
+            - noatime
+            - nodiratime
+            - rsize=262144
+            - wsize=262144
+    - name: Remove storageClass
+      kubernetes.core.k8s:
+        api_version: storage.k8s.io/v1
+        kind: StorageClass
+        state: absent
+        kubeconfig: "{{ KUBECONFIG }}"
+        definition: "{{ storageclass_definition }}"
+  tags:
+    - uninstall
+
+# - name: Deploy csi-driver-nfs-pg-storage
+#   when:
+#     - PROVIDER != "aws"
+#     - PROVIDER != "azure"
+#   kubernetes.core.helm:
+#     name: "{{ CSI_DRIVER_NFS_PG_NAME }}"
+#     namespace: "{{ CSI_DRIVER_NFS_PG_NAMESPACE }}"
+#     chart_repo_url: "{{ CSI_DRIVER_NFS_PG_CHART_URL }}"
+#     chart_ref: "{{ CSI_DRIVER_NFS_PG_CHART_NAME }}"
+#     chart_version: "{{ CSI_DRIVER_NFS_PG_CHART_VERSION }}"
+#     values: "{{ CSI_DRIVER_NFS_PG_CONFIG }}"
+#     kubeconfig: "{{ KUBECONFIG }}"
+#     create_namespace: true
+#     wait: true
+#   tags:
+#     - install
+#     - update
+
+- name: Remove csi-driver-nfs
   kubernetes.core.helm:
     name: "{{ CSI_DRIVER_NFS_NAME }}"
     namespace: "{{ CSI_DRIVER_NFS_NAMESPACE }}"
@@ -91,26 +229,28 @@
   tags:
     - uninstall
 
-- name: Remove csi-driver-nfs-pg-storage
-  when:
-    - PROVIDER != "aws"
-    - PROVIDER != "azure"
-  kubernetes.core.helm:
-    name: "{{ CSI_DRIVER_NFS_PG_NAME }}"
-    namespace: "{{ CSI_DRIVER_NFS_NAMESPACE }}"
-    kubeconfig: "{{ KUBECONFIG }}"
-    wait: true
-    state: absent
-  tags:
-    - uninstall
+# - name: Remove csi-driver-nfs-pg-storage
+#   when:
+#     - PROVIDER != "aws"
+#     - PROVIDER != "azure"
+#   kubernetes.core.helm:
+#     name: "{{ CSI_DRIVER_NFS_PG_NAME }}"
+#     namespace: "{{ CSI_DRIVER_NFS_NAMESPACE }}"
+#     kubeconfig: "{{ KUBECONFIG }}"
+#     wait: true
+#     state: absent
+#   tags:
+#     - uninstall
 
-- name: Remove {{ CSI_DRIVER_NFS_NAMESPACE }} namespace
-  kubernetes.core.k8s:
-    api_version: v1
-    kind: Namespace
-    name: "{{ CSI_DRIVER_NFS_NAMESPACE }}"
-    wait: true
-    state: absent
-    kubeconfig: "{{ KUBECONFIG }}"
-  tags:
-    - uninstall
+# Don't remove the kube-system namespace as it is used by other components
+# - name: Remove {{ CSI_DRIVER_NFS_NAMESPACE }} namespace
+  # kubernetes.core.k8s:
+    # api_version: v1
+    # kind: Namespace
+    # name: "{{ CSI_DRIVER_NFS_NAMESPACE }}"
+    # wait: true
+    # state: absent
+    # kubeconfig: "{{ KUBECONFIG }}"
+  # tags:
+    # - uninstall
+# 
