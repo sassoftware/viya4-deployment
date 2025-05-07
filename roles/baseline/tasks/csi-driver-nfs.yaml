@@ -48,7 +48,7 @@
     - install
     - update
 
-- name: Deploy nfs-subdir-external-provisioner-sas
+- name: Deploy csi-driver-nfs-sas
   kubernetes.core.helm:
     name: "{{ NFS_CLIENT_NAME }}"
     namespace: "{{ NFS_CLIENT_NAMESPACE }}"
@@ -81,7 +81,7 @@
     - install
     - update
 
-- name: Remove nfs-subdir-external-provisioner-sas
+- name: Remove csi-driver-nfs-sas
   kubernetes.core.helm:
     name: "{{ NFS_CLIENT_NAME }}"
     namespace: "{{ NFS_CLIENT_NAMESPACE }}"

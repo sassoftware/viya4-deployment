@@ -84,6 +84,12 @@
       when:
         - tfstate.rwx_filestore_path is defined
         - tfstate.rwx_filestore_path.value|length > 0
+    - name: tfstate - nfs private ip # noqa: name[casing]
+      set_fact:
+        V4_CFG_NFS_PRIVATE_IP: "{{ tfstate.nfs_private_ip.value }}"
+      when:
+        - tfstate.nfs_private_ip is defined
+        - tfstate.nfs_private_ip.value|length > 0
     - name: tfstate - export kubeconfig # noqa: name[casing]
       copy:
         dest: "{{ tmpdir.path }}/.kube"

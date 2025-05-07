@@ -1,0 +1,44 @@
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: sas-crunchy-platform-postgres-crunchy-storage-transformer
+patch: |-
+  # This value can be changed but not decreased after the initial deployment
+  - op: replace
+    path: /spec/instances/0/dataVolumeClaimSpec/resources/requests
+    value:
+      storage: 128Gi
+
+  # This value can be changed but not decreased after the initial deployment
+  - op: replace
+    path: /spec/backups/pgbackrest/repos/0/volume/volumeClaimSpec/resources/requests
+    value:
+      storage: 128Gi
+
+  # This value cannot be changed after the initial deployment
+  - op: replace
+    path: /spec/instances/0/dataVolumeClaimSpec/accessModes
+    value:
+      - ReadWriteOnce
+
+  # This value cannot be changed after the initial deployment
+  - op: replace
+    path: /spec/backups/pgbackrest/repos/0/volume/volumeClaimSpec/accessModes
+    value:
+      - ReadWriteOnce
+
+  # This value cannot be changed after the initial deployment
+  - op: replace
+    path: /spec/instances/0/dataVolumeClaimSpec/storageClassName
+    value: managed-csi-premium-v2-pg
+
+  # This value cannot be changed after the initial deployment
+  - op: replace
+    path: /spec/backups/pgbackrest/repos/0/volume/volumeClaimSpec/storageClassName
+    value: managed-csi-premium-v2-pg
+
+target:
+  group: postgres-operator.crunchydata.com
+  kind: PostgresCluster
+  name: sas-crunchy-platform-postgres
+  version: v1beta1

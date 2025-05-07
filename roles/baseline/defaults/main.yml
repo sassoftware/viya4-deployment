@@ -111,24 +111,58 @@ INGRESS_NGINX_ANNOTATIONS_RISK_LEVEL:
     config:
       annotations-risk-level: "Critical"
 
-## Nfs-subdir-external-provisioner
-NFS_CLIENT_NAME: nfs-subdir-external-provisioner-sas
+## csi-driver-nfs
+NFS_CLIENT_NAME: csi-driver-nfs-sas
 NFS_CLIENT_NAMESPACE: nfs-client
-NFS_CLIENT_CHART_NAME: nfs-subdir-external-provisioner
-NFS_CLIENT_CHART_URL: https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/
-NFS_CLIENT_CHART_VERSION: 4.0.18
+NFS_CLIENT_CHART_NAME: csi-driver-nfs
+NFS_CLIENT_CHART_URL: https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts
+NFS_CLIENT_CHART_VERSION: 4.11.0
 NFS_CLIENT_CONFIG:
-  nfs:
-    server: "{{ V4_CFG_RWX_FILESTORE_ENDPOINT }}"
-    path: "{{ V4_CFG_RWX_FILESTORE_PATH | replace('/$', '') }}/pvs"
-    mountOptions:
-      - noatime
-      - nodiratime
-      - rsize=262144
-      - wsize=262144
+  driver:
+    # Required for viya components like sas-commonfiles and potentially sas-pyconfig.
+    mountPermissions: "0777"
   storageClass:
-    archiveOnDelete: "false"
+    create: true
     name: sas
+    annotations:
+      # Uncomment below line to make it a default storage class on OpenStack cluster
+      # storageclass.kubernetes.io/is-default-class: "true"
+    parameters:
+      server: "{{ V4_CFG_NFS_PRIVATE_IP }}" # e.g. nda-m1.rd-eng-arch.sashq-d.openstack.sas.com
+      # server: 192.168.2.4 # e.g. nda-m1.rd-eng-arch.sashq-d.openstack.sas.com
+  
+      # Should be one of the exports listed in NFS server.
+      # showmount -e <nfs-server>
+      # e.g. on openstack cluster showmount -e  nda-m1.rd-eng-arch.sashq-d.openstack.sas.com
+      # e.g. For Openstack: /data01/ifs/kubernetes
+      #          AKS: /export/pvs
+      #          GKE, AWS: /pvs
+      share: /export/pvs
+
+      # Specifying a hard subdirectory value consolidates all PVCs under that
+      # folder on the NFS share, which may lead to data corruption.
+      # Hence use templated variables that are converted by the driver.
+      # See: https://github.com/kubernetes-csi/csi-driver-nfs/blob/master/docs/driver-parameters.md#tips
+      # Note: With this configuration, the driver deletes only the ${pv.metadata.name} directory during cleanup.
+      subDir: ${pvc.metadata.namespace}/${pvc.metadata.name}/${pv.metadata.name}
+      
+  
+      mountPermissions: "0777"
+  
+      # csi.storage.k8s.io/provisioner-secret is only needed for providing mountOptions in DeleteVolume
+      # csi.storage.k8s.io/provisioner-secret-name: "mount-options"
+      # csi.storage.k8s.io/provisioner-secret-namespace: "default"
+  
+    reclaimPolicy: Delete
+    volumeBindingMode: Immediate
+  
+    mountOptions:
+    - vers=4.1
+    # below options were used in nfs-subdir-provisioner config that can be carried forward.
+    - noatime
+    - nodiratime
+    - rsize=262144
+    - wsize=262144
 # EFS best practice NFS mount options for the aws provider
 NFS_EFS_CLIENT_CONFIG:
   nfs:
