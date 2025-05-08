@@ -207,7 +207,7 @@
   kubernetes.core.k8s:
     api_version: v1
     kind: Namespace
-    namespace: "{{ CSI_DRIVER_NFS_NAMESPACE }}"
+    name: "{{ CSI_DRIVER_NFS_NAMESPACE }}"
     wait: true
     state: absent
     kubeconfig: "{{ KUBECONFIG }}"
