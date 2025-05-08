@@ -5,7 +5,7 @@ on:
     types: [opened, synchronize, reopened, edited]
     branches:
       - main
-      - staging
+      - main
 
 jobs:
   validate-pr-title:

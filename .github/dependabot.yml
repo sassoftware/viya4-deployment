@@ -5,7 +5,7 @@ updates:
     directory: "/"  # The directory where your Terraform files are located
     schedule:
       interval: "weekly"
-    target-branch: "staging"
+    target-branch: "main"
     open-pull-requests-limit: 2
 
   # Docker dependencies
@@ -13,7 +13,7 @@ updates:
     directory: "/"  # The directory where your Dockerfile is located
     schedule:
       interval: "weekly"
-    target-branch: "staging"
+    target-branch: "main"
     open-pull-requests-limit: 2
 
   # GitHub Actions dependencies
@@ -21,7 +21,7 @@ updates:
     directory: "/"  # The directory where your GitHub Actions workflows are located
     schedule:
       interval: "weekly"
-    target-branch: "staging"
+    target-branch: "main"
     open-pull-requests-limit: 2
 
   # Python dependencies (from requirements.txt)
@@ -29,5 +29,5 @@ updates:
     directory: "/"  # The directory where your requirements.txt is located
     schedule:
       interval: "weekly"
-    target-branch: "staging"
+    target-branch: "main"
     open-pull-requests-limit: 2
