@@ -203,13 +203,13 @@
         kubeconfig: "{{ KUBECONFIG }}"
         definition: "{{ storageclass_definition }}"
 
-- name: Remove {{ CSI_DRIVER_NFS_NAMESPACE }} namespace
-  kubernetes.core.k8s:
-    api_version: v1
-    kind: Namespace
-    name: "{{ CSI_DRIVER_NFS_NAMESPACE }}"
-    wait: true
-    state: absent
-    kubeconfig: "{{ KUBECONFIG }}"
-  tags:
-    - uninstall
+# - name: Remove {{ CSI_DRIVER_NFS_NAMESPACE }} namespace
+#   kubernetes.core.k8s:
+#     api_version: v1
+#     kind: Namespace
+#     name: "{{ CSI_DRIVER_NFS_NAMESPACE }}"
+#     wait: true
+#     state: absent
+#     kubeconfig: "{{ KUBECONFIG }}"
+#   tags:
+#     - uninstall
