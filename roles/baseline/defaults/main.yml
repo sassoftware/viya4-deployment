@@ -150,7 +150,6 @@ CSI_DRIVER_NFS_EFS_CONFIG:
       - retrans=2
       - _netdev
 
-# This stanza goes away when we move to csi-driver-nfs v4.11.0, just create the storage class with existing helm chart now
 ## pg-storage storage class config
 CSI_DRIVER_NFS_PG_NAME: csi-driver-nfs-pg-storage
 CSI_DRIVER_NFS_PG_NAMESPACE: nfs-client
