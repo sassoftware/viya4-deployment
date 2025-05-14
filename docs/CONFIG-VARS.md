@@ -90,7 +90,7 @@ Viya4-deployment uses the jump server to interact with the RWX filestore, which 
 
 ### Storage for AWS
 
-When `V4_CFG_MANAGE_STORAGE` is set to `true`, viya4-deployment uses the [EBS CSI driver](#ebs-csi-driver) to create two elastic block storage based storage classes with the default names of `io2-vol-mq` and `io2-vol-pg`. The volume type for both storage classes defaults to `io2`. For EKS clusters, RabbitMQ makes PVC requests to create block storage persistent volumes using the `io2-vol-mq` storage class while Crunchy Postgres makes PVC requests to create block storage persistent volumes using the `io2-vol-pg` storage class. Viya4-deployment also creates the `sas` storage class using the nfs-subdir-external-provisioner Helm chart. If a jump server is used, viya4-deployment uses that server to create the folders for the `astores`, `bin`, `data` and `homes` RWX Filestore NFS paths that are outlined below in the [RWX Filestore](#rwx-filestore) section.
+When `V4_CFG_MANAGE_STORAGE` is set to `true`, viya4-deployment uses the [EBS CSI driver](#ebs-csi-driver) to create two elastic block storage based storage classes with the default names of `io2-vol-mq` and `io2-vol-pg`. The volume type for both storage classes defaults to `io2`. For EKS clusters, RabbitMQ makes PVC requests to create block storage persistent volumes using the `io2-vol-mq` storage class while Crunchy Postgres makes PVC requests to create block storage persistent volumes using the `io2-vol-pg` storage class. Viya4-deployment also creates the `sas` storage class using the csi-driver-nfs Helm chart. If a jump server is used, viya4-deployment uses that server to create the folders for the `astores`, `bin`, `data` and `homes` RWX Filestore NFS paths that are outlined below in the [RWX Filestore](#rwx-filestore) section.
 
 ### Storage for Azure
 
@@ -98,14 +98,14 @@ By default, viya4-deployment uses the [Azure managed disks CSI driver](#azure-ma
 
 **NOTE**: The Azure managed disk CSI Driver can only be included at AKS cluster creation time. It is included in all AKS clusters by default, and any AKS clusters created with viya4-iac-azure will have the driver installed. If you did not use the viya4-iac-azure project to create your AKS cluster, ensure that you have enabled the Azure disk CSI driver prior to using this project or disable the creation of the StorageClasses.
 
-viya4-deployment also creates the `sas` storage class using the nfs-subdir-external-provisioner Helm chart. If a jump server is used, viya4-deployment uses that server to create the folders for the `astores`, `bin`, `data` and `homes` RWX Filestore NFS paths that are outlined below in the [RWX Filestore](#rwx-filestore) section.
+viya4-deployment also creates the `sas` storage class using the csi-driver-nfs Helm chart. If a jump server is used, viya4-deployment uses that server to create the folders for the `astores`, `bin`, `data` and `homes` RWX Filestore NFS paths that are outlined below in the [RWX Filestore](#rwx-filestore) section.
 
 ### Storage for Google Cloud
-When `V4_CFG_MANAGE_STORAGE` is set to `true`, viya4-deployment creates the `sas` and `pg-storage` storage classes using the nfs-subdir-external-provisioner Helm chart. If a jump server is used, viya4-deployment uses that server to create the folders for the `astores`, `bin`, `data` and `homes` RWX Filestore NFS paths that are outlined below in the [RWX Filestore](#rwx-filestore) section.
+When `V4_CFG_MANAGE_STORAGE` is set to `true`, viya4-deployment creates the `sas` and `pg-storage` storage classes using the csi-driver-nfs Helm chart. If a jump server is used, viya4-deployment uses that server to create the folders for the `astores`, `bin`, `data` and `homes` RWX Filestore NFS paths that are outlined below in the [RWX Filestore](#rwx-filestore) section.
 
 ### NFS Storage
 
-When `V4_CFG_MANAGE_STORAGE` is set to `true`, viya4-deployment creates NFS-based storage classes using the nfs-subdir-external-provisioner Helm chart.
+When `V4_CFG_MANAGE_STORAGE` is set to `true`, viya4-deployment creates NFS-based storage classes using the csi-driver-nfs Helm chart.
 
 When `V4_CFG_MANAGE_STORAGE` is set to `false`, viya4-deployment does not create the `sas` or `pg-storage` storage classes for you. In addition, viya4-deployment does not create or manage the RWX Filestore NFS paths. Before you run the SAS Viya deployment, you must set the values for `V4_CFG_RWX_FILESTORE_DATA_PATH` and `V4_CFG_RWX_FILESTORE_HOMES_PATH` to specify existing NFS folder locations. The viya4-deployment user can create the required NFS folders from the jump server before starting the deployment. Recommended attribute settings for each folder are as follows:
 - **filemode**: `0777`
@@ -431,24 +431,24 @@ Kubernetes Metrics Server installation is currently only applicable for AWS EKS 
 
 ### NFS Client
 
-The NFS client is currently supported by the newer nfs-subdir-external-provisioner.
+The NFS client is currently supported by the csi-driver-nfs.
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| NFS_CLIENT_NAMESPACE | nfs-subdir-external-provisioner Helm installation namespace | string | nfs-client | false | | baseline |
-| NFS_CLIENT_CHART_URL | nfs-subdir-external-provisioner Helm chart URL | string | Go [here](https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/) for more information. | false | | baseline |
-| NFS_CLIENT_CHART_NAME | nfs-subdir-external-provisioner Helm chart name | string | nfs-subdir-external-provisioner | false | | baseline |
-| NFS_CLIENT_CHART_VERSION | nfs-subdir-external-provisioner Helm chart version | string | 4.0.18| false | | baseline |
-| NFS_CLIENT_CONFIG | nfs-subdir-external-provisioner Helm values | string | See [this file](../roles/baseline/defaults/main.yml) for more information. | false | | baseline |
+| CSI_DRIVER_NFS_NAMESPACE | csi-driver-nfs Helm installation namespace | string | kube-system | false | | baseline |
+| CSI_DRIVER_NFS_CHART_URL | csi-driver-nfs Helm chart URL | string | Go [here](https://github.com/kubernetes-csi/csi-driver-nfs/) for more information. | false | | baseline |
+| CSI_DRIVER_NFS_CHART_NAME | csi-driver-nfs Helm chart name | string | csi-driver-nfs | false | | baseline |
+| CSI_DRIVER_NFS_CHART_VERSION | csi-driver-nfs Helm chart version | string | 4.11.0 | false | | baseline |
+| CSI_DRIVER_NFS_CONFIG | csi-driver-nfs Helm values | string | See [this file](../roles/baseline/defaults/main.yml) for more information. | false | | baseline |
 
 ### Postgres NFS Client
 
-The Postgres NFS client is currently supported by the nfs-subdir-external-provisioner. It creates the storage class used by 2022.10 and later internal postgres instances.
+The Postgres NFS client is currently supported by the csi-driver-nfs. It creates the storage class used by 2022.10 and later internal postgres instances.
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| PG_NFS_CLIENT_NAMESPACE | nfs-subdir-external-provisioner Helm installation namespace | string | nfs-client | false | | baseline |
-| PG_NFS_CLIENT_CHART_URL | nfs-subdir-external-provisioner Helm chart URL | string | Go [here](https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/) for more information. | false | | baseline |
-| PG_NFS_CLIENT_CHART_NAME | nfs-subdir-external-provisioner Helm chart name | string | nfs-subdir-external-provisioner | false | | baseline |
-| PG_NFS_CLIENT_CHART_VERSION | nfs-subdir-external-provisioner Helm chart version | string | 4.0.18| false | | baseline |
-| PG_NFS_CLIENT_CONFIG | nfs-subdir-external-provisioner Helm values | string | See [this file](../roles/baseline/defaults/main.yml) for more information. | false | | baseline |
+| CSI_DRIVER_NFS_PG_NAMESPACE | csi-driver-nfs Helm installation namespace | string | nfs-client | false | | baseline |
+| CSI_DRIVER_NFS_PG_CHART_URL | csi-driver-nfs Helm chart URL | string | Go [here](https://github.com/kubernetes-csi/csi-driver-nfs/) for more information. | false | | baseline |
+| CSI_DRIVER_NFS_PG_CHART_NAME | csi-driver-nfs Helm chart name | string | csi-driver-nfs | false | | baseline |
+| CSI_DRIVER_NFS_PG_CHART_VERSION | csi-driver-nfs Helm chart version | string | 4.11.0 | false | | baseline |
+| CSI_DRIVER_NFS_PG_CONFIG | csi-driver-nfs Helm values | string | See [this file](../roles/baseline/defaults/main.yml) for more information. | false | | baseline |

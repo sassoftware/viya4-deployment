@@ -1,4 +1,4 @@
-# Copyright © 2020-2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
 ---
@@ -8,6 +8,7 @@ V4_CFG_INGRESS_TYPE: ingress
 V4_CFG_INGRESS_MODE: public
 V4_CFG_MANAGE_STORAGE: true
 V4_CFG_AWS_LB_SUBNETS: ""
+STORAGE_TYPE_BACKEND: ""
 
 ## Cert-manager
 CERT_MANAGER_NAME: cert-manager
@@ -111,27 +112,35 @@ INGRESS_NGINX_ANNOTATIONS_RISK_LEVEL:
     config:
       annotations-risk-level: "Critical"
 
-## Nfs-subdir-external-provisioner
-NFS_CLIENT_NAME: nfs-subdir-external-provisioner-sas
-NFS_CLIENT_NAMESPACE: nfs-client
-NFS_CLIENT_CHART_NAME: nfs-subdir-external-provisioner
-NFS_CLIENT_CHART_URL: https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/
-NFS_CLIENT_CHART_VERSION: 4.0.18
-NFS_CLIENT_CONFIG:
-  nfs:
-    server: "{{ V4_CFG_RWX_FILESTORE_ENDPOINT }}"
-    path: "{{ V4_CFG_RWX_FILESTORE_PATH | replace('/$', '') }}/pvs"
+## Csi-driver-provisioner
+CSI_DRIVER_NFS_NAME: csi-driver-nfs-sas
+CSI_DRIVER_NFS_NAMESPACE: kube-system
+CSI_DRIVER_NFS_CHART_NAME: csi-driver-nfs
+CSI_DRIVER_NFS_CHART_URL: https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts
+CSI_DRIVER_NFS_CHART_VERSION: 4.11.0
+CSI_DRIVER_NFS_CONFIG:
+  driver:
+    mountPermissions: "0777"
+  storageClass:
+    create: true
+    name: sas
+    annotations:
+    reclaimPolicy: Delete
+    volumeBindingMode: Immediate
+    parameters:
+      server: "{{ V4_CFG_RWX_FILESTORE_ENDPOINT }}"
+      share: "{{ '/ontap' if STORAGE_TYPE_BACKEND == 'ontap' else ('/pvs' if PROVIDER != 'azure' else (V4_CFG_RWX_FILESTORE_PATH | replace('/$', '') ~ '/pvs')) }}"
+      subDir: ${pvc.metadata.namespace}/${pvc.metadata.name}/${pv.metadata.name}
+      mountPermissions: "0777"
     mountOptions:
+      - vers=4.1
       - noatime
       - nodiratime
       - rsize=262144
       - wsize=262144
-  storageClass:
-    archiveOnDelete: "false"
-    name: sas
 # EFS best practice NFS mount options for the aws provider
-NFS_EFS_CLIENT_CONFIG:
-  nfs:
+CSI_DRIVER_NFS_EFS_CONFIG:
+  storageClass:
     mountOptions:
       - noresvport
       - rsize=1048576
@@ -142,24 +151,41 @@ NFS_EFS_CLIENT_CONFIG:
       - _netdev
 
 ## pg-storage storage class config
-PG_NFS_CLIENT_NAME: nfs-subdir-external-provisioner-pg-storage
-PG_NFS_CLIENT_NAMESPACE: nfs-client
-PG_NFS_CLIENT_CHART_NAME: nfs-subdir-external-provisioner
-PG_NFS_CLIENT_CHART_URL: https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/
-PG_NFS_CLIENT_CHART_VERSION: 4.0.18
-PG_NFS_CLIENT_CONFIG:
-  nfs:
-    server: "{{ V4_CFG_RWX_FILESTORE_ENDPOINT }}"
-    path: "{{ V4_CFG_RWX_FILESTORE_PATH | replace('/$', '') }}/pvs"
+CSI_DRIVER_NFS_PG_NAME: csi-driver-nfs-pg-storage
+CSI_DRIVER_NFS_PG_NAMESPACE: nfs-client
+CSI_DRIVER_NFS_PG_CHART_NAME: csi-driver-nfs
+CSI_DRIVER_NFS_PG_CHART_URL: https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts
+CSI_DRIVER_NFS_PG_CHART_VERSION: 4.11.0
+CSI_DRIVER_NFS_PG_CONFIG:
+  driver:
+    mountPermissions: "0777"
+  storageClass:
+    reclaimPolicy: Retain
+    volumeBindingMode: Immediate
+    create: true
+    name: pg-storage
+    annotations:
+    parameters:
+      server: "{{ V4_CFG_RWX_FILESTORE_ENDPOINT }}"
+      share: "{{ '/ontap' if STORAGE_TYPE_BACKEND == 'ontap' else ('/pvs' if PROVIDER != 'azure' else (V4_CFG_RWX_FILESTORE_PATH | replace('/$', '') ~ '/pvs')) }}"
+      subDir: ${pvc.metadata.namespace}/${pvc.metadata.name}/${pv.metadata.name}
+      mountPermissions: "0777"
     mountOptions:
       - noatime
       - nodiratime
       - rsize=262144
       - wsize=262144
+# EFS best practice NFS mount options for the aws provider
+CSI_DRIVER_NFS_PG_EFS_CONFIG:
   storageClass:
-    archiveOnDelete: "false"
-    reclaimPolicy: Retain
-    name: pg-storage
+    mountOptions:
+      - noresvport
+      - rsize=1048576
+      - wsize=1048576
+      - soft
+      - timeo=600
+      - retrans=2
+      - _netdev
 
 ## Contour - Ingress
 CONTOUR_NAME: contour

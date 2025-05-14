@@ -1,11 +1,11 @@
-# Copyright © 2020-2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
 
 ---
-- name: Include nfs-subdir-external-provisioner
+- name: Include nfs.csi.k8s.io
   include_tasks:
-    file: nfs-subdir-external-provisioner.yaml
+    file: nfs-csi-provisioner.yaml
   when:
     - V4_CFG_RWX_FILESTORE_ENDPOINT is defined
     - V4_CFG_RWX_FILESTORE_PATH is defined
