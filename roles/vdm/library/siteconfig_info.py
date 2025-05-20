@@ -67,7 +67,7 @@ class siteConfig(object):
                 overlay = Overlay(blockName)
               except ValueError:
                 continue
-              requiredPrefix = "sas-bases/overlays/"
+              requiredPrefix = "sas-bases/"
               for entry in entries:
                 if entry.startswith(requiredPrefix):
                   self.add_overlays(overlay, entry)
