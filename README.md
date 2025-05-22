@@ -253,7 +253,7 @@ envs:
   - site-config/sas-risk-cirrus-rcc/configuration.env 
 ```
 
-#### Base kustomization.yaml additions from sas-bases/overlays
+#### Base kustomization.yaml additions from sas-bases/
 
 In some scenarios, a README or the deployment documentation instructs you to add an entry to the base `kustomization.yaml` (`$deploy/kustomization.yaml`). For example:
 
