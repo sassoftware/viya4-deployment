@@ -1,4 +1,7 @@
 ---
+# This file contains the Postgres server deployment tasks for the vdm role.
+# It is included from main.yaml to manage Postgres server deployment.
+
 - name: Postgres - set internal_postgres boolean
   set_fact:
     internal_postgres: "{{ V4_CFG_POSTGRES_SERVERS.default.internal }}"

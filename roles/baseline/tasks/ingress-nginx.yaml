@@ -1,6 +1,9 @@
 # Copyright © 2020-2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+# This file contains the ingress-nginx controller setup tasks for the baseline role.
+# It is included from main.yaml when ingress-nginx is required.
+
 ---
 - name: Update INGRESS_NGINX_CONFIG to add private_ingress
   set_fact:

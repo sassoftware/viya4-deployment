@@ -1,6 +1,9 @@
 # Copyright © 2020-2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+# This file contains the cert-manager installation and configuration tasks for the baseline role.
+# It is included from main.yaml when cert-manager setup is required.
+
 ---
 - name: Deploy cert-manager
   kubernetes.core.helm:

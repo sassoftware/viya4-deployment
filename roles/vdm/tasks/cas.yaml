@@ -1,6 +1,9 @@
 # Copyright © 2020-2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+# This file contains the CAS server deployment tasks for the vdm role.
+# It is included from main.yaml to manage CAS server deployment.
+
 ---
 - name: CAS - base
   overlay_facts:

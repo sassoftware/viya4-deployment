@@ -2,6 +2,9 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
+# This file contains the tenant CAS customizations tasks for the multi-tenancy role.
+# It is included from main.yaml when tenant-specific CAS customizations are required.
+
 - name: Update tenant cas customizations
   when: V4MT_TENANT_IDS is search(tenant)
   tags:

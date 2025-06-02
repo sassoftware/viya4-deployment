@@ -5,6 +5,7 @@
 # so that the tooling it contains may be used during the deployment process.
 
 ---
+# Set facts for orchestration tooling directory, archive, and credentials
 - name: Orchestration tooling - Set orchestration tooling facts
   set_fact:
     ORCHESTRATION_TOOLING_DIRECTORY: "{{ tmpdir.path }}/orchestration"
@@ -19,6 +20,7 @@
     - cas-onboard
     - offboard
 
+# Collect UID/GID for running docker container if using ansible tooling
 - name: Orchestration tooling - collect uuid for running docker container
   when:
     - deployment_tooling == "ansible"
@@ -40,6 +42,7 @@
       set_fact:
         UID_GID: "{{ out.stdout }}"
 
+# Find the orchestration tooling image from images.yaml if not already defined
 - name: Orchestration tooling - Find orchestration tooling image
   set_fact:
     ORCHESTRATION_IMAGE: "{{ (lookup('file', '{{ DEPLOY_DIR }}/sas-bases/.orchestration/images.yaml') | from_yaml).spec.images['sas-orchestration'] }}"
@@ -53,10 +56,7 @@
     - cas-onboard
     - offboard
 
-# The ansible log output will have escape characters when the fact is set, if the parsed string contains symbols.
-# This is expected and required to avoid Jinja2 templating issues in the tasks that use these two facts.
-# Note we are also escaping '{%' which to resolve templating issues around Jinja statements
-# https://jinja.palletsprojects.com/en/2.11.x/templates/#synopsis
+# Set registry credentials from secrets.yaml if using defaults
 - name: Orchestration tooling - set registry credentials if using defaults
   set_fact:
     ORCHESTRATION_CR_USER: "{{ lookup('file', '{{DEPLOY_DIR}}/sas-bases/base/secrets.yaml') | regex_search('username=(.+)', '\\1') | first | regex_escape() | regex_replace('{%', '{\\%') }}"
@@ -71,8 +71,7 @@
     - cas-onboard
     - offboard
 
-# The ansible log output will have escape characters for ORCHESTRATION_CR_USER & ORCHESTRATION_CR_PASSWORD.
-# if the parsed creds contain symbols. This is expected and required to avoid Jinja2 templating issues.
+# Download orchestration tooling image using skopeo if using docker tooling
 - name: Orchestration tooling - Download orchestration tooling image
   command: |
     skopeo copy docker://{{ V4_CFG_CR_HOST }}/{{ ORCHESTRATION_IMAGE }} oci-archive:{{ ORCHESTRATION_TOOLING_ARCHIVE }} --src-creds {{ ORCHESTRATION_CR_USER | string }}:{{ ORCHESTRATION_CR_PASSWORD | string }} --insecure-policy
@@ -86,6 +85,7 @@
     - cas-onboard
     - offboard
 
+# Create the orchestration tooling directory
 - name: Orchestration tooling - Create orchestration tooling directory
   file:
     path: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}"
@@ -99,6 +99,7 @@
     - cas-onboard
     - offboard
 
+# Extract orchestration tooling archive and set up path if using docker tooling
 - name: Orchestration tooling - Extract orchestration tooling
   when:
     - deployment_tooling == "docker"
@@ -136,8 +137,7 @@
       set_fact:
         ORCHESTRATION_TOOLING_PATH: "{{ path_list | join(':') }}"
 
-# The ansible log output will have escape characters for ORCHESTRATION_CR_USER & ORCHESTRATION_CR_PASSWORD.
-# if the parsed creds contain symbols. This is expected and required to avoid Jinja2 templating issues.
+# Log into the container registry if using ansible tooling
 - name: Orchestration tooling - log into V4_CFG_CR_HOST
   command: docker login -u {{ ORCHESTRATION_CR_USER | string }} -p {{ ORCHESTRATION_CR_PASSWORD | string }} {{ V4_CFG_CR_HOST }}
   when:
@@ -150,6 +150,7 @@
     - cas-onboard
     - offboard
 
+# Pull the orchestration tooling image using the docker_image module if using ansible tooling
 - name: Orchestration tooling - orchestration tooling image
   community.docker.docker_image:
     name: "{{ V4_CFG_CR_HOST }}/{{ ORCHESTRATION_IMAGE }}"

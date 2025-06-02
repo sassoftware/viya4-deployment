@@ -2,6 +2,9 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
+# This file contains the setup tasks for multi-tenancy in the multi-tenancy role.
+# It is included from main.yaml when multi-tenant setup is required.
+
 - name: Create sas-tenant-job folder
   file:
     state: directory

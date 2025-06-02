@@ -2,6 +2,10 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
+# This file contains the main tasks for the Viya Deployment Manager (VDM) role.
+# It orchestrates the creation of site config, overlays, registry access, and includes all deployment assets and subcomponents.
+
+# Create the site-config directory for deployment configuration
 - name: Create site-config folder
   file:
     state: directory
@@ -12,6 +16,7 @@
     - uninstall
     - update
 
+# Check if sitedefault.yaml exists in the site-config directory
 - name: Check if sitedefault.yaml exists
   stat:
     path: "{{ DEPLOY_DIR }}/site-config/sitedefault.yaml"
@@ -21,6 +26,7 @@
     - uninstall
     - update
 
+# If sitedefault.yaml does not exist, copy it from the configured source
 - name: Sitedefault
   when:
     - not stat_result.stat.exists
@@ -35,6 +41,7 @@
         dest: "{{ DEPLOY_DIR }}/site-config/sitedefault.yaml"
         mode: "0660"
 
+# Include deployment asset tasks
 - name: Include Deployment assets
   include_tasks: assets.yaml
   tags:
@@ -43,6 +50,7 @@
     - update
     - multi-tenancy
 
+# Add base overlays and generators for kustomize
 - name: Base overlays
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
@@ -63,6 +71,7 @@
     - uninstall
     - update
 
+# If container registry user is set, copy access file and add image pull secrets generator
 - name: CR access
   when:
     - V4_CFG_CR_USER is not none
@@ -84,6 +93,7 @@
         add:
           - { generators: sas-image-pull-secrets.yaml, vdm: true }
 
+# Include mirror tasks if not using the default SAS registry
 - name: Include Mirror
   include_tasks: mirror.yaml
   when: V4_CFG_CR_HOST != "cr.sas.com"
@@ -92,6 +102,7 @@
     - uninstall
     - update
 
+# Include multi-tenant tasks if multi-tenancy is enabled
 - name: Include MultiTenant
   include_tasks: multi_tenant.yaml
   when: V4MT_ENABLE
@@ -100,6 +111,7 @@
     - uninstall
     - update
 
+# Include CAS deployment tasks
 - name: Include CAS
   include_tasks: cas.yaml
   tags:
@@ -107,6 +119,7 @@
     - uninstall
     - update
 
+# Include Connect deployment tasks
 - name: Include Connect
   include_tasks: connect.yaml
   tags:
@@ -114,6 +127,7 @@
     - uninstall
     - update
 
+# Include OpenLDAP configuration and resources for single-tenancy
 - name: Include Openldap
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
@@ -131,6 +145,7 @@
     - uninstall
     - update
 
+# Include OpenLDAP configuration and resources for multi-tenancy
 - name: Include Openldap - Multi-Tenancy
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
@@ -148,6 +163,7 @@
     - uninstall
     - update
 
+# Include Postgres configuration tasks
 - name: Include Postgres ConfigMap
   include_tasks: postgres/pg_config.yaml
   tags:
@@ -155,6 +171,7 @@
     - uninstall
     - update
 
+# Include Postgres deployment tasks
 - name: Include Postgres
   include_tasks: postgres/postgres.yaml
   tags:
@@ -162,6 +179,7 @@
     - uninstall
     - update
 
+# Include TLS configuration and resources
 - name: Include TLS
   include_tasks: tls.yaml
   tags:
@@ -169,6 +187,7 @@
     - uninstall
     - update
 
+# Include Elasticsearch deployment tasks
 - name: Include Elasticsearch
   include_tasks: elasticsearch.yaml
   tags:
@@ -176,6 +195,7 @@
     - uninstall
     - update
 
+# Include Storage configuration and resources
 - name: Include Storage
   include_tasks: storage.yaml
   tags:
@@ -183,6 +203,7 @@
     - uninstall
     - update
 
+# Include Sizing configuration and resources
 - name: Include Sizing
   include_tasks: sizing.yaml
   tags:
@@ -190,6 +211,7 @@
     - uninstall
     - update
 
+# Include Workload Orchestrator deployment tasks
 - name: Include Workload Orchestrator
   include_tasks: workload_orchestrator.yaml
   tags:
@@ -197,6 +219,7 @@
     - uninstall
     - update
 
+# Include Start Stop configuration and resources
 - name: Include Start Stop
   include_tasks: start_stop.yaml
   tags:
@@ -204,6 +227,7 @@
     - uninstall
     - update
 
+# Include Kustomize deployment tasks
 - name: Include Kustomize
   include_tasks: kustomize.yaml
   tags:
@@ -211,6 +235,7 @@
     - uninstall
     - update
 
+# Include Orchestration Tooling tasks from the common orchestration role
 - name: Include Orchestration Tooling
   include_tasks: ../../orchestration-common/tasks/orchestration_tooling.yaml
   tags:
@@ -218,6 +243,7 @@
     - uninstall
     - update
 
+# Include Deployment Operator installation tasks if enabled
 - name: Include Deployment Operator - Install
   include_tasks: deployment_operator.yaml
   when:
@@ -226,6 +252,7 @@
     - install
     - update
 
+# Include SASDeployment Custom Resource configuration
 - name: Include SASDeployment Custom Resource
   include_tasks: sasdeployment_custom_resource.yaml
   tags:
@@ -234,6 +261,7 @@
     - update
     - multi-tenancy
 
+# Include application deployment tasks
 - name: Include Deploy
   include_tasks: deploy.yaml
   when:
@@ -244,6 +272,7 @@
     - update
     - multi-tenancy
 
+# Include Deployment Operator uninstallation tasks if enabled
 - name: Include Deployment Operator - Uninstall
   include_tasks: deployment_operator.yaml
   when:
