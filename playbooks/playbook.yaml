@@ -2,30 +2,37 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
-- name: Play for deploying Viya
-  hosts: localhost
-  tasks:
+# Define an Ansible playbook for deploying Viya
+- name: Play for deploying Viya  # Name of the play
+  hosts: localhost               # Run all tasks on the local machine
+  tasks:                         # List of tasks to execute
+
+    # Create a global temporary directory for use during the playbook run
     - name: Global tmp dir
       tempfile:
-        state: directory
-      register: tmpdir
-      tags:
+        state: directory        # Ensure a directory is created
+      register: tmpdir          # Save the result to 'tmpdir' variable
+      tags:                     # Tags for selective task execution
         - install
         - uninstall
         - update
         - onboard
         - cas-onboard
         - offboard
+
+    # Run task validations from the 'common' role
     - name: Common role - task validations
       include_role:
-        name: common
-        tasks_from: task-validations
+        name: common            # Include the 'common' role
+        tasks_from: task-validations  # Use the 'task-validations' task file
       tags:
-        - always
+        - always                # Always run this task
+
+    # Include the main tasks from the 'common' role
     - name: Common role
       include_role:
         name: common
-        public: true
+        public: true            # Make role variables public
       tags:
         - install
         - uninstall
@@ -33,6 +40,8 @@
         - onboard
         - cas-onboard
         - offboard
+
+    # Conditionally include the 'jump-server' role if all required vars are defined and storage is managed
     - name: jump-server role # noqa: name[casing]
       include_role:
         name: jump-server
@@ -44,34 +53,44 @@
         - V4_CFG_MANAGE_STORAGE|bool
       tags:
         - viya
+
+    # Conditionally include the 'baseline' role for install if tags match
     - name: baseline role install # noqa: name[casing]
       include_role:
         name: baseline
       when: ('baseline' in ansible_run_tags) and ('install' in ansible_run_tags)
       tags:
         - baseline
+
+    # Conditionally include the 'multi-tenancy' role if multi-tenancy is enabled
     - name: Multi-tenancy role
       include_role:
         name: multi-tenancy
       when: V4MT_ENABLE is defined
       tags:
         - multi-tenancy
+
+    # Always include the 'vdm' role for viya and multi-tenancy tags
     - name: vdm role # noqa: name[casing]
       include_role:
         name: vdm
       tags:
         - viya
         - multi-tenancy
+
+    # Conditionally include the 'baseline' role for uninstall if tags match
     - name: baseline role uninstall # noqa: name[casing]
       include_role:
         name: baseline
       when: ('baseline' in ansible_run_tags) and ('uninstall' in ansible_run_tags)
       tags:
         - baseline
+
+    # Clean up: delete the temporary directory created at the start
     - name: Delete tmpdir
       file:
-        path: "{{ tmpdir.path }}"
-        state: absent
+        path: "{{ tmpdir.path }}"  # Path to the temp directory
+        state: absent              # Ensure it is removed
       tags:
         - install
         - uninstall

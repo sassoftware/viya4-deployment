@@ -1,5 +1,7 @@
 # Copyright © 2020-2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
+# This file contains migration tasks for the common role.
+# It is included from main.yaml to handle any required migrations during install, uninstall, or update actions.
 ---
 - name: Migrations - Postgres server FQDN
   when:

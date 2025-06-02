@@ -1,3 +1,6 @@
+# This file contains the Azure StorageClasses setup tasks for the baseline role.
+# It is included from main.yaml when Azure storage configuration is required.
+
 - name: Create Azure storage class for RabbitMQ
   kubernetes.core.k8s:
     api_version: v1

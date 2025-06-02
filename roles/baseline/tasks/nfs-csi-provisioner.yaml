@@ -1,6 +1,9 @@
 # Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+# This file contains the NFS CSI provisioner setup tasks for the baseline role.
+# It is included from main.yaml when NFS storage is required.
+
 ---
 - name: Remove deprecated nfs-client-provisioner
   kubernetes.core.helm:

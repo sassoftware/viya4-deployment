@@ -2,10 +2,12 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
+# This file contains validation tasks to ensure only supported tags and actions are used when running the playbook.
 - name: Task validation
   tags:
     - always
   block:
+    # Assert that unsupported tags are not present
     - name: Task validation - Unsupported tasks
       ansible.builtin.assert:
         that: '{{ ["cluster-logging", "cluster-monitoring", "viya-monitoring"] | intersect(ansible_run_tags) | count == 0 }}'
@@ -15,6 +17,7 @@
           The 'cluster-logging', 'cluster-monitoring', and 'viya-monitoring' task tags are not supported.
           See usage documentation at docs/user/AnsibleUsage.md
 
+    # Assert that at least one action tag is present
     - name: Task validation - ensure at least one action tag is used
       ansible.builtin.assert:
         that: '{{ ["install", "uninstall", "onboard", "cas-onboard", "offboard"] | intersect(ansible_run_tags) | count > 0 }}'
@@ -25,6 +28,7 @@
           either 'install' or 'uninstall'.
           See usage documentation at docs/user/AnsibleUsage.md
 
+    # Assert that 'viya' and 'multi-tenancy' are not run together
     - name: Task validation - ensure the viya and multi-tenancy tasks are not run simultaneously
       ansible.builtin.assert:
         that: '{{ ["viya", "multi-tenancy"] | intersect(ansible_run_tags) | count <= 1 }}'
@@ -34,6 +38,7 @@
           The 'viya' and 'multi-tenancy' tasks can not be run simultaneously. See usage documentation at
           docs/user/AnsibleUsage.md and docs/user/Multi-Tenancy.md
 
+    # Assert that multi-tenancy is only used with supported actions
     - name: Task validation - ensure the multi-tenancy task runs only with supported actions
       ansible.builtin.assert:
         that: '{{ ["install", "uninstall"] | intersect(ansible_run_tags) | count == 0 }}'
@@ -44,6 +49,7 @@
           'cas-onboard', or 'offboard' actions are supported. See usage documentation at docs/user/Multi-Tenancy.md
       when: "'multi-tenancy' in ansible_run_tags"
 
+    # Assert that viya is only used with supported actions
     - name: Task validation - ensure the viya task runs only with supported actions
       ansible.builtin.assert:
         that: '{{ ["onboard", "cas-onboard", "offboard"] | intersect(ansible_run_tags) | count == 0 }}'
@@ -54,6 +60,7 @@
           or 'uninstall' actions are supported. See usage documentation at docs/user/AnsibleUsage.md
       when: "'viya' in ansible_run_tags"
 
+    # Assert that baseline is only used with install/uninstall
     - name: Task validation - ensure the other tasks run only with supported actions
       ansible.builtin.assert:
         that: '{{ ["install", "uninstall"] | intersect(ansible_run_tags) | count > 0 }}'
@@ -64,6 +71,7 @@
           'install' or 'uninstall' actions. See usage documentation at docs/user/AnsibleUsage.md
       when: '["baseline"] | intersect(ansible_run_tags) | count > 0'
 
+    # Assert that install and uninstall are not run together
     - name: Task validation - ensure the install and uninstall tasks are not run simultaneously
       ansible.builtin.assert:
         that: '{{ ["install", "uninstall"] | intersect(ansible_run_tags) | count <= 1 }}'
@@ -73,6 +81,7 @@
           The 'install' and 'uninstall' actions can not be run simultaneously. See usage documentation at
           docs/user/AnsibleUsage.md
 
+    # Assert that onboard and offboard are not run together
     - name: Task validation - ensure the onboard and offboard tasks are not run simultaneously
       ansible.builtin.assert:
         that: '{{ ["onboard", "offboard"] | intersect(ansible_run_tags) | count <= 1 }}'
@@ -82,6 +91,7 @@
           The 'onboard' and 'offboard' actions can not be run simultaneously. See usage documentation at
           docs/user/Multi-Tenancy.md
 
+    # Assert that cas-onboard and offboard are not run together
     - name: Task validation - ensure the cas-onboard and offboard tasks are not run simultaneously
       ansible.builtin.assert:
         that: '{{ ["cas-onboard", "offboard"] | intersect(ansible_run_tags) | count <= 1 }}'

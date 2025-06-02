@@ -2,6 +2,9 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
+# This file contains the deployment operator tasks for the vdm role.
+# It is included from main.yaml to manage the SAS Deployment Operator lifecycle.
+
 - name: deployment-operator - validate V4_DEPLOYMENT_OPERATOR_SCOPE # noqa: name[casing]
   ansible.builtin.assert:
     that: V4_DEPLOYMENT_OPERATOR_SCOPE is match ('^(cluster|namespace)$')

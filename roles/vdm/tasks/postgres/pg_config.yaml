@@ -1,4 +1,7 @@
 ---
+# This file contains the Postgres ConfigMap deployment tasks for the vdm role.
+# It is included from main.yaml to manage Postgres ConfigMap resources.
+
 - name: pg_config - Check for storage info ConfigMap # noqa: name[casing]
   tags:
     - install

@@ -1,8 +1,11 @@
 # Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-
 ---
+# This file includes baseline setup tasks for the cluster, such as storage, ingress, and version checks.
+# Each block is conditionally included based on configuration variables and tags.
+
+# Include NFS CSI provisioner tasks if RWX filestore is managed
 - name: Include nfs.csi.k8s.io
   include_tasks:
     file: nfs-csi-provisioner.yaml
@@ -14,6 +17,7 @@
   tags:
     - baseline
 
+# Include ingress-nginx tasks if ingress type is 'ingress' or 'nginx' tag is present
 - name: Include ingress nginx
   include_tasks:
     file: ingress-nginx.yaml
@@ -22,6 +26,7 @@
   tags:
     - baseline
 
+# Include Contour ingress tasks if ingress type is 'contour' or 'contour' tag is present
 - name: Include contour
   include_tasks:
     file: contour.yaml
@@ -30,6 +35,7 @@
   tags:
     - baseline
 
+# Include Istio role if ingress type is 'istio' or 'istio' tag is present
 - name: Include istio
   include_role:
     name: istio
@@ -38,6 +44,7 @@
   tags:
     - baseline
 
+# Retrieve Kubernetes cluster version and set K8S_VERSION fact
 - name: Lookup K8s version info
   tags:
     - baseline
@@ -50,6 +57,7 @@
       set_fact:
         K8S_VERSION: "{{ cluster_info.version.server.kubernetes.major + '.' + cluster_info.version.server.kubernetes.minor | regex_replace('\\+$', '') }}"
 
+# Include cluster autoscaler tasks for AWS if required variables are set
 - name: Include cluster-autoscaler
   include_tasks:
     file: cluster-autoscaler.yaml
@@ -60,6 +68,7 @@
   tags:
     - baseline
 
+# Include EBS CSI driver tasks for AWS if K8S version is >= 1.23 and required variables are set
 - name: Include ebs-csi-driver
   include_tasks:
     file: ebs-csi-driver.yaml
@@ -71,6 +80,7 @@
   tags:
     - baseline
 
+# Include Azure StorageClasses tasks if provider is Azure
 - name: Include StorageClasses
   include_tasks:
     file: storage-classes.yaml
@@ -79,13 +89,14 @@
   tags:
     - baseline
 
+# Always include cert-manager tasks
 - name: Include cert manager
   include_tasks:
     file: cert-manager.yaml
   tags:
     - baseline
 
-# The metrics-server tasks are only applicable for AWS
+# Include metrics-server tasks for AWS
 - name: Include metrics-server
   include_tasks:
     file: metrics-server.yaml

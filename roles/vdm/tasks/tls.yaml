@@ -6,6 +6,10 @@
 # Each can have either customer provided certs or cert-manager generated certs
 # Regardless of type or source of certificates, additional root CA certs can be provided
 # See sas-bases/examples/security/README.md for full details
+
+# This file contains the TLS configuration tasks for the vdm role.
+# It is included from main.yaml to manage TLS certificates and configuration.
+
 ---
 - name: TLS - openssl-generator check
   fail:

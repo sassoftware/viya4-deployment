@@ -2,27 +2,57 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
-- name: Multi-tenant role - setup
-  include_tasks: multi-tenant-setup.yaml
-  tags:
-    - onboard
-    - offboard
+# This file contains the main tasks for the multi-tenancy role, handling onboarding, offboarding, and setup for tenants.
+# Each block is conditionally included based on configuration variables and tags.
 
-- name: Include Orchestration Tooling
-  include_tasks: ../../orchestration-common/tasks/orchestration_tooling.yaml
+# Include multi-tenant setup tasks
+- name: Multi-tenant setup
+  include_tasks:
+    file: multi-tenant-setup.yaml
+  when:
+    - V4MT_ENABLE is defined
+    - V4MT_ENABLE
   tags:
-    - onboard
-    - cas-onboard
-    - offboard
+    - multi-tenancy
 
-- name: Multi-tenant role - onboard offboard
-  include_tasks: multi-tenant-onboard-offboard.yaml
+# Include onboarding/offboarding tasks for tenants
+- name: Multi-tenant onboard/offboard
+  include_tasks:
+    file: multi-tenant-onboard-offboard.yaml
+  when:
+    - V4MT_ENABLE is defined
+    - V4MT_ENABLE
+    - ("onboard" in ansible_run_tags or "offboard" in ansible_run_tags)
   tags:
-    - onboard
-    - offboard
+    - multi-tenancy
 
-- name: Multi-tenant role - cas
-  include_tasks: onboard-offboard-cas-servers.yaml
+# Include CAS server onboarding/offboarding tasks for tenants
+- name: Onboard/offboard CAS servers for tenants
+  include_tasks:
+    file: onboard-offboard-cas-servers.yaml
+  when:
+    - V4MT_ENABLE is defined
+    - V4MT_ENABLE
+    - ("cas-onboard" in ansible_run_tags)
   tags:
-    - cas-onboard
-    - offboard
+    - multi-tenancy
+
+# Include tenant pod template customizations
+- name: Tenant pod templates
+  include_tasks:
+    file: tenant-pod-templates.yaml
+  when:
+    - V4MT_ENABLE is defined
+    - V4MT_ENABLE
+  tags:
+    - multi-tenancy
+
+# Include tenant CAS customizations
+- name: Tenant CAS customizations
+  include_tasks:
+    file: tenant-cas-customizations.yaml
+  when:
+    - V4MT_ENABLE is defined
+    - V4MT_ENABLE
+  tags:
+    - multi-tenancy
