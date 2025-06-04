@@ -8,23 +8,23 @@
 # Create the Azure storage class for RabbitMQ if required
 - name: Create Azure storage class for RabbitMQ
   kubernetes.core.k8s:
-    api_version: v1  # Kubernetes API version
-    definition: "{{ AZURE_RABBITMQ_STORAGE_CLASS }}"  # StorageClass definition for RabbitMQ
-    wait: true  # Wait for resource creation
-    wait_timeout: 600  # Timeout for creation
-    state: present  # Ensure the resource is present
-    kubeconfig: "{{ KUBECONFIG }}"  # Kubeconfig for cluster access
+    api_version: v1                                  # Kubernetes API version
+    definition: "{{ AZURE_RABBITMQ_STORAGE_CLASS }}" # StorageClass definition for RabbitMQ
+    wait: true                                       # Wait for resource creation
+    wait_timeout: 600                                # Timeout for creation
+    state: present                                   # Ensure the resource is present
+    kubeconfig: "{{ KUBECONFIG }}"                   # Kubeconfig for cluster access
   when:
-    - PROVIDER == "azure"  # Only for Azure provider
-    - CREATE_AZURE_RABBITMQ_STORAGE_CLASS  # Only if creation is enabled
+    - PROVIDER == "azure"                            # Only for Azure provider
+    - CREATE_AZURE_RABBITMQ_STORAGE_CLASS            # Only if creation is enabled
   tags:
     - install
 
 # Create the Azure storage class for Postgres if required
 - name: Create Azure storage class for Postgres
   kubernetes.core.k8s:
-    api_version: v1  # Kubernetes API version
-    definition: "{{ AZURE_CRUNCHY_STORAGE_CLASS }}"  # StorageClass definition for Postgres
+    api_version: v1                                 # Kubernetes API version
+    definition: "{{ AZURE_CRUNCHY_STORAGE_CLASS }}" # StorageClass definition for Postgres
     wait: true
     wait_timeout: 600
     state: present

@@ -8,16 +8,16 @@
 # Deploy the cluster-autoscaler using Helm
 - name: Deploy cluster-autoscaler
   kubernetes.core.helm:
-    name: "{{ CLUSTER_AUTOSCALER_NAME }}"  # Name of the Helm release
-    namespace: "{{ CLUSTER_AUTOSCALER_NAMESPACE }}"  # Namespace for the autoscaler
-    chart_repo_url: "{{ CLUSTER_AUTOSCALER_CHART_URL }}"  # Helm chart repository URL
-    chart_ref: "{{ CLUSTER_AUTOSCALER_CHART_NAME }}"  # Helm chart name
-    chart_version: "{{ CLUSTER_AUTOSCALER_CHART_VERSION }}"  # Chart version to deploy
-    values: "{{ CLUSTER_AUTOSCALER_CONFIG }}"  # Custom values for the chart
-    kubeconfig: "{{ KUBECONFIG }}"  # Kubeconfig for cluster access
-    wait: true  # Wait for deployment to complete
+    name: "{{ CLUSTER_AUTOSCALER_NAME }}"                   # Name of the Helm release
+    namespace: "{{ CLUSTER_AUTOSCALER_NAMESPACE }}"         # Namespace for the autoscaler
+    chart_repo_url: "{{ CLUSTER_AUTOSCALER_CHART_URL }}"    # Helm chart repository URL
+    chart_ref: "{{ CLUSTER_AUTOSCALER_CHART_NAME }}"        # Helm chart name
+    chart_version: "{{ CLUSTER_AUTOSCALER_CHART_VERSION }}" # Chart version to deploy
+    values: "{{ CLUSTER_AUTOSCALER_CONFIG }}"               # Custom values for the chart
+    kubeconfig: "{{ KUBECONFIG }}"                          # Kubeconfig for cluster access
+    wait: true                                              # Wait for deployment to complete
   when:
-    - CLUSTER_AUTOSCALER_ENABLED  # Only if autoscaler is enabled
+    - CLUSTER_AUTOSCALER_ENABLED                            # Only if autoscaler is enabled
   tags:
     - install
     - update
@@ -25,11 +25,11 @@
 # Remove the cluster-autoscaler Helm release
 - name: Remove cluster-autoscaler
   kubernetes.core.helm:
-    name: "{{ CLUSTER_AUTOSCALER_NAME }}"  # Name of the Helm release
-    namespace: "{{ CLUSTER_AUTOSCALER_NAMESPACE }}"  # Namespace for the autoscaler
-    kubeconfig: "{{ KUBECONFIG }}"  # Kubeconfig for cluster access
-    wait: true  # Wait for removal to complete
-    values: "{{ CLUSTER_AUTOSCALER_CONFIG }}"  # Use the same values as install (for idempotency)
-    state: absent  # Ensure the release is removed
+    name: "{{ CLUSTER_AUTOSCALER_NAME }}"           # Name of the Helm release
+    namespace: "{{ CLUSTER_AUTOSCALER_NAMESPACE }}" # Namespace for the autoscaler
+    kubeconfig: "{{ KUBECONFIG }}"                  # Kubeconfig for cluster access
+    wait: true                                      # Wait for removal to complete
+    values: "{{ CLUSTER_AUTOSCALER_CONFIG }}"       # Use the same values as install (for idempotency)
+    state: absent                                   # Ensure the release is removed
   tags:
     - uninstall
