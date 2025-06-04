@@ -2,12 +2,10 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
-# This file contains the cert-manager controller setup tasks for the baseline role.
-# It is included from main.yaml when cert-manager is required.
-
-# Name: cert-manager
-# Chart URL: https://artifacthub.io/packages/helm/cert-manager/cert-manager
-# Purpose: Manages TLS certificates in Kubernetes.
+# This file contains the cert-manager setup tasks for the baseline role.
+# Chart Repo URL: https://charts.jetstack.io/
+# Chart Source: https://github.com/cert-manager/cert-manager/tree/master/deploy/charts/cert-manager
+# Purpose: Installs and manages cert-manager for TLS certificate management in Kubernetes.
 
 # Deploy the cert-manager controller using Helm
 - name: Deploy cert-manager
