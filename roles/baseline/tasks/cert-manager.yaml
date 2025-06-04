@@ -5,6 +5,10 @@
 # This file contains the cert-manager controller setup tasks for the baseline role.
 # It is included from main.yaml when cert-manager is required.
 
+# Name: cert-manager
+# Chart URL: https://artifacthub.io/packages/helm/cert-manager/cert-manager
+# Purpose: Manages TLS certificates in Kubernetes.
+
 # Deploy the cert-manager controller using Helm
 - name: Deploy cert-manager
   kubernetes.core.helm:

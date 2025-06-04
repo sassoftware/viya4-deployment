@@ -4,6 +4,7 @@
 ---
 # This file contains the EBS CSI driver setup tasks for the baseline role.
 # It is included from main.yaml when ebs-csi-driver is required.
+# NOTE: This file is specific to Amazon Web Services (AWS) and provisions the AWS EBS CSI driver for persistent storage.
 
 - name: Deploy ebs-csi-driver
   kubernetes.core.helm:

@@ -4,6 +4,14 @@
 ---
 # This file contains the Contour ingress controller setup tasks for the baseline role.
 # It is included from main.yaml when Contour is required.
+# NOTE: This file supports deploying Contour on any Kubernetes cluster, including major
+# cloud providers such as AWS, Azure, and GCP. Configuration is conditional per provider.
+# There is no provider-specific logic here; any provider-specific differences
+# should be handled in the Helm values (CONTOUR_CONFIG).
+
+# Name: contour
+# Chart URL: https://projectcontour.io/
+# Purpose: Alternative ingress controller (if selected).
 
 # Deploy the Contour ingress controller using Helm
 - name: Deploy contour

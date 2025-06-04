@@ -4,6 +4,8 @@
 ---
 # This file contains the cluster-autoscaler setup tasks for the baseline role.
 # It is included from main.yaml when cluster-autoscaler is required.
+# NOTE: This file is intended for use with cloud providers that support the Kubernetes Cluster Autoscaler,
+# such as AWS, Azure, and GCP. Configuration and values may need to be adjusted for your specific provider.
 
 # Deploy the cluster-autoscaler using Helm
 - name: Deploy cluster-autoscaler
