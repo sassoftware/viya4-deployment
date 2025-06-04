@@ -2,9 +2,10 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
-# This file contains the EBS CSI driver setup tasks for the baseline role.
-# It is included from main.yaml when ebs-csi-driver is required.
-# NOTE: This file is specific to Amazon Web Services (AWS) and provisions the AWS EBS CSI driver for persistent storage.
+# This file contains the ebs-csi-driver setup tasks for the baseline role.
+# Chart Repo URL: https://kubernetes-sigs.github.io/aws-ebs-csi-driver/
+# Chart Source: https://github.com/kubernetes-sigs/aws-ebs-csi-driver/tree/master/charts
+# Purpose: Installs and manages the AWS EBS CSI driver for dynamic EBS volume provisioning on AWS.
 
 - name: Deploy ebs-csi-driver
   kubernetes.core.helm:

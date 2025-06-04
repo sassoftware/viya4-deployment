@@ -19,7 +19,8 @@
 ### 4. **Metrics Server, Cert-Manager, and Storage CSI Drivers**
 
 - **metrics-server** and **cert-manager** do not directly affect networking, but may require network access to the Kubernetes API and external endpoints (for certificate validation).
-- **CSI drivers** (EBS, NFS, etc.) do not directly affect networking, but may require network connectivity to storage backends (e.g., EFS, NFS servers).
+- **CSI drivers** (such as NFS, EFS, etc.) do not directly affect networking, but may require network connectivity to storage backends (e.g., EFS, NFS servers).
+- **ebs-csi-driver** (AWS only) does not expose services externally, but requires network connectivity to AWS APIs and EBS endpoints for dynamic volume provisioning. This enables persistent storage for pods on AWS and may require outbound access to AWS services.
 
 ### 5. **Namespace and Resource Management**
 
@@ -35,4 +36,5 @@
 |Cluster Autoscaler|Indirectly affects networking by scaling nodes/pods|
 |metrics-server|Minimal, requires API access|
 |cert-manager|Minimal, may require outbound access for ACME|
-|CSI Drivers|May require network access to storage backends|
+|CSI Drivers (NFS, EFS, etc.)|May require network access to storage backends|
+|ebs-csi-driver|Requires network connectivity to AWS APIs and EBS endpoints for dynamic volume provisioning; does not expose services externally but enables persistent storage for pods on AWS|
