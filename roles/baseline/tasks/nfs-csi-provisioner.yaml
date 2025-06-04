@@ -4,6 +4,12 @@
 ---
 # This file contains the NFS CSI provisioner setup tasks for the baseline role.
 # It is included from main.yaml when nfs-csi-provisioner is required.
+# NOTE: This file supports NFS storage provisioning for Kubernetes clusters on multiple cloud providers,
+# including AWS (EFS), GCP (Filestore/NetApp), and generic NFS for other environments. Configuration is conditional per provider.
+
+# Name: nfs.csi.k8s.io (NFS CSI Provisioner)
+# Chart URL: https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/
+# Purpose: Provides NFS storage provisioning for Kubernetes.
 
 # Remove deprecated nfs-client-provisioner Helm release if present
 - name: Remove deprecated nfs-client-provisioner

@@ -6,6 +6,10 @@
 # It handles downloading Istio, creating the namespace, setting secrets, installing Istio, configuring ingress, and cleanup.
 # Each block is conditionally included based on configuration variables and tags.
 
+# Name: istio
+# Chart URL: https://github.com/istio/istio/releases
+# Purpose: Service mesh for traffic management, security, and observability.
+
 # Download the specified version of Istio for the target architecture
 - name: Download istio
   shell: 
