@@ -8,15 +8,15 @@
 # Deploy the Contour ingress controller using Helm
 - name: Deploy contour
   kubernetes.core.helm:
-    name: "{{ CONTOUR_NAME }}"  # Name of the Helm release
-    namespace: "{{ CONTOUR_NAMESPACE }}"  # Namespace for Contour
-    chart_repo_url: "{{ CONTOUR_CHART_URL }}"  # Helm chart repository URL
-    chart_ref: "{{ CONTOUR_CHART_NAME }}"  # Helm chart name
-    chart_version: "{{ CONTOUR_CHART_VERSION }}"  # Chart version to deploy
-    values: "{{ CONTOUR_CONFIG }}"  # Custom values for the chart
-    kubeconfig: "{{ KUBECONFIG }}"  # Kubeconfig for cluster access
-    create_namespace: true  # Create namespace if it doesn't exist
-    wait: true  # Wait for deployment to complete
+    name: "{{ CONTOUR_NAME }}"                   # Name of the Helm release
+    namespace: "{{ CONTOUR_NAMESPACE }}"         # Namespace for Contour
+    chart_repo_url: "{{ CONTOUR_CHART_URL }}"    # Helm chart repository URL
+    chart_ref: "{{ CONTOUR_CHART_NAME }}"        # Helm chart name
+    chart_version: "{{ CONTOUR_CHART_VERSION }}" # Chart version to deploy
+    values: "{{ CONTOUR_CONFIG }}"               # Custom values for the chart
+    kubeconfig: "{{ KUBECONFIG }}"               # Kubeconfig for cluster access
+    create_namespace: true                       # Create namespace if it doesn't exist
+    wait: true                                   # Wait for deployment to complete
   tags:
     - install
     - update
@@ -24,24 +24,24 @@
 # Remove the Contour ingress controller Helm release
 - name: Remove contour
   kubernetes.core.helm:
-    name: "{{ CONTOUR_NAME }}"  # Name of the Helm release
-    namespace: "{{ CONTOUR_NAMESPACE }}"  # Namespace for Contour
-    kubeconfig: "{{ KUBECONFIG }}"  # Kubeconfig for cluster access
-    wait: true  # Wait for removal to complete
-    values: "{{ CONTOUR_CONFIG }}"  # Use the same values as install (for idempotency)
-    state: absent  # Ensure the release is removed
+    name: "{{ CONTOUR_NAME }}"           # Name of the Helm release
+    namespace: "{{ CONTOUR_NAMESPACE }}" # Namespace for Contour
+    kubeconfig: "{{ KUBECONFIG }}"       # Kubeconfig for cluster access
+    wait: true                           # Wait for removal to complete
+    values: "{{ CONTOUR_CONFIG }}"       # Use the same values as install (for idempotency)
+    state: absent                        # Ensure the release is removed
   tags:
     - uninstall
 
 # Remove the Contour namespace from the cluster
 - name: Remove {{ CONTOUR_NAMESPACE }} namespace
   kubernetes.core.k8s:
-    api_version: v1  # Kubernetes API version
-    kind: Namespace  # Resource kind
-    name: "{{ CONTOUR_NAMESPACE }}"  # Namespace to remove
-    wait: true  # Wait for deletion
-    wait_timeout: 600  # Timeout for deletion
-    state: absent  # Ensure the namespace is deleted
+    api_version: v1                 # Kubernetes API version
+    kind: Namespace                 # Resource kind
+    name: "{{ CONTOUR_NAMESPACE }}" # Namespace to remove
+    wait: true                      # Wait for deletion
+    wait_timeout: 600               # Timeout for deletion
+    state: absent                   # Ensure the namespace is deleted
     kubeconfig: "{{ KUBECONFIG }}"  # Kubeconfig for cluster access
   tags:
     - uninstall
