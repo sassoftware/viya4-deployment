@@ -1,33 +1,37 @@
-# Copyright © 2020-2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
 ---
+# Apply SAS Viya deployment using the deployment operator if enabled
 - name: Deploy - Apply SAS Viya deployment
   kubernetes.core.k8s:
-    src: "{{ DEPLOY_DIR }}/sasdeployment.yaml"
-    state: present
-    namespace: "{{ NAMESPACE }}"
-    kubeconfig: "{{ KUBECONFIG }}"
+    src: "{{ DEPLOY_DIR }}/sasdeployment.yaml"  # Path to the main deployment manifest
+    state: present  # Ensure resources are present
+    namespace: "{{ NAMESPACE }}"  # Target namespace
+    kubeconfig: "{{ KUBECONFIG }}"  # Kubeconfig file for cluster access
   when:
-    - V4_DEPLOYMENT_OPERATOR_ENABLED
+    - V4_DEPLOYMENT_OPERATOR_ENABLED  # Only if deployment operator is enabled
   tags:
     - install
     - update
     - cas-onboard
 
+# Fallback: Deploy SAS Viya without the deployment operator
 - name: Deploy - Apply SAS Viya deployment
   when:
-    - not V4_DEPLOYMENT_OPERATOR_ENABLED
+    - not V4_DEPLOYMENT_OPERATOR_ENABLED  # Only if deployment operator is not enabled
   tags:
     - install
     - update
     - cas-onboard
   block:
+    # Gather all YAML resource files in the manifests directory
     - name: Deploy - Gather all resource files
       find:
         paths: "{{ ORCHESTRATION_TOOLING_INSTALL_MANIFESTS_DIRECTORY }}"
         patterns: "*.yaml"
       register: manifests
+    # Find the SASDeployment manifest (should be exactly one)
     - name: Deploy - Gather SAS Viya deployment resource files
       find:
         paths: "{{ ORCHESTRATION_TOOLING_INSTALL_MANIFESTS_DIRECTORY }}"
@@ -35,7 +39,8 @@
         contains: "^kind: SASDeployment"
       register: deployment_manifests
       failed_when:
-        - ( deployment_manifests.files | length ) != 1
+        - ( deployment_manifests.files | length ) != 1  # Fail if not exactly one SASDeployment manifest
+    # Apply all supporting resources except the SASDeployment manifest
     - name: Deploy - Apply supporting resources
       kubernetes.core.k8s:
         src: "{{ item.path }}"
@@ -44,10 +49,12 @@
         kubeconfig: "{{ KUBECONFIG }}"
       with_items:
         - "{{ manifests.files | difference(deployment_manifests.files) }}"
+    # Create a work directory for orchestration tooling
     - name: Orchestration - Create orchestration tooling work directory
       file:
         path: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/work"
         state: directory
+    # Deploy SAS Viya using orchestration tooling (docker mode, above-the-line)
     - name: Deploy - Deploy SAS Viya
       environment:
         PATH: "{{ ORCHESTRATION_TOOLING_PATH + ':' + env_path }}"
@@ -64,12 +71,13 @@
       when:
         - deployment_tooling == "docker"
         - not V4_CFG_BELOW_THE_LINE
+    # Deploy SAS Viya using orchestration tooling (docker mode, below-the-line)
     - name: Deploy BLT - Deploy SAS Viya
       environment:
         PATH: "{{ ORCHESTRATION_TOOLING_PATH + ':' + env_path }}"
         KUBECONFIG: "{{ KUBECONFIG }}"
         WORK_DIRECTORY: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/work"
-        EXPERIMENTAL_FEATURE_LOCAL_DEPLOYMENT_ASSETS: true
+        EXPERIMENTAL_FEATURE_LOCAL_DEPLOYMENT_ASSETS: "true"
       command: |
         orchestration deploy
              --namespace "{{ NAMESPACE }}"
@@ -82,6 +90,7 @@
       when:
         - deployment_tooling == "docker"
         - V4_CFG_BELOW_THE_LINE
+    # Deploy SAS Viya using orchestration tooling (ansible mode, above-the-line)
     - name: Deploy - Deploy SAS Viya
       ansible.builtin.shell: >
         docker run --rm
@@ -100,6 +109,7 @@
       when:
         - deployment_tooling == "ansible"
         - not V4_CFG_BELOW_THE_LINE
+    # Deploy SAS Viya using orchestration tooling (ansible mode, below-the-line)
     - name: Deploy BLT - Deploy SAS Viya
       ansible.builtin.shell: >
         docker run --rm
@@ -120,30 +130,33 @@
         - deployment_tooling == "ansible"
         - V4_CFG_BELOW_THE_LINE
 
+# Uninstall all postgresclusters labeled for this deployment (for uninstall)
 - name: Deploy - Uninstall postgresclusters
   environment:
-    KUBECONFIG: "{{ KUBECONFIG }}"
+    KUBECONFIG: "{{ KUBECONFIG }}"  # Set kubeconfig for kubectl
   ansible.builtin.shell: >
     kubectl -n {{ NAMESPACE }} delete postgresclusters --selector="sas.com/deployment=sas-viya" --ignore-not-found=true
-  ignore_errors: true
+  ignore_errors: true  # Ignore errors if resources are not found
   when:
     - V4_CFG_CADENCE_VERSION is version('2022.10', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
     - internal_postgres
   tags:
     - uninstall
 
+# Remove all Viya resources using the uninstall manifest (for uninstall)
 - name: Deploy - Remove Viya
   kubernetes.core.k8s:
-    state: absent
-    src: "{{ ORCHESTRATION_TOOLING_UNINSTALL_MANIFEST }}"
-    wait: true
-    wait_timeout: 600
+    state: absent  # Delete resources
+    src: "{{ ORCHESTRATION_TOOLING_UNINSTALL_MANIFEST }}"  # Path to uninstall manifest
+    wait: true  # Wait for deletion
+    wait_timeout: 600  # Timeout for deletion
     namespace: "{{ NAMESPACE }}"
     kubeconfig: "{{ KUBECONFIG }}"
-  ignore_errors: true
+  ignore_errors: true  # Ignore errors if resources are already gone
   tags:
     - uninstall
 
+# Delete the namespace (for uninstall)
 - name: Deploy - Delete namespace
   kubernetes.core.k8s:
     api_version: v1
@@ -152,6 +165,6 @@
     wait: true
     wait_timeout: 600
     kubeconfig: "{{ KUBECONFIG }}"
-    state: absent
+    state: absent  # Delete the namespace
   tags:
     - uninstall

@@ -1,4 +1,4 @@
-# Copyright © 2020-2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
 ---
@@ -6,53 +6,39 @@
 # Each block is conditionally included based on configuration variables and tags.
 
 # Include multi-tenant setup tasks
-- name: Multi-tenant setup
-  include_tasks:
-    file: multi-tenant-setup.yaml
-  when:
-    - V4MT_ENABLE is defined
-    - V4MT_ENABLE
+# This task includes the setup tasks for multi-tenancy, which are required for both onboarding and offboarding.
+- name: Multi-tenancy - include setup tasks
+  include_tasks: multi-tenant-setup.yaml
+  # Include the setup tasks for multi-tenancy
+  when: V4MT_ENABLE
   tags:
-    - multi-tenancy
+    - onboard
+    - offboard
 
-# Include onboarding/offboarding tasks for tenants
-- name: Multi-tenant onboard/offboard
-  include_tasks:
-    file: multi-tenant-onboard-offboard.yaml
-  when:
-    - V4MT_ENABLE is defined
-    - V4MT_ENABLE
-    - ("onboard" in ansible_run_tags or "offboard" in ansible_run_tags)
+# Include Orchestration Tooling tasks
+# This task includes common orchestration tooling tasks that are applicable for both onboarding and offboarding.
+- name: Include Orchestration Tooling
+  include_tasks: ../../orchestration-common/tasks/orchestration_tooling.yaml
   tags:
-    - multi-tenancy
+    - onboard
+    - cas-onboard
+    - offboard
 
-# Include CAS server onboarding/offboarding tasks for tenants
-- name: Onboard/offboard CAS servers for tenants
-  include_tasks:
-    file: onboard-offboard-cas-servers.yaml
-  when:
-    - V4MT_ENABLE is defined
-    - V4MT_ENABLE
-    - ("cas-onboard" in ansible_run_tags)
+# Include onboarding and offboarding tasks for multi-tenancy
+- name: Multi-tenancy - include onboard/offboard tasks
+  include_tasks: multi-tenant-onboard-offboard.yaml
+  # Include the onboarding and offboarding tasks for tenants
+  when: V4MT_ENABLE
   tags:
-    - multi-tenancy
-
-# Include tenant pod template customizations
-- name: Tenant pod templates
-  include_tasks:
-    file: tenant-pod-templates.yaml
-  when:
-    - V4MT_ENABLE is defined
-    - V4MT_ENABLE
-  tags:
-    - multi-tenancy
+    - onboard
+    - offboard
 
 # Include tenant CAS customizations
-- name: Tenant CAS customizations
-  include_tasks:
-    file: tenant-cas-customizations.yaml
-  when:
-    - V4MT_ENABLE is defined
-    - V4MT_ENABLE
+# This task includes the tenant CAS customizations, which are necessary for both cas onboarding and offboarding.
+- name: Multi-tenancy - include CAS server onboard/offboard tasks
+  include_tasks: onboard-offboard-cas-servers.yaml
+  # Include the CAS server onboarding and offboarding tasks
+  when: V4MT_ENABLE
   tags:
-    - multi-tenancy
+    - onboard
+    - offboard

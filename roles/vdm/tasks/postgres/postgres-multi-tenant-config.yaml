@@ -1,4 +1,36 @@
+# Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 ---
+# This file configures Postgres settings for multi-tenant environments, such as max connections.
+# It is included from postgres.yaml when V4MT_ENABLE and internal_postgres are true.
+
+# Set the max_connections parameter for each Postgres server in a multi-tenant environment
+- name: Set Postgres max_connections for multi-tenant
+  set_fact:
+    postgres_max_connections: "{{ settings.max_connections | default(200) }}"
+  tags:
+    - install
+    - uninstall
+    - update
+
+# Add or update the overlay configuration for max_connections
+- name: Configure Postgres max_connections in overlay
+  overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { generators: postgres-max-connections.yaml, vdm: true }
+  when:
+    - postgres_max_connections is defined
+    - internal
+  tags:
+    - install
+    - uninstall
+    - update
+
+# Calculate the MAX_CONNECTIONS value based on the number of tenants
 - name: Postgres - determine MAX_CONNECTIONS
   set_fact:
     MAX_CONNECTIONS: '{{ ((((V4MT_TENANT_IDS.split(",") | length) | int) + 1) * 1128) }}'
@@ -7,6 +39,7 @@
     - uninstall
     - update
 
+# Check if the CrunchyData tuning folder exists for crunchy v5
 - name: Postgres crunchy v5 - crunchydata tuning folder check
   stat:
     path: "{{ DEPLOY_DIR }}/sas-bases/examples/crunchydata/tuning"
@@ -17,6 +50,7 @@
     - uninstall
     - update
 
+# Check if the internal-postgres custom-config folder exists
 - name: Postgres - internal-postgres custom-config folder check
   stat:
     path: "{{ DEPLOY_DIR }}/sas-bases/examples/postgres/custom-config"
@@ -27,6 +61,7 @@
     - uninstall
     - update
 
+# Copy custom config files for internal Postgres
 - name: Postgres - copy custom config
   copy:
     src: "{{ file.src }}"
@@ -47,6 +82,7 @@
     - uninstall
     - update
 
+# Update the custom config file: remove shared_buffers and add max_connections block
 - name: Postgres - update config default
   when:
     - custom_config_folder.stat.exists
@@ -55,12 +91,13 @@
     - install
     - uninstall
   block:
+    # Remove the example shared_buffers line from the custom config
     - name: Postgres - remove example shared_buffers line
       lineinfile:
         path: "{{ role_path }}/templates/resources/sas-{{ 'postgres' if role == 'default' else role }}-custom-config.yaml"
         regexp: "shared_buffers: 2GB"
         state: absent
-
+    # Add max_prepared_transactions and max_connections lines to the custom config
     - name: Postgres - add max_connections block
       lineinfile:
         path: "{{ role_path }}/templates/resources/sas-{{ 'postgres' if role == 'default' else role }}-custom-config.yaml"
@@ -72,6 +109,7 @@
       loop_control:
         loop_var: outer_item
 
+# Add the custom config and transformer to the overlay
 - name: Postgres - add resource
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
@@ -88,7 +126,7 @@
     - uninstall
     - update
 
-# Updates to support Crunchy v5 internal PostgreSQL - pre 2023.03
+# Copy Crunchy v5 tuning transformer for internal PostgreSQL (pre 2023.03)
 - name: Postgres crunchy v5 - copy custom config
   copy:
     src: "{{ DEPLOY_DIR }}/sas-bases/examples/crunchydata/tuning/crunchy-tuning-transformer.yaml"
@@ -105,6 +143,7 @@
     - uninstall
     - update
 
+# Uncomment config for front-door or TLS disabled in Crunchy v5 tuning transformer (pre 2023.03)
 - name: Postgres crunchy v5 - uncomment config for front-door or tls disabled
   replace:
     path: "{{ role_path }}/templates/transformers/{{ 'platform-postgres' if role == 'default' else role }}-crunchy-tuning-transformer.yaml"
@@ -125,6 +164,7 @@
     - uninstall
     - update
 
+# Remove commented lines from Crunchy v5 tuning transformer (pre 2023.03)
 - name: Postgres crunchy v5 - remove commented block
   lineinfile:
     path: "{{ role_path }}/templates/transformers/{{ 'platform-postgres' if role == 'default' else role }}-crunchy-tuning-transformer.yaml"
@@ -139,6 +179,7 @@
     - uninstall
     - update
 
+# Update max_connections and other parameters in Crunchy v5 tuning transformer (pre 2023.03)
 - name: Postgres crunchy v5 - update config
   replace:
     path: "{{ role_path }}/templates/transformers/{{ 'platform-postgres' if role == 'default' else role }}-crunchy-tuning-transformer.yaml"
@@ -161,6 +202,7 @@
     - uninstall
     - update
 
+# Add Crunchy v5 tuning transformer to kustomization (pre 2023.03)
 - name: Postgres crunchy v5 - add custom config transformer to kustomization
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
@@ -177,7 +219,7 @@
     - uninstall
     - update
 
-## Postgres tuning transformer updates for 2023.03 and above
+# Copy Crunchy v5 connection params transformer for 2023.03 and above
 - name: Postgres crunchy v5 - copy custom config transformers
   copy:
     src: "{{ DEPLOY_DIR }}/sas-bases/examples/crunchydata/tuning/crunchy-tuning-connection-params-transformer.yaml"
@@ -194,6 +236,7 @@
     - uninstall
     - update
 
+# Copy Crunchy v5 no-tls transformer for front-door or TLS disabled (2023.03 and above)
 - name: Postgres crunchy v5 - add no-tls transformer for front-door or tls disabled
   copy:
     src: "{{ DEPLOY_DIR }}/sas-bases/examples/crunchydata/tuning/crunchy-tuning-pg-hba-no-tls-transformer.yaml"
@@ -211,6 +254,7 @@
     - uninstall
     - update
 
+# Remove commented lines from Crunchy v5 transformers (2023.03 and above)
 - name: Postgres crunchy v5 - remove commented block
   lineinfile:
     path: "{{ outer_item.path }}"
@@ -230,6 +274,7 @@
     - uninstall
     - update
 
+# Update max_connections and other parameters in Crunchy v5 connection params transformer (2023.03 and above)
 - name: Postgres crunchy v5 - update max_connections
   replace:
     path: "{{ role_path }}/templates/transformers/{{ 'platform-postgres' if role == 'default' else role }}-crunchy-tuning-connection-params-transformer.yaml"
@@ -251,6 +296,7 @@
     - uninstall
     - update
 
+# Update no-tls transformer for Crunchy v5 (2023.03 and above)
 - name: Postgres crunchy v5 - update no tls transformer
   replace:
     path: "{{ role_path }}/templates/transformers/{{ 'platform-postgres' if role == 'default' else role }}-crunchy-tuning-pg-hba-no-tls-transformer.yaml"
@@ -271,6 +317,7 @@
     - uninstall
     - update
 
+# Add Crunchy v5 connection params transformer to kustomization (2023.03 and above)
 - name: Postgres crunchy v5 - add custom config transformer to kustomization
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
@@ -289,6 +336,7 @@
     - uninstall
     - update
 
+# Add Crunchy v5 no-tls transformer to kustomization (2023.03 and above)
 - name: Postgres crunchy v5 - add custom config transformer to kustomization
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"

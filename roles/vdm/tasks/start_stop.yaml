@@ -1,10 +1,11 @@
-# Copyright © 2020-2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+---
 # This file contains the start/stop orchestration tasks for the vdm role.
 # It is included from main.yaml to manage start/stop operations for the deployment.
 
----
+# Fail if start/stop scheduling is requested for unsupported cadence versions
 - name: Start_stop - validate cadence version
   ansible.builtin.fail:
     msg: >
@@ -13,6 +14,7 @@
       To continue deploying 2021.1 or older remove 'V4_CFG_VIYA_STOP_SCHEDULE' & 'V4_CFG_VIYA_START_SCHEDULE' from your
       Ansible vars. Alternatively select a newer 'V4_CFG_CADENCE_VERSION' if you would like to use the  schedule-start-stop.yaml transformer
   when:
+    # Only run if scheduling is requested and cadence is too old
     - V4_CFG_VIYA_STOP_SCHEDULE is not none or V4_CFG_VIYA_START_SCHEDULE is not none
     - V4_CFG_CADENCE_VERSION is version('2021.1', "<=")
     - V4_CFG_CADENCE_NAME|lower != "fast"
@@ -21,6 +23,7 @@
     - uninstall
     - update
 
+# Add the schedule-start-stop transformer overlay for supported cadence versions
 - name: Start_stop - add transformer
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
@@ -29,6 +32,7 @@
     add:
       - { transformers: schedule-start-stop.yaml, vdm: true, min: "2021.2", priority: 61 }
   when:
+    # Only run if scheduling is requested
     - V4_CFG_VIYA_STOP_SCHEDULE is not none or V4_CFG_VIYA_START_SCHEDULE is not none
   tags:
     - install

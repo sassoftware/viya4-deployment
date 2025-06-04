@@ -1,4 +1,4 @@
-# Copyright © 2020-2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
 ---
@@ -94,6 +94,7 @@
     - offboard
 
 # On offboard delete the tenant pod template directories
+# Remove the tenant-specific pod template directory if it exists
 - name: Delete tenant pod template directory
   file:
     state: absent
