@@ -1,8 +1,9 @@
-# Copyright © 2020-2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
 ---
 # This file contains validation tasks to ensure only supported tags and actions are used when running the playbook.
+
 - name: Task validation
   tags:
     - always

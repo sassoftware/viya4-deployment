@@ -1,10 +1,10 @@
-# Copyright © 2020-2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+---
 # These tasks are responsible for pulling or downloading the sas-orchestration image
 # so that the tooling it contains may be used during the deployment process.
 
----
 # Set facts for orchestration tooling directory, archive, and credentials
 - name: Orchestration tooling - Set orchestration tooling facts
   set_fact:
@@ -56,6 +56,10 @@
     - cas-onboard
     - offboard
 
+# The ansible log output will have escape characters when the fact is set, if the parsed string contains symbols.
+# This is expected and required to avoid Jinja2 templating issues in the tasks that use these two facts.
+# Note we are also escaping '{%' which to resolve templating issues around Jinja statements
+# https://jinja.palletsprojects.com/en/2.11.x/templates/#synopsis
 # Set registry credentials from secrets.yaml if using defaults
 - name: Orchestration tooling - set registry credentials if using defaults
   set_fact:
@@ -71,6 +75,8 @@
     - cas-onboard
     - offboard
 
+# The ansible log output will have escape characters for ORCHESTRATION_CR_USER & ORCHESTRATION_CR_PASSWORD.
+# if the parsed creds contain symbols. This is expected and required to avoid Jinja2 templating issues.
 # Download orchestration tooling image using skopeo if using docker tooling
 - name: Orchestration tooling - Download orchestration tooling image
   command: |
@@ -137,6 +143,8 @@
       set_fact:
         ORCHESTRATION_TOOLING_PATH: "{{ path_list | join(':') }}"
 
+# The ansible log output will have escape characters for ORCHESTRATION_CR_USER & ORCHESTRATION_CR_PASSWORD.
+# if the parsed creds contain symbols. This is expected and required to avoid Jinja2 templating issues.
 # Log into the container registry if using ansible tooling
 - name: Orchestration tooling - log into V4_CFG_CR_HOST
   command: docker login -u {{ ORCHESTRATION_CR_USER | string }} -p {{ ORCHESTRATION_CR_PASSWORD | string }} {{ V4_CFG_CR_HOST }}

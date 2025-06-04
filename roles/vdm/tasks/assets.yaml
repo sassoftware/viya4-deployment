@@ -1,22 +1,28 @@
-# Copyright © 2020-2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+---
 # This file contains the deployment asset tasks for the vdm role.
 # It is included from main.yaml to manage deployment assets.
 
----
+# Download the viya4-orders-cli tool if any of the required assets are missing
 - name: Assets - Download viya4-orders-cli
   get_url:
+    # Download URL for the CLI, using the system type and version
     url: https://github.com/sassoftware/viya4-orders-cli/releases/download/{{ V4_ORDERS_CLI_VERSION }}/viya4-orders-cli_{{ hostvars[inventory_hostname]['ansible_system'] | lower }}_amd64
+    # Destination path for the CLI binary
     dest: "{{ tmpdir.path }}/viya4-orders-cli"
+    # Set executable permissions
     mode: "0755"
   when:
+    # Only run if license, certs, or deployment assets are missing
     - (V4_CFG_LICENSE is none) or (V4_CFG_CERTS is none) or (V4_CFG_DEPLOYMENT_ASSETS is none)
   tags:
     - install
     - uninstall
     - update
 
+# Set the LICENSE_DIRECTORY fact for later use
 - name: Assets - Set facts
   set_fact:
     LICENSE_DIRECTORY: "{{ BASE_DIR | regex_replace('\\/$', '') }}/{{ CLUSTER_NAME }}/{{ NAMESPACE }}/license"
@@ -27,6 +33,7 @@
     - cas-onboard
     - offboard
 
+# Create the license directory if it does not exist
 - name: Assets - create license directory
   file:
     path: "{{ LICENSE_DIRECTORY }}"
@@ -37,41 +44,51 @@
     - uninstall
     - update
 
+# Download the license file using the viya4-orders-cli
 - name: Assets - Get License
   command:
-    cmd: "{{ tmpdir.path }}/viya4-orders-cli license --file-path {{ LICENSE_DIRECTORY }} --file-name license {{ V4_CFG_ORDER_NUMBER }} {{ V4_CFG_CADENCE_NAME }} {{
-      V4_CFG_CADENCE_VERSION }}"
+    # Command to download the license file
+    cmd: "{{ tmpdir.path }}/viya4-orders-cli license --file-path {{ LICENSE_DIRECTORY }} --file-name license {{ V4_CFG_ORDER_NUMBER }} {{ V4_CFG_CADENCE_NAME }} {{ V4_CFG_CADENCE_VERSION }}"
   environment:
+    # API credentials for authentication, base64 encoded
     CLIENTCREDENTIALSID: "{{ V4_CFG_SAS_API_KEY | string | b64encode }}"
     CLIENTCREDENTIALSSECRET: "{{ V4_CFG_SAS_API_SECRET | string | b64encode }}"
   when:
+    # Only run if license is missing
     - V4_CFG_LICENSE is none
   tags:
     - install
     - uninstall
     - update
 
+# Download the certificates using the viya4-orders-cli
 - name: Assets - Get Certificates
   command:
+    # Command to download the certificates
     cmd: "{{ tmpdir.path }}/viya4-orders-cli certificates --file-path {{ LICENSE_DIRECTORY }} --file-name certs {{ V4_CFG_ORDER_NUMBER }}"
   environment:
+    # API credentials for authentication, base64 encoded
     CLIENTCREDENTIALSID: "{{ V4_CFG_SAS_API_KEY | string | b64encode }}"
     CLIENTCREDENTIALSSECRET: "{{ V4_CFG_SAS_API_SECRET | string | b64encode }}"
   when:
+    # Only run if certs are missing
     - V4_CFG_CERTS is none
   tags:
     - install
     - uninstall
     - update
 
+# Download deployment assets using the viya4-orders-cli
 - name: Assets - Download
   command:
-    cmd: "{{ tmpdir.path }}/viya4-orders-cli dep --file-path {{ DEPLOY_DIR }} -o json {{ V4_CFG_ORDER_NUMBER }} {{ V4_CFG_CADENCE_NAME }} {{ V4_CFG_CADENCE_VERSION
-      }}"
+    # Command to download deployment assets in JSON format
+    cmd: "{{ tmpdir.path }}/viya4-orders-cli dep --file-path {{ DEPLOY_DIR }} -o json {{ V4_CFG_ORDER_NUMBER }} {{ V4_CFG_CADENCE_NAME }} {{ V4_CFG_CADENCE_VERSION }}"
   environment:
+    # API credentials for authentication, base64 encoded
     CLIENTCREDENTIALSID: "{{ V4_CFG_SAS_API_KEY | string | b64encode }}"
     CLIENTCREDENTIALSSECRET: "{{ V4_CFG_SAS_API_SECRET | string | b64encode }}"
   when:
+    # Only run if deployment assets are missing
     - V4_CFG_DEPLOYMENT_ASSETS is none
   tags:
     - install
@@ -79,6 +96,7 @@
     - update
   register: res
 
+# Set the order_output fact with the JSON output from the previous task
 - name: Assets - Set assets location
   set_fact:
     order_output: "{{ res.stdout | from_json }}"
@@ -89,6 +107,7 @@
     - uninstall
     - update
 
+# Remove old asset files/directories before updating
 - name: Assets - Remove old files
   file:
     path: "{{ item }}"
@@ -102,6 +121,7 @@
     - uninstall
     - update
 
+# Extract the downloaded assets to the deployment directory
 - name: Assets - Extract downloaded assets
   unarchive:
     src: "{{ order_output.assetLocation }}"
@@ -113,6 +133,7 @@
     - uninstall
     - update
 
+# Extract user-provided assets if any
 - name: Assets - Extract user-provided assets
   unarchive:
     src: "{{ V4_CFG_DEPLOYMENT_ASSETS }}"
@@ -124,6 +145,7 @@
     - uninstall
     - update
 
+# Copy the user-provided license file to the license directory
 - name: Assets - Copy user-provided license file
   copy:
     src: "{{ V4_CFG_LICENSE }}"
@@ -135,6 +157,7 @@
     - uninstall
     - update
 
+# Copy the user-provided certs file to the license directory
 - name: Assets - Copy user-provided certs file
   copy:
     src: "{{ V4_CFG_CERTS }}"
@@ -146,6 +169,7 @@
     - uninstall
     - update
 
+# Set the LICENSE_CONTENT fact with the content of the license file
 - name: Assets - Set LICENSE_CONTENT
   set_fact:
     LICENSE_CONTENT: "{{ lookup('file', '{{ LICENSE_DIRECTORY }}/license.jwt') }}"

@@ -1,35 +1,47 @@
-# Copyright © 2020-2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+---
 # This file contains the mirror registry configuration tasks for the vdm role.
 # It is included from main.yaml when a non-default container registry is used.
 
----
+# Copy the example mirror.yaml to the transformers directory for customization
 - name: Mirror - copy example
   copy:
+    # Source example file
     src: "{{ DEPLOY_DIR }}/sas-bases/examples/mirror/mirror.yaml"
+    # Destination for the mirror.yaml template
     dest: "{{ role_path }}/templates/transformers/mirror.yaml"
+    # Set file permissions
     mode: "0660"
   tags:
     - install
     - uninstall
     - update
 
+# Replace the MIRROR-HOST placeholder with the configured registry host
 - name: Mirror - update example
   replace:
+    # Path to the mirror.yaml file
     path: "{{ role_path }}/templates/transformers/mirror.yaml"
+    # Regex to find the placeholder
     regexp: MIRROR-HOST
+    # Replace with the actual registry host variable
     replace: V4_CFG_CR_HOST
   tags:
     - install
     - uninstall
     - update
 
+# Add overlay facts for mirror configuration, supporting different cadence versions
 - name: Mirror - overlay
   overlay_facts:
+    # Cadence name and version for overlay selection
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+    # Existing overlays to update
     existing: "{{ vdm_overlays }}"
+    # Add overlay and generator entries for mirror support
     add:
       - { transformers: mirror.yaml, vdm: true, priority: 65 }
       - { generators: mirror.yaml, vdm: true, max: "2022.09" }

@@ -1,18 +1,18 @@
-# Copyright © 2020-2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
 ---
 # Define an Ansible playbook for deploying Viya
-- name: Play for deploying Viya  # Name of the play
-  hosts: localhost               # Run all tasks on the local machine
-  tasks:                         # List of tasks to execute
+- name: Play for deploying Viya # Name of the play
+  hosts: localhost              # Run all tasks on the local machine
+  tasks:                        # List of tasks to execute
 
     # Create a global temporary directory for use during the playbook run
     - name: Global tmp dir
       tempfile:
-        state: directory        # Ensure a directory is created
-      register: tmpdir          # Save the result to 'tmpdir' variable
-      tags:                     # Tags for selective task execution
+        state: directory # Ensure a directory is created
+      register: tmpdir   # Save the result to 'tmpdir' variable
+      tags:              # Tags for selective task execution
         - install
         - uninstall
         - update
@@ -23,16 +23,16 @@
     # Run task validations from the 'common' role
     - name: Common role - task validations
       include_role:
-        name: common            # Include the 'common' role
-        tasks_from: task-validations  # Use the 'task-validations' task file
+        name: common                 # Include the 'common' role
+        tasks_from: task-validations # Use the 'task-validations' task file
       tags:
-        - always                # Always run this task
+        - always                     # Always run this task
 
     # Include the main tasks from the 'common' role
     - name: Common role
       include_role:
         name: common
-        public: true            # Make role variables public
+        public: true # Make role variables public
       tags:
         - install
         - uninstall
@@ -70,7 +70,7 @@
       tags:
         - multi-tenancy
 
-    # Always include the 'vdm' role for viya and multi-tenancy tags
+    # Include the 'vdm' role for viya and multi-tenancy tags
     - name: vdm role # noqa: name[casing]
       include_role:
         name: vdm
@@ -89,8 +89,8 @@
     # Clean up: delete the temporary directory created at the start
     - name: Delete tmpdir
       file:
-        path: "{{ tmpdir.path }}"  # Path to the temp directory
-        state: absent              # Ensure it is removed
+        path: "{{ tmpdir.path }}" # Path to the temp directory
+        state: absent             # Ensure it is removed
       tags:
         - install
         - uninstall

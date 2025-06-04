@@ -1,12 +1,14 @@
-# Copyright © 2020-2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+---
 # This file contains the Elasticsearch deployment tasks for the vdm role.
 # It is included from main.yaml to manage Elasticsearch deployment.
 
----
+# Check if the internal-elasticsearch overlays directory exists
 - name: Elasticsearch - folder check
   stat:
+    # Path to the internal-elasticsearch overlays directory
     path: "{{ DEPLOY_DIR }}/sas-bases/overlays/internal-elasticsearch"
   register: result
   tags:
@@ -14,6 +16,7 @@
     - uninstall
     - update
 
+# Add overlays for internal Elasticsearch if enabled and overlays exist
 - name: Elasticsearch - add overlays
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
@@ -24,6 +27,7 @@
       - { transformers: overlays/internal-elasticsearch/internal-elasticsearch-transformer.yaml }
       - { transformers: overlays/internal-elasticsearch/sysctl-transformer.yaml, priority: 55 }
   when:
+    # Only run if Elasticsearch is enabled and overlays exist
     - V4_CFG_ELASTICSEARCH_ENABLE
     - result.stat.exists
   tags:

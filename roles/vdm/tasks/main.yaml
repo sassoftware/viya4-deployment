@@ -1,4 +1,4 @@
-# Copyright © 2020-2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
 ---
@@ -8,6 +8,7 @@
 # Create the site-config directory for deployment configuration
 - name: Create site-config folder
   file:
+    # Ensure the directory exists
     state: directory
     dest: "{{ DEPLOY_DIR }}/site-config/"
     mode: "0770"
@@ -19,6 +20,7 @@
 # Check if sitedefault.yaml exists in the site-config directory
 - name: Check if sitedefault.yaml exists
   stat:
+    # Path to the sitedefault.yaml file
     path: "{{ DEPLOY_DIR }}/site-config/sitedefault.yaml"
   register: stat_result
   tags:
@@ -29,12 +31,14 @@
 # If sitedefault.yaml does not exist, copy it from the configured source
 - name: Sitedefault
   when:
+    # Only run if sitedefault.yaml is missing
     - not stat_result.stat.exists
   tags:
     - install
     - uninstall
     - update
   block:
+    # Copy the sitedefault.yaml file from the configured source
     - name: Copy sitedefault.yaml
       copy:
         src: "{{ V4_CFG_SITEDEFAULT }}"
@@ -53,9 +57,12 @@
 # Add base overlays and generators for kustomize
 - name: Base overlays
   overlay_facts:
+    # Cadence name and version for overlay selection
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+    # Existing overlays to update
     existing: "{{ vdm_overlays }}"
+    # Add base overlays, generators, and transformers
     add:
       - { resources: base, priority: 0 }
       - { resources: overlays/update-checker }
@@ -74,17 +81,20 @@
 # If container registry user is set, copy access file and add image pull secrets generator
 - name: CR access
   when:
+    # Only run if registry user is defined
     - V4_CFG_CR_USER is not none
   tags:
     - install
     - uninstall
     - update
   block:
+    # Copy the container registry access file
     - name: Copy container registry access
       template:
         src: cr_access.json
         dest: "{{ DEPLOY_DIR }}/site-config/cr_access.json"
         mode: "0660"
+    # Add overlay for image pull secrets generator
     - name: Add image pull secrets generator
       overlay_facts:
         cadence_name: "{{ V4_CFG_CADENCE_NAME }}"

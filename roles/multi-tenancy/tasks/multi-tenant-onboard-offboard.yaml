@@ -1,4 +1,4 @@
-# Copyright © 2020-2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
 ---
@@ -207,6 +207,30 @@
     msg: '{{ ansible_run_tags | select("match", "[on|off].*") | list | first }} job failed with status {{ pod_status.stdout_lines[0] }}. Please check pod log for
       more details.'
   when: pod_status.stdout_lines[0] in pod_fail_list
+  tags:
+    - onboard
+    - offboard
+
+- name: Multi-tenant onboard/offboard - create tenant directories
+  file:
+    # Ensure the tenant-specific directory exists for onboarding/offboarding
+    state: directory
+    dest: "{{ DEPLOY_DIR }}/site-config/tenants/{{ item | lower }}"
+    mode: "0770"
+  with_items: '{{ V4MT_TENANT_IDS.split(",") | replace(" ", "") }}'
+  when: V4MT_ENABLE
+  tags:
+    - onboard
+    - offboard
+
+- name: Multi-tenant onboard/offboard - copy tenant config
+  copy:
+    # Copy the tenant-specific configuration file
+    src: "{{ DEPLOY_DIR }}/sas-bases/examples/tenants/{{ item | lower }}/config.yaml"
+    dest: "{{ DEPLOY_DIR }}/site-config/tenants/{{ item | lower }}/config.yaml"
+    mode: "0660"
+  with_items: '{{ V4MT_TENANT_IDS.split(",") | replace(" ", "") }}'
+  when: V4MT_ENABLE
   tags:
     - onboard
     - offboard

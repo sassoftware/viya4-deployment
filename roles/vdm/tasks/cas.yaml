@@ -1,10 +1,11 @@
-# Copyright © 2020-2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+---
 # This file contains the CAS server deployment tasks for the vdm role.
 # It is included from main.yaml to manage CAS server deployment.
 
----
+# Add overlay for CAS server base resources
 - name: CAS - base
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
@@ -17,24 +18,29 @@
     - uninstall
     - update
 
+# If user provides SSSD config, create the directory, copy the file, and add overlays
 - name: CAS - user defined sssd
   when:
+    # Only run if SSSD config is provided
     - V4_CFG_SSSD is not none
   tags:
     - install
     - uninstall
     - update
   block:
+    # Create the cas-server site-config directory
     - name: CAS - create cas-server site-config folder
       file:
         path: "{{ DEPLOY_DIR }}/site-config/cas-server/"
         state: directory
         mode: "0770"
+    # Copy the SSSD configuration file
     - name: CAS - copy sssd configuration file
       copy:
         src: "{{ V4_CFG_SSSD }}"
         dest: "{{ DEPLOY_DIR }}/site-config/cas-server/sssd.conf"
         mode: "0660"
+    # Add overlays for SSSD sidecar and config
     - name: CAS - update sssd kustomizations
       overlay_facts:
         cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
@@ -45,6 +51,7 @@
           - { transformers: cas-sssd.yaml, vdm: true }
           - { generators: sas-sssd-config.yaml, vdm: true }
 
+# Add overlay for CAS backup controller if enabled
 - name: CAS - backup controller
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
@@ -53,12 +60,14 @@
     add:
       - { transformers: cas-manage-backup.yaml, vdm: true }
   when:
+    # Only run if backup controller is enabled
     - V4_CFG_CAS_ENABLE_BACKUP_CONTROLLER
   tags:
     - install
     - uninstall
     - update
 
+# Add overlays for automatic resource management if RAM or cores are not set
 - name: CAS - auto resources
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
@@ -68,12 +77,14 @@
       - { resources: overlays/cas-server/auto-resources, priority: 40 }
       - { transformers: overlays/cas-server/auto-resources/remove-resources.yaml, priority: 90 }
   when:
+    # Only run if RAM or cores are not set
     - V4_CFG_CAS_RAM is none or V4_CFG_CAS_CORES is none
   tags:
     - install
     - uninstall
     - update
 
+# Add overlay for user-defined CAS resources if RAM and cores are set
 - name: CAS - user-defined resources
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
@@ -82,6 +93,7 @@
     add:
       - { transformers: cas-manage-cpu-and-memory.yaml, vdm: true }
   when:
+    # Only run if both RAM and cores are set
     - V4_CFG_CAS_RAM is not none
     - V4_CFG_CAS_CORES is not none
   tags:
@@ -89,6 +101,7 @@
     - uninstall
     - update
 
+# Add overlay for MPP workers if worker count is greater than 1
 - name: CAS - MPP workers
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
@@ -97,6 +110,7 @@
     add:
       - { transformers: cas-manage-workers.yaml, vdm: true }
   when:
+    # Only run if worker count is greater than 1
     - V4_CFG_CAS_WORKER_COUNT |int > 1
   tags:
     - install
