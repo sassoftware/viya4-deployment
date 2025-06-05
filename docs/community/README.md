@@ -10,7 +10,7 @@ Community contributed features are submitted by community members to help expand
 
 - As with other features, community contributed features should include unit tests which add to the level of community confidence for the feature. Unit tests should also help indicate if a problem occurs with the feature in a future release.
 
-- Community contributed features should be disabled by default. If applicable, a boolean configuration variable named community_enable_<community_feature> should be implemented for the  community feature. The boolean configuration variable should serve as a way to enable or disable the community feature. 
+- Community contributed features should be disabled by default. If applicable, a boolean configuration variable named community_enable_<community_feature> should be implemented for the community feature. The boolean configuration variable should serve as a way to enable or disable the community feature. 
 
 - Multiple community contributed feature configuration variables may exist for the same feature, although if the feature is disabled, they should have no effect on the overall behavior of the project. 
 
