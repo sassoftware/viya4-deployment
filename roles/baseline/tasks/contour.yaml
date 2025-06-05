@@ -11,6 +11,7 @@
 
 # Name: contour
 # Chart URL: https://projectcontour.io/
+# Container registry: docker.io
 # Purpose: Alternative ingress controller (if selected).
 
 # Deploy the Contour ingress controller using Helm

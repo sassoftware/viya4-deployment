@@ -21,28 +21,28 @@
   ansible.builtin.fail:
     msg: CDS postgres instance must be internal server. To use CDS postgres, please reconfigure your infrastructure to set all your postgres servers internal
   when:
-    - V4_CFG_CADENCE_VERSION is version('2022.11', "<=")  # Only applies to cadence versions <= 2022.11
-    - V4_CFG_CADENCE_NAME|lower != "fast"                  # Exclude 'fast' cadence
-    - V4_CFG_POSTGRES_SERVERS['cds-postgres'] is defined    # Only if cds-postgres is defined
+    - V4_CFG_CADENCE_VERSION is version('2022.11', "<=")          # Only applies to cadence versions <= 2022.11
+    - V4_CFG_CADENCE_NAME|lower != "fast"                         # Exclude 'fast' cadence
+    - V4_CFG_POSTGRES_SERVERS['cds-postgres'] is defined          # Only if cds-postgres is defined
     - V4_CFG_POSTGRES_SERVERS['cds-postgres'].internal is defined
-    - not V4_CFG_POSTGRES_SERVERS['cds-postgres'].internal # Only if cds-postgres is external
+    - not V4_CFG_POSTGRES_SERVERS['cds-postgres'].internal        # Only if cds-postgres is external
   tags:
     - install
     - uninstall
     - update
 
 - name: Postgres - gcp cloud-sql-proxy
-  include_tasks: gcp-cloud-sql-proxy.yaml  # Include GCP Cloud SQL proxy tasks for each external Postgres server with a service account
+  include_tasks: gcp-cloud-sql-proxy.yaml          # Include GCP Cloud SQL proxy tasks for each external Postgres server with a service account
   vars:
     role: "{{ item.key }}"
     settings: "{{ item.value }}"
   with_dict: "{{ V4_CFG_POSTGRES_SERVERS }}"
   when:
-    - not item.value.internal                # Only for external Postgres
-    - "'service_account' in item.value"      # Only if service_account is present
+    - not item.value.internal                      # Only for external Postgres
+    - "'service_account' in item.value"            # Only if service_account is present
     - item.value.service_account is defined
     - V4_CFG_CLOUD_SERVICE_ACCOUNT_NAME is defined
-    - PROVIDER == "gcp"                     # Only for GCP provider
+    - PROVIDER == "gcp"                            # Only for GCP provider
   tags:
     - install
     - uninstall

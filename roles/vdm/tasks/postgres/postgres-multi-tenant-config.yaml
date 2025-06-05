@@ -5,31 +5,6 @@
 # This file configures Postgres settings for multi-tenant environments, such as max connections.
 # It is included from postgres.yaml when V4MT_ENABLE and internal_postgres are true.
 
-# Set the max_connections parameter for each Postgres server in a multi-tenant environment
-- name: Set Postgres max_connections for multi-tenant
-  set_fact:
-    postgres_max_connections: "{{ settings.max_connections | default(200) }}"
-  tags:
-    - install
-    - uninstall
-    - update
-
-# Add or update the overlay configuration for max_connections
-- name: Configure Postgres max_connections in overlay
-  overlay_facts:
-    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
-    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
-    existing: "{{ vdm_overlays }}"
-    add:
-      - { generators: postgres-max-connections.yaml, vdm: true }
-  when:
-    - postgres_max_connections is defined
-    - internal
-  tags:
-    - install
-    - uninstall
-    - update
-
 # Calculate the MAX_CONNECTIONS value based on the number of tenants
 - name: Postgres - determine MAX_CONNECTIONS
   set_fact:

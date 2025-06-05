@@ -366,6 +366,8 @@
         add:
           - { resources: "platform-postgres-{{ role }}-dataserver.yaml", min: "2022.10", vdm: true }
 
+# TODO Fix Logic for tasks below
+
 # Only run for internal, non-default roles, and if the overlay does not exist
 - name: Postgres instance - crd
   when:
