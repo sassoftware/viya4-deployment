@@ -1,7 +1,8 @@
-# Copyright © 2020-2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
 ---
+# Load configuration variables from the file specified by CONFIG, if defined
 - name: Load config file
   include_vars:
     file: "{{ CONFIG }}"
@@ -14,6 +15,7 @@
     - cas-onboard
     - offboard
 
+# Set BASE_DIR to the user's home directory if not already defined
 - name: Set BASE_DIR default path
   set_fact:
     BASE_DIR: "{{ ansible_env.HOME }}"
@@ -26,6 +28,7 @@
     - cas-onboard
     - offboard
 
+# If TFSTATE is defined, parse it and set related facts
 - name: Parse tfstate
   when:
     - TFSTATE is defined
@@ -37,14 +40,17 @@
     - cas-onboard
     - offboard
   block:
+    # Parse the tfstate file and set the 'tfstate' fact
     - name: Parse tfstate
       set_fact:
         tfstate: "{{ lookup('tfstate', TFSTATE) }}"
+    # Set default LOADBALANCER_SOURCE_RANGES if not defined
     - name: Default LOADBALANCER_SOURCE_RANGES
       set_fact:
         LOADBALANCER_SOURCE_RANGES: ["0.0.0.0/0"]
       when:
         - LOADBALANCER_SOURCE_RANGES is not defined
+    # Add NAT IP to LOADBALANCER_SOURCE_RANGES if not already present
     - name: Add nat ip to LOADBALANCER_SOURCE_RANGES
       set_fact:
         LOADBALANCER_SOURCE_RANGES: "{{ LOADBALANCER_SOURCE_RANGES + [tfstate.nat_ip.value + '/32'] }}"
@@ -52,6 +58,7 @@
         - tfstate.nat_ip is defined
         - tfstate.nat_ip.value|length > 0
         - (tfstate.nat_ip.value+'/32') not in LOADBALANCER_SOURCE_RANGES
+    # Add GKE pod subnet CIDR for GCP provider
     - name: tfstate - Add GKE pod subnet cidr to LOADBALANCER_SOURCE_RANGES # noqa: name[casing]
       set_fact:
         LOADBALANCER_SOURCE_RANGES: "{{ LOADBALANCER_SOURCE_RANGES + [tfstate.gke_pod_subnet_cidr.value] }}"
@@ -62,6 +69,7 @@
         - tfstate.gke_pod_subnet_cidr is defined
         - tfstate.gke_pod_subnet_cidr.value|length > 0
         - (tfstate.gke_pod_subnet_cidr.value) not in LOADBALANCER_SOURCE_RANGES
+    # Add AKS pod CIDR for Azure provider
     - name: tfstate - Add AKS pod cidr to LOADBALANCER_SOURCE_RANGES # noqa: name[casing]
       set_fact:
         LOADBALANCER_SOURCE_RANGES: "{{ LOADBALANCER_SOURCE_RANGES + [tfstate.aks_pod_cidr.value] }}"
@@ -72,6 +80,7 @@
         - tfstate.aks_pod_cidr is defined
         - tfstate.aks_pod_cidr.value|length > 0
         - (tfstate.aks_pod_cidr.value) not in LOADBALANCER_SOURCE_RANGES
+    # Set NFS endpoint and path from tfstate if present
     - name: tfstate - nfs endpoint # noqa: name[casing]
       set_fact:
         V4_CFG_RWX_FILESTORE_ENDPOINT: "{{ tfstate.rwx_filestore_endpoint.value }}"
@@ -84,6 +93,7 @@
       when:
         - tfstate.rwx_filestore_path is defined
         - tfstate.rwx_filestore_path.value|length > 0
+    # Export kubeconfig from tfstate if present
     - name: tfstate - export kubeconfig # noqa: name[casing]
       copy:
         dest: "{{ tmpdir.path }}/.kube"
@@ -93,12 +103,14 @@
       when:
         - tfstate.kube_config is defined
         - tfstate.kube_config.value|length > 0
+    # Set KUBECONFIG variable from exported kubeconfig
     - name: tfstate - kubeconfig var # noqa: name[casing]
       set_fact:
         KUBECONFIG: "{{ tmpdir.path }}/.kube"
       when:
         - tfstate.kube_config is defined
         - tfstate.kube_config.value|length > 0
+    # Set provider and related facts from tfstate
     - name: tfstate - provider # noqa: name[casing]
       set_fact:
         PROVIDER: "{{ tfstate.provider.value }}"
@@ -153,6 +165,7 @@
       when:
         - tfstate.cluster_node_pool_mode is defined
         - tfstate.cluster_node_pool_mode.value|length > 0
+    # Set jump server facts from tfstate if present
     - name: tfstate - jump server # noqa: name[casing]
       set_fact:
         JUMP_SVR_HOST: "{{ tfstate.jump_public_ip.value }}"
@@ -178,6 +191,7 @@
       when:
         - tfstate.jump_rwx_filestore_path is defined
         - tfstate.jump_rwx_filestore_path.value|length > 0
+    # Copy SSH private key from tfstate if present
     - name: tfstate - ssh private key # noqa: name[casing]
       copy:
         content: "{{ tfstate.ssh_private_key.value }}"
@@ -192,6 +206,7 @@
       when:
         - tfstate.ssh_private_key is defined
         - tfstate.ssh_private_key.value|length > 0
+    # Set storage type backend from tfstate if present
     - name: tfstate - storage type backend var # noqa: name[casing]
       set_fact:
         STORAGE_TYPE_BACKEND: "{{ tfstate.storage_type_backend.value }}"
@@ -260,6 +275,7 @@
       set_fact:
         tfstate: ""
 
+# Set DEPLOY_DIR to a path based on BASE_DIR, CLUSTER_NAME, and NAMESPACE if not already defined
 - name: Set DEPLOY_DIR
   set_fact:
     DEPLOY_DIR: "{{ BASE_DIR | regex_replace('\\/$', '') }}/{{ CLUSTER_NAME }}/{{ NAMESPACE }}"
@@ -272,6 +288,7 @@
     - cas-onboard
     - offboard
 
+# Set deployment_tooling variable from environment or default to 'ansible'
 - name: Set deployment_tooling
   set_fact:
     deployment_tooling: "{{ lookup('env', 'VIYA4_DEPLOYMENT_TOOLING') | default('ansible', -1) }}"
@@ -283,6 +300,7 @@
     - cas-onboard
     - offboard
 
+# Set env_path variable from environment PATH
 - name: Set env_path
   set_fact:
     env_path: "{{ lookup('env', 'PATH') | default('', True) }}"
@@ -294,6 +312,7 @@
     - cas-onboard
     - offboard
 
+# Authenticate to Google Cloud using a service account if required variables are set and provider is GCP
 - name: baseline - gcloud auth use service account # noqa: name[casing]
   shell: |
     gcloud auth activate-service-account '{{ V4_CFG_CLOUD_SERVICE_ACCOUNT_NAME }}' --key-file={{ V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH }}
@@ -309,14 +328,17 @@
     - cas-onboard
     - offboard
 
+# Ensure V4_CFG_MANAGE_STORAGE is set to a valid value (true/false), fail otherwise
 - name: Set V4_CFG_MANAGE_STORAGE default
   block:
+    # Set default to true if not defined
     - name: Set V4_CFG_MANAGE_STORAGE default
       set_fact:
         V4_CFG_MANAGE_STORAGE: true
       when: V4_CFG_MANAGE_STORAGE is not defined
       tags:
         - always
+    # Fail if value is empty
     - name: Fail empty value
       fail:
         msg: V4_CFG_MANAGE_STORAGE is defined but empty, supported values are true or false.
@@ -325,6 +347,7 @@
         - V4_CFG_MANAGE_STORAGE == ''
       tags:
         - always
+    # Fail if value is not 'true' or 'false'
     - name: Fail unsupported values
       fail:
         msg: The value provided for V4_CFG_MANAGE_STORAGE is unsupported, supported values are true or false.
@@ -334,6 +357,7 @@
       tags:
         - always
 
+# Include migration tasks for install, uninstall, or update actions
 - name: Migrations
   include_tasks:
     file: migrations.yaml

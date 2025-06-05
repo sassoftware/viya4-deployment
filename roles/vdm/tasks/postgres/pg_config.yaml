@@ -1,12 +1,20 @@
+# Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 ---
+# This file contains the Postgres ConfigMap deployment tasks for the vdm role.
+# It is included from main.yaml to manage Postgres ConfigMap resources.
+
 - name: pg_config - Check for storage info ConfigMap # noqa: name[casing]
   tags:
     - install
     - uninstall
   block:
+    # Set a fact to track if the storage info ConfigMap is found
     - name: Set facts
       set_fact:
         dac_crunchy_storage_cm_found: false
+    # Query the cluster for the dac-crunchy-storage-info ConfigMap
     - name: pg_config - Look for ConfigMap # noqa: name[casing]
       kubernetes.core.k8s_info:
         kubeconfig: "{{ KUBECONFIG }}"
@@ -15,11 +23,13 @@
         name: dac-crunchy-storage-info
         namespace: "{{ NAMESPACE }}"
       register: cm_info
+    # If the ConfigMap is found, update the fact
     - name: pg_config - set fact that ConfigMap was found # noqa: name[casing]
       set_fact:
         dac_crunchy_storage_cm_found: true
       ignore_errors: true
       when: cm_info.resources
+    # If the ConfigMap is found, notify the user that existing storage values will be used
     - name: pg_config - Use previous postgres storage map values # noqa: name[casing]
       debug:
         msg:
@@ -36,6 +46,7 @@
     - install
     - update
   block:
+    # Query the cluster for the v4 crunchy postgres operator deployment
     - name: pg_config - Find v4 crunchy deployment # noqa: name[casing]
       kubernetes.core.k8s_info:
         kubeconfig: "{{ KUBECONFIG }}"
@@ -43,12 +54,14 @@
         name: sas-crunchy-data-postgres-operator
         namespace: "{{ NAMESPACE }}"
       register: deploy
+    # If the deployment is found, set a fact to indicate it
     - name: pg_config - v4 crunchy operator found # noqa: name[casing]
       set_fact:
         v4_crunchy_found: true
       when:
         - deploy.resources is defined
         - deploy.resources | length != 0
+    # If the deployment is not found, set a fact to indicate it
     - name: pg_config - v4 crunchy operator not found # noqa: name[casing]
       set_fact:
         v4_crunchy_found: false

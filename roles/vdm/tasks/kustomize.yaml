@@ -1,11 +1,16 @@
-# Copyright © 2020-2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
 ---
+# This file contains the kustomize orchestration tasks for the vdm role.
+# It is included from main.yaml to manage kustomize overlays and orchestration.
+
+# Attempt to get the latest git commit hash for build info
 - name: Kustomize - not a git repo
   command: |
     git log -1 --format=format:"%H"
   failed_when:
+    # Only fail if not a git repo and the error is not the expected one
     - "'fatal: not a git repository' not in githash.stderr"
     - githash.rc != 0
   register: githash
@@ -14,15 +19,19 @@
     - uninstall
     - update
 
+# Set timestamp and git hash facts for build info
 - name: Kustomize - set date and git refspec
   set_fact:
+    # ISO8601 timestamp
     timestamp: "{{ ansible_date_time.iso8601 }}"
+    # Git commit hash or 'unknown' if not available
     git_hash: "{{ githash.stdout | default('unknown', -1) }}"
   tags:
     - install
     - uninstall
     - update
 
+# Add buildinfo overlay for kustomize
 - name: Kustomize - buildinfo
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
@@ -35,6 +44,7 @@
     - uninstall
     - update
 
+# Gather user customizations from site-config, excluding certain directories
 - name: Kustomize - Get user's customizations
   siteconfig_info:
     path: "{{ DEPLOY_DIR }}"
@@ -49,6 +59,7 @@
     - uninstall
     - update
 
+# Get the ordered overlays for kustomize
 - name: Kustomize - Ordered overlays
   overlay_facts:
     existing: "{{ vdm_overlays }}"
@@ -58,6 +69,7 @@
     - uninstall
     - update
 
+# Copy overlays for each resource using the copy_overlay.yaml task file
 - name: Kustomize - Copy VDM overlays
   include_tasks: copy_overlay.yaml
   vars:
@@ -69,6 +81,7 @@
     - uninstall
     - update
 
+# Generate the kustomization.yaml file from template
 - name: Kustomize - Generate kustomization.yaml
   template:
     src: kustomization.yaml

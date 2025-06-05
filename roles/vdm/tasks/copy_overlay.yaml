@@ -1,7 +1,11 @@
-# Copyright © 2020-2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
 ---
+# This file contains the overlay copy tasks for the vdm role.
+# It is included from main.yaml to manage copying overlay files.
+
+# Create the VDM resource directory if overlays are present
 - name: Copy - create VDM {{ resource }} folder
   file:
     state: directory
@@ -13,9 +17,12 @@
     - uninstall
     - update
 
+# Copy each overlay file for the resource using the template module
 - name: Copy - VDM {{ resource }}
   template:
+    # Source overlay file
     src: "{{ resource }}/{{ overlay | basename }}"
+    # Destination path for the overlay
     dest: "{{ DEPLOY_DIR }}/{{ overlay | dirname }}/{{ overlay | basename | regex_replace('\\..*\\.yaml$', '.yaml') }}"
     mode: "0660"
   with_items: "{{ overlays }}"

@@ -1,7 +1,11 @@
-# Copyright © 2020-2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
 ---
+# This file contains the Connect server deployment tasks for the vdm role.
+# It is included from main.yaml to manage Connect server deployment.
+
+# Add overlay for enabling load balancer for SAS/CONNECT spawner if enabled
 - name: Connect - Loadbalancer
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
@@ -10,16 +14,19 @@
     add:
       - { resources: sas-connect-spawner-enable-loadbalancer.yaml, vdm: true }
   when:
+    # Only run if load balancer is enabled
     - V4_CFG_CONNECT_ENABLE_LOADBALANCER
   tags:
     - install
     - uninstall
     - update
 
+# Add the SAS/CONNECT FQDN to the SAN DNS list for cert-manager if defined
 - name: Connect - SAS/CONNECT FQDN to the SAN DNS list for cert-manager
   set_fact:
     V4_CFG_TLS_ADDITIONAL_SAN_DNS: "{{ V4_CFG_TLS_ADDITIONAL_SAN_DNS }} {{ V4_CFG_CONNECT_FQDN }}"
   when:
+    # Only run if the FQDN is defined
     - V4_CFG_CONNECT_FQDN is not none
   tags:
     - install

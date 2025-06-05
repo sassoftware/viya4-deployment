@@ -1,7 +1,14 @@
-# Copyright © 2020-2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
 ---
+# This file contains the ingress-nginx setup tasks for the baseline role.
+# Chart Repo URL: https://kubernetes.github.io/ingress-nginx/
+# Container Registry: quay.io
+# Chart Source: https://github.com/kubernetes/ingress-nginx/tree/main/charts/ingress-nginx
+# Purpose: Installs and manages ingress-nginx as the ingress controller for Kubernetes.
+
+# Update INGRESS_NGINX_CONFIG with private ingress settings if running in private mode and provider is supported
 - name: Update INGRESS_NGINX_CONFIG to add private_ingress
   set_fact:
     INGRESS_NGINX_CONFIG: "{{ INGRESS_NGINX_CONFIG | combine(private_ingress[PROVIDER], recursive=True) }}"
@@ -12,6 +19,7 @@
     - install
     - update
 
+# If INGRESS_NGINX_CHART_VERSION is not set, determine it based on the Kubernetes cluster version
 - name: Set the default INGRESS_NGINX_CHART_VERSION if not specified
   when:
     - INGRESS_NGINX_CHART_VERSION|length == 0
@@ -19,17 +27,20 @@
     - install
     - update
   block:
+    # Retrieve Kubernetes cluster version information
     - name: Retrieve K8s cluster information
       kubernetes.core.k8s_cluster_info:
         kubeconfig: "{{ KUBECONFIG }}"
       register: cluster_info
+    # Set the chart version based on the minor version of the Kubernetes server
     - name: Set the default INGRESS_NGINX_CHART_VERSION based on K8s server minor version
       set_fact:
-        INGRESS_NGINX_CHART_VERSION: "{{ ingressVersions.k8sMinorVersion.api.chartVersion if cluster_info.version.server.kubernetes.minor is version(ingressVersions.k8sMinorVersion.value,
-          'ge') else '' }}"
+        INGRESS_NGINX_CHART_VERSION: "{{ ingressVersions.k8sMinorVersion.api.chartVersion if cluster_info.version.server.kubernetes.minor is version(ingressVersions.k8sMinorVersion.value, 'ge') else '' }}"
+    # Output the selected chart version for debugging
     - name: Output INGRESS_NGINX_CHART_VERSION
       debug:
         msg: "{{ INGRESS_NGINX_CHART_VERSION }}"
+    # Fail if the chart version is not set and the K8s version is too low
     - name: Fail when INGRESS_NGINX_CHART_VERSION not set
       fail:
         msg: "INGRESS_NGINX_CHART_VERSION isn't set when K8s version is < 1.{{ ingressVersions.k8sMinorVersion.value }}."
@@ -37,6 +48,7 @@
         - cluster_info.version.server.kubernetes.minor is version(ingressVersions.k8sMinorVersion.value, 'lt')
         - INGRESS_NGINX_CHART_VERSION == ""
 
+# Update INGRESS_NGINX_CONFIG to use AWS Network Load Balancer if provider is AWS
 - name: Update INGRESS_NGINX_CONFIG to use NLB for AWS
   set_fact:
     INGRESS_NGINX_CONFIG: "{{ INGRESS_NGINX_CONFIG | combine(INGRESS_NGINX_AWS_NLB_CONFIG, recursive=True) }}"
@@ -46,6 +58,7 @@
     - install
     - update
 
+# Add AWS load balancer subnets to the configuration if specified
 - name: Update INGRESS_NGINX_CONFIG annotations to include INGRESS_NGINX_AWS_LB_SUBNETS
   set_fact:
     INGRESS_NGINX_CONFIG: "{{ INGRESS_NGINX_CONFIG | combine(INGRESS_NGINX_AWS_LB_SUBNETS, recursive=True) }}"
@@ -56,6 +69,7 @@
     - install
     - update
 
+# Add Azure load-balancer health probe request path to the configuration if provider is Azure
 - name: Update INGRESS_NGINX_CONFIG to add Azure load-balancer health probe request path
   set_fact:
     INGRESS_NGINX_CONFIG: "{{ INGRESS_NGINX_CONFIG | combine(INGRESS_NGINX_AZURE_LB_HEALTH_PROBE_CONFIG, recursive=True) }}"
@@ -65,21 +79,25 @@
     - install
     - update
 
+# Apply mitigation for CVE-2021-25742 if chart version is at or above the minimum required
 - name: Apply Mitigation for CVE-2021-25742
   tags:
     - install
     - update
   block:
+    # Retrieve Kubernetes cluster version information
     - name: Retrieve K8s cluster information
       kubernetes.core.k8s_cluster_info:
         kubeconfig: "{{ KUBECONFIG }}"
       register: cluster_info
+    # Patch configuration if chart version is at or above the minimum required for the CVE mitigation
     - name: Update INGRESS_NGINX_CONFIG
       set_fact:
         INGRESS_NGINX_CONFIG: "{{ INGRESS_NGINX_CONFIG | combine(INGRESS_NGINX_CVE_2021_25742_PATCH, recursive=True) }}"
       when:
         - INGRESS_NGINX_CHART_VERSION is version(ingressVersions.k8sMinorVersion.api.chartVersionMin, ">=")
 
+# Disable strict_validate_path_type if cadence version is <= 2024.11 and not "fast", and chart version is >= 4.12.0
 - name: Disable strict_validate_path_type in INGRESS_NGINX_CONFIG
   set_fact:
     INGRESS_NGINX_CONFIG: "{{ INGRESS_NGINX_CONFIG | combine(INGRESS_NGINX_STRICT_VALIDATE_PATH_TYPE, recursive=True) }}"
@@ -88,6 +106,7 @@
     - install
     - update
 
+# Add risk level annotations to the configuration if chart version is >= 4.12.0
 - name: Add annotations_risk_level to INGRESS_NGINX_CONFIG
   set_fact:
     INGRESS_NGINX_CONFIG: "{{ INGRESS_NGINX_CONFIG | combine(INGRESS_NGINX_ANNOTATIONS_RISK_LEVEL, recursive=True) }}"
@@ -96,6 +115,7 @@
     - install
     - update
 
+# Deploy ingress-nginx using Helm with the prepared configuration
 - name: Deploy ingress-nginx
   kubernetes.core.helm:
     name: "{{ INGRESS_NGINX_NAME }}"
@@ -111,6 +131,7 @@
     - install
     - update
 
+# Remove ingress-nginx Helm release during uninstall
 - name: Remove ingress-nginx
   kubernetes.core.helm:
     name: "{{ INGRESS_NGINX_NAME }}"
@@ -122,6 +143,7 @@
   tags:
     - uninstall
 
+# Remove the ingress-nginx namespace from the cluster during uninstall
 - name: Remove {{ INGRESS_NGINX_NAMESPACE }} namespace
   kubernetes.core.k8s:
     api_version: v1

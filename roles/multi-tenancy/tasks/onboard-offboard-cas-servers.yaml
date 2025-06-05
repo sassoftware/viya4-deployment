@@ -1,7 +1,10 @@
-# Copyright © 2020-2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
 ---
+# This file contains the onboarding and offboarding tasks for CAS servers in the multi-tenancy role.
+# It is included from main.yaml when onboarding or offboarding CAS servers for tenants.
+
 # Update Resources in Kustomization.yaml
 - name: Check if cas resources present
   lineinfile:
@@ -91,6 +94,7 @@
     - offboard
 
 # On offboard delete the tenant pod template directories
+# Remove the tenant-specific pod template directory if it exists
 - name: Delete tenant pod template directory
   file:
     state: absent

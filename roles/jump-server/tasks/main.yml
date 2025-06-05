@@ -1,7 +1,10 @@
-# Copyright © 2020-2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
 ---
+# This file contains tasks for configuring the jump server host and preparing shared folders.
+
+# Add the jump server host to the Ansible inventory dynamically
 - name: jump-server - add host # noqa: name[casing]
   add_host:
     hostname: "{{ JUMP_SVR_HOST }}"
@@ -13,6 +16,7 @@
   tags:
     - install
 
+# Lookup all groups on the jump server
 - name: jump-server - lookup groups # noqa: name[casing]
   getent:
     database: group
@@ -21,6 +25,7 @@
   tags:
     - install
 
+# Set folder group/owner to nfsnobody if present
 - name: jump-server - group nfsnobody # noqa: name[casing]
   set_fact:
     folder_group: nfsnobody
@@ -30,6 +35,7 @@
   tags:
     - install
 
+# Set folder group to nogroup if present
 - name: jump-server - group nogroup # noqa: name[casing]
   set_fact:
     folder_group: nogroup
@@ -38,6 +44,7 @@
   tags:
     - install
 
+# Create shared folders for bin, homes, data, astores on the jump server
 - name: jump-server - create folders # noqa: name[casing]
   file:
     state: directory

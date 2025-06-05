@@ -1,8 +1,11 @@
-# Copyright © 2020-2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
 ---
+# This file contains the workload orchestrator tasks for the vdm role.
+# It is included from main.yaml to manage workload orchestration for the deployment.
 
+# Add overlay for enabling the SAS Workload Orchestrator if enabled and cadence is recent
 - name: Workload Orchestrator - Configure SAS Workload Orchestrator Service Account
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
@@ -11,12 +14,14 @@
     add:
       - { resources: overlays/sas-workload-orchestrator, min: "2023.08", vdm: false }
   when:
+    # Only run if workload orchestrator is enabled
     - V4_WORKLOAD_ORCHESTRATOR_ENABLED
   tags:
     - install
     - uninstall
     - update
 
+# Add overlays to disable the SAS Workload Orchestrator if not enabled
 - name: Workload Orchestrator - Disable the SAS Workload Orchestrator Service
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
@@ -26,26 +31,31 @@
       - { transformers: examples/sas-workload-orchestrator/enable-disable/sas-workload-orchestrator-disable-patch-transformer.yaml, min: "2023.08", max: "2024.06", vdm: false }
       - { transformers: overlays/sas-workload-orchestrator/enable-disable/sas-workload-orchestrator-disable-patch-transformer.yaml, min: "2024.07", vdm: false }
   when:
+    # Only run if workload orchestrator is not enabled
     - not V4_WORKLOAD_ORCHESTRATOR_ENABLED
   tags:
     - install
     - uninstall
     - update
 
+# Remove ClusterRoleBinding and ClusterRole if uninstalling and orchestrator is enabled for recent cadence
 - name: Workload Orchestrator - Remove the ClusterRoleBinding and ClusterRole
   when:
+    # Only run if uninstalling, orchestrator is enabled, and cadence is recent
     - DEPLOY
     - V4_WORKLOAD_ORCHESTRATOR_ENABLED
     - V4_CFG_CADENCE_VERSION is version('2023.08', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
   tags:
     - uninstall
   block:
+    # Remove the ClusterRoleBinding
     - name: Workload Orchestrator - Remove ClusterRoleBinding
       kubernetes.core.k8s:
         kind: ClusterRoleBinding
         name: "sas-workload-orchestrator-{{ NAMESPACE }}"
         kubeconfig: "{{ KUBECONFIG }}"
         state: absent
+    # Remove the ClusterRole
     - name: Workload Orchestrator - Remove ClusterRole
       kubernetes.core.k8s:
         kind: ClusterRole

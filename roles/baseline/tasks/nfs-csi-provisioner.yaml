@@ -2,6 +2,18 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
+# This file contains the csi-driver-nfs (NFS CSI) provisioner setup tasks for the baseline role.
+# It is included from main.yaml when csi-driver-nfs is required.
+# NOTE: This file supports NFS storage provisioning for Kubernetes clusters on multiple cloud providers,
+# including AWS (EFS), GCP (Filestore/NetApp), and generic NFS for other environments. Configuration is conditional per provider.
+
+# Name: csi-driver-nfs (NFS CSI Provisioner)
+# Chart Repo URL: https://kubernetes-csi.github.io/csi-driver-nfs/
+# Container registries: registry.k8s.io, gcr.io
+# Chart Source: https://github.com/kubernetes-csi/csi-driver-nfs/tree/master/charts
+# Purpose: Provides NFS storage provisioning for Kubernetes using the csi-driver-nfs Helm chart.
+
+# Remove deprecated nfs-client-provisioner Helm release if present
 - name: Remove deprecated nfs-client-provisioner
   kubernetes.core.helm:
     name: nfs-client
@@ -13,6 +25,7 @@
     - uninstall
     - update
 
+# Remove deprecated efs-provisioner Helm release if present
 - name: Remove deprecated efs-provisioner
   kubernetes.core.helm:
     name: efs-provisioner
@@ -24,6 +37,7 @@
     - uninstall
     - update
 
+# Remove deprecated efs-provisioner namespace if present
 - name: Remove deprecated efs-provisioner namespace
   kubernetes.core.k8s:
     api_version: v1
@@ -36,6 +50,7 @@
     - uninstall
     - update
 
+# Update csi-driver-nfs configuration for AWS EFS backend
 - name: Update csi-driver-nfs configurations for EFS
   set_fact:
     CSI_DRIVER_NFS_CONFIG: "{{ CSI_DRIVER_NFS_CONFIG | combine(CSI_DRIVER_NFS_EFS_CONFIG, recursive=True) }}"
@@ -48,6 +63,7 @@
     - install
     - update
 
+# Update csi-driver-nfs configuration for Google Filestore
 - name: Update csi-driver-nfs configuration for Google Filestore
   set_fact:
     CSI_DRIVER_NFS_CONFIG:
@@ -77,6 +93,7 @@
     - install
     - update
 
+# Update csi-driver-nfs configuration for Google Netapp
 - name: Update csi-driver-nfs configuration for Google Netapp
   set_fact:
     CSI_DRIVER_NFS_CONFIG:
@@ -106,6 +123,7 @@
     - install
     - update
 
+# Deploy csi-driver-nfs-sas Helm release with the prepared configuration
 - name: Deploy csi-driver-nfs-sas
   kubernetes.core.helm:
     name: "{{ CSI_DRIVER_NFS_NAME }}"
@@ -121,6 +139,7 @@
     - install
     - update
 
+# Create csi-driver-nfs-pg-storage StorageClass for non-AWS/Azure providers
 - name: Create csi-driver-nfs-pg-storage storageClass
   when:
     - PROVIDER != "aws"
@@ -129,6 +148,7 @@
     - install
     - update
   block:
+    # Define the StorageClass resource for pg-storage
     - name: Define csi-driver-nfs-pg-storage storageClass
       set_fact:
         storageclass_definition:
@@ -149,6 +169,7 @@
             - nodiratime
             - rsize=262144
             - wsize=262144
+    # Create the StorageClass resource
     - name: Create sc
       kubernetes.core.k8s:
         api_version: storage.k8s.io/v1
@@ -157,6 +178,7 @@
         kubeconfig: "{{ KUBECONFIG }}"
         definition: "{{ storageclass_definition }}"
 
+# Remove csi-driver-nfs-sas Helm release during uninstall
 - name: Remove csi-driver-nfs-sas
   kubernetes.core.helm:
     name: "{{ CSI_DRIVER_NFS_NAME }}"
@@ -167,7 +189,7 @@
   tags:
     - uninstall
 
-# Remove storageClass for pg-storage
+# Remove pg-storage StorageClass during uninstall for non-AWS/Azure providers
 - name: Remove pg-storage storageClass
   when:
     - PROVIDER != "aws"
@@ -175,6 +197,7 @@
   tags:
     - uninstall
   block:
+    # Redefine the StorageClass resource for pg-storage
     - name: Redefine csi-driver-nfs-pg-storage storageClass
       set_fact:
         storageclass_definition:
@@ -195,6 +218,7 @@
             - nodiratime
             - rsize=262144
             - wsize=262144
+    # Remove the StorageClass resource
     - name: Remove storageClass
       kubernetes.core.k8s:
         api_version: storage.k8s.io/v1

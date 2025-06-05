@@ -1,12 +1,19 @@
-# Copyright © 2020-2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
 ---
+# This file contains the storage configuration tasks for the vdm role.
+# It is included from main.yaml to manage storage overlays and configuration.
+
+# Add overlay for storage class configuration
 - name: Storage - storageclass
   overlay_facts:
+    # Cadence name and version for overlay selection
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+    # Existing overlays to update
     existing: "{{ vdm_overlays }}"
+    # Add storageclass transformer overlay
     add:
       - { transformers: sas-storageclass.yaml, vdm: true, priority: 49 }
   tags:
@@ -14,6 +21,7 @@
     - uninstall
     - update
 
+# Add overlays for NFS storage if endpoints and paths are defined
 - name: Storage - nfs
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
@@ -26,6 +34,7 @@
       - { transformers: launcher-service-add-nfs.yaml, max: 2021.1.6, vdm: true }
       - { transformers: launcher-nfs-mount.yaml, min: "2021.2", vdm: true }
   when:
+    # Only run if both NFS endpoint and path are defined
     - V4_CFG_RWX_FILESTORE_ENDPOINT is not none
     - V4_CFG_RWX_FILESTORE_PATH is not none
   tags:

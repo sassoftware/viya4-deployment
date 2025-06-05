@@ -1,4 +1,10 @@
+# Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 ---
+# This file contains the tenant pod template customization tasks for the multi-tenancy role.
+# It is included from main.yaml when tenant-specific pod template customizations are required.
+
 - name: FileGenerator updates for tenant-specific resources
   when: V4MT_TENANT_IDS is search(tenant)
   tags:
