@@ -19,12 +19,12 @@
     # Copy the CPU/memory management template if user-defined resources are specified
     - name: Tenant cas user-defined resources - copy template
       copy:
-        src: "{{ role_path }}/templates/cas-manage-cpu-and-memory.yaml"  # Source template for CPU/memory
-        dest: "{{ DEPLOY_DIR }}/site-config/cas-{{ tenant }}-default/cas-manage-cpu-and-memory.yaml"  # Destination path
+        src: "{{ role_path }}/templates/cas-manage-cpu-and-memory.yaml"                              # Source template for CPU/memory
+        dest: "{{ DEPLOY_DIR }}/site-config/cas-{{ tenant }}-default/cas-manage-cpu-and-memory.yaml" # Destination path
         mode: "0660"
       when:
-        - settings.memory is defined and settings.memory is not none  # Only if memory is specified
-        - settings.cpus is defined and settings.cpus is not none      # Only if CPUs are specified
+        - settings.memory is defined and settings.memory is not none # Only if memory is specified
+        - settings.cpus is defined and settings.cpus is not none     # Only if CPUs are specified
 
     # Replace placeholders in the copied template with actual values for memory, CPUs, and server name
     - name: Tenant cas user-defined resources - update
@@ -55,7 +55,7 @@
     # Copy the external services template if load balancer is enabled and source ranges are specified
     - name: Tenant cas - external services copy template
       copy:
-        src: "{{ role_path }}/templates/cas-enable-external-services.yaml"  # Source template for external services
+        src: "{{ role_path }}/templates/cas-enable-external-services.yaml" # Source template for external services
         dest: "{{ DEPLOY_DIR }}/site-config/cas-{{ tenant }}-default"      # Destination directory
         mode: "0660"
       when:

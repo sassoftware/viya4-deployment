@@ -8,8 +8,8 @@
 # Migrate Postgres server FQDN if needed
 - name: Migrations - Postgres server FQDN
   when:
-    - V4_CFG_POSTGRES_FQDN is defined  # Only run if FQDN is defined
-    - "'fqdn' not in V4_CFG_POSTGRES_SERVERS['default']"  # Only if not already present
+    - V4_CFG_POSTGRES_FQDN is defined                    # Only run if FQDN is defined
+    - "'fqdn' not in V4_CFG_POSTGRES_SERVERS['default']" # Only if not already present
   tags:
     - install
     - uninstall
@@ -30,8 +30,8 @@
 # Migrate Postgres server admin login if needed
 - name: Migrations - Postgres server admin login
   when:
-    - V4_CFG_POSTGRES_ADMIN_LOGIN is defined  # Only run if admin login is defined
-    - "'admin' not in V4_CFG_POSTGRES_SERVERS['default']"  # Only if not already present
+    - V4_CFG_POSTGRES_ADMIN_LOGIN is defined              # Only run if admin login is defined
+    - "'admin' not in V4_CFG_POSTGRES_SERVERS['default']" # Only if not already present
   tags:
     - install
     - uninstall
@@ -52,8 +52,8 @@
 # Migrate Postgres server port if needed
 - name: Migrations - Postgres server port
   when:
-    - V4_CFG_POSTGRES_PORT is defined  # Only run if port is defined
-    - "'server_port' not in V4_CFG_POSTGRES_SERVERS['default']"  # Only if not already present
+    - V4_CFG_POSTGRES_PORT is defined                           # Only run if port is defined
+    - "'server_port' not in V4_CFG_POSTGRES_SERVERS['default']" # Only if not already present
   tags:
     - install
     - uninstall
@@ -74,8 +74,8 @@
 # Migrate Postgres server password if needed
 - name: Migrations - Postgres server password
   when:
-    - V4_CFG_POSTGRES_PASSWORD is defined  # Only run if password is defined
-    - "'password' not in V4_CFG_POSTGRES_SERVERS['default']"  # Only if not already present
+    - V4_CFG_POSTGRES_PASSWORD is defined                    # Only run if password is defined
+    - "'password' not in V4_CFG_POSTGRES_SERVERS['default']" # Only if not already present
   tags:
     - install
     - uninstall
@@ -96,8 +96,8 @@
 # Migrate Postgres server connection name if needed
 - name: Migrations - Postgres server connection name
   when:
-    - V4_CFG_POSTGRES_CONNECTION_NAME is defined  # Only run if connection name is defined
-    - "'connection_name' not in V4_CFG_POSTGRES_SERVERS['default']"  # Only if not already present
+    - V4_CFG_POSTGRES_CONNECTION_NAME is defined                    # Only run if connection name is defined
+    - "'connection_name' not in V4_CFG_POSTGRES_SERVERS['default']" # Only if not already present
   tags:
     - install
     - uninstall
@@ -118,8 +118,8 @@
 # Migrate Postgres server service account if needed
 - name: Migrations - Postgres server service account
   when:
-    - V4_CFG_POSTGRES_SERVICE_ACCOUNT is defined  # Only run if service account is defined
-    - "'service_account' not in V4_CFG_POSTGRES_SERVERS['default']"  # Only if not already present
+    - V4_CFG_POSTGRES_SERVICE_ACCOUNT is defined                    # Only run if service account is defined
+    - "'service_account' not in V4_CFG_POSTGRES_SERVERS['default']" # Only if not already present
   tags:
     - install
     - uninstall
@@ -140,8 +140,8 @@
 # Migrate Postgres server SSL enforcement if needed
 - name: Migrations - Postgres server ssl enforcement
   when:
-    - V4_CFG_POSTGRES_SSL_ENFORCEMENT is defined  # Only run if SSL enforcement is defined
-    - "'ssl_enforcement_enabled' not in V4_CFG_POSTGRES_SERVERS['default']"  # Only if not already present
+    - V4_CFG_POSTGRES_SSL_ENFORCEMENT is defined                            # Only run if SSL enforcement is defined
+    - "'ssl_enforcement_enabled' not in V4_CFG_POSTGRES_SERVERS['default']" # Only if not already present
   tags:
     - install
     - uninstall
@@ -162,8 +162,8 @@
 # Migrate Postgres server internal/external flag if needed
 - name: Migrations - Postgres server internal
   when:
-    - V4_CFG_POSTGRES_TYPE is defined  # Only run if type is defined
-    - "'internal' not in V4_CFG_POSTGRES_SERVERS['default']"  # Only if not already present
+    - V4_CFG_POSTGRES_TYPE is defined                        # Only run if type is defined
+    - "'internal' not in V4_CFG_POSTGRES_SERVERS['default']" # Only if not already present
   tags:
     - install
     - uninstall
@@ -184,8 +184,8 @@
 # Migrate Postgres server database name if needed
 - name: Migrations - Postgres server database
   when:
-    - V4_CFG_POSTGRES_DATABASE is defined  # Only run if database is defined
-    - "'database' not in V4_CFG_POSTGRES_SERVERS['default']"  # Only if not already present
+    - V4_CFG_POSTGRES_DATABASE is defined                    # Only run if database is defined
+    - "'database' not in V4_CFG_POSTGRES_SERVERS['default']" # Only if not already present
   tags:
     - install
     - uninstall

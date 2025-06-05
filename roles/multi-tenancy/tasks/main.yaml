@@ -40,5 +40,5 @@
   # Include the CAS server onboarding and offboarding tasks
   when: V4MT_ENABLE
   tags:
-    - onboard
+    - cas-onboard
     - offboard

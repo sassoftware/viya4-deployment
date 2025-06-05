@@ -5,12 +5,12 @@
 # Apply SAS Viya deployment using the deployment operator if enabled
 - name: Deploy - Apply SAS Viya deployment
   kubernetes.core.k8s:
-    src: "{{ DEPLOY_DIR }}/sasdeployment.yaml"  # Path to the main deployment manifest
-    state: present  # Ensure resources are present
-    namespace: "{{ NAMESPACE }}"  # Target namespace
-    kubeconfig: "{{ KUBECONFIG }}"  # Kubeconfig file for cluster access
+    src: "{{ DEPLOY_DIR }}/sasdeployment.yaml" # Path to the main deployment manifest
+    state: present                             # Ensure resources are present
+    namespace: "{{ NAMESPACE }}"               # Target namespace
+    kubeconfig: "{{ KUBECONFIG }}"             # Kubeconfig file for cluster access
   when:
-    - V4_DEPLOYMENT_OPERATOR_ENABLED  # Only if deployment operator is enabled
+    - V4_DEPLOYMENT_OPERATOR_ENABLED           # Only if deployment operator is enabled
   tags:
     - install
     - update
@@ -39,7 +39,7 @@
         contains: "^kind: SASDeployment"
       register: deployment_manifests
       failed_when:
-        - ( deployment_manifests.files | length ) != 1  # Fail if not exactly one SASDeployment manifest
+        - ( deployment_manifests.files | length ) != 1 # Fail if not exactly one SASDeployment manifest
     # Apply all supporting resources except the SASDeployment manifest
     - name: Deploy - Apply supporting resources
       kubernetes.core.k8s:
@@ -133,10 +133,10 @@
 # Uninstall all postgresclusters labeled for this deployment (for uninstall)
 - name: Deploy - Uninstall postgresclusters
   environment:
-    KUBECONFIG: "{{ KUBECONFIG }}"  # Set kubeconfig for kubectl
+    KUBECONFIG: "{{ KUBECONFIG }}" # Set kubeconfig for kubectl
   ansible.builtin.shell: >
     kubectl -n {{ NAMESPACE }} delete postgresclusters --selector="sas.com/deployment=sas-viya" --ignore-not-found=true
-  ignore_errors: true  # Ignore errors if resources are not found
+  ignore_errors: true              # Ignore errors if resources are not found
   when:
     - V4_CFG_CADENCE_VERSION is version('2022.10', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
     - internal_postgres
@@ -146,13 +146,13 @@
 # Remove all Viya resources using the uninstall manifest (for uninstall)
 - name: Deploy - Remove Viya
   kubernetes.core.k8s:
-    state: absent  # Delete resources
-    src: "{{ ORCHESTRATION_TOOLING_UNINSTALL_MANIFEST }}"  # Path to uninstall manifest
-    wait: true  # Wait for deletion
-    wait_timeout: 600  # Timeout for deletion
+    state: absent                                         # Delete resources
+    src: "{{ ORCHESTRATION_TOOLING_UNINSTALL_MANIFEST }}" # Path to uninstall manifest
+    wait: true                                            # Wait for deletion
+    wait_timeout: 600                                     # Timeout for deletion
     namespace: "{{ NAMESPACE }}"
     kubeconfig: "{{ KUBECONFIG }}"
-  ignore_errors: true  # Ignore errors if resources are already gone
+  ignore_errors: true                                     # Ignore errors if resources are already gone
   tags:
     - uninstall
 
