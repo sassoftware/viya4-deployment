@@ -1,4 +1,4 @@
-### Third-party components
+### Third-Party Components
 The following is a list of the third-party components currently in full support/used by the Viya4 DaC. You can also find the chart repo URLs referenced in the repo [README](../README.md).
 
 | Component         | Chart Name        | Chart Source URL                                                                                         | Container Registry              | Purpose                                                                                                 | Cloud Provider Support           |
