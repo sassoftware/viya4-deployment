@@ -27,7 +27,7 @@
 
 ### 3. **Cluster Autoscaler**
 
-- The **cluster-autoscaler** by scaling nodes up or down, it can impact the availability of network endpoints and the distribution of pods across subnets.
+- The **cluster-autoscaler** works by scaling the number of nodes up or down, it can impact the availability of network endpoints and the distribution of pods across subnets.
 - **Note:**
     - Ensure that your cloud provider IAM roles and API access allow autoscaler operations, and that new nodes can join the cluster network without manual intervention.
     - **Common endpoints that may need to be allowed:**
