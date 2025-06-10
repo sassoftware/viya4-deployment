@@ -1,25 +1,32 @@
-# Copyright © 2020-2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
 ---
+# This file contains the tenant CAS customizations tasks for the multi-tenancy role.
+# It is included from main.yaml when tenant-specific CAS customizations are required.
+
+# Main block for updating tenant CAS customizations
 - name: Update tenant cas customizations
-  when: V4MT_TENANT_IDS is search(tenant)
+  when: V4MT_TENANT_IDS is search(tenant)  # Only run if the tenant is present in the list
   tags:
     - onboard
   block:
+    # Run the create-cas-server.sh script to set up MPP workers and backup controller for the tenant
     - name: Tenant cas - MPP workers
       command:
         cmd: "{{ DEPLOY_DIR }}/site-config/create-cas-server.sh --tenant {{ tenant }} --output {{ DEPLOY_DIR }}/site-config --workers {{ settings.worker_count if (settings.worker_count is defined and settings.worker_count is not none) else 0 }} --backup {{ 1 if (settings.backup_controller_enabled is defined) and (settings.backup_controller_enabled | bool == True) else 0 }}"
 
+    # Copy the CPU/memory management template if user-defined resources are specified
     - name: Tenant cas user-defined resources - copy template
       copy:
-        src: "{{ role_path }}/templates/cas-manage-cpu-and-memory.yaml"
-        dest: "{{ DEPLOY_DIR }}/site-config/cas-{{ tenant }}-default/cas-manage-cpu-and-memory.yaml"
+        src: "{{ role_path }}/templates/cas-manage-cpu-and-memory.yaml"                              # Source template for CPU/memory
+        dest: "{{ DEPLOY_DIR }}/site-config/cas-{{ tenant }}-default/cas-manage-cpu-and-memory.yaml" # Destination path
         mode: "0660"
       when:
-        - settings.memory is defined and settings.memory is not none
-        - settings.cpus is defined and settings.cpus is not none
+        - settings.memory is defined and settings.memory is not none # Only if memory is specified
+        - settings.cpus is defined and settings.cpus is not none     # Only if CPUs are specified
 
+    # Replace placeholders in the copied template with actual values for memory, CPUs, and server name
     - name: Tenant cas user-defined resources - update
       replace:
         path: "{{ DEPLOY_DIR }}/site-config/cas-{{ tenant }}-default/cas-manage-cpu-and-memory.yaml"
@@ -35,6 +42,7 @@
         - settings.memory is defined and settings.memory is not none
         - settings.cpus is defined and settings.cpus is not none
 
+    # Add the user-defined resource transformer to the tenant's kustomization.yaml
     - name: Add tenant cas user-defined resources to kustomization
       lineinfile:
         path: "{{ DEPLOY_DIR }}/site-config/cas-{{ tenant }}-default/kustomization.yaml"
@@ -44,15 +52,17 @@
         - settings.memory is defined and settings.memory is not none
         - settings.cpus is defined and settings.cpus is not none
 
+    # Copy the external services template if load balancer is enabled and source ranges are specified
     - name: Tenant cas - external services copy template
       copy:
-        src: "{{ role_path }}/templates/cas-enable-external-services.yaml"
-        dest: "{{ DEPLOY_DIR }}/site-config/cas-{{ tenant }}-default"
+        src: "{{ role_path }}/templates/cas-enable-external-services.yaml" # Source template for external services
+        dest: "{{ DEPLOY_DIR }}/site-config/cas-{{ tenant }}-default"      # Destination directory
         mode: "0660"
       when:
         - settings.loadbalancer_enabled is defined and settings.loadbalancer_enabled is true
         - settings.loadbalancer_source_ranges is defined and settings.loadbalancer_source_ranges is not none
 
+    # Replace placeholders in the external services template with actual values
     - name: Tenant cas external services - update
       replace:
         path: "{{ DEPLOY_DIR }}/site-config/cas-{{ tenant }}-default/cas-enable-external-services.yaml"
@@ -67,6 +77,7 @@
         - settings.loadbalancer_enabled is defined and settings.loadbalancer_enabled is true
         - settings.loadbalancer_source_ranges is defined and settings.loadbalancer_source_ranges is not none
 
+    # Add the external services transformer to the tenant's kustomization.yaml
     - name: Add tenant cas external services to kustomization
       lineinfile:
         path: "{{ DEPLOY_DIR }}/site-config/cas-{{ tenant }}-default/kustomization.yaml"

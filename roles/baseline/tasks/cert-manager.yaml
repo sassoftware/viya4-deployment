@@ -1,43 +1,52 @@
-# Copyright © 2020-2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
 ---
+# This file contains the cert-manager setup tasks for the baseline role.
+# Chart Repo URL: https://charts.jetstack.io/
+# Container registry: quay.io
+# Chart Source: https://github.com/cert-manager/cert-manager/tree/master/deploy/charts/cert-manager
+# Purpose: Installs and manages cert-manager for TLS certificate management in Kubernetes.
+
+# Deploy the cert-manager controller using Helm
 - name: Deploy cert-manager
   kubernetes.core.helm:
-    name: "{{ CERT_MANAGER_NAME }}"
-    namespace: "{{ CERT_MANAGER_NAMESPACE }}"
-    chart_repo_url: "{{ CERT_MANAGER_CHART_URL }}"
-    chart_ref: "{{ CERT_MANAGER_CHART_NAME }}"
-    chart_version: "{{ CERT_MANAGER_CHART_VERSION }}"
-    values: "{{ CERT_MANAGER_CONFIG }}"
-    kubeconfig: "{{ KUBECONFIG }}"
-    create_namespace: true
-    wait: true
+    name: "{{ CERT_MANAGER_NAME }}"                   # Name of the Helm release
+    namespace: "{{ CERT_MANAGER_NAMESPACE }}"         # Namespace for cert-manager
+    chart_repo_url: "{{ CERT_MANAGER_CHART_URL }}"    # Helm chart repository URL
+    chart_ref: "{{ CERT_MANAGER_CHART_NAME }}"        # Helm chart name
+    chart_version: "{{ CERT_MANAGER_CHART_VERSION }}" # Chart version to deploy
+    values: "{{ CERT_MANAGER_CONFIG }}"               # Custom values for the chart
+    kubeconfig: "{{ KUBECONFIG }}"                    # Kubeconfig for cluster access
+    create_namespace: true                            # Create namespace if it doesn't exist
+    wait: true                                        # Wait for deployment to complete
   when:
-    - V4_CFG_TLS_GENERATOR is defined
-    - V4_CFG_TLS_GENERATOR == 'cert-manager'
+    - V4_CFG_TLS_GENERATOR is defined                 # Only if TLS generator is defined
+    - V4_CFG_TLS_GENERATOR == 'cert-manager'          # Only if cert-manager is the generator
   tags:
     - install
     - update
 
+# Remove the cert-manager Helm release
 - name: Remove cert-manager
   kubernetes.core.helm:
-    name: "{{ CERT_MANAGER_NAME }}"
-    namespace: "{{ CERT_MANAGER_NAMESPACE }}"
-    kubeconfig: "{{ KUBECONFIG }}"
-    wait: true
-    values: "{{ CERT_MANAGER_CONFIG }}"
-    state: absent
+    name: "{{ CERT_MANAGER_NAME }}"           # Name of the Helm release
+    namespace: "{{ CERT_MANAGER_NAMESPACE }}" # Namespace for cert-manager
+    kubeconfig: "{{ KUBECONFIG }}"            # Kubeconfig for cluster access
+    wait: true                                # Wait for removal to complete
+    values: "{{ CERT_MANAGER_CONFIG }}"       # Use the same values as install (for idempotency)
+    state: absent                             # Ensure the release is removed
   tags:
     - uninstall
 
+# Remove the cert-manager namespace from the cluster
 - name: Remove {{ CERT_MANAGER_NAMESPACE }} namespace
   kubernetes.core.k8s:
-    api_version: v1
-    kind: Namespace
-    name: "{{ CERT_MANAGER_NAMESPACE }}"
-    wait: true
-    state: absent
-    kubeconfig: "{{ KUBECONFIG }}"
+    api_version: v1                       # Kubernetes API version
+    kind: Namespace                       # Resource kind
+    name: "{{ CERT_MANAGER_NAMESPACE }}"  # Namespace to remove
+    wait: true                            # Wait for deletion
+    state: absent                         # Ensure the namespace is deleted
+    kubeconfig: "{{ KUBECONFIG }}"        # Kubeconfig for cluster access
   tags:
     - uninstall

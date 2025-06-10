@@ -1,7 +1,10 @@
-# Copyright © 2020-2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
 ---
+# This file contains the onboarding and offboarding tasks for tenants in the multi-tenancy role.
+# It is included from main.yaml when onboarding or offboarding tenants.
+
 # Apply the service account role
 - name: Apply service account role
   ansible.builtin.shell: |

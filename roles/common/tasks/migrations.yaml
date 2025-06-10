@@ -1,173 +1,204 @@
-# Copyright © 2020-2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
+
 ---
+# This file contains migration tasks for the common role.
+# It is included from main.yaml to handle any required migrations during install, uninstall, or update actions.
+
+# Migrate Postgres server FQDN if needed
 - name: Migrations - Postgres server FQDN
   when:
-    - V4_CFG_POSTGRES_FQDN is defined
-    - "'fqdn' not in V4_CFG_POSTGRES_SERVERS['default']"
+    - V4_CFG_POSTGRES_FQDN is defined                    # Only run if FQDN is defined
+    - "'fqdn' not in V4_CFG_POSTGRES_SERVERS['default']" # Only if not already present
   tags:
     - install
     - uninstall
     - update
   block:
+    # Update the FQDN in the servers dict
     - name: Update Postgres server FQDN
       ansible.utils.update_fact:
         updates:
           - path: V4_CFG_POSTGRES_SERVERS['default']['fqdn']
             value: "{{ V4_CFG_POSTGRES_FQDN }}"
       register: updated
+    # Set the updated servers dict
     - name: Update Postgres servers
       set_fact:
         V4_CFG_POSTGRES_SERVERS: "{{ updated.V4_CFG_POSTGRES_SERVERS }}"
 
+# Migrate Postgres server admin login if needed
 - name: Migrations - Postgres server admin login
   when:
-    - V4_CFG_POSTGRES_ADMIN_LOGIN is defined
-    - "'admin' not in V4_CFG_POSTGRES_SERVERS['default']"
+    - V4_CFG_POSTGRES_ADMIN_LOGIN is defined              # Only run if admin login is defined
+    - "'admin' not in V4_CFG_POSTGRES_SERVERS['default']" # Only if not already present
   tags:
     - install
     - uninstall
     - update
   block:
+    # Update the admin login in the servers dict
     - name: Update Postgres server admin login
       ansible.utils.update_fact:
         updates:
           - path: V4_CFG_POSTGRES_SERVERS['default']['admin']
             value: "{{ V4_CFG_POSTGRES_ADMIN_LOGIN }}"
       register: updated
+    # Set the updated servers dict
     - name: Update Postgres servers
       set_fact:
         V4_CFG_POSTGRES_SERVERS: "{{ updated.V4_CFG_POSTGRES_SERVERS }}"
 
+# Migrate Postgres server port if needed
 - name: Migrations - Postgres server port
   when:
-    - V4_CFG_POSTGRES_PORT is defined
-    - "'server_port' not in V4_CFG_POSTGRES_SERVERS['default']"
+    - V4_CFG_POSTGRES_PORT is defined                           # Only run if port is defined
+    - "'server_port' not in V4_CFG_POSTGRES_SERVERS['default']" # Only if not already present
   tags:
     - install
     - uninstall
     - update
   block:
+    # Update the port in the servers dict
     - name: Update Postgres server port
       ansible.utils.update_fact:
         updates:
           - path: V4_CFG_POSTGRES_SERVERS['default']['server_port']
             value: "{{ V4_CFG_POSTGRES_PORT }}"
       register: updated
+    # Set the updated servers dict
     - name: Update Postgres servers
       set_fact:
         V4_CFG_POSTGRES_SERVERS: "{{ updated.V4_CFG_POSTGRES_SERVERS }}"
 
+# Migrate Postgres server password if needed
 - name: Migrations - Postgres server password
   when:
-    - V4_CFG_POSTGRES_PASSWORD is defined
-    - "'password' not in V4_CFG_POSTGRES_SERVERS['default']"
+    - V4_CFG_POSTGRES_PASSWORD is defined                    # Only run if password is defined
+    - "'password' not in V4_CFG_POSTGRES_SERVERS['default']" # Only if not already present
   tags:
     - install
     - uninstall
     - update
   block:
+    # Update the password in the servers dict
     - name: Update Postgres server password
       ansible.utils.update_fact:
         updates:
           - path: V4_CFG_POSTGRES_SERVERS['default']['password']
             value: "{{ V4_CFG_POSTGRES_PASSWORD }}"
       register: updated
+    # Set the updated servers dict
     - name: Update Postgres servers
       set_fact:
         V4_CFG_POSTGRES_SERVERS: "{{ updated.V4_CFG_POSTGRES_SERVERS }}"
 
+# Migrate Postgres server connection name if needed
 - name: Migrations - Postgres server connection name
   when:
-    - V4_CFG_POSTGRES_CONNECTION_NAME is defined
-    - "'connection_name' not in V4_CFG_POSTGRES_SERVERS['default']"
+    - V4_CFG_POSTGRES_CONNECTION_NAME is defined                    # Only run if connection name is defined
+    - "'connection_name' not in V4_CFG_POSTGRES_SERVERS['default']" # Only if not already present
   tags:
     - install
     - uninstall
     - update
   block:
+    # Update the connection name in the servers dict
     - name: Update Postgres server connection name
       ansible.utils.update_fact:
         updates:
           - path: V4_CFG_POSTGRES_SERVERS['default']['connection_name']
             value: "{{ V4_CFG_POSTGRES_CONNECTION_NAME }}"
       register: updated
+    # Set the updated servers dict
     - name: Update Postgres servers
       set_fact:
         V4_CFG_POSTGRES_SERVERS: "{{ updated.V4_CFG_POSTGRES_SERVERS }}"
 
+# Migrate Postgres server service account if needed
 - name: Migrations - Postgres server service account
   when:
-    - V4_CFG_POSTGRES_SERVICE_ACCOUNT is defined
-    - "'service_account' not in V4_CFG_POSTGRES_SERVERS['default']"
+    - V4_CFG_POSTGRES_SERVICE_ACCOUNT is defined                    # Only run if service account is defined
+    - "'service_account' not in V4_CFG_POSTGRES_SERVERS['default']" # Only if not already present
   tags:
     - install
     - uninstall
     - update
   block:
+    # Update the service account in the servers dict
     - name: Update Postgres server service account
       ansible.utils.update_fact:
         updates:
           - path: V4_CFG_POSTGRES_SERVERS['default']['service_account']
             value: "{{ V4_CFG_POSTGRES_SERVICE_ACCOUNT }}"
       register: updated
+    # Set the updated servers dict
     - name: Update Postgres servers
       set_fact:
         V4_CFG_POSTGRES_SERVERS: "{{ updated.V4_CFG_POSTGRES_SERVERS }}"
 
+# Migrate Postgres server SSL enforcement if needed
 - name: Migrations - Postgres server ssl enforcement
   when:
-    - V4_CFG_POSTGRES_SSL_ENFORCEMENT is defined
-    - "'ssl_enforcement_enabled' not in V4_CFG_POSTGRES_SERVERS['default']"
+    - V4_CFG_POSTGRES_SSL_ENFORCEMENT is defined                            # Only run if SSL enforcement is defined
+    - "'ssl_enforcement_enabled' not in V4_CFG_POSTGRES_SERVERS['default']" # Only if not already present
   tags:
     - install
     - uninstall
     - update
   block:
+    # Update the SSL enforcement in the servers dict
     - name: Update Postgres server ssl enforcement
       ansible.utils.update_fact:
         updates:
           - path: V4_CFG_POSTGRES_SERVERS['default']['ssl_enforcement_enabled']
             value: "{{ V4_CFG_POSTGRES_SSL_ENFORCEMENT }}"
       register: updated
+    # Set the updated servers dict
     - name: Update Postgres servers
       set_fact:
         V4_CFG_POSTGRES_SERVERS: "{{ updated.V4_CFG_POSTGRES_SERVERS }}"
 
+# Migrate Postgres server internal/external flag if needed
 - name: Migrations - Postgres server internal
   when:
-    - V4_CFG_POSTGRES_TYPE is defined
-    - "'internal' not in V4_CFG_POSTGRES_SERVERS['default']"
+    - V4_CFG_POSTGRES_TYPE is defined                        # Only run if type is defined
+    - "'internal' not in V4_CFG_POSTGRES_SERVERS['default']" # Only if not already present
   tags:
     - install
     - uninstall
     - update
   block:
+    # Update the internal flag in the servers dict
     - name: Update Postgres server internal
       ansible.utils.update_fact:
         updates:
           - path: V4_CFG_POSTGRES_SERVERS['default']['internal']
             value: "{{ V4_CFG_POSTGRES_TYPE == 'internal' }}"
       register: updated
+    # Set the updated servers dict
     - name: Update Postgres servers
       set_fact:
         V4_CFG_POSTGRES_SERVERS: "{{ updated.V4_CFG_POSTGRES_SERVERS }}"
 
+# Migrate Postgres server database name if needed
 - name: Migrations - Postgres server database
   when:
-    - V4_CFG_POSTGRES_DATABASE is defined
-    - "'database' not in V4_CFG_POSTGRES_SERVERS['default']"
+    - V4_CFG_POSTGRES_DATABASE is defined                    # Only run if database is defined
+    - "'database' not in V4_CFG_POSTGRES_SERVERS['default']" # Only if not already present
   tags:
     - install
     - uninstall
     - update
   block:
+    # Update the database name in the servers dict
     - name: Update Postgres server database
       ansible.utils.update_fact:
         updates:
           - path: V4_CFG_POSTGRES_SERVERS['default']['database']
             value: "{{ V4_CFG_POSTGRES_DATABASE }}"
       register: updated
+    # Set the updated servers dict
     - name: Update Postgres servers
       set_fact:
         V4_CFG_POSTGRES_SERVERS: "{{ updated.V4_CFG_POSTGRES_SERVERS }}"

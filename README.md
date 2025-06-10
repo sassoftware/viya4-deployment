@@ -34,7 +34,7 @@
 
 ## Overview
 
-This project contains Ansible code that creates a baseline cluster in an existing Kubernetes environment for use with the SAS Viya platform, generates the manifest for a SAS Viya platform software order, and then deploys that order into the specified Kubernetes environment. Here is a list of tasks that this tool can perform: 
+This project contains Ansible code that creates a baseline cluster in an existing Kubernetes environment for use with the SAS Viya platform, generates the manifest for a SAS Viya platform software order, and then deploys that order into the specified Kubernetes environment. Here is a list of tasks that this tool can perform (also see [playbook overview](./playbooks/README.md) for info on the default tasks):
 
 - Prepare Kubernetes cluster
   - Deploy [ingress-nginx](https://kubernetes.github.io/ingress-nginx)
@@ -43,7 +43,9 @@ This project contains Ansible code that creates a baseline cluster in an existin
   - Deploy [metrics-server](https://github.com/bitnami/charts/tree/master/bitnami/metrics-server/) (AWS only)
   - Deploy [aws-ebs-csi-driver](https://github.com/kubernetes-sigs/aws-ebs-csi-driver) (AWS only)
   - Manage storageClass settings
-  
+
+*NOTE*: See the list of [supported third-party components](./docs/third-party-components.md) for more information. For information on networking considerations for these and other components, see [networking considerations](./docs/user/NetworkingConsiderations.md).
+
 - Deploy the SAS Viya Platform
   - Retrieve the deployment assets using [SAS Viya Orders CLI](https://github.com/sassoftware/viya4-orders-cli)
   - Retrieve cloud configuration from tfstate (if using a SAS Viya 4 IaC project)

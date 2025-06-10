@@ -1,47 +1,60 @@
-# Copyright © 2020-2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
 ---
+# This file contains the metrics-server setup tasks for the baseline role.
+# Chart Repo URL: https://kubernetes-sigs.github.io/metrics-server/
+# Container registry: registry.k8s.io
+# Chart Source: https://github.com/kubernetes-sigs/metrics-server/tree/master/charts/metrics-server
+# Purpose: Installs and manages metrics-server for resource metrics collection in Kubernetes.
+
+# Name: metrics-server
+# Chart URL: https://github.com/kubernetes-sigs/metrics-server/tree/master/charts/metrics-server
+# Purpose: Collects resource metrics from K8s nodes and pods.
+
+# Check if the metrics-server service exists in the kube-system namespace
 - name: Check for metrics service
   kubernetes.core.k8s_info:
-    api_version: v1
-    kind: Service
-    name: metrics-server
-    namespace: kube-system
-    kubeconfig: "{{ KUBECONFIG }}"
-  register: metrics_service
+    api_version: v1                # Kubernetes API version
+    kind: Service                  # Resource kind
+    name: metrics-server           # Name of the service to check
+    namespace: kube-system         # Namespace where metrics-server should be
+    kubeconfig: "{{ KUBECONFIG }}" # Kubeconfig for cluster access
+  register: metrics_service        # Register the result for later use
   when:
-    - METRICS_SERVER_ENABLED
+    - METRICS_SERVER_ENABLED       # Only if metrics-server is enabled
   tags:
     - install
     - update
     - uninstall
 
+# Deploy the metrics-server using Helm if it is not already present
 - name: Deploy metrics-server
   kubernetes.core.helm:
-    name: "{{ METRICS_SERVER_NAME }}"
-    namespace: kube-system
-    chart_repo_url: "{{ METRICS_SERVER_CHART_URL }}"
-    chart_ref: "{{ METRICS_SERVER_CHART_NAME }}"
-    chart_version: "{{ METRICS_SERVER_CHART_VERSION }}"
-    values: "{{ METRICS_SERVER_CONFIG }}"
-    kubeconfig: "{{ KUBECONFIG }}"
-    wait: true
+    name: "{{ METRICS_SERVER_NAME }}"                   # Name of the Helm release
+    namespace: kube-system                              # Namespace for metrics-server
+    chart_repo_url: "{{ METRICS_SERVER_CHART_URL }}"    # Helm chart repository URL
+    chart_ref: "{{ METRICS_SERVER_CHART_NAME }}"        # Helm chart name
+    chart_version: "{{ METRICS_SERVER_CHART_VERSION }}" # Chart version to deploy
+    values: "{{ METRICS_SERVER_CONFIG }}"               # Custom values for the chart
+    kubeconfig: "{{ KUBECONFIG }}"                      # Kubeconfig for cluster access
+    wait: true                                          # Wait for deployment to complete
   tags:
     - install
     - update
   when:
-    - ('resources' not in metrics_service) or ((metrics_service.resources | length) == 0)
+    - ('resources' not in metrics_service) or ((metrics_service.resources | length) == 0)  # Only if not already present
     - METRICS_SERVER_ENABLED
 
+# Remove the metrics-server Helm release if present (uninstall)
 - name: Remove metrics-server
   kubernetes.core.helm:
-    name: "{{ METRICS_SERVER_NAME }}"
-    namespace: kube-system
-    kubeconfig: "{{ KUBECONFIG }}"
-    values: "{{ METRICS_SERVER_CONFIG }}"
-    state: absent
-    wait: true
+    name: "{{ METRICS_SERVER_NAME }}"     # Name of the Helm release
+    namespace: kube-system                # Namespace for metrics-server
+    kubeconfig: "{{ KUBECONFIG }}"        # Kubeconfig for cluster access
+    values: "{{ METRICS_SERVER_CONFIG }}" # Use the same values as install (for idempotency)
+    state: absent                         # Ensure the release is removed
+    wait: true                            # Wait for removal to complete
   tags:
     - uninstall
   when:

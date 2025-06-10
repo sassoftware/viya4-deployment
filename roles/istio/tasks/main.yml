@@ -1,7 +1,16 @@
-# Copyright © 2020-2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
 ---
+# This file contains the main tasks for the istio role.
+# It handles downloading Istio, creating the namespace, setting secrets, installing Istio, configuring ingress, and cleanup.
+# Each block is conditionally included based on configuration variables and tags.
+
+# Name: istio
+# Chart URL: https://github.com/istio/istio/releases
+# Purpose: Service mesh for traffic management, security, and observability.
+
+# Download the specified version of Istio for the target architecture
 - name: Download istio
   shell: 
     cmd: "curl -L https://istio.io/downloadIstio | ISTIO_VERSION={{ istio_ver }} TARGET_ARCH={{ target_arch }} sh -"
@@ -11,6 +20,7 @@
     - uninstall
     - update
 
+# Create the istio-system namespace in Kubernetes
 - name: Create namespace
   kubernetes.core.k8s:
     kubeconfig: "{{ KUBECONFIG }}"
@@ -22,6 +32,7 @@
     - install
     - update
 
+# Set the Kiali secret using a template
 - name: Set kiali secret
   kubernetes.core.k8s:
     kubeconfig: "{{ KUBECONFIG }}"
@@ -31,6 +42,7 @@
     - install
     - update
 
+# Set the Grafana secret using a template
 - name: Set grafana secret
   kubernetes.core.k8s:
     kubeconfig: "{{ KUBECONFIG }}"
@@ -39,13 +51,15 @@
   tags:
     - install
     - update
-   
+
+# Install base Istio using istioctl and the provided config
 - name: Install base Istio 
   command: "{{ tmpdir.path }}/istio-{{ istio_ver }}/bin/istioctl --kubeconfig {{ KUBECONFIG }} manifest apply {{ istio_config }}"
   tags:
     - install
     - update
 
+# Lockdown ingress with an AuthorizationPolicy for allowed source ranges
 - name: Lockdown ingress
   kubernetes.core.k8s:
     kubeconfig: "{{ KUBECONFIG }}"
@@ -69,6 +83,7 @@
     - install
     - update
 
+# Create Grafana ingress if enabled
 - name: Grafana ingress
   kubernetes.core.k8s:
     kubeconfig: "{{ KUBECONFIG }}"
@@ -95,6 +110,7 @@
     - install
     - update
 
+# Create Prometheus ingress if enabled
 - name: Prometheus ingress
   kubernetes.core.k8s:
     kubeconfig: "{{ KUBECONFIG }}"
@@ -121,6 +137,7 @@
     - install
     - update
 
+# Create Kiali ingress if enabled
 - name: Kiali ingress
   kubernetes.core.k8s:
     kubeconfig: "{{ KUBECONFIG }}"
@@ -147,6 +164,7 @@
     - install
     - update
 
+# Create Tracing ingress if enabled
 - name: Tracing ingress
   kubernetes.core.k8s:
     kubeconfig: "{{ KUBECONFIG }}"
@@ -173,6 +191,7 @@
     - install
     - update
 
+# Lookup the istio-ingressgateway service to get the ingress endpoint
 - name: Lookup ingress
   kubernetes.core.k8s_info:
     api_version: v1
@@ -187,6 +206,7 @@
     - update
     - uninstall
 
+# Set facts for ingress endpoint and type (IP or DNS)
 - set_fact: 
     ingress_endpoint: "{{ ingress_config.resources[0].status.loadBalancer.ingress[0].ip |default(ingress_config.resources[0].status.loadBalancer.ingress[0].hostname, true) }}"
     ingress_type: "{{ 'ip' if (ingress_config.resources[0].status.loadBalancer.ingress[0].ip is defined) else 'dns' }}"
@@ -196,15 +216,17 @@
     - update
     - uninstall
 
+# Uninstall base Istio using istioctl and kubectl delete
 - name: Uninstall base Istio 
   shell: |
     {{ tmpdir.path }}/istio-{{ istio_ver }}/bin/istioctl --kubeconfig {{ KUBECONFIG }} manifest generate {{ istio_config }} | kubectl delete -f -
   environment:
     KUBECONFIG: "{{ KUBECONFIG }}"
-  ignore_errors: yes
+  ignore_errors: true
   tags:
     - uninstall
 
+# Delete the istio-system namespace
 - name: Delete namespace
   kubernetes.core.k8s:
     kubeconfig: "{{ KUBECONFIG }}"
@@ -214,10 +236,11 @@
     wait: true
     wait_timeout: 600
     state: absent
-  ignore_errors: yes
+  ignore_errors: true
   tags:
     - uninstall
 
+# Remove the temporary directory used for Istio installation
 - name: Remove tmp_dir
   file:
     path: "{{ tmpdir.path }}"

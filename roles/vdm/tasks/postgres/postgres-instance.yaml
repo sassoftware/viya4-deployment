@@ -1,14 +1,20 @@
+# Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 ---
+# Fail if there is a mix of internal and external database settings
 - name: Postgres instance - ensure all are internal/external
   fail:
     msg: All database must either be internal or external. Mix-n-match is not supported
   when:
+    # Only fail if the settings do not match the expected internal/external value
     - settings.internal != internal
   tags:
     - install
     - uninstall
     - update
 
+# Check if the crunchydata overlay directory exists
 - name: Postgres - crunchydata folder check
   stat:
     path: "{{ DEPLOY_DIR }}/sas-bases/overlays/crunchydata"
@@ -19,6 +25,7 @@
     - uninstall
     - update
 
+# Set a boolean fact if the crunchydata folder exists
 - name: Postgres - set internal_crunchy boolean
   set_fact:
     internal_crunchy: crunchydata_folder.stat.exists
@@ -27,6 +34,7 @@
     - uninstall
     - update
 
+# Check if the internal-postgres overlay directory exists
 - name: Postgres - internal-postgres folder check
   stat:
     path: "{{ DEPLOY_DIR }}/sas-bases/overlays/internal-postgres"
@@ -37,6 +45,7 @@
     - uninstall
     - update
 
+# Add overlays for crunchydata and platform-postgres if using crunchydata and role is default
 - name: Postgres - internal crunchydata default
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
@@ -55,6 +64,7 @@
     - uninstall
     - update
 
+# Add overlays for internal-postgres if using internal-postgres and role is default
 - name: Postgres - internal default
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
@@ -71,6 +81,7 @@
     - uninstall
     - update
 
+# Check if the internal-postgres overlay directory for this role exists
 - name: Postgres - internal folder check
   stat:
     path: "{{ DEPLOY_DIR }}/sas-bases/overlays/internal-postgres/{{ role }}"
@@ -81,6 +92,7 @@
     - uninstall
     - update
 
+# Add overlays for internal-postgres for this role if the directory exists
 - name: Postgres - internal cds
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
@@ -96,6 +108,7 @@
     - uninstall
     - update
 
+# Check if the v5 crunchydata overlay directory for this role exists
 - name: Postgres - cds v5 crunchy folder check
   stat:
     path: "{{ DEPLOY_DIR }}/sas-bases/overlays/postgres/{{ role }}"
@@ -106,6 +119,7 @@
     - uninstall
     - update
 
+# Add overlays for v5 crunchydata for this role if the directory exists
 - name: Postgres - internal cds v5 crunchy
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
@@ -122,6 +136,7 @@
     - uninstall
     - update
 
+# Only run for internal, default/cds-postgres roles, and cadence >= 2022.10
 - name: Postgres instance - internal post 2022.10
   when:
     - settings.internal
@@ -132,6 +147,7 @@
     - uninstall
     - update
   block:
+    # Fail if a manual update from crunchy v4 to crunchy v5 is required
     - name: Postgres instance - crunchy v4 to crunchy v5 update is required
       fail:
         msg: A manual update from crunchy v4 to v5 is required, follow these steps https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=dplynotes&docsetTarget=p1bpcvd3sr8au8n1w9ypcvu31taj.htm
@@ -139,8 +155,10 @@
         - v4_crunchy_found is defined
         - v4_crunchy_found
 
+    # Retrieve and set facts from the ConfigMap if present
     - name: Postgres instance - Get stored ConfigMap values
       block:
+        # Access the ConfigMap for storage info
         - name: Postgres instance - Access ConfigMap values
           kubernetes.core.k8s_info:
             kubeconfig: "{{ KUBECONFIG }}"
@@ -149,11 +167,13 @@
             name: dac-crunchy-storage-info
             namespace: "{{ NAMESPACE }}"
           register: cm_info
+        # Set facts for either role from ConfigMap keys if present
         - name: Postgres instance - set facts for either role from configMap keys
           when:
             - dac_crunchy_storage_cm_found
             - cm_info.resources
           block:
+            # Check for cds-postgres-storage-class in ConfigMap
             - name: Postgres instance - check for cds values
               block:
                 - name: Postgres instance - cds-postgres-storage-class not in cm
@@ -165,6 +185,7 @@
                     dac_crunchy_storage_cm_cds_values_present: true
                   when: cm_info.resources[0].data['cds-postgres-storage-class'] is defined
 
+            # Set facts for default role
             - name: Postgres instance - set facts for default role
               set_fact:
                 default_postgres_storage_class: "{{ cm_info.resources[0].data['default-postgres-storage-class'] }}"
@@ -173,6 +194,7 @@
                 default_backrest_pvc_access_mode: "{{ cm_info.resources[0].data['default-backrest-access-mode'] }}"
               when: role == 'default'
 
+            # Set facts for cds-postgres role
             - name: Postgres instance - set facts for cds-postgres role
               set_fact:
                 cds_postgres_storage_class: "{{ cm_info.resources[0].data['cds-postgres-storage-class'] }}"
@@ -183,12 +205,13 @@
                 - dac_crunchy_storage_cm_cds_values_present
                 - role == 'cds-postgres'
 
-
+    # Create a crunchy storage transformer template for this role
     - name: Postgres instance - internal copy crunchy transformer template
       template:
         src: "{{ role_path }}/templates/transformers/crunchy-storage-transformer.yaml"
         dest: "{{ role_path }}/templates/transformers/{{ role }}-crunchy-storage-transformer.yaml"
         mode: "0660"
+    # Add the transformer overlay for this role
     - name: Postgres instance - internal kustomization entries
       overlay_facts:
         cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
@@ -196,8 +219,10 @@
         existing: "{{ vdm_overlays }}"
         add:
           - { transformers: "{{ role }}-crunchy-storage-transformer.yaml", min: "2022.10", vdm: true }
+    # Set immutable storage transformer values if not found in ConfigMap
     - name: Postgres instance - set immutable storage transformer values
       block:
+        # Save default role storage map values if not found in ConfigMap
         - name: Postgres instance - save role storage map values
           when:
             - not dac_crunchy_storage_cm_found
@@ -234,6 +259,7 @@
                     default-postgres-access-mode: "{{ default_postgres_pvc_access_mode | string }}"
                     default-backrest-storage-class: "{{ default_backrest_storage_class | string }}"
                     default-backrest-access-mode: "{{ default_backrest_pvc_access_mode | string }}"
+        # Save cds role storage map values if not found in ConfigMap
         - name: Postgres instance - save role storage map values
           when:
             - not dac_crunchy_storage_cm_found or not dac_crunchy_storage_cm_cds_values_present
@@ -264,6 +290,7 @@
                     cds-backrest-storage-class: "{{ cds_backrest_storage_class | string }}"
                     cds-backrest-access-mode: "{{ cds_backrest_pvc_access_mode | string }}"
 
+# Only run for external, default/cds-postgres roles, and cadence >= 2022.10
 - name: Postgres instance - external post 2022.10 - external cds post 2022.12
   when:
     - not settings.internal
@@ -274,6 +301,7 @@
     - uninstall
     - update
   block:
+    # Add overlays for external cds-postgres if role is cds-postgres
     - name: Postgres instance - external cds resource
       overlay_facts:
         cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
@@ -283,21 +311,25 @@
           - { resources: overlays/postgres/cds-postgres, min: "2022.12" }
       when:
         - role == "cds-postgres"
+    # Copy the postgres-user.env template for this role
     - name: Postgres instance - external copy postgres-user.env
       template:
         src: postgres-user.env
         dest: "{{ DEPLOY_DIR }}/site-config/postgres-{{ role }}-user.env"
         mode: "0660"
+    # Copy the secret generator template for this role
     - name: Postgres instance - external copy secret generator template
       template:
         src: "{{ role_path }}/templates/generators/postgres-secrets.yaml"
         dest: "{{ role_path }}/templates/generators/postgres-{{ role }}-secrets.yaml"
         mode: "0660"
+    # Copy the dataserver transformer template for this role
     - name: Postgres instance - external copy dataserver transformer template
       template:
         src: "{{ role_path }}/templates/transformers/dataserver-transformer.yaml"
         dest: "{{ role_path }}/templates/transformers/{{ role }}-dataserver-transformer.yaml"
         mode: "0660"
+    # Add overlay facts for dataserver transformer and secrets generator
     - name: Postgres instance - external kustomization entries
       overlay_facts:
         cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
@@ -307,6 +339,7 @@
           - { transformers: "{{ role }}-dataserver-transformer.yaml", min: "2022.10", vdm: true }
           - { generators: "postgres-{{ role }}-secrets.yaml", min: "2022.10", vdm: true }
 
+# Only run for external, non-default/cds-postgres roles, and cadence >= 2022.10
 - name: Postgres instance - external post 2022.10 - additional servers
   when:
     - not settings.internal
@@ -318,11 +351,13 @@
     - uninstall
     - update
   block:
+    # Copy the dataserver template for this role
     - name: Postgres instance - external copy dataserver template
       template:
         src: "{{ role_path }}/templates/resources/platform-postgres-dataserver.yaml"
         dest: "{{ role_path }}/templates/resources/platform-postgres-{{ role }}-dataserver.yaml"
         mode: "0660"
+    # Add overlay facts for the dataserver resource
     - name: Postgres instance - external additional servers kustomization entries
       overlay_facts:
         cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
@@ -333,6 +368,7 @@
 
 # TODO Fix Logic for tasks below
 
+# Only run for internal, non-default roles, and if the overlay does not exist
 - name: Postgres instance - crd
   when:
     - settings.internal and role != "default" and not result.stat.exists
@@ -342,11 +378,13 @@
     - uninstall
     - update
   block:
+    # Copy the postgres-instance resource template for this role
     - name: Postgres instance - crd
       template:
         src: "{{ role_path }}/templates/resources/postgres-instance.yaml"
         dest: "{{ role_path }}/templates/resources/postgres-{{ role }}-instance.yaml"
         mode: "0660"
+    # Add overlay facts for the postgres-instance resource
     - name: Postgres instance - add resources
       overlay_facts:
         cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
@@ -355,6 +393,7 @@
         add:
           - { resources: "postgres-{{ role }}-instance.yaml", vdm: true }
 
+# Only run for external roles and cadence < 2022.10
 - name: Postgres instance - external pre 2022.10
   when:
     - not settings.internal
@@ -365,11 +404,13 @@
     - uninstall
     - update
   block:
+    # Copy the postgres-instance resource template for this role
     - name: Postgres instance - external crd
       template:
         src: "{{ role_path }}/templates/resources/postgres-instance.yaml"
         dest: "{{ role_path }}/templates/resources/postgres-{{ role }}-instance.yaml"
         mode: "0660"
+    # Add overlay facts for the postgres-instance resource
     - name: Postgres instance - add external resources
       overlay_facts:
         cadence_name: "{{ V4_CFG_CADENCE_NAME }}"

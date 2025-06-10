@@ -1,7 +1,17 @@
+# Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 ---
+# ---------------------------------------------
+# Postgres Server Deployment Tasks for VDM Role
+# ---------------------------------------------
+# This file manages the deployment and configuration of Postgres servers for the VDM role.
+# It handles both internal and external Postgres, GCP Cloud SQL proxy, and overlays for different cadence versions.
+# Included from main.yaml.
+
 - name: Postgres - set internal_postgres boolean
   set_fact:
-    internal_postgres: "{{ V4_CFG_POSTGRES_SERVERS.default.internal }}"
+    internal_postgres: "{{ V4_CFG_POSTGRES_SERVERS.default.internal }}"  # Set a fact to track if the default Postgres server is internal
   tags:
     - install
     - uninstall
@@ -11,36 +21,38 @@
   ansible.builtin.fail:
     msg: CDS postgres instance must be internal server. To use CDS postgres, please reconfigure your infrastructure to set all your postgres servers internal
   when:
-    - V4_CFG_CADENCE_VERSION is version('2022.11', "<=")
-    - V4_CFG_CADENCE_NAME|lower != "fast"
-    - V4_CFG_POSTGRES_SERVERS['cds-postgres'] is defined
+    - V4_CFG_CADENCE_VERSION is version('2022.11', "<=")          # Only applies to cadence versions <= 2022.11
+    - V4_CFG_CADENCE_NAME|lower != "fast"                         # Exclude 'fast' cadence
+    - V4_CFG_POSTGRES_SERVERS['cds-postgres'] is defined          # Only if cds-postgres is defined
     - V4_CFG_POSTGRES_SERVERS['cds-postgres'].internal is defined
-    - not V4_CFG_POSTGRES_SERVERS['cds-postgres'].internal
+    - not V4_CFG_POSTGRES_SERVERS['cds-postgres'].internal        # Only if cds-postgres is external
   tags:
     - install
     - uninstall
     - update
 
 - name: Postgres - gcp cloud-sql-proxy
-  include_tasks: gcp-cloud-sql-proxy.yaml
+  include_tasks: gcp-cloud-sql-proxy.yaml          # Include GCP Cloud SQL proxy tasks for each external Postgres server with a service account
   vars:
     role: "{{ item.key }}"
     settings: "{{ item.value }}"
   with_dict: "{{ V4_CFG_POSTGRES_SERVERS }}"
   when:
-    - not item.value.internal
-    - "'service_account' in item.value"
+    - not item.value.internal                      # Only for external Postgres
+    - "'service_account' in item.value"            # Only if service_account is present
     - item.value.service_account is defined
     - V4_CFG_CLOUD_SERVICE_ACCOUNT_NAME is defined
-    - PROVIDER == "gcp"
+    - PROVIDER == "gcp"                            # Only for GCP provider
   tags:
     - install
     - uninstall
     - update
 
+# Handle overlays and configuration for different cadence versions
+
 - name: Postgres - pre 2021.1.4
   when:
-    - V4_CFG_CADENCE_VERSION is version('2021.1.4', "<")
+    - V4_CFG_CADENCE_VERSION is version('2021.1.4', "<")   # For cadence versions before 2021.1.4
     - V4_CFG_CADENCE_NAME|lower != "fast"
   tags:
     - install
@@ -59,7 +71,7 @@
           - { transformers: postgres-storage-transformer.yaml, vdm: true, max: 2020.1.3 }
           - { transformers: postgres-storage-transformer.v2.yaml, vdm: true, min: 2020.1.3 }
       when:
-        - internal_postgres
+        - internal_postgres  # Only if using internal Postgres
     - name: Postgres - external
       overlay_facts:
         cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
@@ -72,11 +84,11 @@
           - { generators: sas-postgres-config.yaml, max: 2020.0.4, vdm: true }
           - { generators: sas-postgres-config.v2.yaml, min: 2020.0.5, vdm: true }
       when:
-        - not internal_postgres
+        - not internal_postgres  # Only if using external Postgres
 
 - name: Postgres - post 2021.1.4
   when:
-    - V4_CFG_CADENCE_VERSION is version('2021.1.4', ">=")
+    - V4_CFG_CADENCE_VERSION is version('2021.1.4', ">=")   # For cadence versions >= 2021.1.4 and < 2022.10
     - V4_CFG_CADENCE_VERSION is version('2022.10', "<")
   tags:
     - install
@@ -102,7 +114,7 @@
       when:
         - not internal_postgres
     - name: Postgres - instance
-      include_tasks: postgres-instance.yaml
+      include_tasks: postgres-instance.yaml  # Deploy Postgres instance for each server
       vars:
         role: "{{ item.key }}"
         settings: "{{ item.value }}"
@@ -111,7 +123,7 @@
 
 - name: Postgres - post 2022.10
   when:
-    - V4_CFG_CADENCE_VERSION is version('2022.10', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"
+    - V4_CFG_CADENCE_VERSION is version('2022.10', ">=") or V4_CFG_CADENCE_NAME|lower == "fast"  # For cadence >= 2022.10 or 'fast' cadence
   tags:
     - install
     - uninstall
@@ -136,7 +148,7 @@
       when:
         - not internal_postgres
     - name: Postgres - instance
-      include_tasks: postgres-instance.yaml
+      include_tasks: postgres-instance.yaml  # Deploy Postgres instance for each server
       vars:
         role: "{{ item.key }}"
         settings: "{{ item.value }}"
@@ -144,7 +156,7 @@
       with_dict: "{{ V4_CFG_POSTGRES_SERVERS }}"
 
 - name: Custom postgres - max connection
-  include_tasks: postgres-multi-tenant-config.yaml
+  include_tasks: postgres-multi-tenant-config.yaml  # Configure max connections for multi-tenant Postgres
   vars:
     role: "{{ item.key }}"
     settings: "{{ item.value }}"
