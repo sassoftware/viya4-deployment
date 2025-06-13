@@ -27,4 +27,5 @@ config:
       objectFilter: (objectClass=inetOrgPerson)
       searchFilter: uid={0}
     sas.logon.initial.password: Password123
-config/identities/sas.identities/administrator: viya_admin
+  identities:
+    administrator: 'viya_admin'
