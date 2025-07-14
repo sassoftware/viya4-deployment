@@ -25,7 +25,6 @@
 - [Creating and Managing Deployments](#creating-and-managing-deployments)
   - [DNS](#dns)
     - [SAS/CONNECT](#sasconnect)
-  - [Updating SAS Viya Manually](#updating-sas-viya-manually)
 - [Troubleshooting](#troubleshooting)
 - [Contributing](#contributing)
 - [License](#license)
@@ -33,6 +32,10 @@
 
 
 ## Overview
+
+- This project can only be used for patch updates that use the exact same manifest as the existing deployment. 
+- Updating to a new SAS Viya platform version, cadence, or a new software offering is not supported using this project.
+- For more information about updating your software, see [KB0041450: The SAS Viya Deployment as a Code project does not perform updates](https://sas.service-now.com/csm?id=kb_article_view&sysparm_article=KB0041450).
 
 This project contains Ansible code that creates a baseline cluster in an existing Kubernetes environment for use with the SAS Viya platform, generates the manifest for a SAS Viya platform software order, and then deploys that order into the specified Kubernetes environment. Here is a list of tasks that this tool can perform (also see [playbook overview](./playbooks/README.md) for info on the default tasks):
 
@@ -340,20 +343,9 @@ In the above example, the ingress controller's LoadBalancer endpoint is 52.52.52
 - An A record (such as `example.com`) that points to the 52.52.52.52 address
 - A wildcard CNAME (`*.example.com`) that points to example.com
 
-
 #### SAS/CONNECT
 
 When running the `viya` action with `V4_CFG_CONNECT_ENABLE_LOADBALANCER=true`, a separate loadbalancer service is created to allow external SAS/CONNECT clients to connect to the SAS Viya platform. You will need to register this LoadBalancer endpoint with your DNS provider such that the desired host name (for example, connect.example.com) points to the LoadBalancer endpoint.
-
-
-### Updating SAS Viya Manually
-
-Manual steps are required by the SAS software to update a SAS deployment in an existing cluster. As a result, viya4-deployment does not perform updates. The viya4-deployment tools can perform subsequent `viya,install` tasks if you are simply reapplying the same software order into the cluster.
-
-If you have an existing deployment that you performed with the viya4-deployment project, take the following steps in order to update the SAS Viya platform:
-
-- Follow the instructions in [Updating Software](https://documentation.sas.com/?cdcId=sasadmincdc&cdcVersion=default&docsetId=k8sag&docsetTarget=titlepage.htm) in the SAS Viya Platform Operations Guide.
-- You are expected to modify the steps that are described in the SAS Viya Platform Operations Guide to accommodate the slightly different directory structure 
 
 ### Troubleshooting
 
