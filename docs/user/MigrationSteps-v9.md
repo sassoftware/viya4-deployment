@@ -23,15 +23,11 @@ kubectl create job --from=cronjob/sas-scheduled-backup-all-sources manual-backup
 
 ###  Verify the backup job has completed successfully:
 
-
 ```bash
 kubectl get jobs \
   -l "sas.com/sas-backup-id=<backup-id>" \
   -L "sas.com/sas-backup-id,sas.com/backup-job-type,sas.com/sas-backup-job-status,sas.com/backup-persistence-status"
 ```
-
----
-
 ###  Stop the Viya Deployment
 
 Stop the SAS Viya environment using the cron job:
@@ -45,9 +41,6 @@ kubectl -n <viya-namespace> create job --from=cronjob/sas-stop-all stopdep-<date
 ```bash
 kubectl -n viya4 create job --from=cronjob/sas-stop-all stopdep-22072025
 ```
-
----
-
 ###  Delete Old NFS Provisioner Components
 
 Remove the `sas` StorageClass:
@@ -68,8 +61,7 @@ Redeploy SAS Viya using the updated DaC baseline that includes CSI NFS driver su
 
 >  **Important Note:** You do **not** need to restore from backup, as the NFS server path to the PVs remains the same. The CSI driver will reuse existing PVs and directories automatically.
 
-
-## 🔍 Post-Migration Steps
+##  Post-Migration Steps
 
 *  Confirm all PVCs are **bound and mounted correctly** in the new Viya deployment.
 *  Validate **data availability** and application functionality.
@@ -82,4 +74,3 @@ Redeploy SAS Viya using the updated DaC baseline that includes CSI NFS driver su
 * The **CSI NFS driver** offers improved compatibility with newer Kubernetes versions and is the **recommended** provisioner going forward.
 * Avoid reusing the old Helm release metadata (`meta.helm.sh/*`) to prevent installation or upgrade conflicts.
 
----
