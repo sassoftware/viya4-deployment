@@ -1,20 +1,15 @@
 
-````markdown
 #  Migration Guide: NFS Subdir-External Provisioner to CSI NFS Driver
 
 This document outlines the steps required to migrate from the legacy `nfs-subdir-external-provisioner` to the CSI-based `csi-driver-nfs` in a SAS Viya 4 environment on Azure.
 
-> This guide assumes you are migrating a Viya deployment (e.g., `v8.2.1`) to a newer version (e.g., `v9.0.0`) using the latest DaC baseline that includes the `csi-driver-nfs`.
-
----
+This guide assumes you are migrating a Viya deployment (e.g., `v8.2.1`) to a newer version (e.g., `v9.0.0`) using the latest DaC baseline that includes the `csi-driver-nfs`.
 
 ##  Prerequisites
 
 - Ensure you have **cluster admin access**.
 - The **NFS server** used in the existing setup must be retained and accessible.
 - All **PVs and PVCs** should be backed up as a precaution.
-
----
 
 ##  Migration Steps
 
@@ -26,7 +21,8 @@ Trigger a manual backup of your running Viya deployment:
 kubectl create job --from=cronjob/sas-scheduled-backup-all-sources manual-backup-$(date +%s) -n <viya-namespace>
 ````
 
-Verify the backup job has completed successfully:
+###  Verify the backup job has completed successfully:
+
 
 ```bash
 kubectl get jobs \
@@ -66,25 +62,22 @@ Delete the namespace used by the legacy provisioner (typically `nfs-client`):
 kubectl delete namespace nfs-client
 ```
 
----
-
 ###  Deploy New Viya Environment with CSI Driver
 
 Redeploy SAS Viya using the updated DaC baseline that includes CSI NFS driver support.
 
 >  **Important Note:** You do **not** need to restore from backup, as the NFS server path to the PVs remains the same. The CSI driver will reuse existing PVs and directories automatically.
 
----
 
 ## 🔍 Post-Migration Steps
 
-* ✅ Confirm all PVCs are **bound and mounted correctly** in the new Viya deployment.
-* 🔄 Validate **data availability** and application functionality.
-* 📝 Finalize documentation and update the `README.md` or internal documentation as needed.
+*  Confirm all PVCs are **bound and mounted correctly** in the new Viya deployment.
+*  Validate **data availability** and application functionality.
+*  Finalize documentation and update the `README.md` or internal documentation as needed.
 
 ---
 
-## 📌 Notes
+##  Notes
 
 * The **CSI NFS driver** offers improved compatibility with newer Kubernetes versions and is the **recommended** provisioner going forward.
 * Avoid reusing the old Helm release metadata (`meta.helm.sh/*`) to prevent installation or upgrade conflicts.
