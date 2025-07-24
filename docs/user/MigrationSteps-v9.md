@@ -77,7 +77,6 @@ kubectl -n <viya-namespace> create job --from=cronjob/sas-start-all startdep-<da
 
 *  Confirm all PVCs are **bound and mounted correctly** in the new Viya deployment.
 *  Validate **data availability** and application functionality.
-*  Finalize documentation and update the `README.md` or internal documentation as needed.
 
 ---
 
