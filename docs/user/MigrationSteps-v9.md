@@ -50,6 +50,7 @@ kubectl -n viya4 create job --from=cronjob/sas-stop-all stopdep-22072025
 ###  Delete Old NFS Provisioner Components
 
 Remove the `sas` StorageClass:
+For SAS Viya environments deployed on Google Cloud Platform (GCP), the legacy `pg-storage` StorageClass must be deleted.
 
 ```bash
 kubectl delete storageclass sas
