@@ -21,7 +21,7 @@ Trigger a manual backup of your running Viya deployment:
 kubectl create job --from=cronjob/sas-scheduled-backup-all-sources manual-backup-$(date +%s) -n <viya-namespace>
 ````
 
-fatch the backup ID
+Fatch the backup ID
 
 ```bash
 kubectl describe job <backup-job-name> -n va-viya | grep "sas.com/sas-backup-id"
@@ -68,12 +68,12 @@ If you have redeployed SAS Viya using the updated DaC baseline that includes CSI
 However, if you have only updated the DaC baseline without redeploying Viya, you will need to manually start the Viya environment using the following command:
 
 ```bash
-kubectl -n <namespace> create job --from=cronjobs/sas-start-all startdep-<guid>
+kubectl -n <viya-namespace> create job --from=cronjob/sas-start-all startdep-<date +%s>
 ```
 
 >  **Important Note:** You do **not** need to restore from backup, as the NFS server path to the PVs remains the same. The CSI driver will reuse existing PVs and directories automatically.
 
-##  Post-Migration Steps
+###  Post-Migration Steps
 
 *  Confirm all PVCs are **bound and mounted correctly** in the new Viya deployment.
 *  Validate **data availability** and application functionality.
@@ -81,7 +81,7 @@ kubectl -n <namespace> create job --from=cronjobs/sas-start-all startdep-<guid>
 
 ---
 
-##  Notes
+###  Notes
 
 * The **CSI NFS driver** offers improved compatibility with newer Kubernetes versions and is the **recommended** provisioner going forward.
 * Avoid reusing the old Helm release metadata (`meta.helm.sh/*`) to prevent installation or upgrade conflicts.
