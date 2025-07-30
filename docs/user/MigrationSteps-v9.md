@@ -1,7 +1,5 @@
 
-#  Migration Guide: NFS Subdir-External Provisioner to CSI NFS Driver
-
-This document outlines the steps required to migrate from the legacy `nfs-subdir-external-provisioner` to the CSI-based `csi-driver-nfs` in a SAS Viya 4 environment on Azure.
+#  Migration Guide: v9.0.0
 
 This guide assumes you are migrating a Viya deployment (e.g., `v8.2.1`) to a newer version (e.g., `v9.0.0`) using the latest DaC baseline that includes the `csi-driver-nfs`.
 
