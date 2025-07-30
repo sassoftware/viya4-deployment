@@ -95,7 +95,7 @@
   set_fact:
     # Build a list of tenant-specific provider password variable names
     tenant_password_list: >-
-      {{ (tenant_password_list | default([])) + ( ['V4MT_PROVIDER_PASSWORD_'] | product([item | default('')])| map('join') | list ) }}
+      {{ (tenant_password_list | default([])) + (['V4MT_PROVIDER_PASSWORD_'] | product([item | default('')]) | map('join') | list) }}
   with_items: "{{ V4MT_TENANT_IDS | default('') | replace(' ', '') | upper | split(',') }}"
   when: V4MT_PROVIDER_PASSWORD is not defined
   tags:
