@@ -68,12 +68,7 @@ INGRESS_NGINX_CONFIG:
     lifecycle:
       preStop:
         exec:
-          command:
-            [
-              /bin/sh,
-              -c,
-              sleep 5; /usr/local/nginx/sbin/nginx -c /etc/nginx/nginx.conf -s quit; while pgrep -x nginx; do sleep 1; done,
-            ]
+          command: [/bin/sh, -c, sleep 5; /usr/local/nginx/sbin/nginx -c /etc/nginx/nginx.conf -s quit; while pgrep -x nginx; do sleep 1; done]
     terminationGracePeriodSeconds: 600
 
 # Add annotation to include Azure load-balancer health probe request path
