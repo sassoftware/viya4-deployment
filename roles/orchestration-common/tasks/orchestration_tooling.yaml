@@ -137,8 +137,9 @@
       register: orchestration_path
     - name: Orchestration tooling - Prepend path with tooling directory
       set_fact:
-        path_list: "{{ path_list | default([]) + [''.join((ORCHESTRATION_TOOLING_DIRECTORY, item))] }}"
-      loop: "{{ orchestration_path.stdout.split(':') | list }}"
+        path_list: >-
+          {{ (path_list | default([])) + [ (ORCHESTRATION_TOOLING_DIRECTORY | default('') ~ (item | default(''))) ] }}
+      loop: "{{ orchestration_path.stdout | default('') | split(':') }}"
     - name: Orchestration tooling - Set orchestration tooling path
       set_fact:
         ORCHESTRATION_TOOLING_PATH: "{{ path_list | join(':') }}"
