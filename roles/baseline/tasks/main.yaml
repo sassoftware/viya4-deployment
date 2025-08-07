@@ -86,6 +86,8 @@
     file: storage-classes.yaml
   when:
     - PROVIDER == "azure"
+    - V4_CFG_MANAGE_STORAGE is defined
+    - V4_CFG_MANAGE_STORAGE|bool
   tags:
     - baseline
 
