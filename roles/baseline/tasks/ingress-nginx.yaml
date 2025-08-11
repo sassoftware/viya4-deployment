@@ -27,6 +27,10 @@
     - install
     - update
   block:
+    # Set the chart version based on cadence version
+    - name: Set ingress-nginx chart version based on cadence
+      set_fact:
+        INGRESS_NGINX_CHART_VERSION: "{{ '4.12.1' if V4_CFG_CADENCE_VERSION | float <= 2025.07 else '4.13.0' }}"
     # Retrieve Kubernetes cluster version information
     - name: Retrieve K8s cluster information
       kubernetes.core.k8s_cluster_info:
