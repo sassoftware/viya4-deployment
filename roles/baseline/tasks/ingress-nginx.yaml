@@ -27,19 +27,17 @@
     - install
     - update
   block:
-    # Set the chart version based on cadence version
-    - name: Set ingress-nginx chart version based on cadence
-      set_fact:
-        INGRESS_NGINX_CHART_VERSION: "{{ '4.12.1' if V4_CFG_CADENCE_VERSION | float <= 2025.07 else '4.13.0' }}"
     # Retrieve Kubernetes cluster version information
     - name: Retrieve K8s cluster information
       kubernetes.core.k8s_cluster_info:
         kubeconfig: "{{ KUBECONFIG }}"
       register: cluster_info
-    # Set the chart version based on the minor version of the Kubernetes server
-    - name: Set the default INGRESS_NGINX_CHART_VERSION based on K8s server minor version
+    # Set the chart version based on cadence version if K8s version is >= threshold
+    - name: Set ingress-nginx chart version
       set_fact:
-        INGRESS_NGINX_CHART_VERSION: "{{ ingressVersions.k8sMinorVersion.api.chartVersion if cluster_info.version.server.kubernetes.minor is version(ingressVersions.k8sMinorVersion.value, 'ge') else '' }}"
+        INGRESS_NGINX_CHART_VERSION: "{{ '4.12.1' if V4_CFG_CADENCE_VERSION is version('2025.07', '<=') else '4.13.0' }}"
+      when:
+        - cluster_info.version.server.kubernetes.minor is version(ingressVersions.k8sMinorVersion.value, 'ge')
     # Output the selected chart version for debugging
     - name: Output INGRESS_NGINX_CHART_VERSION
       debug:
