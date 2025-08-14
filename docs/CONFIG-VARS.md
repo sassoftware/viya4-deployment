@@ -424,9 +424,9 @@ Kubernetes Metrics Server installation is currently only applicable for AWS EKS 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | METRICS_SERVER_ENABLED | Whether to deploy Metrics Server | bool | true | false | | baseline |
-| METRICS_SERVER_CHART_URL | Metrics Server Helm chart url | string | Go [here](https://charts.bitnami.com/bitnami/) for more information. | false | If an existing Metrics Server is installed, these options are ignored. | baseline |
+| METRICS_SERVER_CHART_URL | Metrics Server Helm chart url | string | Go [here](https://kubernetes-sigs.github.io/metrics-server/) for more information. | false | If an existing Metrics Server is installed, these options are ignored. | baseline |
 | METRICS_SERVER_CHART_NAME | Metrics Server Helm chart name | string | metrics-server | false | If an existing Metrics Server is installed, these options are ignored. | baseline |
-| METRICS_SERVER_CHART_VERSION | Metrics Server Helm chart version | string | 6.6.5 | false | If an existing Metrics Server is installed, these options are ignored. See [Artifact Hub](https://artifacthub.io/packages/helm/bitnami/metrics-server) to determine application version.| baseline |
+| METRICS_SERVER_CHART_VERSION | Metrics Server Helm chart version | string | 6.6.5 | false | If an existing Metrics Server is installed, these options are ignored. See [Artifact Hub](https://artifacthub.io/packages/helm/metrics-server/metrics-server) to determine application version.| baseline |
 | METRICS_SERVER_CONFIG | Metrics Server Helm values | string | See [this file](../roles/baseline/defaults/main.yml) for more information. | false | If an existing Metrics Server is installed, these options are ignored. | baseline |
 
 ### NFS Client
