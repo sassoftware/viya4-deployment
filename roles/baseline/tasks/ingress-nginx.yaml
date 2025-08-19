@@ -32,7 +32,7 @@
       kubernetes.core.k8s_cluster_info:
         kubeconfig: "{{ KUBECONFIG }}"
       register: cluster_info
-     # Set the chart version based on the minor version of the Kubernetes server
+    # Set the chart version based on the minor version of the Kubernetes server
     - name: Set the default INGRESS_NGINX_CHART_VERSION based on K8s server minor version
       set_fact:
         INGRESS_NGINX_CHART_VERSION: "{{ ingressVersions.k8sMinorVersion.api.chartVersion if cluster_info.version.server.kubernetes.minor is version(ingressVersions.k8sMinorVersion.value, 'ge') else '' }}"
