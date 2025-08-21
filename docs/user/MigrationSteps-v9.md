@@ -1,7 +1,7 @@
 
 #  Migration Guide: v9.0.0
 
-This guide assumes you are migrating a Viya deployment (e.g., `v8.2.1`) to a newer version (e.g., `v9.0.0`) using the latest DaC baseline that includes the `csi-driver-nfs`.
+This guide assumes you are migrating a viya4-deployment (e.g., `v8.2.1`) to a newer version (e.g., `v9.0.0`) using the latest viya4-deployment baseline that includes the `csi-driver-nfs`.
 
 ##  Prerequisites
 
@@ -11,12 +11,12 @@ This guide assumes you are migrating a Viya deployment (e.g., `v8.2.1`) to a new
 
 ##  Migration Steps
 
-###  Backup Existing Viya Environment (Manual Trigger)
+###  Backup Existing Environment (Manual Execution)
 
-Trigger a manual backup of your running Viya deployment:
+Trigger a manual backup of your running viya4-deployment:
 
 ```bash
-kubectl create job --from=cronjob/sas-scheduled-backup-all-sources manual-backup-$(date +%s) -n <viya-namespace>
+kubectl create job --from=cronjob/sas-scheduled-backup-all-sources manual-backup-$(date +%s) -n <viya4-namespace>
 ````
 
 Fatch the backup ID
@@ -32,12 +32,12 @@ kubectl get jobs \
   -l "sas.com/sas-backup-id=<backup-id>" \
   -L "sas.com/sas-backup-id,sas.com/backup-job-type,sas.com/sas-backup-job-status,sas.com/backup-persistence-status"
 ```
-###  Stop the Viya Deployment
+###  Stop the viya4-deployment
 
-Stop the SAS Viya environment using the cron job:
+Stop the SAS viya4 environment using the cron job:
 
 ```bash
-kubectl -n <viya-namespace> create job --from=cronjob/sas-stop-all stopdep-<date +%s>
+kubectl -n <viya4-namespace> create job --from=cronjob/sas-stop-all stopdep-<date +%s>
 ```
 
 **Example:**
@@ -48,7 +48,7 @@ kubectl -n viya4 create job --from=cronjob/sas-stop-all stopdep-22072025
 ###  Delete Old NFS Provisioner Components
 
 Remove the `sas` StorageClass:
-For SAS Viya environments deployed on Google Cloud Platform (GCP), the legacy `pg-storage` StorageClass must be deleted.
+For SAS viya4 environments deployed on Google Cloud Platform (GCP), the legacy `pg-storage` StorageClass must be deleted.
 
 ```bash
 kubectl delete storageclass sas
@@ -60,21 +60,46 @@ Delete the namespace used by the legacy provisioner (typically `nfs-client`):
 kubectl delete namespace nfs-client
 ```
 
-###  Deploy New Viya Environment with CSI Driver
+###  Deploy New viya4 Environment with CSI Driver
 
-If you have redeployed SAS Viya using the updated DaC baseline that includes CSI NFS driver support, no additional action is required.
+Update your DaC baseline to install the CSI NFS driver
 
-However, if you have only updated the DaC baseline without redeploying Viya, you will need to manually start the Viya environment using the following command:
+To install/upgrade baseline dependencies only using "Docker"
+
+  ```bash
+  docker run --rm \
+    --group-add root \
+    --user $(id -u):$(id -g) \
+    --volume $HOME/deployments:/data \
+    --volume $HOME/deployments/dev-cluster/.kube/config:/config/kubeconfig \
+    --volume $HOME/deployments/dev-cluster/dev-namespace/ansible-vars.yaml:/config/config \
+    --volume $HOME/.ssh/id_rsa:/config/jump_svr_private_key \
+    viya4-deployment --tags "baseline,install"
+  ```
+
+To install/upgrade baseline dependencies only using "ansible"
+
+  ```bash
+  ansible-playbook \
+    -e BASE_DIR=$HOME/deployments \
+    -e KUBECONFIG=$HOME/deployments/.kube/config \
+    -e CONFIG=$HOME/deployments/dev-cluster/dev-namespace/ansible-vars.yaml \
+    -e JUMP_SVR_PRIVATE_KEY=$HOME/.ssh/id_rsa \
+    playbooks/playbook.yaml --tags "baseline,install"
+  ```
+If you have redeployed **viya4-deployment** using the [9.0.0 release](https://github.com/sassoftware/viya4-deployment/releases/tag/v9.0.0), which includes CSI NFS driver support, no additional action is required.
+
+However, if you have only updated the viya4-deployment baseline without redeploying viya4, you will need to manually start the viya4 environment using the following command:
 
 ```bash
-kubectl -n <viya-namespace> create job --from=cronjob/sas-start-all startdep-<date +%s>
+kubectl -n <viya4-namespace> create job --from=cronjob/sas-start-all startdep-<date +%s>
 ```
 
 >  **Important Note:** You do **not** need to restore from backup, as the NFS server path to the PVs remains the same. The CSI driver will reuse existing PVs and directories automatically.
 
 ###  Post-Migration Steps
 
-*  Confirm all PVCs are **bound and mounted correctly** in the new Viya deployment.
+*  Confirm all PVCs are **bound and mounted correctly** in the new viya4-deployment.
 *  Validate **data availability** and application functionality.
 
 ---
