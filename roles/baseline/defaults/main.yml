@@ -130,7 +130,7 @@ CSI_DRIVER_NFS_CONFIG:
     parameters:
       server: "{{ V4_CFG_RWX_FILESTORE_ENDPOINT }}"
       share: "{{ '/ontap' if STORAGE_TYPE_BACKEND == 'ontap' else ('/pvs' if PROVIDER != 'azure' else (V4_CFG_RWX_FILESTORE_PATH | replace('/$', '') ~ '/pvs')) }}"
-      subDir: ${pvc.metadata.namespace}/${pvc.metadata.name}/${pv.metadata.name}
+      subdir: ${pvc.metadata.namespace}-${pvc.metadata.name}-${pv.metadata.name}
       mountPermissions: "0777"
     mountOptions:
       - vers=4.1
