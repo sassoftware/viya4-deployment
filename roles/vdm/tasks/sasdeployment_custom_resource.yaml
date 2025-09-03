@@ -33,12 +33,20 @@
     - cas-onboard
     - offboard
   block:
+    # If explicitly passed from Ansible, use that value
+    - name: Set cadence release from ansible var if provided
+      set_fact:
+        V4_CFG_CADENCE_RELEASE: "{{ V4_CFG_CADENCE_RELEASE }}"
+      when:
+        - V4_CFG_CADENCE_RELEASE is defined
+        - V4_CFG_CADENCE_RELEASE | length > 0
     # For cadence version > 2021.1 or 'fast', use cadence.yaml
     - name: sasdeployment custom resource - Find order cadence release from cadence.yaml # noqa: name[casing]
       set_fact:
         V4_CFG_CADENCE_RELEASE: "{{ (lookup('file', '{{ DEPLOY_DIR }}/sas-bases/.orchestration/cadence.yaml') | from_yaml).spec.release }}"
       when:
         - V4_CFG_CADENCE_VERSION is version('2021.1', ">") or V4_CFG_CADENCE_NAME|lower == "fast"
+        - V4_CFG_CADENCE_RELEASE is not defined or V4_CFG_CADENCE_RELEASE | length == 0
     # For cadence version <= 2021.1 and not 'fast', use configmaps.yaml
     - name: sasdeployment custom resource - Find order cadence release from configmaps.yaml # noqa: name[casing]
       set_fact:
@@ -46,6 +54,7 @@
       when:
         - V4_CFG_CADENCE_VERSION is version('2021.1', "<=")
         - V4_CFG_CADENCE_NAME|lower != "fast"
+        - V4_CFG_CADENCE_RELEASE is not defined or V4_CFG_CADENCE_RELEASE | length == 0
 
 # Prepare orchestration tooling directory and copy required files
 - name: sasdeployment custom resource - Setup orchestration tooling directory # noqa: name[casing]
