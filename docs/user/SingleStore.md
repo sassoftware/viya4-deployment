@@ -40,7 +40,7 @@ Refer to the [SingleStore sample input file](https://github.com/sassoftware/viya
 
 Choose the appropriate section below based on the cadence version of the SAS Viya platform and SingleStore that you are deploying.
 
-### SAS Viya and SingleStore orders at stable:2023.10 and later
+### SAS SpeedyStore orders at stable:2023.10 and later
 
 Refer to the viya4-deployment [Getting Started](https://github.com/sassoftware/viya4-deployment#getting-started) and [SAS Viya Platform Customizations](https://github.com/sassoftware/viya4-deployment#sas-viya-platform-customizations) documentation if you need information about how to make changes to your deployment by adding custom overlays into subdirectories under the `site-config` directory.
 
@@ -88,7 +88,7 @@ Complete each step under the "SingleStore Cluster Definition" heading in the "SA
 
 - Run viya4-deployment with the "viya, install" tags to deploy SAS SpeedyStore into your cluster.
 
-### SAS Viya and SingleStore orders at LTS:2023.03 and earlier
+### SAS SpeedyStore orders at LTS:2023.03 and earlier
 
 Refer to the viya4-deployment [Getting Started](https://github.com/sassoftware/viya4-deployment#getting-started) and [SAS Viya Platform Customizations](https://github.com/sassoftware/viya4-deployment#sas-viya-platform-customizations) documentation if you need information about how to make changes to your deployment by adding custom overlays into subdirectories under the `/site-config` directory.
 
