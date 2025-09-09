@@ -11,7 +11,6 @@ If your SAS software order includes SAS SpeedyStore, additional requirements app
 You can deploy SAS SpeedyStore into a Kubernetes cluster in the following environments:
 - Azure Kubernetes Service (AKS) in Microsoft Azure
 - Elastic Kubernetes Service (EKS) in Amazon Web Services (AWS)
-- Google Kubernetes Engine (GKE) in Google Cloud Platform (GCP)
 - Open Source Kubernetes on your own machines
 
 ## Cluster Provisioning for SAS SpeedyStore
@@ -25,11 +24,6 @@ Refer to the [SingleStore sample input file](https://github.com/sassoftware/viya
 
 The [SAS Viya 4 IaC for AWS](https://github.com/sassoftware/viya4-iac-aws) GitHub project can automatically provision the required infrastructure components that support SAS SpeedyStore deployments.
 Refer to the [SingleStore sample input file](https://github.com/sassoftware/viya4-iac-aws/blob/main/examples/sample-input-singlestore.tfvars) for Terraform configuration values that create an EKS cluster that is suitable for deploying the SAS Viya platform and SingleStore.
-
-### GKE Cluster in GCP
-
-The [SAS Viya 4 IaC for GCP](https://github.com/sassoftware/viya4-iac-gcp) GitHub project can automatically provision the required infrastructure components that support SAS SpeedyStore deployments.
-Refer to the [SingleStore sample input file](https://github.com/sassoftware/viya4-iac-gcp/blob/main/examples/sample-input-singlestore.tfvars) for Terraform configuration values that create an GKE cluster that is suitable for deploying the SAS Viya platform and SingleStore.
 
 ### Open Source Kubernetes Cluster
 
