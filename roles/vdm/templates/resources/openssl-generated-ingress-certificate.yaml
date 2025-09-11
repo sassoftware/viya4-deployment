@@ -1,11 +1,15 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
+  annotations: {}
   labels:
     sas.com/admin: namespace
   name: sas-create-openssl-ingress-certificate
 spec:
+  ttlSecondsAfterFinished: 0
   template:
+    metadata:
+      annotations: {}
     spec:
       imagePullSecrets: []
       containers:
@@ -58,6 +62,7 @@ spec:
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
+            add: []
             drop:
             - ALL
           privileged: false
@@ -68,6 +73,10 @@ spec:
         - mountPath: /security
           name: security
       restartPolicy: OnFailure
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
       volumes:
       - name: certframe-token
         secret:
