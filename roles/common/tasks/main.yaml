@@ -166,19 +166,20 @@
         - tfstate.cluster_node_pool_mode is defined
         - tfstate.cluster_node_pool_mode.value|length > 0
     # Set jump server facts from tfstate if present
-    - name: tfstate - jump server # noqa: name[casing]
+    - name: tfstate - jump server public IP # noqa: name[casing]
       set_fact:
         JUMP_SVR_HOST: "{{ tfstate.jump_public_ip.value }}"
       when:
+        - JUMP_SVR_HOST is not defined
         - tfstate.jump_public_ip is defined
         - tfstate.jump_public_ip.value|length > 0
     - name: tfstate - jump server private # noqa: name[casing]
       set_fact:
         JUMP_SVR_HOST: "{{ tfstate.jump_private_ip.value }}"
       when:
+        - JUMP_SVR_HOST is not defined
         - tfstate.jump_private_ip is defined
         - tfstate.jump_private_ip.value|length > 0
-        - JUMP_SVR_HOST is not defined
     - name: tfstate - jump user # noqa: name[casing]
       set_fact:
         JUMP_SVR_USER: "{{ tfstate.jump_admin_username.value }}"
