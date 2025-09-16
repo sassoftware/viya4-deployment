@@ -29,8 +29,7 @@ kubectl describe job <backup-job-name> -n va-viya | grep "sas.com/sas-backup-id"
 
 ```bash
 kubectl get jobs \
-  -l "sas.com/sas-backup-id=<backup-id>" \
-  -L "sas.com/sas-backup-id,sas.com/backup-job-type,sas.com/sas-backup-job-status,sas.com/backup-persistence-status"
+  -L "sas.com/sas-backup-id,sas.com/backup-job-type,sas.com/sas-backup-job-status,sas.com/backup-persistence-status" -n viya_namespace_name
 ```
 ###  Stop the viya4-deployment
 
