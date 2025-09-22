@@ -214,7 +214,6 @@
       when:
         - tfstate.storage_type_backend is defined
         - tfstate.storage_type_backend.value|length > 0
-    
     # Set NetApp volume path from tfstate if STORAGE_TYPE_BACKEND is 'netapp'
     - name: "Set NetApp volume path fact"
       set_fact:
