@@ -159,12 +159,13 @@
           provisioner: nfs.csi.k8s.io
           parameters:
             server: "{{ V4_CFG_RWX_FILESTORE_ENDPOINT }}"
-            share: "{{ V4_CFG_RWX_FILESTORE_PATH if '-export' in V4_CFG_RWX_FILESTORE_PATH else ('/pvs' if V4_CFG_RWX_FILESTORE_PATH != '/volumes' else '/volumes/pvs') }}"
+            share: "{{ V4_CFG_RWX_FILESTORE_PATH if '-export' in V4_CFG_RWX_FILESTORE_PATH else (V4_CFG_RWX_FILESTORE_PATH if (STORAGE_TYPE_BACKEND == 'netapp' and NETAPP_VOLUME_PATH  | length > 0) else ('/pvs' if V4_CFG_RWX_FILESTORE_PATH != '/volumes' else '/volumes/pvs')) }}"
           reclaimPolicy: Delete
           volumeBindingMode: Immediate
           allowVolumeExpansion: true
           mountOptions:
-            - "{{ 'nfsvers=4.1' if (V4_CFG_RWX_FILESTORE_PATH != '/volumes' and '-export' not in V4_CFG_RWX_FILESTORE_PATH) else 'nolock' }}"
+            - "{{ 'nfsvers=3' if (PROVIDER == 'gcp' and STORAGE_TYPE_BACKEND == 'netapp') else ('nfsvers=4.1' if (V4_CFG_RWX_FILESTORE_PATH != '/volumes' and '-export' not in V4_CFG_RWX_FILESTORE_PATH) else 'nfsvers=4.1') }}"
+            - nolock
             - noatime
             - nodiratime
             - rsize=262144
