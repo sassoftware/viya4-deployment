@@ -131,8 +131,8 @@ CSI_DRIVER_NFS_CONFIG:
     volumeBindingMode: Immediate
     parameters:
       server: "{{ V4_CFG_RWX_FILESTORE_ENDPOINT }}"
-      share: "{{ '/ontap' if STORAGE_TYPE_BACKEND == 'ontap' else (V4_CFG_RWX_FILESTORE_PATH if (STORAGE_TYPE_BACKEND == 'netapp' and NETAPP_VOLUME_PATH | length > 0) else ('/pvs' if PROVIDER != 'azure' else (V4_CFG_RWX_FILESTORE_PATH | replace('/$', '') ~ '/pvs')) ) }}"
-      subDir: ${pvc.metadata.namespace}/${pvc.metadata.name}/${pv.metadata.name}
+      share: "{{ '/ontap' if STORAGE_TYPE_BACKEND == 'ontap' else ('/pvs' if PROVIDER != 'azure' else (V4_CFG_RWX_FILESTORE_PATH | replace('/$', '') ~ '/pvs')) }}"
+      subdir: ${pvc.metadata.namespace}-${pvc.metadata.name}-${pv.metadata.name}
       mountPermissions: "0777"
     mountOptions:
       - "{{ 'vers=3' if (PROVIDER == 'gcp' and STORAGE_TYPE_BACKEND == 'netapp') else 'vers=4.1' }}"
