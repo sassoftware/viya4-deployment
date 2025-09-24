@@ -78,7 +78,7 @@ Complete each step under the "SingleStore Cluster Definition" heading in the "SA
 └── sas-singlestore-osconfig.yaml           (present only if you did NOT skip step 6 above)
 ```
 
-# Additional Configuration for AWS LoadBalancer Service
+#### Additional Configuration for AWS LoadBalancer Service
 
 Default settings in AWS can easily lead to the creation of IP addresses for the SingleStore LoadBalancer service that are accessible from outside of your VPC.
 
