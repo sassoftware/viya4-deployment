@@ -166,19 +166,20 @@
         - tfstate.cluster_node_pool_mode is defined
         - tfstate.cluster_node_pool_mode.value|length > 0
     # Set jump server facts from tfstate if present
-    - name: tfstate - jump server # noqa: name[casing]
+    - name: tfstate - jump server public IP # noqa: name[casing]
       set_fact:
         JUMP_SVR_HOST: "{{ tfstate.jump_public_ip.value }}"
       when:
+        - JUMP_SVR_HOST is not defined
         - tfstate.jump_public_ip is defined
         - tfstate.jump_public_ip.value|length > 0
     - name: tfstate - jump server private # noqa: name[casing]
       set_fact:
         JUMP_SVR_HOST: "{{ tfstate.jump_private_ip.value }}"
       when:
+        - JUMP_SVR_HOST is not defined
         - tfstate.jump_private_ip is defined
         - tfstate.jump_private_ip.value|length > 0
-        - JUMP_SVR_HOST is not defined
     - name: tfstate - jump user # noqa: name[casing]
       set_fact:
         JUMP_SVR_USER: "{{ tfstate.jump_admin_username.value }}"
@@ -213,6 +214,12 @@
       when:
         - tfstate.storage_type_backend is defined
         - tfstate.storage_type_backend.value|length > 0
+    # Set NetApp volume path from tfstate if STORAGE_TYPE_BACKEND is 'netapp'
+    - name: "Set NetApp volume path fact"
+      set_fact:
+        NETAPP_VOLUME_PATH: "{{ tfstate.netapp_volume_path.value }}"
+      when: STORAGE_TYPE_BACKEND is defined and STORAGE_TYPE_BACKEND == 'netapp'
+
     ### Deprecations
     - name: tfstate - postgres admin # noqa: name[casing]
       set_fact:

@@ -9,6 +9,7 @@ V4_CFG_INGRESS_MODE: public
 V4_CFG_MANAGE_STORAGE: true
 V4_CFG_AWS_LB_SUBNETS: ""
 STORAGE_TYPE_BACKEND: ""
+NETAPP_VOLUME_PATH: ""
 
 ## Cert-manager
 CERT_MANAGER_NAME: cert-manager
@@ -121,6 +122,7 @@ CSI_DRIVER_NFS_CHART_VERSION: 4.11.0
 CSI_DRIVER_NFS_CONFIG:
   driver:
     mountPermissions: "0777"
+    fsGroupPolicy: ReadWriteOnceWithFSType
   storageClass:
     create: true
     name: sas
@@ -133,7 +135,8 @@ CSI_DRIVER_NFS_CONFIG:
       subdir: ${pvc.metadata.namespace}-${pvc.metadata.name}-${pv.metadata.name}
       mountPermissions: "0777"
     mountOptions:
-      - vers=4.1
+      - "{{ 'vers=3' if (PROVIDER == 'gcp' and STORAGE_TYPE_BACKEND == 'netapp') else 'vers=4.1' }}"
+      - nolock
       - noatime
       - nodiratime
       - rsize=262144
