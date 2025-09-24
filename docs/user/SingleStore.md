@@ -88,10 +88,10 @@ However, SAS has determined that AWS does not honor the annotation without addit
 
 For more information, see the following documents:
 
-[Use Service Annotations to configure Network Load Balancers](https://docs.aws.amazon.com/eks/latest/userguide/auto-configure-nlb.html)
-[Create a cluster with Amazon EKS Auto Mode](https://docs.aws.amazon.com/eks/latest/userguide/create-auto.html)
-[Enable EKS Auto Mode on an existing cluster](https://docs.aws.amazon.com/eks/latest/userguide/auto-enable-existing.html)
-[Deploy an AWS Load Balancer Controller](https://kubernetes-sigs.github.io/aws-load-balancer-controller/latest/)
+1. [Use Service Annotations to configure Network Load Balancers](https://docs.aws.amazon.com/eks/latest/userguide/auto-configure-nlb.html)
+2. [Create a cluster with Amazon EKS Auto Mode](https://docs.aws.amazon.com/eks/latest/userguide/create-auto.html)
+3. [Enable EKS Auto Mode on an existing cluster](https://docs.aws.amazon.com/eks/latest/userguide/auto-enable-existing.html)
+4. [Deploy an AWS Load Balancer Controller](https://kubernetes-sigs.github.io/aws-load-balancer-controller/latest/)
 
 - Set `DEPLOY=true` in your ansible-vars.yaml file.
 
