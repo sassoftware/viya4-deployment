@@ -78,6 +78,21 @@ Complete each step under the "SingleStore Cluster Definition" heading in the "SA
 └── sas-singlestore-osconfig.yaml           (present only if you did NOT skip step 6 above)
 ```
 
+# Additional Configuration for AWS LoadBalancer Service
+
+Default settings in AWS can easily lead to the creation of IP addresses for the SingleStore LoadBalancer service that are accessible from outside of your VPC.
+
+By default, the SAS SpeedyStore deployment sets the scheme of the SingleStore LoadBalancer service to "internal," which is private and inaccessible from outside the cluster. The IP addresses for each of the two SingleStore service ports default to "internal" because the aws-load-balancer-scheme annotation defaults to "internal": aws-load-balancer-scheme: internal
+
+However, SAS has determined that AWS does not honor the annotation without additional configuration. As a result, your default LoadBalancer service is likely to be accessible from outside the cluster (that is, set to "internet-facing"). At least one of two specific AWS features, EKS Auto Mode or the aws-load-balancer-controller, must be enabled before AWS can honor the default "internal" annotation and secure the IP address.
+
+For more information, see the following documents:
+
+[Use Service Annotations to configure Network Load Balancers](https://docs.aws.amazon.com/eks/latest/userguide/auto-configure-nlb.html)
+[Create a cluster with Amazon EKS Auto Mode](https://docs.aws.amazon.com/eks/latest/userguide/create-auto.html)
+[Enable EKS Auto Mode on an existing cluster](https://docs.aws.amazon.com/eks/latest/userguide/auto-enable-existing.html)
+[Deploy an AWS Load Balancer Controller](https://kubernetes-sigs.github.io/aws-load-balancer-controller/latest/)
+
 - Set `DEPLOY=true` in your ansible-vars.yaml file.
 
 - Run viya4-deployment with the "viya, install" tags to deploy SAS SpeedyStore into your cluster.
