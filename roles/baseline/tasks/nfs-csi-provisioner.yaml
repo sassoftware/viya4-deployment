@@ -163,6 +163,7 @@
           reclaimPolicy: Delete
           volumeBindingMode: Immediate
           allowVolumeExpansion: true
+          fsGroupPolicy: ReadWriteOnceWithFSType
           mountOptions:
             - "{{ 'nfsvers=3' if (PROVIDER == 'gcp' and STORAGE_TYPE_BACKEND == 'netapp') else ('nfsvers=4.1' if (V4_CFG_RWX_FILESTORE_PATH != '/volumes' and '-export' not in V4_CFG_RWX_FILESTORE_PATH) else 'nfsvers=4.1') }}"
             - nolock
