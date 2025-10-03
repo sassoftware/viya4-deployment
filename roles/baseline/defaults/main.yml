@@ -122,7 +122,6 @@ CSI_DRIVER_NFS_CHART_VERSION: 4.11.0
 CSI_DRIVER_NFS_CONFIG:
   driver:
     mountPermissions: "0777"
-    fsGroupPolicy: ReadWriteOnceWithFSType
   storageClass:
     create: true
     name: sas
