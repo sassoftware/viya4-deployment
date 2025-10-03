@@ -139,6 +139,21 @@
     - install
     - update
 
+# Patch the fsGroupPolicy in the CSIDriver after Helm install
+- name: Patch fsGroupPolicy in CSIDriver to ReadWriteOnceWithFSType
+  kubernetes.core.k8s:
+    api_version: storage.k8s.io/v1
+    kind: CSIDriver
+    name: nfs.csi.k8s.io
+    kubeconfig: "{{ KUBECONFIG }}"
+    merge_type: merge
+    definition:
+      spec:
+        fsGroupPolicy: ReadWriteOnceWithFSType
+  tags:
+    - install
+    - update
+
 # Create csi-driver-nfs-pg-storage StorageClass for non-AWS/Azure providers
 - name: Create csi-driver-nfs-pg-storage storageClass
   when:
@@ -163,7 +178,6 @@
           reclaimPolicy: Delete
           volumeBindingMode: Immediate
           allowVolumeExpansion: true
-          fsGroupPolicy: ReadWriteOnceWithFSType
           mountOptions:
             - "{{ 'nfsvers=3' if (PROVIDER == 'gcp' and STORAGE_TYPE_BACKEND == 'netapp') else ('nfsvers=4.1' if (V4_CFG_RWX_FILESTORE_PATH != '/volumes' and '-export' not in V4_CFG_RWX_FILESTORE_PATH) else 'nfsvers=4.1') }}"
             - nolock
