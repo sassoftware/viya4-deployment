@@ -34,7 +34,7 @@ Refer to the [SingleStore sample input file](https://github.com/sassoftware/viya
 ### Google Kubernetes Engine (GKE) Cluster in Google Cloud and Google Distributed Cloud (GCP)
 
 The [SAS Viya 4 IaC for GCP](https://github.com/sassoftware/viya4-iac-gcp) GitHub project can automatically provision the required infrastructure components that support SAS SpeedyStore deployments.
-Refer to the [SingleStore sample input file](https://github.com/sassoftware/viya4-iac-gcp/blob/main/examples/sample-input-singlestore.tfvars) for Terraform configuration values that create an GKE cluster that is suitable for deploying the SAS Viya platform and SingleStore.
+Refer to the [SingleStore sample input file](https://github.com/sassoftware/viya4-iac-gcp/blob/main/examples/sample-input-singlestore.tfvars) for Terraform configuration values that create a GKE cluster that is suitable for deploying the SAS Viya platform and SingleStore.
 
 ## Customizing SingleStore Deployment Overlays
 
