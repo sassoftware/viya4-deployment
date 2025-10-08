@@ -189,8 +189,8 @@ The following information is parsed from the integration:
 
 ### Customize Deployment Overlays
 
-The Ansible playbook in viya4-deployment fully manages the kustomization.yaml file. Users can make changes by adding custom overlays into subfolders under the `/site-config` folder. If this is the first time that you are running the playbook and plan to add customizations, create the following folder structure:
-**Note:** For this to work, you need to set `DEPLOY: false` before running the playbook.
+The Ansible playbook in viya4-deployment fully manages the kustomization.yaml file. Users can make changes by adding custom overlays into subfolders under the `/site-config` folder. If this is the first time that you are running the playbook and plan to add customizations, create the following folder structure:  
+**Note:** For this to work, you need to set `DEPLOY: false` in Ansible vars.yaml before running the playbook.
 
 ```bash
 <base_dir>            <- parent directory
