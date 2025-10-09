@@ -32,10 +32,6 @@ Refer to the [SingleStore sample input file](https://github.com/sassoftware/viya
 
 ## Customizing SingleStore Deployment Overlays
 
-Choose the appropriate section below based on the cadence version of the SAS Viya platform and SingleStore that you are deploying.
-
-### SAS SpeedyStore orders at stable:2023.10 and later
-
 Refer to the viya4-deployment [Getting Started](https://github.com/sassoftware/viya4-deployment#getting-started) and [SAS Viya Platform Customizations](https://github.com/sassoftware/viya4-deployment#sas-viya-platform-customizations) documentation if you need information about how to make changes to your deployment by adding custom overlays into subdirectories under the `site-config` directory.
 
 After running viya4-deployment with the setting `DEPLOY=false` in your ansible-vars.yaml file, locate the `sas-bases` directory, which is a peer to the `site-config` directory underneath your SAS Viya platform deployment's <base_dir>.
@@ -94,27 +90,5 @@ Complete each step under the "SingleStore Cluster Definition" heading in the "SA
   4. [Deploy an AWS Load Balancer Controller](https://kubernetes-sigs.github.io/aws-load-balancer-controller/latest/)
 
 - Set `DEPLOY=true` in your ansible-vars.yaml file.
-
-- Run viya4-deployment with the "viya, install" tags to deploy SAS SpeedyStore into your cluster.
-
-### SAS SpeedyStore orders at LTS:2023.03 and earlier
-
-Refer to the viya4-deployment [Getting Started](https://github.com/sassoftware/viya4-deployment#getting-started) and [SAS Viya Platform Customizations](https://github.com/sassoftware/viya4-deployment#sas-viya-platform-customizations) documentation if you need information about how to make changes to your deployment by adding custom overlays into subdirectories under the `/site-config` directory.
-
-After running viya4-deployment with the setting `DEPLOY=false` in your ansible-vars.yaml file, locate the `sas-bases` directory, which is a peer to the `site-config` directory underneath your SAS Viya platform deployment's <base_dir>.
-
-Complete each step under the "SingleStore Cluster Definition" heading in the "SAS SingleStore Cluster Operator" README file in order to configure your SAS SpeedyStore deployment, noting the following exceptions. The README file is located at `$deploy/sas-bases/examples/sas-singlestore/README.md` (for Markdown format) or at `$deploy/sas-bases/docs/sas_singlestore_cluster_operator.htm` (for HTML format).
-
-- Complete steps 1 and 2 in the `sas-bases/examples/sas-singlestore/README.md` file.
-
-- Complete Step 2a below:
-
-  2a. Copy `$deploy/sas-bases/components/sas-singlestore` into the `$deploy/site-config/sas-singlestore/components` directory.
-
-- Complete steps 3 and 4 in the "SAS SingleStore Cluster Operator" README file.
-
-- Skip step 5 in the "SAS SingleStore Cluster Operator" README file. The viya4-deployment playbook will automatically add the SingleStore component and the overlays to the base kustomization.yaml file that you have copied to the `site-config` directory in the final step.
-
-- Complete the remaining steps from the  "SAS SingleStore Cluster Operator" README file. Then set `DEPLOY=true` in your ansible-vars.yaml file.
 
 - Run viya4-deployment with the "viya, install" tags to deploy SAS SpeedyStore into your cluster.
