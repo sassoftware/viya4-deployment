@@ -32,10 +32,6 @@ Refer to the [SingleStore sample input file](https://github.com/sassoftware/viya
 
 ## Customizing SingleStore Deployment Overlays
 
-Choose the appropriate section below based on the cadence version of the SAS Viya platform and SingleStore that you are deploying.
-
-### SAS SpeedyStore orders at stable:2023.10 and later
-
 Refer to the viya4-deployment [Getting Started](https://github.com/sassoftware/viya4-deployment#getting-started) and [SAS Viya Platform Customizations](https://github.com/sassoftware/viya4-deployment#sas-viya-platform-customizations) documentation if you need information about how to make changes to your deployment by adding custom overlays into subdirectories under the `site-config` directory.
 
 After running viya4-deployment with the setting `DEPLOY=false` in your ansible-vars.yaml file, locate the `sas-bases` directory, which is a peer to the `site-config` directory underneath your SAS Viya platform deployment's <base_dir>.
@@ -78,28 +74,21 @@ Complete each step under the "SingleStore Cluster Definition" heading in the "SA
 └── sas-singlestore-osconfig.yaml           (present only if you did NOT skip step 6 above)
 ```
 
+- #### Additional Configuration for AWS LoadBalancer Service
+
+  Default settings in AWS can easily lead to the creation of IP addresses for the SingleStore LoadBalancer service that are accessible from outside of your VPC.
+  
+  By default, the SAS SpeedyStore deployment sets the scheme of the SingleStore LoadBalancer service to "internal," which is private and inaccessible from outside the cluster. The IP addresses for each of the two SingleStore service ports default to "internal" because the aws-load-balancer-scheme annotation defaults to "internal": aws-load-balancer-scheme: internal
+  
+  However, SAS has determined that AWS does not honor the annotation without additional configuration. As a result, your default LoadBalancer service is likely to be accessible from outside the cluster (that is, set to "internet-facing"). At least one of two specific AWS features, EKS Auto Mode or the aws-load-balancer-controller, must be enabled before AWS can honor the default "internal" annotation and secure the IP address.
+  
+  For more information, see the following documents:
+  
+  1. [Use Service Annotations to configure Network Load Balancers](https://docs.aws.amazon.com/eks/latest/userguide/auto-configure-nlb.html)
+  2. [Create a cluster with Amazon EKS Auto Mode](https://docs.aws.amazon.com/eks/latest/userguide/create-auto.html)
+  3. [Enable EKS Auto Mode on an existing cluster](https://docs.aws.amazon.com/eks/latest/userguide/auto-enable-existing.html)
+  4. [Deploy an AWS Load Balancer Controller](https://kubernetes-sigs.github.io/aws-load-balancer-controller/latest/)
+
 - Set `DEPLOY=true` in your ansible-vars.yaml file.
-
-- Run viya4-deployment with the "viya, install" tags to deploy SAS SpeedyStore into your cluster.
-
-### SAS SpeedyStore orders at LTS:2023.03 and earlier
-
-Refer to the viya4-deployment [Getting Started](https://github.com/sassoftware/viya4-deployment#getting-started) and [SAS Viya Platform Customizations](https://github.com/sassoftware/viya4-deployment#sas-viya-platform-customizations) documentation if you need information about how to make changes to your deployment by adding custom overlays into subdirectories under the `/site-config` directory.
-
-After running viya4-deployment with the setting `DEPLOY=false` in your ansible-vars.yaml file, locate the `sas-bases` directory, which is a peer to the `site-config` directory underneath your SAS Viya platform deployment's <base_dir>.
-
-Complete each step under the "SingleStore Cluster Definition" heading in the "SAS SingleStore Cluster Operator" README file in order to configure your SAS SpeedyStore deployment, noting the following exceptions. The README file is located at `$deploy/sas-bases/examples/sas-singlestore/README.md` (for Markdown format) or at `$deploy/sas-bases/docs/sas_singlestore_cluster_operator.htm` (for HTML format).
-
-- Complete steps 1 and 2 in the `sas-bases/examples/sas-singlestore/README.md` file.
-
-- Complete Step 2a below:
-
-  2a. Copy `$deploy/sas-bases/components/sas-singlestore` into the `$deploy/site-config/sas-singlestore/components` directory.
-
-- Complete steps 3 and 4 in the "SAS SingleStore Cluster Operator" README file.
-
-- Skip step 5 in the "SAS SingleStore Cluster Operator" README file. The viya4-deployment playbook will automatically add the SingleStore component and the overlays to the base kustomization.yaml file that you have copied to the `site-config` directory in the final step.
-
-- Complete the remaining steps from the  "SAS SingleStore Cluster Operator" README file. Then set `DEPLOY=true` in your ansible-vars.yaml file.
 
 - Run viya4-deployment with the "viya, install" tags to deploy SAS SpeedyStore into your cluster.
