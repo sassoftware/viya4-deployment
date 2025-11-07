@@ -23,6 +23,6 @@ pg_cluster_name_map: {
 # TODO - Fix once 2021.1.6 is ready and the kustomization files have been updated
 network_name_map: {
   ingress: networking.k8s.io,
-  contour: projectcountour.io,
+  contour: projectcontour.io,
   route: route.openshift.io
 }
