@@ -135,7 +135,6 @@ CSI_DRIVER_NFS_CONFIG:
       mountPermissions: "0777"
     mountOptions:
       - "{{ 'vers=3' if (PROVIDER == 'gcp' and STORAGE_TYPE_BACKEND == 'netapp') else 'vers=4.1' }}"
-      - nolock
       - noatime
       - nodiratime
       - rsize=262144
