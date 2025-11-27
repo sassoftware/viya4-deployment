@@ -102,8 +102,8 @@ INGRESS_NGINX_IPV6_CONFIG:
         service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
         service.beta.kubernetes.io/aws-load-balancer-ip-address-type: "dualstack"
         service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
-      ipFamilyPolicy: "PreferDualStack"
-      ipFamilies: ["IPv6", "IPv4"]
+      ipFamilyPolicy: "SingleStack"
+      ipFamilies: ["IPv6"]
 
 # Ingress-nginx - CVE-2021-25742 Mitigation
 INGRESS_NGINX_CVE_2021_25742_PATCH:
