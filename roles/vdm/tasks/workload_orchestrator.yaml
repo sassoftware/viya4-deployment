@@ -47,7 +47,6 @@
     - install
     - uninstall
     - update
-    
 
 # Add overlay for enabling the SAS Workload Orchestrator if enabled and cadence is recent
 - name: Workload Orchestrator - Configure SAS Workload Orchestrator Service Account
