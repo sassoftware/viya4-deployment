@@ -1,0 +1,25 @@
+# Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+---
+# CAS Shutdown Transformer for Programming-Only Deployments
+# This transformer sets the CAS server to shutdown mode, stopping CAS pods
+# while keeping the CASDeployment resource (avoiding kubectl prune issues)
+# The CAS Operator and CAS Control components remain deployed to handle
+# "where is CAS?" queries from other services gracefully.
+#
+# Usage: Set V4_CFG_ENABLE_CAS: false in your ansible-vars.yaml
+#
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: cas-shutdown-for-programming-only
+patch: |-
+  - op: replace
+    path: /spec/shutdown
+    value: true
+target:
+  group: viya.sas.com
+  kind: CASDeployment
+  labelSelector: "sas.com/cas-server-default"
+  version: v1alpha1
