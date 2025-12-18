@@ -122,7 +122,7 @@ When `V4_CFG_MANAGE_STORAGE` is set to `false`, viya4-deployment does not create
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_RWX_FILESTORE_ENDPOINT | NFS IP address or host name | string | | false | | baseline, viya |
-| V4_CFG_RWX_FILESTORE_PATH | NFS export path | string | /export | false | | baseline, viya |
+| V4_CFG_RWX_FILESTORE_PATH | NFS export path | string | /export | false | If using terraform.tfstate (viya4-iac-gcp), this value will be overridden by the path from the state file (typically /volumes for Filestore).| baseline, viya |
 | V4_CFG_RWX_FILESTORE_DATA_PATH | NFS path to data directory | string | <V4_CFG_RWX_FILESTORE_PATH>/\<NAMESPACE>/data | false | | viya |
 | V4_CFG_RWX_FILESTORE_HOMES_PATH | NFS path to homes directory | string | <V4_CFG_RWX_FILESTORE_PATH>/\<NAMESPACE>/homes | false | | viya |
 
