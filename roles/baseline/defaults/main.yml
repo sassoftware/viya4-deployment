@@ -28,7 +28,7 @@ METRICS_SERVER_ENABLED: true
 METRICS_SERVER_NAME: metrics-server
 METRICS_SERVER_CHART_NAME: metrics-server
 METRICS_SERVER_CHART_URL: https://kubernetes-sigs.github.io/metrics-server/
-METRICS_SERVER_CHART_VERSION: 3.12.2
+METRICS_SERVER_CHART_VERSION: 3.13.0
 METRICS_SERVER_CONFIG:
   apiService:
     create: true
