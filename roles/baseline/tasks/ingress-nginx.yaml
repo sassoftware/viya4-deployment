@@ -89,6 +89,16 @@
     - install
     - update
 
+- name: Update INGRESS_NGINX_CONFIG to set service ipFamilies for Azure IPv6 dual-stack
+  set_fact:
+    INGRESS_NGINX_CONFIG: "{{ INGRESS_NGINX_CONFIG | combine(INGRESS_NGINX_AZURE_IPV6_CONFIG, recursive=True) }}"
+  when:
+    - PROVIDER == "azure"
+    - V4_CFG_ENABLE_IPV6
+  tags:
+    - install
+    - update
+
 # Apply mitigation for CVE-2021-25742 if chart version is at or above the minimum required
 - name: Apply Mitigation for CVE-2021-25742
   tags:

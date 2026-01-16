@@ -94,7 +94,7 @@ INGRESS_NGINX_AWS_LB_SUBNETS:
       annotations:
         service.beta.kubernetes.io/aws-load-balancer-subnets: "{{ V4_CFG_AWS_LB_SUBNETS }}"
 
-# Update ipFamily for ingress-nginx service for IPv6 support
+# Update ipFamily for ingress-nginx service for IPv6 support (AWS)
 INGRESS_NGINX_IPV6_CONFIG:
   controller:
     service:
@@ -104,6 +104,13 @@ INGRESS_NGINX_IPV6_CONFIG:
         service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
       ipFamilyPolicy: "SingleStack"
       ipFamilies: ["IPv6"]
+
+# Update ipFamily for ingress-nginx service for IPv6 dual-stack support (Azure)
+INGRESS_NGINX_AZURE_IPV6_CONFIG:
+  controller:
+    service:
+      ipFamilies: ["IPv6", "IPv4"]
+      ipFamilyPolicy: "PreferDualStack"
 
 # Ingress-nginx - CVE-2021-25742 Mitigation
 INGRESS_NGINX_CVE_2021_25742_PATCH:

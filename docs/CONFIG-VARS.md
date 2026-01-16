@@ -40,7 +40,7 @@ Supported configuration variables are listed in the table below.  All variables 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | DEPLOY | Whether to deploy the SAS Viya platform and SAS Viya Platform Deployment Operator or stop at generating kustomization.yaml and manifests | bool | true | false | This flag can also prevent the uninstall of both the SAS Viya platform and SAS Viya Platform Deployment Operator | viya |
-| LOADBALANCER_SOURCE_RANGES | IP addresses to allow to reach the ingress | [string] | | true | When deploying in a cloud environment, be sure to add the cloud NAT IP address. | baseline, viya |
+| LOADBALANCER_SOURCE_RANGES | IP addresses to allow to reach the ingress | [string] | | true | When deploying in a cloud environment, be sure to add the cloud NAT IP address. Supports both IPv4 (e.g., "10.0.0.0/8") and IPv6 (e.g., "2001:db8::/32") CIDR notation. | baseline, viya |
 | BASE_DIR | Path to store persistent files | string | $HOME | false | | all |
 | KUBECONFIG | Path to kubeconfig file | string | | true | | viya |
 | V4_CFG_SITEDEFAULT | Path to sitedefault file | string | | false | When not set, [sitedefault](../examples/sitedefault.yaml) is used. | viya |
@@ -172,6 +172,7 @@ When V4_CFG_MANAGE_STORAGE is set to `true`, the `sas` and `pg-storage` storage 
 | V4_CFG_INGRESS_TYPE | The ingress controller to deploy | string | "ingress" | true | Possible values: "ingress" | baseline, viya |
 | V4_CFG_INGRESS_FQDN | FQDN to the ingress for SAS Vya installation | string | | true | | viya |
 | V4_CFG_INGRESS_MODE | Whether to create a public or private Loadbalancer endpoint | string | "public" | false | Possible values: "public", "private". Setting this option to "private" adds options to the ingress controller that create a LoadBalancer with private IP address(es) only. | baseline |
+| V4_CFG_ENABLE_IPV6 | Enable IPv6/dual-stack networking for ingress-nginx LoadBalancer | bool | false | false | When true on AWS, configures dualstack NLB with IPv6 SingleStack. When true on Azure, configures dual-stack with ipFamilies ["IPv6", "IPv4"] and ipFamilyPolicy "PreferDualStack". Requires cluster with IPv6 enabled at creation time. Not supported on GCP. | baseline |
 
 ## Load Balancer
 
