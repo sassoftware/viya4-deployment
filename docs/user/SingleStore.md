@@ -1,6 +1,6 @@
 # SAS Viya Support for SingleStore
 
-The SAS Viya platform provides an optional integration with SingleStore. SingleStore is a cloud-native database that is designed for data-intensive applications. A distributed, relational SQL database management system that features ANSI SQL support, SingleStore is known for speed in data ingest, transaction processing, and query processing.
+The SAS Viya platform provides an optional integration with SingleStore, which is licensed as SAS SpeedyStore. SingleStore is a cloud-native database that is designed for data-intensive applications. A distributed, relational SQL database management system that features ANSI SQL support, SingleStore is known for speed in data ingest, transaction processing, and query processing.
 
 ## Requirements for SAS SpeedyStore
 
@@ -12,23 +12,29 @@ You can deploy SAS SpeedyStore into a Kubernetes cluster in the following enviro
 - Azure Kubernetes Service (AKS) in Microsoft Azure
 - Elastic Kubernetes Service (EKS) in Amazon Web Services (AWS)
 - Open Source Kubernetes on your own machines
+- Google Kubernetes Engine (GKE) in Google Cloud and Google Distributed Cloud
 
 ## Cluster Provisioning for SAS SpeedyStore
 
 ### Azure Kubernetes Service (AKS) Cluster in Microsoft Azure
 
 The [SAS Viya 4 IaC for Microsoft Azure](https://github.com/sassoftware/viya4-iac-azure) GitHub project can automatically provision the required infrastructure components that support SAS SpeedyStore deployments.
-Refer to the [SingleStore sample input file](https://github.com/sassoftware/viya4-iac-azure/blob/main/examples/sample-input-singlestore.tfvars) for Terraform configuration values that create an AKS cluster that is suitable for deploying the SAS Viya platform and SingleStore.
+Refer to the [SingleStore sample input file](https://github.com/sassoftware/viya4-iac-azure/blob/main/examples/sample-input-singlestore.tfvars) for Terraform configuration values that create an AKS cluster that is suitable for deploying SAS SpeedyStore.
 
 ### EKS Cluster in AWS
 
 The [SAS Viya 4 IaC for AWS](https://github.com/sassoftware/viya4-iac-aws) GitHub project can automatically provision the required infrastructure components that support SAS SpeedyStore deployments.
-Refer to the [SingleStore sample input file](https://github.com/sassoftware/viya4-iac-aws/blob/main/examples/sample-input-singlestore.tfvars) for Terraform configuration values that create an EKS cluster that is suitable for deploying the SAS Viya platform and SingleStore.
+Refer to the [SingleStore sample input file](https://github.com/sassoftware/viya4-iac-aws/blob/main/examples/sample-input-singlestore.tfvars) for Terraform configuration values that create an EKS cluster that is suitable for deploying SAS SpeedyStore.
 
 ### Open Source Kubernetes Cluster
 
 The [SAS Viya 4 Infrastructure as Code (IaC) for Open Source Kubernetes](https://github.com/sassoftware/viya4-iac-k8s) GitHub project can automatically provision the required infrastructure components that support SAS SpeedyStore deployments.
-Refer to the [SingleStore sample input file](https://github.com/sassoftware/viya4-iac-k8s/blob/main/examples/vsphere/sample-terraform-static-singlestore.tfvars) for Terraform configuration values that create an Open Source Kubernetes cluster that is suitable for deploying the SAS Viya platform and SingleStore.
+Refer to the [SingleStore sample input file](https://github.com/sassoftware/viya4-iac-k8s/blob/main/examples/vsphere/sample-terraform-static-singlestore.tfvars) for Terraform configuration values that create an Open Source Kubernetes cluster that is suitable for deploying SAS SpeedyStore.
+
+### Google Kubernetes Engine (GKE) Cluster in Google Cloud and Google Distributed Cloud
+
+The [SAS Viya 4 IaC for Google Cloud and Google Distributed Cloud](https://github.com/sassoftware/viya4-iac-gcp) GitHub project can automatically provision the required infrastructure components that support SAS SpeedyStore deployments.
+Refer to the [SingleStore sample input file](https://github.com/sassoftware/viya4-iac-gcp/blob/main/examples/sample-input-singlestore.tfvars) for Terraform configuration values that create a GKE cluster that is suitable for deploying SAS SpeedyStore.
 
 ## Customizing SingleStore Deployment Overlays
 

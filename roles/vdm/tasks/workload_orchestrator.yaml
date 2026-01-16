@@ -5,17 +5,73 @@
 # This file contains the workload orchestrator tasks for the vdm role.
 # It is included from main.yaml to manage workload orchestration for the deployment.
 
-# Add overlay for enabling the SAS Workload Orchestrator if enabled and cadence is recent
+# Workload Orchestrator Overlay Handling
+
+# Check if cluster-role exists in the orchestrator overlay
+- name: Check existence of orchestrator cluster-role
+  stat:
+    path: "{{ DEPLOY_DIR }}/sas-bases/overlays/sas-workload-orchestrator/cluster-role"
+  register: orchestrator_cluster_role
+  tags:
+    - install
+    - uninstall
+    - update
+
+# Check if cluster-role exists in the orchestrator-server overlay
+- name: Check existence of orchestrator-server cluster-role
+  stat:
+    path: "{{ DEPLOY_DIR }}/sas-bases/overlays/sas-workload-orchestrator-server/cluster-role"
+  register: orchestrator_server_cluster_role
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: Set orchestrator primary resource path
+  set_fact:
+    orchestrator_primary_resource: >-
+      {{
+        'overlays/sas-workload-orchestrator/cluster-role'
+        if orchestrator_cluster_role.stat.exists | default(false)
+        else 'overlays/sas-workload-orchestrator'
+      }}
+  tags:
+    - install
+    - uninstall
+    - update
+
+# Add overlay for enabling the SAS Workload Orchestrator primary resource
 - name: Workload Orchestrator - Configure SAS Workload Orchestrator Service Account
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { resources: overlays/sas-workload-orchestrator, min: "2023.08", vdm: false }
+      - resources: "{{ orchestrator_primary_resource }}"
+        min: "2023.08"
+        vdm: false
   when:
     # Only run if workload orchestrator is enabled
     - V4_WORKLOAD_ORCHESTRATOR_ENABLED
+  tags:
+    - install
+    - uninstall
+    - update
+
+# Add overlay for enabling the SAS Workload Orchestrator Server cluster-role (if exists)
+- name: Workload Orchestrator - Configure SAS Workload Orchestrator Server Service Account
+  overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+    existing: "{{ vdm_overlays }}"
+    add:
+      - resources: "overlays/sas-workload-orchestrator-server/cluster-role"
+        min: "2023.08"
+        vdm: false
+  when:
+    # Only run if workload orchestrator is enabled AND server cluster-role exists
+    - V4_WORKLOAD_ORCHESTRATOR_ENABLED
+    - orchestrator_server_cluster_role.stat.exists | default(false)
   tags:
     - install
     - uninstall
