@@ -4,7 +4,7 @@
 ---
 V4_CFG_TLS_MODE: full-stack # other valid values are front-door, ingress-only, and disabled
 V4_CFG_RWX_FILESTORE_PATH: /export
-V4_CFG_INGRESS_TYPE: ingress
+V4_CFG_INGRESS_TYPE: contour
 V4_CFG_INGRESS_MODE: public
 V4_CFG_MANAGE_STORAGE: true
 V4_CFG_AWS_LB_SUBNETS: ""
@@ -190,10 +190,10 @@ CSI_DRIVER_NFS_PG_EFS_CONFIG:
 
 ## Contour - Ingress
 CONTOUR_NAME: contour
-CONTOUR_NAMESPACE: contour
+CONTOUR_NAMESPACE: projectcontour
 CONTOUR_CHART_NAME: contour
-CONTOUR_CHART_URL: https://charts.bitnami.com/bitnami
-CONTOUR_CHART_VERSION: 4.3.8
+CONTOUR_CHART_URL: https://projectcontour.github.io/helm-charts/
+CONTOUR_CHART_VERSION: 0.2.1
 CONTOUR_CONFIG:
   envoy:
     service:

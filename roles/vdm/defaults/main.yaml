@@ -39,7 +39,7 @@ V4_CFG_MANAGE_STORAGE: true
 V4_CFG_DEPLOYMENT_URL_PREFIX: null
 V4_CFG_DEPLOYMENT_URL_PORT: null
 V4_CFG_INGRESS_FQDN: null
-V4_CFG_INGRESS_TYPE: ingress
+V4_CFG_INGRESS_TYPE: contour
 
 V4_CFG_TLS_MODE: front-door # other valid values are full-stack, ingress-only, and disabled
 V4_CFG_TLS_CERT: null
