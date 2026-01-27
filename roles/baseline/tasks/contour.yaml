@@ -14,6 +14,16 @@
 # Container registry: docker.io
 # Purpose: Alternative ingress controller (if selected).
 
+# Add Azure load-balancer health probe request path to the configuration if provider is Azure
+- name: Update CONTOUR_CONFIG to add Azure load-balancer health probe request path
+  set_fact:
+    CONTOUR_CONFIG: "{{ CONTOUR_CONFIG | combine(CONTOUR_AZURE_LB_HEALTH_PROBE_CONFIG, recursive=True) }}"
+  when:
+    - PROVIDER == "azure"
+  tags:
+    - install
+    - update
+
 # Deploy the Contour ingress controller using Helm
 - name: Deploy contour
   kubernetes.core.helm:

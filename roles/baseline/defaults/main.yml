@@ -199,6 +199,13 @@ CONTOUR_CONFIG:
     service:
       loadBalancerSourceRanges: "{{ LOADBALANCER_SOURCE_RANGES | default(['0.0.0.0/0'], -1) }}"
 
+# Add annotation to include Azure load-balancer health probe request path for Contour
+CONTOUR_AZURE_LB_HEALTH_PROBE_CONFIG:
+  envoy:
+    service:
+      annotations:
+        service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: /healthz
+
 ## Cluster Autoscaler
 CLUSTER_AUTOSCALER_ENABLED: true
 CLUSTER_AUTOSCALER_NAME: cluster-autoscaler
