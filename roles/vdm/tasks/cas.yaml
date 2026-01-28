@@ -145,3 +145,20 @@
     - install
     - uninstall
     - update
+    
+# Add shutdown transformer for programming-only deployments (CAS disabled)
+# This approach keeps CAS resources in the manifest (avoiding prune risks) but shuts down CAS pods
+- name: CAS - shutdown for programming-only deployment
+  overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { transformers: cas-shutdown.yaml, vdm: true, priority: 100 }
+  when:
+    # Only add shutdown transformer when CAS is disabled
+    - not (V4_CFG_ENABLE_CAS | default(true) | bool)
+  tags:
+    - install
+    - uninstall
+    - update
