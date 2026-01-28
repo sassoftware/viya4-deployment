@@ -13,6 +13,37 @@
 # Chart URL: https://projectcontour.io/
 # Container registry: docker.io
 # Purpose: Alternative ingress controller (if selected).
+# Update CONTOUR_CONFIG with private ingress settings if running in private mode and provider is supported
+- name: Update CONTOUR_CONFIG to add private_ingress
+  set_fact:
+    CONTOUR_CONFIG: "{{ CONTOUR_CONFIG | combine(private_ingress[PROVIDER], recursive=True) }}"
+  when:
+    - V4_CFG_INGRESS_MODE == "private"
+    - PROVIDER in private_ingress
+  tags:
+    - install
+    - update
+
+# Update CONTOUR_CONFIG to use NLB for AWS
+- name: Update CONTOUR_CONFIG to use NLB for AWS
+  set_fact:
+    CONTOUR_CONFIG: "{{ CONTOUR_CONFIG | combine(CONTOUR_AWS_NLB_CONFIG, recursive=True) }}"
+  when:
+    - PROVIDER == "aws"
+  tags:
+    - install
+    - update
+
+# Add AWS load balancer subnets to the configuration if specified
+- name: Update CONTOUR_CONFIG annotations to include CONTOUR_AWS_LB_SUBNETS
+  set_fact:
+    CONTOUR_CONFIG: "{{ CONTOUR_CONFIG | combine(CONTOUR_AWS_LB_SUBNETS, recursive=True) }}"
+  when:
+    - PROVIDER == "aws"
+    - V4_CFG_AWS_LB_SUBNETS|length != 0m
+  tags:
+    - install
+    - update
 
 # Add Azure load-balancer health probe request path to the configuration if provider is Azure
 - name: Update CONTOUR_CONFIG to add Azure load-balancer health probe request path
