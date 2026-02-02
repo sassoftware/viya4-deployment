@@ -40,7 +40,7 @@
     CONTOUR_CONFIG: "{{ CONTOUR_CONFIG | combine(CONTOUR_AWS_LB_SUBNETS, recursive=True) }}"
   when:
     - PROVIDER == "aws"
-    - V4_CFG_AWS_LB_SUBNETS|length != 0m
+    - V4_CFG_AWS_LB_SUBNETS|length != 0
   tags:
     - install
     - update
