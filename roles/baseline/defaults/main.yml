@@ -195,10 +195,6 @@ CONTOUR_CHART_NAME: contour
 CONTOUR_CHART_URL: https://projectcontour.github.io/helm-charts/
 CONTOUR_CHART_VERSION: 0.2.1
 CONTOUR_CONFIG:
-  contour:
-    configFileContents:
-      compression:
-        algorithm: disabled
   envoy:
     service:
       loadBalancerSourceRanges: "{{ LOADBALANCER_SOURCE_RANGES | default(['0.0.0.0/0'], -1) }}"
