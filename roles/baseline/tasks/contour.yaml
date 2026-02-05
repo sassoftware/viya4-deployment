@@ -81,6 +81,28 @@
     - install
     - update
 
+# Patch Contour ConfigMap to add compression configuration.
+- name: Patch Contour ConfigMap with compression settings
+  kubernetes.core.k8s:
+    state: patched
+    kind: ConfigMap
+    name: "{{ CONTOUR_NAME }}"
+    namespace: "{{ CONTOUR_NAMESPACE }}"
+    kubeconfig: "{{ KUBECONFIG }}"
+    definition:
+      data:
+        contour.yaml: |
+          accesslog-format: envoy
+          compression:
+            algorithm: disabled
+          disablePermitInsecure: false
+          tls:
+            fallback-certificate: {}
+  when: CONTOUR_CONFIG.contour.configFileContents.compression is defined
+  tags:
+    - install
+    - update
+
 # Remove the Contour ingress controller Helm release
 - name: Remove contour
   kubernetes.core.helm:
