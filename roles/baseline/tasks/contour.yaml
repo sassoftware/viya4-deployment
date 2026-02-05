@@ -71,9 +71,7 @@
     - install
     - update
 
-# Patch Contour ConfigMap to add compression configuration (PSCLOUD-483)
-# Note: Contour Helm chart v0.2.1 doesn't properly merge configFileContents,
-# so we need to patch the ConfigMap directly after deployment
+# Patch Contour ConfigMap to add compression configuration.
 - name: Patch Contour ConfigMap with compression settings
   kubernetes.core.k8s:
     state: patched
