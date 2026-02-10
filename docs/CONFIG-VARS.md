@@ -368,7 +368,7 @@ If you used [viya4-iac-aws:5.6.0](https://github.com/sassoftware/viya4-iac-aws/r
 
 ### Contour
 
-Contour is an open source ingress controller that provides dynamic configuration updates and multi-team ingress delegation while maintaining a lightweight profile. Contour support is available starting with the 2026.02 cadence release.
+Contour is an open source ingress controller that provides dynamic configuration updates. Contour support is available starting with the 2026.02 cadence release.
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
