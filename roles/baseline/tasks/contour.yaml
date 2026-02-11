@@ -88,7 +88,24 @@
           disablePermitInsecure: false
           tls:
             fallback-certificate: {}
-  when: CONTOUR_CONFIG.contour.configFileContents.compression is defined
+  tags:
+    - install
+    - update
+
+# Restart Contour deployment to apply the compression configuration changes
+- name: Restart Contour deployment
+  kubernetes.core.k8s:
+    state: patched
+    kind: Deployment
+    name: "{{ CONTOUR_NAME }}"
+    namespace: "{{ CONTOUR_NAMESPACE }}"
+    kubeconfig: "{{ KUBECONFIG }}"
+    definition:
+      spec:
+        template:
+          metadata:
+            annotations:
+              kubectl.kubernetes.io/restartedAt: "{{ ansible_date_time.iso8601 }}"
   tags:
     - install
     - update
