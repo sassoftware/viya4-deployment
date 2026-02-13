@@ -1,0 +1,54 @@
+# Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+# Specific transformer for RabbitMQ StatefulSet zone distribution with restrictive constraints
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: rabbitmq-zone-distribution
+patch: |-
+  - op: add
+    path: /spec/template/spec/topologySpreadConstraints
+    value:
+      - maxSkew: 0
+        topologyKey: topology.kubernetes.io/zone
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            app: sas-rabbitmq-server
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            app: sas-rabbitmq-server
+  - op: add
+    path: /spec/template/spec/affinity
+    value:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: workload.sas.com/class
+                  operator: In
+                  values:
+                    - stateful
+                - key: agentpool
+                  operator: Exists
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                app: sas-rabbitmq-server
+            topologyKey: topology.kubernetes.io/zone
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app: sas-rabbitmq-server
+              topologyKey: kubernetes.io/hostname
+target:
+  kind: StatefulSet
+  name: ".*rabbitmq.*"
+  version: v1

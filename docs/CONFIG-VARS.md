@@ -332,6 +332,43 @@ Notes:
     - For example, defining `V4_CFG_VIYA_STOP_SCHEDULE` and not `V4_CFG_VIYA_START_SCHEDULE` will result in a Viya stop job that runs on a schedule and a suspended Viya start job that you will be able to manually trigger.
   - Defining both `V4_CFG_VIYA_START_SCHEDULE` and `V4_CFG_VIYA_STOP_SCHEDULE` will result in a non-suspended Viya start and stop job that runs on the schedule you defined.
 
+## Multi-Zone Pod Distribution
+
+| Name | Description | Type | Default | Required | Notes | Tasks |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
+| V4_CFG_MULTI_ZONE_ENABLED | Enable strict multi-zone pod distribution and anti-affinity for StatefulSets | bool | true | false | Adds restrictive topology spread constraints (maxSkew: 0) and required pod anti-affinity to prevent StatefulSet quorum loss during zone failures | viya |
+| V4_CFG_MULTI_ZONE_RABBITMQ_ENABLED | Enable strict multi-zone distribution for RabbitMQ StatefulSet | bool | true | false | Ensures RabbitMQ pods are strictly distributed across zones with required anti-affinity to maintain quorum during zone failures | viya |
+| V4_CFG_MULTI_ZONE_POSTGRES_ENABLED | Enable strict multi-zone distribution for PostgreSQL StatefulSet | bool | true | false | Ensures PostgreSQL pods are strictly distributed across zones for high availability. Only applies to internal PostgreSQL deployments | viya |
+| V4_CFG_STATEFUL_NODEPOOL_RESTRICTION | Restrict StatefulSets to dedicated stateful nodepools | bool | true | false | Adds node affinity to ensure StatefulSets only run on nodes labeled with workload.sas.com/class=stateful | viya |
+| V4_CFG_STATEFUL_NODEPOOL_LABEL | Label key used to identify stateful workload nodepools | string | workload.sas.com/class | false | Node label used for nodepool restriction. Stateful pods will require this label with value 'stateful' | viya |
+| V4_CFG_MULTI_ZONE_AUTO_DETECT | Automatically detect if cluster has multiple zones | bool | true | false | When enabled, automatically detects cluster topology and applies appropriate constraints. Prevents scheduling issues in single-zone clusters | viya |
+| V4_CFG_SINGLE_ZONE_FALLBACK | Enable relaxed constraints for single-zone clusters | bool | true | false | Applies relaxed topology constraints and preferred (not required) anti-affinity in single-zone deployments to avoid scheduling failures | viya |
+
+**Notes:**
+
+**Multi-Zone Clusters** (2+ zones detected):
+- **Zone Distribution**: `maxSkew: 0` with `DoNotSchedule` - pods must be evenly distributed across zones
+- **Required Pod Anti-Affinity**: Pods cannot be scheduled in the same zone as another pod of the same StatefulSet
+- **Nodepool Restriction**: StatefulSets are restricted to nodes with `workload.sas.com/class=stateful` label
+- **Node Distribution**: `maxSkew: 1` with `DoNotSchedule` - prevents multiple pods on the same node
+
+**Single-Zone Clusters** (1 zone detected):
+- **Node Distribution**: `maxSkew: 1` with `ScheduleAnyway` - spreads pods across nodes when possible
+- **Preferred Pod Anti-Affinity**: Attempts to avoid co-location on same node (weight: 100)
+- **Preferred Node Affinity**: Prefers stateful nodepool but allows scheduling elsewhere if needed
+
+**Automatic Behavior**:
+- Detects cluster zones by querying node labels (`topology.kubernetes.io/zone`)
+- Applies strict constraints only in true multi-zone environments  
+- Falls back to relaxed constraints in single-zone clusters
+- Ensures compatibility across different infrastructure deployments
+
+This configuration ensures:
+- No StatefulSet quorum loss during zone failures in multi-zone clusters
+- No scheduling failures in single-zone deployments
+- Optimal resource distribution based on cluster topology
+- Supports AKS, EKS, and GKE clusters
+
 ## Third-Party Tools
 
 ### Cert-manager
