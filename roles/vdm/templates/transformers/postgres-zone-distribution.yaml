@@ -29,12 +29,10 @@ patch: |-
         requiredDuringSchedulingIgnoredDuringExecution:
           nodeSelectorTerms:
             - matchExpressions:
-                - key: workload.sas.com/class
+                - key: agentpool
                   operator: In
                   values:
                     - stateful
-                - key: agentpool
-                  operator: Exists
       podAntiAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
           - labelSelector:

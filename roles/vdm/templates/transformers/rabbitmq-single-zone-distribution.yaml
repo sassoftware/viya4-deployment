@@ -15,7 +15,7 @@ patch: |-
         whenUnsatisfiable: ScheduleAnyway
         labelSelector:
           matchLabels:
-            app: sas-rabbitmq-server
+            app.kubernetes.io/name: sas-rabbitmq-server
   - op: add
     path: /spec/template/spec/affinity
     value:
@@ -24,7 +24,7 @@ patch: |-
           - weight: 100
             preference:
               matchExpressions:
-                - key: workload.sas.com/class
+                - key: agentpool
                   operator: In
                   values:
                     - stateful
@@ -34,7 +34,7 @@ patch: |-
             podAffinityTerm:
               labelSelector:
                 matchLabels:
-                  app: sas-rabbitmq-server
+                  app.kubernetes.io/name: sas-rabbitmq-server
               topologyKey: kubernetes.io/hostname
 target:
   kind: StatefulSet

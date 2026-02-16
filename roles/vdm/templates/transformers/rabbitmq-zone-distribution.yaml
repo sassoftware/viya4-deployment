@@ -15,13 +15,13 @@ patch: |-
         whenUnsatisfiable: DoNotSchedule
         labelSelector:
           matchLabels:
-            app: sas-rabbitmq-server
+            app.kubernetes.io/name: sas-rabbitmq-server
       - maxSkew: 1
         topologyKey: kubernetes.io/hostname
         whenUnsatisfiable: DoNotSchedule
         labelSelector:
           matchLabels:
-            app: sas-rabbitmq-server
+            app.kubernetes.io/name: sas-rabbitmq-server
   - op: add
     path: /spec/template/spec/affinity
     value:
@@ -29,24 +29,17 @@ patch: |-
         requiredDuringSchedulingIgnoredDuringExecution:
           nodeSelectorTerms:
             - matchExpressions:
-                - key: workload.sas.com/class
+                - key: agentpool
                   operator: In
                   values:
                     - stateful
-                - key: agentpool
-                  operator: Exists
       podAntiAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          - labelSelector:
-              matchLabels:
-                app: sas-rabbitmq-server
-            topologyKey: topology.kubernetes.io/zone
         preferredDuringSchedulingIgnoredDuringExecution:
           - weight: 100
             podAffinityTerm:
               labelSelector:
                 matchLabels:
-                  app: sas-rabbitmq-server
+                  app.kubernetes.io/name: sas-rabbitmq-server
               topologyKey: kubernetes.io/hostname
 target:
   kind: StatefulSet

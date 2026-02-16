@@ -24,7 +24,7 @@ patch: |-
           - weight: 100
             preference:
               matchExpressions:
-                - key: workload.sas.com/class
+                - key: agentpool
                   operator: In
                   values:
                     - stateful
