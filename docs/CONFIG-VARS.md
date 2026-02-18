@@ -29,6 +29,7 @@ Supported configuration variables are listed in the table below.  All variables 
   - [Third-Party Tools](#third-party-tools)
     - [Cert-manager](#cert-manager)
     - [Cluster Autoscaler](#cluster-autoscaler)
+    - [Contour](#contour)
     - [EBS CSI Driver](#ebs-csi-driver)
     - [Ingress-nginx](#ingress-nginx)
     - [Metrics Server](#metrics-server)
@@ -169,7 +170,7 @@ When V4_CFG_MANAGE_STORAGE is set to `true`, the `sas` and `pg-storage` storage 
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_INGRESS_TYPE | The ingress controller to deploy | string | "ingress" | true | Possible values: "ingress" | baseline, viya |
+| V4_CFG_INGRESS_TYPE | The ingress controller to deploy | string | "ingress" | true | Possible values: "ingress", "contour" | baseline, viya |
 | V4_CFG_INGRESS_FQDN | FQDN to the ingress for SAS Vya installation | string | | true | | viya |
 | V4_CFG_INGRESS_MODE | Whether to create a public or private Loadbalancer endpoint | string | "public" | false | Possible values: "public", "private". Setting this option to "private" adds options to the ingress controller that create a LoadBalancer with private IP address(es) only. | baseline |
 
@@ -364,6 +365,19 @@ Cluster-autoscaler is currently only used for AWS EKS clusters. Google GKE and A
 **Cluster Autoscaler Notes:**
 
 If you used [viya4-iac-aws:5.6.0](https://github.com/sassoftware/viya4-iac-aws/releases) or newer to create your infrastructure, a cluster autoscaler account should have been created for you with a policy that is compatible with both our default versions for the `CLUSTER_AUTOSCALER_CHART_VERSION` variable. If you choose an alternative version ensure that your autoscaler account has a policy that matches the recommendation from the [kubernetes/autoscaler documentation](https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/cloudprovider/aws/README.md#iam-policy). This note is only applicable for EKS clusters.
+
+### Contour
+
+Contour is an open source ingress controller that provides dynamic configuration updates. Contour support is available starting with the 2026.02 cadence release.
+
+| Name | Description | Type | Default | Required | Notes | Tasks |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
+| CONTOUR_NAME | Contour Helm release name | string | contour | false | | baseline |
+| CONTOUR_NAMESPACE | Contour Helm installation namespace | string | projectcontour | false | | baseline |
+| CONTOUR_CHART_NAME | Contour Helm chart name | string | contour | false | | baseline |
+| CONTOUR_CHART_URL | Contour Helm chart URL | string | https://projectcontour.github.io/helm-charts/ | false | | baseline |
+| CONTOUR_CHART_VERSION | Contour Helm chart version | string | 0.2.1 | false | | baseline |
+| CONTOUR_CONFIG | Contour Helm values | string | See [this file](../roles/baseline/defaults/main.yml) for more information. Altering this value will affect the cluster. | false | | baseline |
 
 ### EBS CSI Driver
 
