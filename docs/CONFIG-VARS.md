@@ -29,6 +29,7 @@ Supported configuration variables are listed in the table below.  All variables 
   - [Third-Party Tools](#third-party-tools)
     - [Cert-manager](#cert-manager)
     - [Cluster Autoscaler](#cluster-autoscaler)
+    - [Contour](#contour)
     - [EBS CSI Driver](#ebs-csi-driver)
     - [Ingress-nginx](#ingress-nginx)
     - [Metrics Server](#metrics-server)
@@ -94,7 +95,7 @@ When `V4_CFG_MANAGE_STORAGE` is set to `true`, viya4-deployment uses the [EBS CS
 
 ### Storage for Azure
 
-By default, viya4-deployment uses the [Azure managed disks CSI driver](#azure-managed-disk-csi-driver) to create two elastic block storage based storage classes with the default names of `managed-csi-premium-v2-mq` and `managed-csi-premium-v2-pg`. The disk SKU for both storage classes defaults to `PremiumV2_LRS`. For AKS clusters, RabbitMQ makes PVC requests to create block storage persistent volumes using the `managed-csi-premium-v2-mq` storage class while Crunchy Postgres makes PVC requests to create block storage persistent volumes using the `managed-csi-premium-v2-pg` storage class. To use a different StorageClass for RabbitMQ, set the `V4_CFG_RABBITMQ_STORAGECLASS` property to the name of the StorageClass to use. To use a different StorageClass for Crunchy Postgres, set the `V4_CFG_CRUNCHY_STORAGECLASS` property to the name of the StorageClass to use.
+By default, viya4-deployment uses the [Azure managed disks CSI driver](#azure-managed-disk-csi-driver) to create two Azure Disk–based storage classes with the default names of `managed-csi-premium-v2-mq` and `managed-csi-premium-v2-pg`. The disk SKU for both storage classes defaults to `PremiumV2_LRS`. For AKS clusters, RabbitMQ makes PVC requests to create block storage persistent volumes using the `managed-csi-premium-v2-mq` storage class while Crunchy Postgres makes PVC requests to create block storage persistent volumes using the `managed-csi-premium-v2-pg` storage class. To use a different StorageClass for RabbitMQ, set the `V4_CFG_RABBITMQ_STORAGECLASS` property to the name of the StorageClass to use. To use a different StorageClass for Crunchy Postgres, set the `V4_CFG_CRUNCHY_STORAGECLASS` property to the name of the StorageClass to use.
 
 **NOTE**: The Azure managed disk CSI Driver can only be included at AKS cluster creation time. It is included in all AKS clusters by default, and any AKS clusters created with viya4-iac-azure will have the driver installed. If you did not use the viya4-iac-azure project to create your AKS cluster, ensure that you have enabled the Azure disk CSI driver prior to using this project or disable the creation of the StorageClasses.
 
@@ -169,7 +170,7 @@ When V4_CFG_MANAGE_STORAGE is set to `true`, the `sas` and `pg-storage` storage 
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_INGRESS_TYPE | The ingress controller to deploy | string | "ingress" | true | Possible values: "ingress" | baseline, viya |
+| V4_CFG_INGRESS_TYPE | The ingress controller to deploy | string | "ingress" | true | Possible values: "ingress", "contour" | baseline, viya |
 | V4_CFG_INGRESS_FQDN | FQDN to the ingress for SAS Vya installation | string | | true | | viya |
 | V4_CFG_INGRESS_MODE | Whether to create a public or private Loadbalancer endpoint | string | "public" | false | Possible values: "public", "private". Setting this option to "private" adds options to the ingress controller that create a LoadBalancer with private IP address(es) only. | baseline |
 
@@ -297,6 +298,7 @@ V4_CFG_POSTGRES_SERVERS:
 | V4_CFG_CAS_ENABLE_BACKUP_CONTROLLER | Enable backup CAS controller | bool | false | false | | viya |
 | V4_CFG_CAS_ENABLE_LOADBALANCER | Set up LoadBalancer to access CAS binary ports | bool | false | false | | viya |
 | V4_CFG_CAS_ENABLE_AUTO_RESTART | Include a transformer so that the CAS servers will automatically restart during version updates performed by the SAS Viya Deployment Operator. | bool | true | false | This variable will not be applicable if you are not using the SAS Viya Deployment Operator by setting `V4_DEPLOYMENT_OPERATOR_ENABLED` to "false". See the [SAS Viya Platform Operations documentation](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=dplyml0phy0dkr&docsetTarget=n08u2yg8tdkb4jn18u8zsi6yfv3d.htm#p1mtzb2zsvv581n1gpmwds3urbon) for additional information. | viya |
+| V4_CFG_ENABLE_CAS | Enable CAS Server deployment | bool | true | false | Set to `false` for programming-only deployments without CAS Server. When disabled, a shutdown transformer is applied to scale down CAS pods to zero while keeping CAS Operator and Control components deployed. | viya |
 
 ## CONNECT
 
@@ -363,6 +365,19 @@ Cluster-autoscaler is currently only used for AWS EKS clusters. Google GKE and A
 **Cluster Autoscaler Notes:**
 
 If you used [viya4-iac-aws:5.6.0](https://github.com/sassoftware/viya4-iac-aws/releases) or newer to create your infrastructure, a cluster autoscaler account should have been created for you with a policy that is compatible with both our default versions for the `CLUSTER_AUTOSCALER_CHART_VERSION` variable. If you choose an alternative version ensure that your autoscaler account has a policy that matches the recommendation from the [kubernetes/autoscaler documentation](https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/cloudprovider/aws/README.md#iam-policy). This note is only applicable for EKS clusters.
+
+### Contour
+
+Contour is an open source ingress controller that provides dynamic configuration updates. Contour support is available starting with the 2026.02 cadence release.
+
+| Name | Description | Type | Default | Required | Notes | Tasks |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
+| CONTOUR_NAME | Contour Helm release name | string | contour | false | | baseline |
+| CONTOUR_NAMESPACE | Contour Helm installation namespace | string | projectcontour | false | | baseline |
+| CONTOUR_CHART_NAME | Contour Helm chart name | string | contour | false | | baseline |
+| CONTOUR_CHART_URL | Contour Helm chart URL | string | https://projectcontour.github.io/helm-charts/ | false | | baseline |
+| CONTOUR_CHART_VERSION | Contour Helm chart version | string | 0.2.1 | false | | baseline |
+| CONTOUR_CONFIG | Contour Helm values | string | See [this file](../roles/baseline/defaults/main.yml) for more information. Altering this value will affect the cluster. | false | | baseline |
 
 ### EBS CSI Driver
 

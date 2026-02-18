@@ -13,6 +13,47 @@
 # Chart URL: https://projectcontour.io/
 # Container registry: docker.io
 # Purpose: Alternative ingress controller (if selected).
+# Update CONTOUR_CONFIG with private ingress settings if running in private mode and provider is supported
+- name: Update CONTOUR_CONFIG to add private_ingress
+  set_fact:
+    CONTOUR_CONFIG: "{{ CONTOUR_CONFIG | combine(private_ingress[PROVIDER], recursive=True) }}"
+  when:
+    - V4_CFG_INGRESS_MODE == "private"
+    - PROVIDER in private_ingress
+  tags:
+    - install
+    - update
+
+# Update CONTOUR_CONFIG to use NLB for AWS
+- name: Update CONTOUR_CONFIG to use NLB for AWS
+  set_fact:
+    CONTOUR_CONFIG: "{{ CONTOUR_CONFIG | combine(CONTOUR_AWS_NLB_CONFIG, recursive=True) }}"
+  when:
+    - PROVIDER == "aws"
+  tags:
+    - install
+    - update
+
+# Add AWS load balancer subnets to the configuration if specified
+- name: Update CONTOUR_CONFIG annotations to include CONTOUR_AWS_LB_SUBNETS
+  set_fact:
+    CONTOUR_CONFIG: "{{ CONTOUR_CONFIG | combine(CONTOUR_AWS_LB_SUBNETS, recursive=True) }}"
+  when:
+    - PROVIDER == "aws"
+    - V4_CFG_AWS_LB_SUBNETS|length != 0
+  tags:
+    - install
+    - update
+
+# Add Azure load-balancer health probe request path to the configuration if provider is Azure
+- name: Update CONTOUR_CONFIG to add Azure load-balancer health probe request path
+  set_fact:
+    CONTOUR_CONFIG: "{{ CONTOUR_CONFIG | combine(CONTOUR_AZURE_LB_HEALTH_PROBE_CONFIG, recursive=True) }}"
+  when:
+    - PROVIDER == "azure"
+  tags:
+    - install
+    - update
 
 # Deploy the Contour ingress controller using Helm
 - name: Deploy contour
@@ -26,6 +67,45 @@
     kubeconfig: "{{ KUBECONFIG }}"               # Kubeconfig for cluster access
     create_namespace: true                       # Create namespace if it doesn't exist
     wait: true                                   # Wait for deployment to complete
+  tags:
+    - install
+    - update
+
+# Patch Contour ConfigMap to add compression configuration.
+- name: Patch Contour ConfigMap with compression settings
+  kubernetes.core.k8s:
+    state: patched
+    kind: ConfigMap
+    name: "{{ CONTOUR_NAME }}"
+    namespace: "{{ CONTOUR_NAMESPACE }}"
+    kubeconfig: "{{ KUBECONFIG }}"
+    definition:
+      data:
+        contour.yaml: |
+          accesslog-format: envoy
+          compression:
+            algorithm: disabled
+          disablePermitInsecure: false
+          tls:
+            fallback-certificate: {}
+  tags:
+    - install
+    - update
+
+# Restart Contour deployment to apply the compression configuration changes
+- name: Restart Contour deployment
+  kubernetes.core.k8s:
+    state: patched
+    kind: Deployment
+    name: "{{ CONTOUR_NAME }}"
+    namespace: "{{ CONTOUR_NAMESPACE }}"
+    kubeconfig: "{{ KUBECONFIG }}"
+    definition:
+      spec:
+        template:
+          metadata:
+            annotations:
+              kubectl.kubernetes.io/restartedAt: "{{ ansible_date_time.iso8601 }}"
   tags:
     - install
     - update

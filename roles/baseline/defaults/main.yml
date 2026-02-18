@@ -190,14 +190,35 @@ CSI_DRIVER_NFS_PG_EFS_CONFIG:
 
 ## Contour - Ingress
 CONTOUR_NAME: contour
-CONTOUR_NAMESPACE: contour
+CONTOUR_NAMESPACE: projectcontour
 CONTOUR_CHART_NAME: contour
-CONTOUR_CHART_URL: https://charts.bitnami.com/bitnami
-CONTOUR_CHART_VERSION: 4.3.8
+CONTOUR_CHART_URL: https://projectcontour.github.io/helm-charts/
+CONTOUR_CHART_VERSION: 0.2.1
 CONTOUR_CONFIG:
   envoy:
     service:
       loadBalancerSourceRanges: "{{ LOADBALANCER_SOURCE_RANGES | default(['0.0.0.0/0'], -1) }}"
+
+# Add annotation to include Azure load-balancer health probe request path for Contour
+CONTOUR_AZURE_LB_HEALTH_PROBE_CONFIG:
+  envoy:
+    service:
+      annotations:
+        service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: /healthz
+
+# Update default load-balancer for AWS to be NLB for Contour
+CONTOUR_AWS_NLB_CONFIG:
+  envoy:
+    service:
+      annotations:
+        service.beta.kubernetes.io/aws-load-balancer-type: nlb
+
+# Update LB for AWS, specify subnets to allocate internal IPs from for Contour
+CONTOUR_AWS_LB_SUBNETS:
+  envoy:
+    service:
+      annotations:
+        service.beta.kubernetes.io/aws-load-balancer-subnets: "{{ V4_CFG_AWS_LB_SUBNETS }}"
 
 ## Cluster Autoscaler
 CLUSTER_AUTOSCALER_ENABLED: true
@@ -274,13 +295,26 @@ private_ingress:
         annotations:
           service.beta.kubernetes.io/aws-load-balancer-internal: "true"
           service.beta.kubernetes.io/aws-load-balancer-type: nlb
+    envoy:
+      service:
+        annotations:
+          service.beta.kubernetes.io/aws-load-balancer-internal: "true"
+          service.beta.kubernetes.io/aws-load-balancer-type: nlb
   azure:
     controller:
       service:
         annotations:
           service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+    envoy:
+      service:
+        annotations:
+          service.beta.kubernetes.io/azure-load-balancer-internal: "true"
   gcp:
     controller:
+      service:
+        annotations:
+          networking.gke.io/load-balancer-type: Internal
+    envoy:
       service:
         annotations:
           networking.gke.io/load-balancer-type: Internal
