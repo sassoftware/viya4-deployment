@@ -6,37 +6,12 @@
 # to prevent StatefulSet quorum loss during zone failures in multi-zone clusters.
 # For single-zone deployments, applies relaxed constraints to avoid scheduling issues.
 
-# Detect if cluster has multiple zones
-- name: Multi-Zone - Detect cluster zones
-  kubernetes.core.k8s_info:
-    api_version: v1
-    kind: Node
-    kubeconfig: "{{ KUBECONFIG }}"
-  register: cluster_nodes
-  when:
-    - V4_CFG_MULTI_ZONE_ENABLED | bool
-    - V4_CFG_MULTI_ZONE_AUTO_DETECT | bool
-  tags:
-    - install
-    - uninstall
-    - update
+# Multi-zone StatefulSet distribution configuration
+# Applies zone distribution constraints to prevent StatefulSet pods from 
+# ending up on same zone during zone failures (addresses PSCLOUD-64)
 
-# Set fact for zone count
-- name: Multi-Zone - Calculate zone count
-  set_fact:
-    cluster_zone_count: "{{ cluster_nodes.resources | map(attribute='metadata.labels') | map('dict2items') | flatten | selectattr('key', 'equalto', 'topology.kubernetes.io/zone') | map(attribute='value') | unique | length }}"
-    is_multi_zone: "{{ (cluster_nodes.resources | map(attribute='metadata.labels') | map('dict2items') | flatten | selectattr('key', 'equalto', 'topology.kubernetes.io/zone') | map(attribute='value') | unique | length | int) > 1 }}"
-  when:
-    - V4_CFG_MULTI_ZONE_ENABLED | bool
-    - V4_CFG_MULTI_ZONE_AUTO_DETECT | bool
-    - cluster_nodes.resources is defined
-  tags:
-    - install
-    - uninstall
-    - update
-
-# Add multi-zone distribution overlay for RabbitMQ StatefulSet (multi-zone clusters)
-- name: Multi-Zone - RabbitMQ zone distribution with restrictive constraints
+# Add multi-zone distribution overlay for RabbitMQ StatefulSet
+- name: Multi-Zone - RabbitMQ zone distribution with balanced constraints
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
@@ -47,33 +22,13 @@
     - V4_CFG_MULTI_ZONE_ENABLED | bool
     - V4_CFG_MULTI_ZONE_RABBITMQ_ENABLED | bool
     - PROVIDER in ["AKS", "azure", "EKS", "aws", "GKE", "gcp"]
-    - not V4_CFG_MULTI_ZONE_AUTO_DETECT | bool or (is_multi_zone | default(true) | bool)
   tags:
     - install
     - uninstall
     - update
 
-# Add relaxed distribution overlay for RabbitMQ StatefulSet (single-zone clusters)
-- name: Multi-Zone - RabbitMQ single-zone distribution fallback
-  overlay_facts:
-    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
-    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
-    existing: "{{ vdm_overlays }}"
-    add:
-      - { transformers: rabbitmq-single-zone-distribution.yaml, vdm: true }
-  when:
-    - V4_CFG_MULTI_ZONE_ENABLED | bool
-    - V4_CFG_MULTI_ZONE_RABBITMQ_ENABLED | bool
-    - V4_CFG_SINGLE_ZONE_FALLBACK | bool
-    - PROVIDER in ["AKS", "azure", "EKS", "aws", "GKE", "gcp"]
-    - V4_CFG_MULTI_ZONE_AUTO_DETECT | bool and not (is_multi_zone | default(true) | bool)
-  tags:
-    - install
-    - uninstall
-    - update
-
-# Add multi-zone distribution overlay for PostgreSQL StatefulSet (multi-zone clusters)
-- name: Multi-Zone - PostgreSQL zone distribution with restrictive constraints
+# Add multi-zone distribution overlay for PostgreSQL StatefulSet
+- name: Multi-Zone - PostgreSQL zone distribution with balanced constraints
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
@@ -85,45 +40,6 @@
     - V4_CFG_MULTI_ZONE_POSTGRES_ENABLED | bool
     - V4_CFG_POSTGRES_SERVERS.default.internal | bool
     - PROVIDER in ["AKS", "azure", "EKS", "aws", "GKE", "gcp"]
-    - not V4_CFG_MULTI_ZONE_AUTO_DETECT | bool or (is_multi_zone | default(true) | bool)
-  tags:
-    - install
-    - uninstall
-    - update
-
-# Add relaxed distribution overlay for PostgreSQL StatefulSet (single-zone clusters)
-- name: Multi-Zone - PostgreSQL single-zone distribution fallback
-  overlay_facts:
-    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
-    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
-    existing: "{{ vdm_overlays }}"
-    add:
-      - { transformers: postgres-single-zone-distribution.yaml, vdm: true }
-  when:
-    - V4_CFG_MULTI_ZONE_ENABLED | bool
-    - V4_CFG_MULTI_ZONE_POSTGRES_ENABLED | bool
-    - V4_CFG_POSTGRES_SERVERS.default.internal | bool
-    - V4_CFG_SINGLE_ZONE_FALLBACK | bool
-    - PROVIDER in ["AKS", "azure", "EKS", "aws", "GKE", "gcp"]
-    - V4_CFG_MULTI_ZONE_AUTO_DETECT | bool and not (is_multi_zone | default(true) | bool)
-  tags:
-    - install
-    - uninstall
-    - update
-
-# Add general multi-zone distribution overlay for other StatefulSets (multi-zone clusters)
-- name: Multi-Zone - General StatefulSet zone distribution with restrictive constraints
-  overlay_facts:
-    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
-    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
-    existing: "{{ vdm_overlays }}"
-    add:
-      - { transformers: multi-zone-pod-distribution.yaml, vdm: true }
-  when:
-    - V4_CFG_MULTI_ZONE_ENABLED | bool
-    - V4_CFG_STATEFUL_NODEPOOL_RESTRICTION | bool
-    - PROVIDER in ["AKS", "azure", "EKS", "aws", "GKE", "gcp"]
-    - not V4_CFG_MULTI_ZONE_AUTO_DETECT | bool or (is_multi_zone | default(true) | bool)
   tags:
     - install
     - uninstall

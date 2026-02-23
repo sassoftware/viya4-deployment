@@ -10,7 +10,7 @@ patch: |-
   - op: add
     path: /spec/template/spec/topologySpreadConstraints
     value:
-      - maxSkew: 0
+      - maxSkew: 1
         topologyKey: topology.kubernetes.io/zone
         whenUnsatisfiable: DoNotSchedule
         labelSelector:
@@ -34,11 +34,6 @@ patch: |-
                   values:
                     - stateful
       podAntiAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          - labelSelector:
-              matchLabels:
-                postgres-operator.crunchydata.com/cluster: shared-postgres
-            topologyKey: topology.kubernetes.io/zone
         preferredDuringSchedulingIgnoredDuringExecution:
           - weight: 100
             podAffinityTerm:
