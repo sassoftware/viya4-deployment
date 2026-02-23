@@ -7,7 +7,7 @@
 # For single-zone deployments, applies relaxed constraints to avoid scheduling issues.
 
 # Multi-zone StatefulSet distribution configuration
-# Applies zone distribution constraints to prevent StatefulSet pods from 
+# Applies zone distribution constraints to prevent StatefulSet pods from
 # ending up on same zone during zone failures (addresses PSCLOUD-64)
 
 # Add multi-zone distribution overlay for RabbitMQ StatefulSet
