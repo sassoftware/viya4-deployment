@@ -195,9 +195,24 @@ CONTOUR_CHART_NAME: contour
 CONTOUR_CHART_URL: https://projectcontour.github.io/helm-charts/
 CONTOUR_CHART_VERSION: 0.2.1
 CONTOUR_CONFIG:
+  contour:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 200m
+        memory: 512Mi
   envoy:
     service:
       loadBalancerSourceRanges: "{{ LOADBALANCER_SOURCE_RANGES | default(['0.0.0.0/0'], -1) }}"
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 200m
+        memory: 512Mi
 
 # Add annotation to include Azure load-balancer health probe request path for Contour
 CONTOUR_AZURE_LB_HEALTH_PROBE_CONFIG:
