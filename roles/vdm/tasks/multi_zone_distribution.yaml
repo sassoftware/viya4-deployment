@@ -44,3 +44,88 @@
     - install
     - uninstall
     - update
+
+# Add multi-zone distribution overlay for Consul StatefulSet
+- name: Multi-Zone - Consul zone distribution with balanced constraints
+  overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { transformers: consul-zone-distribution.yaml, vdm: true }
+  when:
+    - V4_CFG_MULTI_ZONE_ENABLED | bool
+    - V4_CFG_MULTI_ZONE_CONSUL_ENABLED | bool
+    - PROVIDER in ["AKS", "azure", "EKS", "aws", "GKE", "gcp"]
+  tags:
+    - install
+    - uninstall
+    - update
+
+# Add multi-zone distribution overlay for Redis StatefulSet
+- name: Multi-Zone - Redis zone distribution with balanced constraints
+  overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { transformers: redis-zone-distribution.yaml, vdm: true }
+  when:
+    - V4_CFG_MULTI_ZONE_ENABLED | bool
+    - V4_CFG_MULTI_ZONE_REDIS_ENABLED | bool
+    - PROVIDER in ["AKS", "azure", "EKS", "aws", "GKE", "gcp"]
+  tags:
+    - install
+    - uninstall
+    - update
+
+# Add multi-zone distribution overlay for OpenDistro/OpenSearch StatefulSets
+- name: Multi-Zone - OpenDistro zone distribution with balanced constraints
+  overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { transformers: opendistro-zone-distribution.yaml, vdm: true }
+  when:
+    - V4_CFG_MULTI_ZONE_ENABLED | bool
+    - V4_CFG_MULTI_ZONE_OPENDISTRO_ENABLED | bool
+    - PROVIDER in ["AKS", "azure", "EKS", "aws", "GKE", "gcp"]
+  tags:
+    - install
+    - uninstall
+    - update
+
+# Add multi-zone distribution overlay for Workload Orchestrator StatefulSet
+- name: Multi-Zone - Workload Orchestrator zone distribution with balanced constraints
+  overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { transformers: workload-orchestrator-zone-distribution.yaml, vdm: true }
+  when:
+    - V4_CFG_MULTI_ZONE_ENABLED | bool
+    - V4_CFG_MULTI_ZONE_WORKLOAD_ORCHESTRATOR_ENABLED | bool
+    - PROVIDER in ["AKS", "azure", "EKS", "aws", "GKE", "gcp"]
+  tags:
+    - install
+    - uninstall
+    - update
+
+# Add multi-zone distribution overlay for Data Agent Server StatefulSet
+- name: Multi-Zone - Data Agent Server zone distribution with balanced constraints
+  overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { transformers: data-agent-zone-distribution.yaml, vdm: true }
+  when:
+    - V4_CFG_MULTI_ZONE_ENABLED | bool
+    - V4_CFG_MULTI_ZONE_DATA_AGENT_ENABLED | bool
+    - PROVIDER in ["AKS", "azure", "EKS", "aws", "GKE", "gcp"]
+  tags:
+    - install
+    - uninstall
+    - update
