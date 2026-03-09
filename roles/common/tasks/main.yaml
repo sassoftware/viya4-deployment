@@ -336,7 +336,7 @@
     - offboard
 
 # Ensure V4_CFG_MANAGE_STORAGE is set to a valid value (true/false), fail otherwise
-- name: Set V4_CFG_MANAGE_STORAGE default
+- name: Validate V4_CFG_MANAGE_STORAGE value
   block:
     # Set default to true if not defined
     - name: Set V4_CFG_MANAGE_STORAGE default
@@ -351,7 +351,7 @@
         msg: V4_CFG_MANAGE_STORAGE is defined but empty, supported values are true or false.
       when:
         - V4_CFG_MANAGE_STORAGE is defined
-        - V4_CFG_MANAGE_STORAGE == ''
+        - not V4_CFG_MANAGE_STORAGE or V4_CFG_MANAGE_STORAGE|length == 0
       tags:
         - always
     # Fail if value is not 'true' or 'false'
