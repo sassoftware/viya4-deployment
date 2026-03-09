@@ -7,16 +7,32 @@ This implementation provides balanced multi-zone pod distribution for StatefulSe
 
 ### Core Settings (roles/vdm/defaults/main.yaml)
 - `V4_CFG_MULTI_ZONE_ENABLED`: Master switch for multi-zone distribution (default: true)
-- `V4_CFG_MULTI_ZONE_RABBITMQ_ENABLED`: RabbitMQ distribution control (default: true)  
+- `V4_CFG_MULTI_ZONE_RABBITMQ_ENABLED`: RabbitMQ distribution control (default: true)
 - `V4_CFG_MULTI_ZONE_POSTGRES_ENABLED`: PostgreSQL distribution control (default: true)
+- `V4_CFG_MULTI_ZONE_CONSUL_ENABLED`: Consul distribution control (default: true)
+- `V4_CFG_MULTI_ZONE_REDIS_ENABLED`: Redis distribution control (default: true)
+- `V4_CFG_MULTI_ZONE_OPENDISTRO_ENABLED`: OpenDistro/OpenSearch distribution control (default: true)
+- `V4_CFG_MULTI_ZONE_WORKLOAD_ORCHESTRATOR_ENABLED`: Workload Orchestrator distribution control (default: true)
+- `V4_CFG_MULTI_ZONE_DATA_AGENT_ENABLED`: Data Agent Server distribution control (default: true)
 - `V4_CFG_STATEFUL_NODEPOOL_RESTRICTION`: Restrict to stateful nodepools (default: true)
+- `V4_CFG_STATEFUL_NODEPOOL_LABEL`: Label for stateful nodepool identification (default: "workload.sas.com/class")
+- `V4_CFG_MULTI_ZONE_AUTO_DETECT`: Automatically detect multi-zone clusters (default: true)
+- `V4_CFG_SINGLE_ZONE_FALLBACK`: Apply relaxed constraints for single-zone clusters (default: true)
 
 ### Usage in ansible-vars.yaml
 ```yaml
 V4_CFG_MULTI_ZONE_ENABLED: true
 V4_CFG_MULTI_ZONE_RABBITMQ_ENABLED: true
 V4_CFG_MULTI_ZONE_POSTGRES_ENABLED: true
+V4_CFG_MULTI_ZONE_CONSUL_ENABLED: true
+V4_CFG_MULTI_ZONE_REDIS_ENABLED: true
+V4_CFG_MULTI_ZONE_OPENDISTRO_ENABLED: true
+V4_CFG_MULTI_ZONE_WORKLOAD_ORCHESTRATOR_ENABLED: true
+V4_CFG_MULTI_ZONE_DATA_AGENT_ENABLED: true
 V4_CFG_STATEFUL_NODEPOOL_RESTRICTION: true
+V4_CFG_STATEFUL_NODEPOOL_LABEL: "workload.sas.com/class"
+V4_CFG_MULTI_ZONE_AUTO_DETECT: true
+V4_CFG_SINGLE_ZONE_FALLBACK: true
 ```
 
 ## Implementation Details
@@ -29,9 +45,10 @@ V4_CFG_STATEFUL_NODEPOOL_RESTRICTION: true
   - Spreads pods across nodes when possible
 
 ### Node Affinity (Nodepool Restriction)
-- **Required Node Affinity**: `agentpool=stateful` restriction
-  - Ensures StatefulSets only schedule on nodes with `agentpool=stateful` label
+- **Required Node Affinity**: Configurable nodepool label restriction (default: `workload.sas.com/class=stateful`)
+  - Ensures StatefulSets only schedule on nodes with the specified stateful nodepool label
   - Prevents cross-nodepool scheduling that could compromise zone isolation
+  - Supports both modern (`workload.sas.com/class`) and legacy (`agentpool`) label formats
 
 ### Preferred Pod Anti-Affinity
 - **Host Distribution**: Preferred anti-affinity for `kubernetes.io/hostname`
@@ -40,11 +57,26 @@ V4_CFG_STATEFUL_NODEPOOL_RESTRICTION: true
 
 ## Key Benefits
 
-- **Zone Failure Protection**: Distributes StatefulSet replicas across zones
-- **Nodepool Isolation**: Prevents StatefulSets from mixing with stateless workloads  
+- **Zone Failure Protection**: Distributes StatefulSet replicas across availability zones
+- **Nodepool Isolation**: Prevents StatefulSets from mixing with stateless workloads
 - **Quorum Safety**: Single zone failure won't compromise StatefulSet availability
 - **Reliable Scheduling**: Balanced constraints allow successful deployment
 - **Multi-Cloud Support**: Works with AKS, EKS, and GKE
+- **Comprehensive Coverage**: Supports 7 critical StatefulSet workloads
+- **Automatic Detection**: Auto-detects multi-zone clusters and applies appropriate constraints
+- **Single-Zone Fallback**: Gracefully handles single-zone deployments with relaxed constraints
+
+## Supported StatefulSets
+
+This implementation provides multi-zone distribution for the following StatefulSet workloads:
+
+1. **sas-rabbitmq-server** - Message queue service
+2. **sas-crunchy-platform-postgres** - PostgreSQL database (Crunchy operator)
+3. **sas-consul-server** - Service discovery and configuration
+4. **sas-redis-server** - Caching and session store
+5. **sas-opendistro** - Search and logging infrastructure (OpenSearch/OpenDistro)
+6. **sas-workload-orchestrator** - Job scheduling and orchestration
+7. **sas-data-agent-server-colocated** - Data agent services
 
 ## Usage
 
@@ -57,7 +89,76 @@ V4_CFG_STATEFUL_NODEPOOL_RESTRICTION: true
 ```
 
 ## Nodepool Requirements
-Ensure your stateful nodepool is labeled:
+
+Ensure your stateful nodepool is labeled correctly. The default label is:
 ```bash
 kubectl label nodes <stateful-node> workload.sas.com/class=stateful
 ```
+
+You can customize the nodepool label using:
+```yaml
+V4_CFG_STATEFUL_NODEPOOL_LABEL: "workload.sas.com/class"
+```
+
+For legacy deployments using `agentpool` label:
+```bash
+kubectl label nodes <stateful-node> agentpool=stateful
+```
+
+## Chaos Testing & Validation
+
+### Zone Failure Simulation Results
+
+Chaos testing was performed to validate multi-zone resilience by cordoning all nodes in a zone and deleting StatefulSet pods to simulate complete zone failure.
+
+**Test Scenario**:
+- Cordoned all stateful nodes in single zone
+- Deleted pods (RabbitMQ, Consul, Redis) that were running on the cordoned zone
+- Monitored rescheduling behavior and constraint enforcement
+
+**Observed Behavior**:
+- Deleted pods entered `Pending` state and could not reschedule to remaining zones
+- Topology constraints prevented scheduling that would violate `maxSkew: 1`
+- With current distribution 0-1-1 (after zone-1 failure), scheduling to either remaining zone would create 0-2-1 or 0-1-2 distribution (skew = 2), which violates the constraint
+- Pods remained `Pending` until the failed zone was recovered (node uncordoned)
+- Once zone became available, pods automatically rescheduled and restored balanced distribution
+
+**Validation Result**: Topology constraints working as designed
+
+### Known Limitation (By Design)
+
+**Complete Zone Failure Behavior**:
+- When an entire availability zone becomes unavailable (all nodes cordoned/failed), affected StatefulSet pods **cannot reschedule** to remaining zones
+- Pods remain in `Pending` state until the failed zone recovers
+- This is the intended behavior with `maxSkew: 1` + `whenUnsatisfiable: DoNotSchedule`
+
+**Why This is Acceptable**:
+1. **Primary Goal Achieved**: Prevents cross-nodepool pods from concentrating in a single zone during normal operations
+2. **Rare Scenario**: Complete zone failures are uncommon (Azure/AWS/GCP multi-zone SLA > 99.99%)
+3. **Planned Maintenance**: Production zone maintenance is typically planned, allowing for graceful pod draining
+4. **Trade-off Decision**: Temporary unavailability during zone outage vs. chronic concentration risk in normal operations
+
+**Recovery**:
+Once the zone becomes available again, pods automatically reschedule and rebalance:
+```bash
+kubectl uncordon <zone-nodes>
+# Pods reschedule automatically to restore balanced distribution
+```
+
+### Alternative Constraint Options
+
+If complete zone failure rescheduling is required, consider:
+
+**Option A: Use `ScheduleAnyway`**
+```yaml
+whenUnsatisfiable: ScheduleAnyway  # Allows scheduling during zone failure
+```
+- Warning: Weakens constraint enforcement during normal operations
+
+**Option B: Increase `maxSkew`**
+```yaml
+maxSkew: 2  # Allows 0-2-1 distribution during zone failure
+```
+- Warning: Permits less balanced distribution in normal conditions
+
+**Current Implementation**: Uses strict enforcement (`DoNotSchedule`, `maxSkew: 1`) to prioritize prevention of zone concentration during normal operations.
