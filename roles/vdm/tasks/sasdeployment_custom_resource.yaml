@@ -87,6 +87,8 @@
       synchronize:
         src: "{{ DEPLOY_DIR }}/site-config"
         dest: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}/data"
+        owner: false
+        group: false
         rsync_opts:
           - --exclude=operator-deploy
           - --exclude=sas-tenant-job

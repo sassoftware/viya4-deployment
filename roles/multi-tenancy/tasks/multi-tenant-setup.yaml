@@ -97,8 +97,7 @@
     tenant_password_list: >-
       {{ (tenant_password_list | default([])) + (['V4MT_PROVIDER_PASSWORD_'] | product([item | default('')]) | map('join') | list) }}
   with_items: "{{ V4MT_TENANT_IDS | default('') | replace(' ', '') | upper | split(',') }}"
-  when: V4MT_PROVIDER_PASSWORD is not defined
-  tags:
+  when: V4MT_PROVIDER_PASSWORD is not defined  no_log: true  tags:
     - onboard
 
 - name: sas-tenant-job - add sas-provider-password-TENANT-ID if provided # noqa: name[casing]
