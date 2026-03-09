@@ -22,7 +22,7 @@
 # If INGRESS_NGINX_CHART_VERSION is not set, determine it based on the Kubernetes cluster version
 - name: Set the default INGRESS_NGINX_CHART_VERSION if not specified
   when:
-    - INGRESS_NGINX_CHART_VERSION|length == 0
+    - not INGRESS_NGINX_CHART_VERSION or INGRESS_NGINX_CHART_VERSION|length == 0
   tags:
     - install
     - update
@@ -46,7 +46,7 @@
         msg: "INGRESS_NGINX_CHART_VERSION isn't set when K8s version is < 1.{{ ingressVersions.k8sMinorVersion.value }}."
       when:
         - cluster_info.version.server.kubernetes.minor is version(ingressVersions.k8sMinorVersion.value, 'lt')
-        - INGRESS_NGINX_CHART_VERSION == ""
+        - not INGRESS_NGINX_CHART_VERSION or INGRESS_NGINX_CHART_VERSION|length == 0
 
 # Update INGRESS_NGINX_CONFIG to use AWS Network Load Balancer if provider is AWS
 - name: Update INGRESS_NGINX_CONFIG to use NLB for AWS
