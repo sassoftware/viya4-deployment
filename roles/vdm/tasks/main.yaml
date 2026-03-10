@@ -208,9 +208,6 @@
 # Include Storage configuration and resources
 - name: Include Storage
   include_tasks: storage.yaml
-  when:
-    - V4_CFG_MANAGE_STORAGE is defined
-    - V4_CFG_MANAGE_STORAGE|bool
   tags:
     - install
     - uninstall
