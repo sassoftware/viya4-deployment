@@ -351,7 +351,7 @@
         msg: V4_CFG_MANAGE_STORAGE is defined but empty, supported values are true or false.
       when:
         - V4_CFG_MANAGE_STORAGE is defined
-        - not V4_CFG_MANAGE_STORAGE or V4_CFG_MANAGE_STORAGE|length == 0
+        - V4_CFG_MANAGE_STORAGE == ''
       tags:
         - always
     # Fail if value is not 'true' or 'false'
