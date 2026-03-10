@@ -92,12 +92,26 @@
     - install
     - update
 
-# Restart Contour deployment to apply the compression configuration changes
+# Dynamically fetch the actual Contour deployment name.
+- name: Get Contour deployment name
+  kubernetes.core.k8s_info:
+    kind: Deployment
+    namespace: "{{ CONTOUR_NAMESPACE }}"
+    kubeconfig: "{{ KUBECONFIG }}"
+    label_selectors:
+      - "app.kubernetes.io/name=contour"
+      - "app.kubernetes.io/component=contour"
+  register: contour_deploy_info
+  tags:
+    - install
+    - update
+
+# Restart the discovered Contour deployment to apply the compression configuration changes
 - name: Restart Contour deployment
   kubernetes.core.k8s:
     state: patched
     kind: Deployment
-    name: "{{ CONTOUR_NAME }}"
+    name: "{{ contour_deploy_info.resources[0].metadata.name }}"
     namespace: "{{ CONTOUR_NAMESPACE }}"
     kubeconfig: "{{ KUBECONFIG }}"
     definition:
@@ -106,6 +120,7 @@
           metadata:
             annotations:
               kubectl.kubernetes.io/restartedAt: "{{ ansible_date_time.iso8601 }}"
+  when: contour_deploy_info.resources | length > 0
   tags:
     - install
     - update
