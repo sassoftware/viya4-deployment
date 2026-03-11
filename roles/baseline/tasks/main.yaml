@@ -77,6 +77,8 @@
     - K8S_VERSION|float >= 1.23
     - EBS_CSI_DRIVER_ACCOUNT is defined
     - EBS_CSI_DRIVER_ACCOUNT is not none
+    - V4_CFG_MANAGE_STORAGE is defined
+    - V4_CFG_MANAGE_STORAGE|bool
   tags:
     - baseline
 
