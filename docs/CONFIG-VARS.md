@@ -157,6 +157,7 @@ When V4_CFG_MANAGE_STORAGE is set to `true`, the `sas` and `pg-storage` storage 
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_SAS_API_KEY | SAS API Key| string | | true | [API credentials](https://developer.sas.com/guides/sas-viya-orders.html) can be obtained from the [SAS API Portal](https://apiportal.sas.com/get-started) | viya |
 | V4_CFG_SAS_API_SECRET | SAS API Secret | string | | true | [API credentials](https://developer.sas.com/guides/sas-viya-orders.html) can be obtained from the [SAS API Portal](https://apiportal.sas.com/get-started) | viya |
+| V4_CFG_REPOSITORY_WAREHOUSE | Repository warehouse endpoint override | string | | false | Use `https://ses.sas.com` if your enterprise firewall or proxy blocks `ses.sas.download` due to certificate trust policies. This is passed as `--repository-warehouse` flag to the sas-orchestration container during deployment. | viya |
 
 ## Container Registry Access
 
