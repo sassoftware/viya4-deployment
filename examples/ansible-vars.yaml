@@ -25,6 +25,8 @@ V4_CFG_SAS_API_SECRET: <api_client_secret>
 V4_CFG_ORDER_NUMBER: <order_number>
 V4_CFG_CADENCE_NAME: <cadence_name> # [lts|stable]
 V4_CFG_CADENCE_VERSION: <cadence_version>
+## Uncomment and set the line below if your firewall/proxy blocks ses.sas.download due to certificate trust issues
+# V4_CFG_REPOSITORY_WAREHOUSE: https://ses.sas.com
 
 ## CR Access
 V4_CFG_CR_USER: <container_registry_user>

@@ -21,6 +21,7 @@ V4_CFG_CR_HOST: '{{ V4_CFG_CR_URL | regex_replace("^https?:\/\/(.*)\/?", "\1") }
 
 V4_CFG_SAS_API_KEY: null
 V4_CFG_SAS_API_SECRET: null
+V4_CFG_REPOSITORY_WAREHOUSE: null  # Warehouse endpoint override for sas-orchestration container: ses.sas.download or ses.sas.com
 
 V4_CFG_RWX_FILESTORE_ENDPOINT: null
 V4_CFG_RWX_FILESTORE_PATH: /export

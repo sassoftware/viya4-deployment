@@ -64,6 +64,7 @@
         orchestration deploy
              --namespace "{{ NAMESPACE }}"
              --sas-deployment-cr "{{ item.path }}"
+             {{ '--repository-warehouse ' + V4_CFG_REPOSITORY_WAREHOUSE if V4_CFG_REPOSITORY_WAREHOUSE else '' }}
       args:
         chdir: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}"
       with_items:
@@ -83,6 +84,7 @@
              --namespace "{{ NAMESPACE }}"
              --user-content "{{ DEPLOY_DIR }}"
              --local-deployment-assets
+             {{ '--repository-warehouse ' + V4_CFG_REPOSITORY_WAREHOUSE if V4_CFG_REPOSITORY_WAREHOUSE else '' }}
       args:
         chdir: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}"
       with_items:
@@ -104,6 +106,7 @@
         deploy
         --namespace {{ NAMESPACE }}
         --sas-deployment-cr {{ item.path | replace(ORCHESTRATION_TOOLING_DIRECTORY, '/') }}
+        {{ '--repository-warehouse ' + V4_CFG_REPOSITORY_WAREHOUSE if V4_CFG_REPOSITORY_WAREHOUSE else '' }}
       with_items:
         - "{{ deployment_manifests.files }}"
       when:
@@ -126,6 +129,7 @@
         --namespace {{ NAMESPACE }}
         --user-content /src
         --local-deployment-assets
+        {{ '--repository-warehouse ' + V4_CFG_REPOSITORY_WAREHOUSE if V4_CFG_REPOSITORY_WAREHOUSE else '' }}
       when:
         - deployment_tooling == "ansible"
         - V4_CFG_BELOW_THE_LINE
