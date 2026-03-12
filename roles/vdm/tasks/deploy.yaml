@@ -64,6 +64,7 @@
         orchestration deploy
              --namespace "{{ NAMESPACE }}"
              --sas-deployment-cr "{{ item.path }}"
+             {{ '--repository-warehouse ' + V4_CFG_REPOSITORY_WAREHOUSE if V4_CFG_REPOSITORY_WAREHOUSE else '' }}
       args:
         chdir: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}"
       with_items:
@@ -83,6 +84,7 @@
              --namespace "{{ NAMESPACE }}"
              --user-content "{{ DEPLOY_DIR }}"
              --local-deployment-assets
+             {{ '--repository-warehouse ' + V4_CFG_REPOSITORY_WAREHOUSE if V4_CFG_REPOSITORY_WAREHOUSE else '' }}
       args:
         chdir: "{{ ORCHESTRATION_TOOLING_DIRECTORY }}"
       with_items:
