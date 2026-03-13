@@ -18,7 +18,7 @@ patch: |-
             app: sas-consul-server
       - maxSkew: 1
         topologyKey: kubernetes.io/hostname
-        whenUnsatisfiable: DoNotSchedule
+        whenUnsatisfiable: ScheduleAnyway
         labelSelector:
           matchLabels:
             app: sas-consul-server

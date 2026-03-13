@@ -39,10 +39,15 @@ V4_CFG_SINGLE_ZONE_FALLBACK: true
 
 ### Topology Spread Constraints (Balanced Approach)
 - **Zone Distribution**: `maxSkew: 1` on `topology.kubernetes.io/zone` with `DoNotSchedule`
-  - Distributes pods across zones with some tolerance for imbalance
-  - Ensures scheduling reliability while maintaining zone distribution
-- **Node Distribution**: `maxSkew: 1` on `kubernetes.io/hostname` with `DoNotSchedule`
-  - Spreads pods across nodes when possible
+  - **Strict enforcement** at zone level to prevent concentration
+  - Ensures StatefulSet replicas are distributed across availability zones
+  - Primary protection against zone failures (PSCLOUD-64 resolution)
+  
+- **Node Distribution**: `maxSkew: 1` on `kubernetes.io/hostname` with `ScheduleAnyway`
+  - **Best-effort spreading** at node level without blocking scheduling
+  - Kubernetes attempts to spread pods across different nodes when possible
+  - Will not prevent pod scheduling if perfect node balance cannot be achieved
+  - Prevents scheduling deadlock when combined with zone-level constraints
 
 ### Node Affinity (Nodepool Restriction)
 - **Required Node Affinity**: Configurable nodepool label restriction (default: `workload.sas.com/class=stateful`)
@@ -125,18 +130,25 @@ Chaos testing was performed to validate multi-zone resilience by cordoning all n
 
 **Validation Result**: Topology constraints working as designed
 
+**Production Deployment Note**:
+The hostname-level constraint uses `ScheduleAnyway` (best-effort) to ensure StatefulSets
+can schedule successfully even when perfect node-level balance is not achievable. This
+prevents scheduling deadlock while maintaining strict zone-level protection. Zone-level
+distribution remains strictly enforced with `DoNotSchedule` to prevent concentration.
+
 ### Known Limitation (By Design)
 
 **Complete Zone Failure Behavior**:
 - When an entire availability zone becomes unavailable (all nodes cordoned/failed), affected StatefulSet pods **cannot reschedule** to remaining zones
 - Pods remain in `Pending` state until the failed zone recovers
-- This is the intended behavior with `maxSkew: 1` + `whenUnsatisfiable: DoNotSchedule`
+- This is the intended behavior with strict zone-level constraint: `maxSkew: 1` + `whenUnsatisfiable: DoNotSchedule`
 
 **Why This is Acceptable**:
 1. **Primary Goal Achieved**: Prevents cross-nodepool pods from concentrating in a single zone during normal operations
 2. **Rare Scenario**: Complete zone failures are uncommon (Azure/AWS/GCP multi-zone SLA > 99.99%)
 3. **Planned Maintenance**: Production zone maintenance is typically planned, allowing for graceful pod draining
 4. **Trade-off Decision**: Temporary unavailability during zone outage vs. chronic concentration risk in normal operations
+5. **Production Safety**: Hostname-level constraint uses `ScheduleAnyway` to prevent scheduling issues during normal operations while zone-level remains strict
 
 **Recovery**:
 Once the zone becomes available again, pods automatically reschedule and rebalance:
@@ -147,18 +159,31 @@ kubectl uncordon <zone-nodes>
 
 ### Alternative Constraint Options
 
-If complete zone failure rescheduling is required, consider:
+If different scheduling behavior is required, consider:
 
-**Option A: Use `ScheduleAnyway`**
+**Option A: Strict Hostname Enforcement**
 ```yaml
-whenUnsatisfiable: ScheduleAnyway  # Allows scheduling during zone failure
+whenUnsatisfiable: DoNotSchedule  # For both zone AND hostname
 ```
-- Warning: Weakens constraint enforcement during normal operations
+- Warning: May cause scheduling deadlock in constrained environments
+- Only recommended for clusters with abundant stateful node capacity
 
-**Option B: Increase `maxSkew`**
+**Option B: Relax Zone Constraint**
 ```yaml
-maxSkew: 2  # Allows 0-2-1 distribution during zone failure
-```
-- Warning: Permits less balanced distribution in normal conditions
+# Zone-level
+whenUnsatisfiable: ScheduleAnyway  # Allows zone concentration
 
-**Current Implementation**: Uses strict enforcement (`DoNotSchedule`, `maxSkew: 1`) to prioritize prevention of zone concentration during normal operations.
+# Hostname-level  
+whenUnsatisfiable: ScheduleAnyway  # Current: best-effort spreading
+```
+- Warning: Weakens primary PSCLOUD-64 protection
+- Not recommended for production multi-zone deployments
+
+**Option C: Increase Zone maxSkew**
+```yaml
+maxSkew: 2  # Allows more imbalanced zone distribution
+```
+- Warning: Permits concentration (e.g., 0-2-1 or 1-3-2 distribution)
+- Reduces protection against zone failures
+
+**Current Implementation (Recommended)**: Uses strict zone enforcement (`DoNotSchedule`, `maxSkew: 1`) with best-effort hostname spreading (`ScheduleAnyway`, `maxSkew: 1`) to balance zone protection with reliable scheduling.
