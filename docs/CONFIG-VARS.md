@@ -334,6 +334,43 @@ Notes:
     - For example, defining `V4_CFG_VIYA_STOP_SCHEDULE` and not `V4_CFG_VIYA_START_SCHEDULE` will result in a Viya stop job that runs on a schedule and a suspended Viya start job that you will be able to manually trigger.
   - Defining both `V4_CFG_VIYA_START_SCHEDULE` and `V4_CFG_VIYA_STOP_SCHEDULE` will result in a non-suspended Viya start and stop job that runs on the schedule you defined.
 
+## Multi-Zone Pod Distribution
+
+| Name | Description | Type | Default | Required | Notes | Tasks |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
+| V4_CFG_MULTI_ZONE_ENABLED | Enable multi-zone pod distribution for StatefulSets | bool | true | false | Adds topology spread constraints and node affinity to prevent StatefulSet pods from co-locating in same zone during zone failures | viya |
+| V4_CFG_MULTI_ZONE_RABBITMQ_ENABLED | Enable multi-zone distribution for RabbitMQ StatefulSet | bool | true | false | Ensures RabbitMQ pods are distributed across zones with nodepool restrictions to maintain quorum during zone failures | viya |
+| V4_CFG_MULTI_ZONE_POSTGRES_ENABLED | Enable multi-zone distribution for PostgreSQL StatefulSet | bool | true | false | Ensures PostgreSQL pods are distributed across zones for high availability. Only applies to internal PostgreSQL deployments | viya |
+| V4_CFG_MULTI_ZONE_CONSUL_ENABLED | Enable multi-zone distribution for Consul StatefulSet | bool | true | false | Ensures Consul pods are distributed across zones for service discovery high availability | viya |
+| V4_CFG_MULTI_ZONE_REDIS_ENABLED | Enable multi-zone distribution for Redis StatefulSet | bool | true | false | Ensures Redis pods are distributed across zones for caching and session store availability | viya |
+| V4_CFG_MULTI_ZONE_OPENDISTRO_ENABLED | Enable multi-zone distribution for OpenDistro/OpenSearch StatefulSets | bool | true | false | Ensures OpenDistro/OpenSearch pods are distributed across zones for search and logging availability | viya |
+| V4_CFG_MULTI_ZONE_WORKLOAD_ORCHESTRATOR_ENABLED | Enable multi-zone distribution for Workload Orchestrator StatefulSet | bool | true | false | Ensures Workload Orchestrator pods are distributed across zones for job scheduling availability | viya |
+| V4_CFG_MULTI_ZONE_DATA_AGENT_ENABLED | Enable multi-zone distribution for Data Agent Server StatefulSet | bool | true | false | Ensures Data Agent Server pods are distributed across zones for data services availability | viya |
+| V4_CFG_STATEFUL_NODEPOOL_RESTRICTION | Restrict StatefulSets to dedicated stateful nodepools | bool | true | false | Adds node affinity to ensure StatefulSets only run on nodes with the specified stateful nodepool label | viya |
+| V4_CFG_STATEFUL_NODEPOOL_LABEL | Label key for identifying stateful nodepool nodes | string | workload.sas.com/class | false | Configures the node label used for nodepool affinity. Common values: `workload.sas.com/class` (modern) or `agentpool` (legacy AKS) | viya |
+| V4_CFG_MULTI_ZONE_AUTO_DETECT | Automatically detect cluster zone topology | bool | true | false | When enabled, automatically detects if cluster is multi-zone or single-zone and applies appropriate constraints | viya |
+| V4_CFG_SINGLE_ZONE_FALLBACK | Apply relaxed constraints for single-zone clusters | bool | true | false | When enabled, uses relaxed scheduling constraints for single-zone deployments to prevent scheduling failures | viya |
+
+**Expected Results**:
+- StatefulSet replicas distributed across different availability zones
+- All StatefulSet pods restricted to stateful nodepool only
+- Zone failure protection - single zone outage won't cause StatefulSet quorum loss
+- Compatible with both single-zone and multi-zone cluster deployments
+
+**Example Multi-Zone Distribution**:
+```
+RabbitMQ (3 replicas):
+├── sas-rabbitmq-server-0 → stateful-node-1 → zone-1
+├── sas-rabbitmq-server-1 → stateful-node-2 → zone-2  
+└── sas-rabbitmq-server-2 → stateful-node-3 → zone-3
+```
+
+This configuration ensures:
+- No StatefulSet quorum loss during zone failures in multi-zone clusters
+- No scheduling failures in single-zone deployments
+- Optimal resource distribution based on cluster topology
+- Supports AKS, EKS, and GKE clusters
+
 ## Third-Party Tools
 
 ### Cert-manager

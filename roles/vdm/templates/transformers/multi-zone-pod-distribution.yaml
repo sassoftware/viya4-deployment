@@ -1,0 +1,62 @@
+# Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+# Transformer to add restrictive pod topology spread constraints and anti-affinity rules 
+# for StatefulSets to ensure strict zone distribution and quorum protection
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: multi-zone-pod-distribution
+patch: |-
+  - op: add
+    path: /spec/template/spec/topologySpreadConstraints
+    value:
+      - maxSkew: 0
+        topologyKey: topology.kubernetes.io/zone
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: PLACEHOLDER_APP_NAME
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: PLACEHOLDER_APP_NAME
+  - op: add
+    path: /spec/template/spec/affinity
+    value:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: agentpool
+                  operator: In
+                  values:
+                    - stateful
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: PLACEHOLDER_APP_NAME
+            topologyKey: topology.kubernetes.io/zone
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: PLACEHOLDER_APP_NAME
+              topologyKey: kubernetes.io/hostname
+target:
+  kind: StatefulSet
+  name: ".*rabbitmq.*|.*postgres.*|.*cas.*"
+  version: v1
+replacements:
+  - source:
+      kind: StatefulSet
+      fieldPath: metadata.labels['app.kubernetes.io/name']
+    targets:
+      - select:
+          kind: PatchTransformer
+        fieldPaths:
+          - patch

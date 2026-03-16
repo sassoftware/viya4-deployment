@@ -1,0 +1,47 @@
+# Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+# Transformer for Data Agent Server StatefulSet zone distribution with balanced constraints
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: data-agent-zone-distribution
+patch: |-
+  - op: add
+    path: /spec/template/spec/topologySpreadConstraints
+    value:
+      - maxSkew: 1
+        topologyKey: topology.kubernetes.io/zone
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: sas-data-agent-server-colocated
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: sas-data-agent-server-colocated
+  - op: add
+    path: /spec/template/spec/affinity
+    value:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: agentpool
+                  operator: In
+                  values:
+                    - stateful
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: sas-data-agent-server-colocated
+              topologyKey: kubernetes.io/hostname
+target:
+  kind: StatefulSet
+  name: "sas-data-agent-server-colocated"
+  version: v1
