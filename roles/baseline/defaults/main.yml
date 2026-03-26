@@ -38,7 +38,7 @@ ingressVersions:
   k8sMinorVersion:
     value: 29
     api:
-      chartVersion: 4.14.0
+      chartVersion: 4.15.0
       chartVersionMin: 4.0.17
 
 ## Ingress-nginx - Ingress
