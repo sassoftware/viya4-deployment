@@ -21,6 +21,9 @@ V4_CFG_CR_HOST: '{{ V4_CFG_CR_URL | regex_replace("^https?:\/\/(.*)\/?", "\1") }
 
 V4_CFG_SAS_API_KEY: null
 V4_CFG_SAS_API_SECRET: null
+V4_CFG_APIM_CLIENT_ID: null
+V4_CFG_APIM_CLIENT_SECRET: null
+USE_APIM_CREDS: false  # Set to true to use APIM credentials instead of legacy
 V4_CFG_REPOSITORY_WAREHOUSE: null  # Warehouse endpoint override for sas-orchestration container: ses.sas.download or ses.sas.com
 
 V4_CFG_RWX_FILESTORE_ENDPOINT: null
@@ -82,7 +85,7 @@ V4_CFG_TLS_DURATION: "{{ V4_CFG_CM_CERTIFICATE_DURATION }}"
 V4_CFG_TLS_ADDITIONAL_SAN_DNS: "{{ V4_CFG_CM_CERTIFICATE_ADDITIONAL_SAN_DNS }}"
 V4_CFG_TLS_ADDITIONAL_SAN_IP: "{{ V4_CFG_CM_CERTIFICATE_ADDITIONAL_SAN_IP }}"
 
-V4_ORDERS_CLI_VERSION: 1.1.0
+V4_ORDERS_CLI_VERSION: 2.0.1
 
 V4_CFG_ELASTICSEARCH_ENABLE: true
 
