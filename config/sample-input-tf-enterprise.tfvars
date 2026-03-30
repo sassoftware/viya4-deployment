@@ -38,7 +38,7 @@ create_static_kubeconfig = true
 # tags = {} # e.g., { "key1" = "value1", "key2" = "value2" }
 
 # GKE config
-kubernetes_version         = "1.32"
+kubernetes_version         = "1.34"
 default_nodepool_min_nodes = 1
 default_nodepool_vm_type   = "n2-highmem-8"
 

@@ -1,7 +1,7 @@
 ARG GCP_CLI_VERSION=513.0.0
 
 FROM google/cloud-sdk:$GCP_CLI_VERSION-alpine AS gcpcli
-FROM golang:1.24
+FROM golang:1.26
 
 # Install terraform from apt repository, terratest_log_parser, jq
 RUN \

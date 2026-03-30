@@ -27,7 +27,7 @@ postgres_servers = {
 }
 
 # GKE config
-kubernetes_version         = "1.33"
+kubernetes_version         = "1.34"
 default_nodepool_min_nodes = 2
 default_nodepool_vm_type   = "n2-highmem-8"
 gke_network_policy = true

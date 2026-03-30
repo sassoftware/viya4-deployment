@@ -142,7 +142,7 @@ func GetDefaultPlanVars(t *testing.T) map[string]interface{} {
 	variables["default_public_access_cidrs"] = []string{"123.45.67.89/16"}
 	variables["project"] = credsFileContents["project_id"]
 	variables["service_account_keyfile"] = "/.viya4-tf-gcp-service-account.json"
-	variables["kubernetes_version"] = "1.33"
+	variables["kubernetes_version"] = "1.34"
 
 	return variables
 }
