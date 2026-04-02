@@ -155,9 +155,14 @@ When V4_CFG_MANAGE_STORAGE is set to `true`, the `sas` and `pg-storage` storage 
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_SAS_API_KEY | SAS API Key| string | | true | [API credentials](https://developer.sas.com/guides/sas-viya-orders.html) can be obtained from the [SAS API Portal](https://apiportal.sas.com/get-started) | viya |
-| V4_CFG_SAS_API_SECRET | SAS API Secret | string | | true | [API credentials](https://developer.sas.com/guides/sas-viya-orders.html) can be obtained from the [SAS API Portal](https://apiportal.sas.com/get-started) | viya |
+| V4_CFG_SAS_API_KEY | SAS API Key| string | | true | [API credentials](https://developer.sas.com/guides/sas-viya-orders.html) can be obtained from the [SAS API Portal](https://apiportal.sas.com/get-started) (Refer Deprication note below) | viya |
+| V4_CFG_SAS_API_SECRET | SAS API Secret | string | | true | [API credentials](https://developer.sas.com/guides/sas-viya-orders.html) can be obtained from the [SAS API Portal](https://apiportal.sas.com/get-started)(Refer Deprication note below) | viya |
+| V4_CFG_APIM_CLIENT_ID | APIM Client ID | string | | false | [APIM credentials](https://developer.sas.com/rest-apis/mysas/docs/getting-started/authentication#obtain-client-credentials) can be obtained from the [SAS API Portal](https://apiportal.sas.com/get-started) | viya |
+| V4_CFG_APIM_CLIENT_SECRET | APIM Client Secret | string | | false | [APIM credentials](https://developer.sas.com/rest-apis/mysas/docs/getting-started/authentication#obtain-client-credentials) can be obtained from the [SAS API Portal](https://apiportal.sas.com/get-started) | viya |
+| USE_APIM_CREDS | Switch to use APIM credentials instead of legacy SAS API credentials | bool | false | false | Set to `true` to use APIM credentials. Supported until April 20, 2026, after which legacy SAS API credentials will no longer work. | viya |
 | V4_CFG_REPOSITORY_WAREHOUSE | Repository warehouse endpoint override | string | | false | Use `https://ses.sas.com` if your enterprise firewall or proxy blocks `ses.sas.download` due to certificate trust policies. This is passed as `--repository-warehouse` flag to the sas-orchestration container during deployment. | viya |
+
+**Deprecation Notice**: `V4_CFG_SAS_API_KEY` and `V4_CFG_SAS_API_SECRET` are deprecated and will stop working after April 20, 2026. Use `V4_CFG_APIM_CLIENT_ID` and `V4_CFG_APIM_CLIENT_SECRET` instead.
 
 ## Container Registry Access
 
@@ -171,7 +176,7 @@ When V4_CFG_MANAGE_STORAGE is set to `true`, the `sas` and `pg-storage` storage 
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_INGRESS_TYPE | The ingress controller to deploy | string | "ingress" | true | Possible values: "ingress", "contour" | baseline, viya |
+| V4_CFG_INGRESS_TYPE | The ingress controller to deploy | string | "contour" | true | Possible values: "ingress", "contour" | baseline, viya |
 | V4_CFG_INGRESS_FQDN | FQDN to the ingress for SAS Vya installation | string | | true | | viya |
 | V4_CFG_INGRESS_MODE | Whether to create a public or private Loadbalancer endpoint | string | "public" | false | Possible values: "public", "private". Setting this option to "private" adds options to the ingress controller that create a LoadBalancer with private IP address(es) only. | baseline |
 
@@ -380,7 +385,7 @@ This configuration ensures:
 | CERT_MANAGER_NAMESPACE | cert-manager Helm installation namespace | string | cert-manager | false | | baseline |
 | CERT_MANAGER_CHART_URL | cert-manager Helm chart URL | string | https://charts.jetstack.io/ | false | | baseline |
 | CERT_MANAGER_CHART_NAME| cert-manager Helm chart name | string | cert-manager| false | | baseline |
-| CERT_MANAGER_CHART_VERSION | cert-manager Helm chart version | string | 1.18.2 | false | | baseline |
+| CERT_MANAGER_CHART_VERSION | cert-manager Helm chart version | string | 1.20.0 | false | | baseline |
 | CERT_MANAGER_CONFIG | cert-manager Helm values | string | See [this file](../roles/baseline/defaults/main.yml) for more information. | false | | baseline |
 
 Notes:
