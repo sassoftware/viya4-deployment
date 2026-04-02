@@ -75,13 +75,35 @@ V4_CFG_SINGLE_ZONE_FALLBACK: true
 
 This implementation provides multi-zone distribution for the following StatefulSet workloads:
 
-1. **sas-rabbitmq-server** - Message queue service
-2. **sas-crunchy-platform-postgres** - PostgreSQL database (Crunchy operator)
-3. **sas-consul-server** - Service discovery and configuration
-4. **sas-redis-server** - Caching and session store
-5. **sas-opendistro** - Search and logging infrastructure (OpenSearch/OpenDistro)
-6. **sas-workload-orchestrator** - Job scheduling and orchestration
-7. **sas-data-agent-server-colocated** - Data agent services
+| # | StatefulSet Name | Description | Transformer Target |
+|---|------------------|-------------|--------------------|
+| 1 | sas-rabbitmq-server | Message queue service | StatefulSet (direct) |
+| 2 | sas-crunchy-platform-postgres-* | PostgreSQL database | PostgresCluster CR (Crunchy operator) |
+| 3 | sas-consul-server | Service discovery and configuration | StatefulSet (direct) |
+| 4 | sas-redis-server | Caching and session store | StatefulSet (direct) |
+| 5 | sas-opendistro-default | Search and logging (OpenSearch) | OpenDistroCluster CR (operator-managed) |
+| 6 | sas-workload-orchestrator | Job scheduling and orchestration | StatefulSet (direct) |
+| 7 | sas-data-agent-server-colocated | Data agent services | StatefulSet (direct) |
+
+### Implementation Notes
+
+**OpenDistro (sas-opendistro-default)**:
+- Deployed via Custom Resource: `OpenDistroCluster` (API: `opendistro.sas.com/v1alpha1`)
+- Transformer patches the CR at `/spec/template/spec/topologySpreadConstraints`
+- The `sas-opendistro-operator` watches the CR and creates the StatefulSet with constraints
+- StatefulSet name is `sas-opendistro-default` (not directly patched)
+
+**PostgreSQL (sas-crunchy-platform-postgres)**:
+- Managed by Crunchy PostgreSQL Operator
+- Transformer patches `PostgresCluster` CR
+- Operator creates multiple StatefulSets (e.g., `sas-crunchy-platform-postgres-00-xxxx-0`)
+- Uses `ScheduleAnyway` for both zone and hostname constraints (operator default)
+- Zone awareness provided without strict enforcement
+
+**Direct StatefulSet Transformers**:
+- RabbitMQ, Consul, Redis, Workload Orchestrator, Data Agent
+- Transformers directly patch StatefulSet resources
+- Use strict zone enforcement (`DoNotSchedule`) with soft hostname spreading (`ScheduleAnyway`)
 
 ## Usage
 
@@ -108,6 +130,19 @@ V4_CFG_STATEFUL_NODEPOOL_LABEL: "workload.sas.com/class"
 For legacy deployments using `agentpool` label:
 ```bash
 kubectl label nodes <stateful-node> agentpool=stateful
+```
+
+### Comprehensive Validation Report
+```bash
+echo "=== Validation Report ==="
+for sts in sas-rabbitmq-server sas-consul-server sas-redis-server sas-workload-orchestrator sas-data-agent-server-colocated sas-opendistro-default; do
+  count=$(kubectl get statefulset $sts -n <namespace> -o jsonpath='{.spec.template.spec.topologySpreadConstraints}' 2>/dev/null | jq 'length' 2>/dev/null || echo "0")
+  if [ "$count" == "2" ]; then
+    echo "  ✓ $sts: $count constraints"
+  else
+    echo "  ✗ $sts: $count constraints (expected 2)"
+  fi
+done
 ```
 
 ## Chaos Testing & Validation
