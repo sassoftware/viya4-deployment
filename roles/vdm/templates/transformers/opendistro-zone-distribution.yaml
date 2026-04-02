@@ -1,7 +1,6 @@
-# Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# Copyright © 2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-# Transformer for OpenDistro/OpenSearch StatefulSets zone distribution with balanced constraints
 apiVersion: builtin
 kind: PatchTransformer
 metadata:
@@ -22,26 +21,8 @@ patch: |-
         labelSelector:
           matchLabels:
             app.kubernetes.io/name: sas-opendistro
-  - op: add
-    path: /spec/template/spec/affinity
-    value:
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-            - matchExpressions:
-                - key: agentpool
-                  operator: In
-                  values:
-                    - stateful
-      podAntiAffinity:
-        preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            podAffinityTerm:
-              labelSelector:
-                matchLabels:
-                  app.kubernetes.io/name: sas-opendistro
-              topologyKey: kubernetes.io/hostname
 target:
-  kind: StatefulSet
-  name: "sas-opendistro-.*"
-  version: v1
+  group: opendistro.sas.com
+  version: v1alpha1
+  kind: OpenDistroCluster
+  name: sas-opendistro
