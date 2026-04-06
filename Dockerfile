@@ -20,7 +20,7 @@ FROM golang:alpine3.20 AS golang
 ARG SKOPEO_VERSION=release-1.16
 RUN apk add --no-cache git build-base containers-common bash btrfs-progs-dev glib-dev go go-md2man gpgme-dev libselinux-dev linux-headers lvm2-dev ostree-dev \
   && git clone https://github.com/containers/skopeo.git -b $SKOPEO_VERSION \
-  && DISABLE_DOCS=1 make -C skopeo bin/skopeo.linux.386
+  && DISABLE_DOCS=1 make -C skopeo bin/skopeo
 
 # Installation
 FROM baseline
@@ -49,7 +49,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y gzip wget git j
   && rm -rf /var/lib/apt/lists/*
 
 COPY --from=tool_builder /build/kubectl /usr/local/bin/kubectl
-COPY --from=golang /go/skopeo/bin/skopeo.linux.386 /usr/local/bin/skopeo
+COPY --from=golang /go/skopeo/bin/skopeo /usr/local/bin/skopeo
 
 WORKDIR /viya4-deployment/
 COPY . /viya4-deployment/
