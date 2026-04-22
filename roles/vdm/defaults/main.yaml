@@ -23,7 +23,7 @@ V4_CFG_SAS_API_KEY: null
 V4_CFG_SAS_API_SECRET: null
 V4_CFG_APIM_CLIENT_ID: null
 V4_CFG_APIM_CLIENT_SECRET: null
-USE_APIM_CREDS: false  # Set to true to use APIM credentials instead of legacy
+USE_APIM_CREDS: true  # Set to false to use legacy SAS API credentials
 V4_CFG_REPOSITORY_WAREHOUSE: null  # Warehouse endpoint override for sas-orchestration container: ses.sas.download or ses.sas.com
 
 V4_CFG_RWX_FILESTORE_ENDPOINT: null
