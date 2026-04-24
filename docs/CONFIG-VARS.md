@@ -159,6 +159,10 @@ When V4_CFG_MANAGE_STORAGE is set to `true`, the `sas` and `pg-storage` storage 
 | V4_CFG_APIM_CLIENT_SECRET | APIM Client Secret | string | | true | [APIM credentials](https://developer.sas.com/rest-apis/mysas/docs/getting-started/authentication#obtain-client-credentials) can be obtained from the [SAS API Portal](https://apiportal.sas.com/get-started) | viya |
 | V4_CFG_REPOSITORY_WAREHOUSE | Repository warehouse endpoint override | string | | false | Use `https://ses.sas.com` if your enterprise firewall or proxy blocks `ses.sas.download` due to certificate trust policies. This is passed as `--repository-warehouse` flag to the sas-orchestration container during deployment. | viya |
 
+**SAS API Access Notes:**
+
+* When creating an application in the SAS Viya Orders API portal, ensure you select the environment as **PROD(mysas)** to obtain the APIM credentials
+
 ## Container Registry Access
 
 | Name | Description | Type | Default | Required | Notes | Tasks |

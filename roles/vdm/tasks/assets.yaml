@@ -13,7 +13,6 @@
       Please provide:
         - V4_CFG_APIM_CLIENT_ID
         - V4_CFG_APIM_CLIENT_SECRET
-      
       Obtain credentials from: https://developer.sas.com/rest-apis/mysas/docs/getting-started/authentication#obtain-client-credentials
   when:
     - (V4_CFG_APIM_CLIENT_ID is none or V4_CFG_APIM_CLIENT_SECRET is none)
