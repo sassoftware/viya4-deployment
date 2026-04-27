@@ -77,10 +77,12 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
-              - key: kubernetes.azure.com/mode
+{% if V4_CFG_SYSTEM_NODEPOOL_RESTRICTION | bool %}
+              - key: {{ V4_CFG_SYSTEM_NODEPOOL_LABEL }}
                 operator: NotIn
                 values:
-                - system
+                - {{ V4_CFG_SYSTEM_NODEPOOL_VALUE }}
+{% endif %}
               matchFields: []
       tolerations:
       - effect: NoSchedule
