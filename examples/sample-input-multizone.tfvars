@@ -93,10 +93,15 @@ jump_vm_admin         = "jumpuser"
 
 # Storage for Viya Compute Services
 # Supported storage_type values
-#    "standard" - Custom managed NFS Server VM and disks
-#    "ha"       - Google Filestore  or Google NetApp Volumes
+#    "standard" - Custom managed NFS Server VM and disks (ZONAL - single zone only)
+#    "ha"       - Google NetApp Volumes (Zone-Redundant - required for Multi-Zone deployments)
+#
+# IMPORTANT: For Multi-Zone GKE deployments, storage_type = "ha" is required.
+#            Google Filestore is a ZONAL service and does NOT provide zone-redundant storage.
+#            Google NetApp Volumes is the only supported zone-redundant RWX storage backend
+#            for Multi-Zone GKE deployments.
 storage_type = "ha"
-storage_type_backend = "netapp"  # "filestore" is the default, use "netapp" to create Google NetApp Volumes
+# storage_type_backend is no longer required. storage_type = "ha" always provisions Google NetApp Volumes.
 
 # GKE cluster control plane configuration
 regional = true # e.g., true for regional (multi-zone) control plane, false for zonal

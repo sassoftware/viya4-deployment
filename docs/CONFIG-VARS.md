@@ -217,8 +217,8 @@ stateful = {
 
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |
-| storage_type | Type of Storage. Valid Values: "standard", "ha"  | string | "standard" |  "standard" creates NFS server VM, "ha" Google Filestore instance |
-| storage_type_backend | The storage backend for the chosen `storage_type`. | string | If `storage_type=standard` the default is "nfs";<br>If `storage_type=ha` the default is "filestore" | Valid Values: "nfs" if `storage_type=standard`; "filestore" or "netapp" if `storage_type=ha` |
+| storage_type | Type of Storage. Valid Values: "standard", "ha" | string | "standard" | "standard" creates NFS server VM (ZONAL - single zone only, NOT zone-redundant). "ha" provisions Google NetApp Volumes (Zone-Redundant). **NOTE: Google Filestore is ZONAL and does NOT provide zone-redundant storage. For Multi-Zone GKE deployments, always use `storage_type="ha"` (NetApp Volumes).** |
+| storage_type_backend | The storage backend for the chosen `storage_type`. | string | If `storage_type=standard` the default is "nfs";<br>If `storage_type=ha` the default is "netapp" | Valid Values: "nfs" if `storage_type=standard`; "netapp" if `storage_type=ha`. **NOTE: Filestore is no longer a valid backend for `storage_type=ha`. NetApp Volumes is the only supported zone-redundant RWX storage backend for Multi-Zone deployments.** |
 
 ### For `storage_type=standard` only (NFS server VM)
 
@@ -228,7 +228,12 @@ stateful = {
 | nfs_vm_admin | OS Admin User for the NFS server VM | string | "nfsuser" | The NFS server VM is only created when storage_type="standard" |
 | nfs_raid_disk_size | Size in Gb for each disk of the RAID5 cluster on the NFS server VM | number | 1000 | The NFS server VM is only created when storage_type="standard" |
 
-### For `storage_type=ha` with Google Filestore
+### For `storage_type=standard` with Google Filestore (ZONAL - NOT zone-redundant)
+
+> **WARNING:** Google Filestore is a **ZONAL** service and does **NOT** provide zone-redundant storage.
+> It is only suitable for single-zone GKE deployments. For Multi-Zone HA deployments, use Google NetApp Volumes (`storage_type="ha"`).
+
+### For `storage_type=ha` with Google Filestore (Deprecated - use NetApp Volumes for HA)
 
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |

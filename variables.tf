@@ -174,10 +174,18 @@ variable "create_nfs_public_ip" {
 }
 
 variable "storage_type" {
-  description = "Type of storage to create"
-  type        = string
-  default     = "standard"
-  # NOTE: storage_type="none" is for internal use only
+  description = <<-EOF
+    Type of storage to provision for RWX volumes.
+    - "standard" : Provisions Google Filestore (ZONAL - single zone only, NOT zone-redundant).
+                   Suitable for single-zone GKE deployments only.
+    - "ha"        : Provisions Google NetApp Volumes (Zone-Redundant).
+                   Required for Multi-Zone GKE deployments.
+    NOTE: Google Filestore is ZONAL and does NOT provide zone-redundant storage.
+          For Multi-Zone GKE deployments, always use storage_type = "ha" (NetApp Volumes).
+    NOTE: storage_type="none" is for internal use only.
+  EOF
+  type    = string
+  default = "standard"
   validation {
     condition     = contains(["standard", "ha", "none"], lower(var.storage_type))
     error_message = "ERROR: Supported values for `storage_type` are - standard, ha."
@@ -185,10 +193,15 @@ variable "storage_type" {
 }
 
 variable "storage_type_backend" {
-  description = "The storage backend used for the chosen storage type. Defaults to 'nfs' for storage_type='standard'. Defaults to 'filestore for storage_type='ha'. 'filestore' and 'netapp' are valid choices for storage_type='ha'."
-  type        = string
-  default     = "nfs"
-  # If storage_type is standard, this will be set to "nfs"
+  description = <<-EOF
+    The storage backend used for the chosen storage type.
+    - storage_type = "standard" : backend is always "nfs" (Google Filestore - ZONAL).
+    - storage_type = "ha"        : backend is always "netapp" (Google NetApp Volumes - Zone-Redundant).
+    NOTE: Filestore is no longer a valid backend for storage_type = "ha".
+          For Multi-Zone HA deployments, NetApp Volumes is the only supported zone-redundant RWX backend.
+  EOF
+  type    = string
+  default = "nfs"
 
   validation {
     condition     = contains(["nfs", "filestore", "netapp", "none"], lower(var.storage_type_backend))

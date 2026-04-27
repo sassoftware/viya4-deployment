@@ -68,8 +68,11 @@ EOT
 }
 
 resource "google_filestore_instance" "rwx" {
-  name     = "${var.prefix}-rwx-filestore"
-  count    = var.storage_type == "ha" && local.storage_type_backend == "filestore" ? 1 : 0
+  name  = "${var.prefix}-rwx-filestore"
+  # Filestore is a ZONAL service and does NOT provide zone-redundant storage.
+  # Filestore is only provisioned for storage_type = "standard" (single-zone deployments).
+  # For Multi-Zone / HA deployments, use storage_type = "ha" which provisions NetApp Volumes.
+  count    = var.storage_type == "standard" && local.storage_type_backend == "filestore" ? 1 : 0
   tier     = upper(var.filestore_tier)
   location = local.zone
   labels   = var.tags
@@ -310,7 +313,10 @@ module "sql_proxy_sa" {
 module "google_netapp" {
   source = "./modules/google_netapp"
 
-  count = var.storage_type == "ha" && local.storage_type_backend == "netapp" ? 1 : 0
+  # NetApp Volumes is the only supported zone-redundant RWX storage backend for HA.
+  # When storage_type = "ha", NetApp Volumes are always provisioned.
+  # For single-zone / standard deployments, use storage_type = "standard" (Filestore).
+  count = var.storage_type == "ha" ? 1 : 0
 
   prefix             = var.prefix
   region             = local.region

@@ -26,10 +26,13 @@ locals {
   )
 
   # Storage
+  # Updated: storage_type = "ha" always maps to "netapp" (zone-redundant, required for Multi-Zone).
+  # storage_type = "standard" maps to "filestore" (zonal, single-zone only).
+  # NOTE: Filestore is ZONAL and does NOT provide zone-redundant storage.
+  #       For Multi-Zone HA deployments, always use storage_type = "ha" (NetApp Volumes).
   storage_type_backend = (var.storage_type == "none" ? "none"
     : var.storage_type == "standard" ? "nfs"
-    : var.storage_type == "ha" && var.storage_type_backend == "netapp" ? "netapp"
-  : var.storage_type == "ha" ? "filestore" : "none")
+  : var.storage_type == "ha" ? "netapp" : "none")
 
   # Kubernetes
   kubeconfig_path = var.iac_tooling == "docker" ? "/workspace/${var.prefix}-gke-kubeconfig.conf" : "${var.prefix}-gke-kubeconfig.conf"
