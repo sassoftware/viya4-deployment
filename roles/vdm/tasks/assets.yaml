@@ -5,32 +5,17 @@
 # This file contains the deployment asset tasks for the vdm role.
 # It is included from main.yaml to manage deployment assets.
 
-# Validate credentials based on the selected authentication method
+# Validate APIM credentials are provided
 - name: Assets - Validate APIM credentials
   fail:
     msg: |
-      USE_APIM_CREDS is set to true, but APIM credentials are missing.
+      APIM credentials are missing.
       Please provide:
         - V4_CFG_APIM_CLIENT_ID
         - V4_CFG_APIM_CLIENT_SECRET
+      Obtain credentials from: https://developer.sas.com/rest-apis/mysas/docs/getting-started/authentication#obtain-client-credentials
   when:
-    - USE_APIM_CREDS | default(false)
     - (V4_CFG_APIM_CLIENT_ID is none or V4_CFG_APIM_CLIENT_SECRET is none)
-  tags:
-    - install
-    - uninstall
-    - update
-
-- name: Assets - Validate legacy credentials
-  fail:
-    msg: |
-      USE_APIM_CREDS is set to false, but legacy credentials are missing.
-      Please provide:
-        - V4_CFG_SAS_API_KEY
-        - V4_CFG_SAS_API_SECRET
-  when:
-    - not (USE_APIM_CREDS | default(false))
-    - (V4_CFG_SAS_API_KEY is none or V4_CFG_SAS_API_SECRET is none)
   tags:
     - install
     - uninstall
@@ -76,23 +61,7 @@
     - update
 
 # Download the license file using the viya4-orders-cli
-- name: Assets - Get License (legacy credentials)
-  command:
-    # Command to download the license file
-    cmd: "{{ tmpdir.path }}/viya4-orders-cli license --file-path {{ LICENSE_DIRECTORY }} --file-name license {{ V4_CFG_ORDER_NUMBER }} {{ V4_CFG_CADENCE_NAME }} {{ V4_CFG_CADENCE_VERSION }}"
-  environment:
-    CLIENTCREDENTIALSID: "{{ V4_CFG_SAS_API_KEY | b64encode }}"
-    CLIENTCREDENTIALSSECRET: "{{ V4_CFG_SAS_API_SECRET | b64encode }}"
-  when:
-    # Only run if license is missing and using legacy credentials
-    - V4_CFG_LICENSE is none
-    - not (USE_APIM_CREDS | default(false))
-  tags:
-    - install
-    - uninstall
-    - update
-
-- name: Assets - Get License (APIM credentials)
+- name: Assets - Get License
   command:
     # Command to download the license file
     cmd: "{{ tmpdir.path }}/viya4-orders-cli license --file-path {{ LICENSE_DIRECTORY }} --file-name license {{ V4_CFG_ORDER_NUMBER }} {{ V4_CFG_CADENCE_NAME }} {{ V4_CFG_CADENCE_VERSION }}"
@@ -100,32 +69,15 @@
     APIMCLIENTCREDENTIALSID: "{{ V4_CFG_APIM_CLIENT_ID | b64encode }}"
     APIMCLIENTCREDENTIALSSECRET: "{{ V4_CFG_APIM_CLIENT_SECRET | b64encode }}"
   when:
-    # Only run if license is missing and using APIM credentials
+    # Only run if license is missing
     - V4_CFG_LICENSE is none
-    - USE_APIM_CREDS | default(false)
   tags:
     - install
     - uninstall
     - update
 
 # Download the certificates using the viya4-orders-cli
-- name: Assets - Get Certificates (legacy credentials)
-  command:
-    # Command to download the certificates
-    cmd: "{{ tmpdir.path }}/viya4-orders-cli certificates --file-path {{ LICENSE_DIRECTORY }} --file-name certs {{ V4_CFG_ORDER_NUMBER }}"
-  environment:
-    CLIENTCREDENTIALSID: "{{ V4_CFG_SAS_API_KEY | b64encode }}"
-    CLIENTCREDENTIALSSECRET: "{{ V4_CFG_SAS_API_SECRET | b64encode }}"
-  when:
-    # Only run if certs are missing and using legacy credentials
-    - V4_CFG_CERTS is none
-    - not (USE_APIM_CREDS | default(false))
-  tags:
-    - install
-    - uninstall
-    - update
-
-- name: Assets - Get Certificates (APIM credentials)
+- name: Assets - Get Certificates
   command:
     # Command to download the certificates
     cmd: "{{ tmpdir.path }}/viya4-orders-cli certificates --file-path {{ LICENSE_DIRECTORY }} --file-name certs {{ V4_CFG_ORDER_NUMBER }}"
@@ -133,33 +85,15 @@
     APIMCLIENTCREDENTIALSID: "{{ V4_CFG_APIM_CLIENT_ID | b64encode }}"
     APIMCLIENTCREDENTIALSSECRET: "{{ V4_CFG_APIM_CLIENT_SECRET | b64encode }}"
   when:
-    # Only run if certs are missing and using APIM credentials
+    # Only run if certs are missing
     - V4_CFG_CERTS is none
-    - USE_APIM_CREDS | default(false)
   tags:
     - install
     - uninstall
     - update
 
 # Download deployment assets using the viya4-orders-cli
-- name: Assets - Download (legacy credentials)
-  command:
-    # Command to download deployment assets in JSON format
-    cmd: "{{ tmpdir.path }}/viya4-orders-cli dep --file-path {{ DEPLOY_DIR }} -o json {{ V4_CFG_ORDER_NUMBER }} {{ V4_CFG_CADENCE_NAME }} {{ V4_CFG_CADENCE_VERSION }}"
-  environment:
-    CLIENTCREDENTIALSID: "{{ V4_CFG_SAS_API_KEY | b64encode }}"
-    CLIENTCREDENTIALSSECRET: "{{ V4_CFG_SAS_API_SECRET | b64encode }}"
-  when:
-    # Only run if deployment assets are missing and using legacy credentials
-    - V4_CFG_DEPLOYMENT_ASSETS is none
-    - not (USE_APIM_CREDS | default(false))
-  tags:
-    - install
-    - uninstall
-    - update
-  register: res_legacy
-
-- name: Assets - Download (APIM credentials)
+- name: Assets - Download
   command:
     # Command to download deployment assets in JSON format
     cmd: "{{ tmpdir.path }}/viya4-orders-cli dep --file-path {{ DEPLOY_DIR }} -o json {{ V4_CFG_ORDER_NUMBER }} {{ V4_CFG_CADENCE_NAME }} {{ V4_CFG_CADENCE_VERSION }}"
@@ -167,19 +101,18 @@
     APIMCLIENTCREDENTIALSID: "{{ V4_CFG_APIM_CLIENT_ID | b64encode }}"
     APIMCLIENTCREDENTIALSSECRET: "{{ V4_CFG_APIM_CLIENT_SECRET | b64encode }}"
   when:
-    # Only run if deployment assets are missing and using APIM credentials
+    # Only run if deployment assets are missing
     - V4_CFG_DEPLOYMENT_ASSETS is none
-    - USE_APIM_CREDS | default(false)
   tags:
     - install
     - uninstall
     - update
-  register: res_apim
+  register: res_download
 
 # Set the order_output fact with the JSON output from the previous task
 - name: Assets - Set assets location
   set_fact:
-    order_output: "{{ (res_legacy.stdout | default(res_apim.stdout)) | from_json }}"
+    order_output: "{{ res_download.stdout | from_json }}"
   when:
     - V4_CFG_DEPLOYMENT_ASSETS is none
   tags:
