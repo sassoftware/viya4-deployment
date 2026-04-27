@@ -83,6 +83,24 @@
     skopeo copy docker://{{ V4_CFG_CR_HOST }}/{{ ORCHESTRATION_IMAGE }} oci-archive:{{ ORCHESTRATION_TOOLING_ARCHIVE }} --src-creds {{ ORCHESTRATION_CR_USER | string }}:{{ ORCHESTRATION_CR_PASSWORD | string }} --insecure-policy
   when:
     - deployment_tooling == "docker"
+  failed_when: false
+  register: skopeo_result
+  tags:
+    - install
+    - uninstall
+    - update
+    - onboard
+    - cas-onboard
+    - offboard
+
+# Fallback to ansible tooling if skopeo fails
+- name: Orchestration tooling - Set fallback to ansible tooling if skopeo failed
+  set_fact:
+    deployment_tooling: "ansible"
+  when:
+    - deployment_tooling == "docker"
+    - skopeo_result is defined
+    - skopeo_result.rc != 0
   tags:
     - install
     - uninstall
