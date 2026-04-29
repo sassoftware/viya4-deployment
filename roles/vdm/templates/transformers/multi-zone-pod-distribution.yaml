@@ -26,14 +26,16 @@ patch: |-
   - op: add
     path: /spec/template/spec/affinity
     value:
+{% if V4_CFG_STATEFUL_NODEPOOL_RESTRICTION | bool %}
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
           nodeSelectorTerms:
             - matchExpressions:
-                - key: agentpool
+                - key: "{{ V4_CFG_STATEFUL_NODEPOOL_LABEL }}"
                   operator: In
                   values:
                     - stateful
+{% endif %}
       podAntiAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
           - labelSelector:
