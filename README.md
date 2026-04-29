@@ -147,7 +147,13 @@ The playbook uses Ansible variables for configuration. SAS recommends that you e
 
 #### Ansible Vars File
 
-The Ansible vars.yaml file is the main configuration file. Create a file named ansible-vars.yaml to specify values for any input variables. Example variable definition files are provided in the `./examples` folder. For more details on the supported variables, refer to [CONFIG-VARS.md](docs/CONFIG-VARS.md).
+The Ansible vars.yaml file is the main configuration file. Create a file named ansible-vars.yaml to specify values for any input variables. Example variable definition files are provided in the `./examples` folder:
+
+- [ansible-vars.yaml](examples/ansible-vars.yaml) - Standard single-zone deployment
+- [ansible-vars-multi-zone.yaml](examples/ansible-vars-multi-zone.yaml) - Multi-zone distribution for high availability
+- [ansible-vars-iac.yaml](examples/ansible-vars-iac.yaml) - IaC integration example
+
+For more details on the supported variables, refer to [CONFIG-VARS.md](docs/CONFIG-VARS.md).
 
 #### (Optional) Sitedefault File
 

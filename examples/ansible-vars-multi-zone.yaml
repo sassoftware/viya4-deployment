@@ -1,0 +1,127 @@
+---
+# Example ansible-vars.yaml for Multi-Zone Distribution
+# This configuration enables SAS Viya StatefulSets to distribute across availability zones
+# for improved resilience and fault tolerance.
+#
+# Prerequisites:
+# 1. Multi-zone Kubernetes cluster (AKS/EKS/GKE)
+# 2. Stateful nodepool labeled with workload.sas.com/class=stateful
+# 3. Minimum 3 availability zones recommended
+#
+# Usage: Copy this file and customize for your environment
+# ansible-playbook -i inventory playbooks/playbook.yaml -e @ansible-vars-multi-zone.yaml
+
+## Cluster
+PROVIDER: <provider>  # aws, azure, gcp, vsphere, etc.
+CLUSTER_NAME: <cluster_name>
+NAMESPACE: <namespace>
+
+## MISC
+DEPLOY: true # Set to false to stop at generating the manifest
+LOADBALANCER_SOURCE_RANGES: [<cluster_nat_ip>/32]
+
+## Jump
+JUMP_SVR_HOST: <jump_host>
+JUMP_SVR_USER: <jump_user>
+
+## RWX Filestore
+V4_CFG_RWX_FILESTORE_ENDPOINT: <nfs_host>
+V4_CFG_RWX_FILESTORE_PATH: <nfs_export_path>
+
+## Storage
+V4_CFG_MANAGE_STORAGE: true
+
+## SAS API Access
+V4_CFG_APIM_CLIENT_ID: <apim_client_id>
+V4_CFG_APIM_CLIENT_SECRET: <apim_client_secret>
+V4_CFG_ORDER_NUMBER: <order_number>
+V4_CFG_CADENCE_NAME: <cadence_name> # [lts|stable]
+V4_CFG_CADENCE_VERSION: <cadence_version>
+## Uncomment and set the line below if your firewall/proxy blocks ses.sas.download due to certificate trust issues
+# V4_CFG_REPOSITORY_WAREHOUSE: https://ses.sas.com
+
+## CR Access
+V4_CFG_CR_USER: <container_registry_user>
+V4_CFG_CR_PASSWORD: <container_registry_password>
+
+## Ingress
+V4_CFG_INGRESS_TYPE: contour
+V4_CFG_INGRESS_FQDN: <desired_fqdn>
+V4_CFG_TLS_MODE: full-stack # [full-stack|front-door|ingress-only|disabled]
+
+## Postgres
+V4_CFG_POSTGRES_SERVERS:
+  default:
+    internal: false
+    admin: <existing_pg_user>
+    password: <existing_pg_password>
+    fqdn: <existing_pg_fqdn>
+    ssl_enforcement_enabled: true
+    database: <desired_database>
+
+## LDAP
+V4_CFG_EMBEDDED_LDAP_ENABLE: true
+
+## Consul UI
+V4_CFG_CONSUL_ENABLE_LOADBALANCER: false
+
+## SAS/CONNECT
+V4_CFG_CONNECT_ENABLE_LOADBALANCER: false
+
+## Multi-Zone Distribution Configuration
+# Enable multi-zone distribution for StatefulSets
+V4_CFG_MULTI_ZONE_ENABLED: true
+
+# Restrict StatefulSets to stateful nodepools (recommended)
+V4_CFG_STATEFUL_NODEPOOL_RESTRICTION: true
+
+# Nodepool label for stateful nodes
+V4_CFG_STATEFUL_NODEPOOL_LABEL: "workload.sas.com/class"
+# For legacy deployments, use: "agentpool"
+
+# Individual service controls (all default to true when multi-zone enabled)
+V4_CFG_MULTI_ZONE_RABBITMQ_ENABLED: true              # Message queue
+V4_CFG_MULTI_ZONE_POSTGRES_ENABLED: true              # Database
+V4_CFG_MULTI_ZONE_CONSUL_ENABLED: true                # Service discovery
+V4_CFG_MULTI_ZONE_REDIS_ENABLED: true                 # Caching
+V4_CFG_MULTI_ZONE_OPENDISTRO_ENABLED: true           # Search/logging
+V4_CFG_MULTI_ZONE_WORKLOAD_ORCHESTRATOR_ENABLED: true # Job scheduling
+V4_CFG_MULTI_ZONE_DATA_AGENT_ENABLED: true           # Data services
+
+# Advanced options
+V4_CFG_MULTI_ZONE_AUTO_DETECT: true        # Auto-detect cluster zones
+V4_CFG_SINGLE_ZONE_FALLBACK: true          # Handle single-zone clusters gracefully
+
+## Monitoring and Logging
+## uncomment and update the below values when deploying the viya4-monitoring-kubernetes stack
+# V4M_BASE_DOMAIN: <base_domain>
+
+## Viya Start and Stop Schedule
+## uncomment and update the values below with CronJob schedule expressions if you would
+## like to start and stop your Viya Deployment on a schedule
+# V4_CFG_VIYA_START_SCHEDULE: "0 7 * * 1-5"
+# V4_CFG_VIYA_STOP_SCHEDULE: "0 19 * * 1-5"
+
+## Multi-Zone Nodepool Configuration Examples
+# Ensure your cluster has properly labeled nodes:
+#
+# For stateful services (databases, queues):
+# kubectl label nodes node1 node2 node3 workload.sas.com/class=stateful
+#
+# For compute workloads:
+# kubectl label nodes node4 node5 node6 workload.sas.com/class=compute
+#
+# For stateless services:
+# kubectl label nodes node7 node8 node9 workload.sas.com/class=stateless
+
+## Multi-Zone Validation Commands
+# After deployment, validate zone distribution:
+# kubectl get pods -n <namespace> -o wide
+# kubectl get statefulset -n <namespace> -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{range .spec.template.spec.topologySpreadConstraints[*]}  {.topologyKey}: {.maxSkew} {.whenUnsatisfiable}{"\n"}{end}{"\n"}{end}'
+
+## Troubleshooting Multi-Zone Issues
+# If pods are Pending due to zone constraints:
+# 1. Check node labels: kubectl get nodes --show-labels
+# 2. Verify zone distribution: kubectl get nodes -L topology.kubernetes.io/zone
+# 3. Check StatefulSet events: kubectl describe statefulset <name> -n <namespace>
+# 4. Temporarily disable multi-zone: V4_CFG_MULTI_ZONE_ENABLED: false

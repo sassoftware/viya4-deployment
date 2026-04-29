@@ -3,10 +3,12 @@
 ## Overview
 This implementation provides balanced multi-zone pod distribution for StatefulSets in AKS, EKS, and GKE clusters to prevent quorum loss during zone failures while ensuring reliable scheduling.
 
+**Note**: As of DaC 9.7.0, multi-zone distribution is **disabled by default** to maintain backwards compatibility. Enable it explicitly when your cluster has proper multi-zone setup.
+
 ## Configuration Variables
 
 ### Core Settings (roles/vdm/defaults/main.yaml)
-- `V4_CFG_MULTI_ZONE_ENABLED`: Master switch for multi-zone distribution (default: true)
+- `V4_CFG_MULTI_ZONE_ENABLED`: Master switch for multi-zone distribution (default: **false**)
 - `V4_CFG_MULTI_ZONE_RABBITMQ_ENABLED`: RabbitMQ distribution control (default: true)
 - `V4_CFG_MULTI_ZONE_POSTGRES_ENABLED`: PostgreSQL distribution control (default: true)
 - `V4_CFG_MULTI_ZONE_CONSUL_ENABLED`: Consul distribution control (default: true)
@@ -14,14 +16,28 @@ This implementation provides balanced multi-zone pod distribution for StatefulSe
 - `V4_CFG_MULTI_ZONE_OPENDISTRO_ENABLED`: OpenDistro/OpenSearch distribution control (default: true)
 - `V4_CFG_MULTI_ZONE_WORKLOAD_ORCHESTRATOR_ENABLED`: Workload Orchestrator distribution control (default: true)
 - `V4_CFG_MULTI_ZONE_DATA_AGENT_ENABLED`: Data Agent Server distribution control (default: true)
-- `V4_CFG_STATEFUL_NODEPOOL_RESTRICTION`: Restrict to stateful nodepools (default: true)
+- `V4_CFG_STATEFUL_NODEPOOL_RESTRICTION`: Restrict to stateful nodepools (default: **false**)
 - `V4_CFG_STATEFUL_NODEPOOL_LABEL`: Label for stateful nodepool identification (default: "workload.sas.com/class")
 - `V4_CFG_MULTI_ZONE_AUTO_DETECT`: Automatically detect multi-zone clusters (default: true)
 - `V4_CFG_SINGLE_ZONE_FALLBACK`: Apply relaxed constraints for single-zone clusters (default: true)
 
-### Usage in ansible-vars.yaml
+### Default Configuration (Multi-Zone Disabled)
+By default, multi-zone distribution is **disabled** for backwards compatibility:
 ```yaml
+# These are the defaults - no configuration needed for single-zone deployments
+V4_CFG_MULTI_ZONE_ENABLED: false
+V4_CFG_STATEFUL_NODEPOOL_RESTRICTION: false
+```
+
+### Enable Multi-Zone Distribution in ansible-vars.yaml
+To enable multi-zone distribution, add this to your ansible-vars.yaml:
+```yaml
+# Enable multi-zone distribution
 V4_CFG_MULTI_ZONE_ENABLED: true
+V4_CFG_STATEFUL_NODEPOOL_RESTRICTION: true
+V4_CFG_STATEFUL_NODEPOOL_LABEL: "workload.sas.com/class"
+
+# Optional: Fine-tune individual services (all default to true when multi-zone enabled)
 V4_CFG_MULTI_ZONE_RABBITMQ_ENABLED: true
 V4_CFG_MULTI_ZONE_POSTGRES_ENABLED: true
 V4_CFG_MULTI_ZONE_CONSUL_ENABLED: true
@@ -29,8 +45,6 @@ V4_CFG_MULTI_ZONE_REDIS_ENABLED: true
 V4_CFG_MULTI_ZONE_OPENDISTRO_ENABLED: true
 V4_CFG_MULTI_ZONE_WORKLOAD_ORCHESTRATOR_ENABLED: true
 V4_CFG_MULTI_ZONE_DATA_AGENT_ENABLED: true
-V4_CFG_STATEFUL_NODEPOOL_RESTRICTION: true
-V4_CFG_STATEFUL_NODEPOOL_LABEL: "workload.sas.com/class"
 V4_CFG_MULTI_ZONE_AUTO_DETECT: true
 V4_CFG_SINGLE_ZONE_FALLBACK: true
 ```
@@ -107,13 +121,29 @@ This implementation provides multi-zone distribution for the following StatefulS
 
 ## Usage
 
-Enable in your ansible-vars.yaml:
+### Quick Start - Enable Multi-Zone
+Add this minimal configuration to your ansible-vars.yaml:
 ```yaml
+# Enable multi-zone distribution
 V4_CFG_MULTI_ZONE_ENABLED: true
-V4_CFG_MULTI_ZONE_RABBITMQ_ENABLED: true
-V4_CFG_MULTI_ZONE_POSTGRES_ENABLED: true
 V4_CFG_STATEFUL_NODEPOOL_RESTRICTION: true
 ```
+
+### Advanced Configuration
+For custom nodepool labels or selective service control:
+```yaml
+V4_CFG_MULTI_ZONE_ENABLED: true
+V4_CFG_STATEFUL_NODEPOOL_RESTRICTION: true
+V4_CFG_STATEFUL_NODEPOOL_LABEL: "workload.sas.com/class"  # or "agentpool" for legacy
+
+# Disable specific services if needed
+V4_CFG_MULTI_ZONE_RABBITMQ_ENABLED: false  # Keep RabbitMQ in single zone
+```
+
+### Sample Configuration Files
+See:
+- [examples/ansible-vars-multi-zone.yaml](../../examples/ansible-vars-multi-zone.yaml) - Complete multi-zone configuration
+- [examples/ansible-vars.yaml](../../examples/ansible-vars.yaml) - Standard single-zone deployment (default)
 
 ## Nodepool Requirements
 
