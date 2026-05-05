@@ -122,9 +122,9 @@ This implementation provides multi-zone distribution for the following StatefulS
 ## Usage
 
 ### Quick Start - Enable Multi-Zone
-Add this minimal configuration to your ansible-vars.yaml:
+Multi-zone distribution is **disabled by default** for backwards compatibility. To enable it, add this minimal configuration to your ansible-vars.yaml:
 ```yaml
-# Enable multi-zone distribution
+# Enable multi-zone distribution (disabled by default)
 V4_CFG_MULTI_ZONE_ENABLED: true
 V4_CFG_STATEFUL_NODEPOOL_RESTRICTION: true
 ```
