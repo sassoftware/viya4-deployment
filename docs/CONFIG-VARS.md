@@ -340,6 +340,8 @@ Notes:
 
 ## Multi-Zone Pod Distribution
 
+**Important**: `V4_CFG_MULTI_ZONE_ENABLED` acts as a master switch - ALL individual service flags (V4_CFG_MULTI_ZONE_*_ENABLED) are ignored unless this is set to `true`.
+
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_MULTI_ZONE_ENABLED | Enable multi-zone pod distribution for StatefulSets | bool | false | false | Adds topology spread constraints and node affinity to prevent StatefulSet pods from co-locating in same zone during zone failures. | viya |
