@@ -8,6 +8,8 @@ This implementation provides balanced multi-zone pod distribution for StatefulSe
 ## Configuration Variables
 
 ### Core Settings (roles/vdm/defaults/main.yaml)
+**Important**: `V4_CFG_MULTI_ZONE_ENABLED` is the master switch - all individual service flags below are ignored unless the master switch is `true`.
+
 - `V4_CFG_MULTI_ZONE_ENABLED`: Master switch for multi-zone distribution (default: **false**)
 - `V4_CFG_MULTI_ZONE_RABBITMQ_ENABLED`: RabbitMQ distribution control (default: true)
 - `V4_CFG_MULTI_ZONE_POSTGRES_ENABLED`: PostgreSQL distribution control (default: true)
@@ -122,9 +124,9 @@ This implementation provides multi-zone distribution for the following StatefulS
 ## Usage
 
 ### Quick Start - Enable Multi-Zone
-Add this minimal configuration to your ansible-vars.yaml:
+Multi-zone distribution is **disabled by default** for backwards compatibility. To enable it, add this minimal configuration to your ansible-vars.yaml:
 ```yaml
-# Enable multi-zone distribution
+# Enable multi-zone distribution (disabled by default)
 V4_CFG_MULTI_ZONE_ENABLED: true
 V4_CFG_STATEFUL_NODEPOOL_RESTRICTION: true
 ```
