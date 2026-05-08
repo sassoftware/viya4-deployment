@@ -89,7 +89,6 @@ V4_CFG_MULTI_ZONE_WORKLOAD_ORCHESTRATOR_ENABLED: true # Job scheduling
 V4_CFG_MULTI_ZONE_DATA_AGENT_ENABLED: true           # Data services
 
 # Advanced options
-V4_CFG_MULTI_ZONE_AUTO_DETECT: true        # Auto-detect cluster zones
 V4_CFG_SINGLE_ZONE_FALLBACK: true          # Handle single-zone clusters gracefully
 
 ## Monitoring and Logging

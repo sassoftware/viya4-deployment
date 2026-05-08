@@ -20,7 +20,6 @@ This implementation provides balanced multi-zone pod distribution for StatefulSe
 - `V4_CFG_MULTI_ZONE_DATA_AGENT_ENABLED`: Data Agent Server distribution control (default: true)
 - `V4_CFG_STATEFUL_NODEPOOL_RESTRICTION`: Restrict to stateful nodepools (default: **false**)
 - `V4_CFG_STATEFUL_NODEPOOL_LABEL`: Label for stateful nodepool identification (default: "workload.sas.com/class")
-- `V4_CFG_MULTI_ZONE_AUTO_DETECT`: Automatically detect multi-zone clusters (default: true)
 - `V4_CFG_SINGLE_ZONE_FALLBACK`: Apply relaxed constraints for single-zone clusters (default: true)
 
 ### Default Configuration (Multi-Zone Disabled)
@@ -47,7 +46,6 @@ V4_CFG_MULTI_ZONE_REDIS_ENABLED: true
 V4_CFG_MULTI_ZONE_OPENDISTRO_ENABLED: true
 V4_CFG_MULTI_ZONE_WORKLOAD_ORCHESTRATOR_ENABLED: true
 V4_CFG_MULTI_ZONE_DATA_AGENT_ENABLED: true
-V4_CFG_MULTI_ZONE_AUTO_DETECT: true
 V4_CFG_SINGLE_ZONE_FALLBACK: true
 ```
 
