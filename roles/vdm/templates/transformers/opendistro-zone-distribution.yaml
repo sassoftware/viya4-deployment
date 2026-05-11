@@ -35,7 +35,7 @@ patch: |-
                 - key: "{{ V4_CFG_STATEFUL_NODEPOOL_LABEL }}"
                   operator: In
                   values:
-                    - {{ V4_CFG_STATEFUL_NODEPOOL_VALUE }}
+                    - stateful
 {% endif %}
       podAntiAffinity:
         preferredDuringSchedulingIgnoredDuringExecution:
