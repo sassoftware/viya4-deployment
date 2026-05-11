@@ -1,8 +1,9 @@
 # Copyright © 2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-# Transformer for OpenDistro/OpenSearch StatefulSet zone distribution with restrictive constraints
-# Uses nodeset-name labels to allow data and master pods to be distributed independently across zones
+# Transformer for OpenDistro/OpenSearch zone distribution
+# Patches the OpenDistroCluster Custom Resource (CR) template spec
+# The OpenDistro operator then creates StatefulSets with these constraints
 apiVersion: builtin
 kind: PatchTransformer
 metadata:
@@ -16,81 +17,15 @@ patch: |-
         whenUnsatisfiable: DoNotSchedule
         labelSelector:
           matchLabels:
-            opendistro.sas.com/nodeset-name: sas-opendistro-custom-data
+            opendistro.sas.com/cluster-name: sas-opendistro
       - maxSkew: 1
         topologyKey: kubernetes.io/hostname
         whenUnsatisfiable: ScheduleAnyway
         labelSelector:
           matchLabels:
-            opendistro.sas.com/nodeset-name: sas-opendistro-custom-data
-  - op: add
-    path: /spec/template/spec/affinity
-    value:
-{% if V4_CFG_STATEFUL_NODEPOOL_RESTRICTION | bool %}
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-            - matchExpressions:
-                - key: "{{ V4_CFG_STATEFUL_NODEPOOL_LABEL }}"
-                  operator: In
-                  values:
-                    - stateful
-{% endif %}
-      podAntiAffinity:
-        preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            podAffinityTerm:
-              labelSelector:
-                matchLabels:
-                  opendistro.sas.com/nodeset-name: sas-opendistro-custom-data
-              topologyKey: kubernetes.io/hostname
+            opendistro.sas.com/cluster-name: sas-opendistro
 target:
-  kind: StatefulSet
-  name: sas-opendistro-custom-data
-  version: v1
----
-apiVersion: builtin
-kind: PatchTransformer
-metadata:
-  name: opendistro-zone-distribution-master
-patch: |-
-  - op: add
-    path: /spec/template/spec/topologySpreadConstraints
-    value:
-      - maxSkew: 1
-        topologyKey: topology.kubernetes.io/zone
-        whenUnsatisfiable: DoNotSchedule
-        labelSelector:
-          matchLabels:
-            opendistro.sas.com/nodeset-name: sas-opendistro-custom-master
-      - maxSkew: 1
-        topologyKey: kubernetes.io/hostname
-        whenUnsatisfiable: ScheduleAnyway
-        labelSelector:
-          matchLabels:
-            opendistro.sas.com/nodeset-name: sas-opendistro-custom-master
-  - op: add
-    path: /spec/template/spec/affinity
-    value:
-{% if V4_CFG_STATEFUL_NODEPOOL_RESTRICTION | bool %}
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-            - matchExpressions:
-                - key: "{{ V4_CFG_STATEFUL_NODEPOOL_LABEL }}"
-                  operator: In
-                  values:
-                    - stateful
-{% endif %}
-      podAntiAffinity:
-        preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            podAffinityTerm:
-              labelSelector:
-                matchLabels:
-                  opendistro.sas.com/nodeset-name: sas-opendistro-custom-master
-              topologyKey: kubernetes.io/hostname
-target:
-  kind: StatefulSet
-  name: sas-opendistro-custom-master
-  version: v1
+  kind: OpenDistroCluster
+  name: sas-opendistro
+  group: opendistro.sas.com
+  version: v1alpha1
