@@ -24,6 +24,27 @@ patch: |-
         labelSelector:
           matchLabels:
             opendistro.sas.com/cluster-name: sas-opendistro
+  - op: add
+    path: /spec/template/spec/affinity
+    value:
+{% if V4_CFG_STATEFUL_NODEPOOL_RESTRICTION | bool %}
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: "{{ V4_CFG_STATEFUL_NODEPOOL_LABEL }}"
+                  operator: In
+                  values:
+                    - {{ V4_CFG_STATEFUL_NODEPOOL_VALUE }}
+{% endif %}
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  opendistro.sas.com/cluster-name: sas-opendistro
+              topologyKey: kubernetes.io/hostname
 target:
   kind: OpenDistroCluster
   name: sas-opendistro
