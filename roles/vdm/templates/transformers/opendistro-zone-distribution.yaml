@@ -1,9 +1,39 @@
 # Copyright © 2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-# Transformer for OpenDistro/OpenSearch zone distribution
-# Patches the OpenDistroCluster Custom Resource (CR) template spec
-# The OpenDistro operator then creates StatefulSets with these constraints
+# Transformer for OpenDistro/OpenSearch with custom multi-nodeset topology and zone distribution
+# NOTE: The OpenDistroCluster CRD only supports a GLOBAL template at /spec/template
+
+---
+# STEP 1: Create custom multi-nodeset topology
+# Define the nodes array with master and data nodesets
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: opendistro-custom-topology
+patch: |-
+  - op: replace
+    path: /spec/nodes
+    value:
+      - name: custom-master
+        replicas: 3
+        roles:
+          - master
+        heapsize: 2G
+      - name: custom-data
+        replicas: 3
+        roles:
+          - data
+        heapsize: 4G
+target:
+  kind: OpenDistroCluster
+  name: sas-opendistro
+  group: opendistro.sas.com
+  version: v1alpha1
+
+---
+# STEP 2: Add zone distribution using GLOBAL template
+# This applies to ALL OpenDistro pods (both master and data nodesets)
 apiVersion: builtin
 kind: PatchTransformer
 metadata:
