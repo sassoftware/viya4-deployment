@@ -8,6 +8,8 @@ This implementation provides balanced multi-zone pod distribution for StatefulSe
 ## Configuration Variables
 
 ### Core Settings (roles/vdm/defaults/main.yaml)
+**Important**: `V4_CFG_MULTI_ZONE_ENABLED` is the master switch - all individual service flags below are ignored unless the master switch is `true`.
+
 - `V4_CFG_MULTI_ZONE_ENABLED`: Master switch for multi-zone distribution (default: **false**)
 - `V4_CFG_MULTI_ZONE_RABBITMQ_ENABLED`: RabbitMQ distribution control (default: true)
 - `V4_CFG_MULTI_ZONE_POSTGRES_ENABLED`: PostgreSQL distribution control (default: true)
@@ -18,7 +20,6 @@ This implementation provides balanced multi-zone pod distribution for StatefulSe
 - `V4_CFG_MULTI_ZONE_DATA_AGENT_ENABLED`: Data Agent Server distribution control (default: true)
 - `V4_CFG_STATEFUL_NODEPOOL_RESTRICTION`: Restrict to stateful nodepools (default: **false**)
 - `V4_CFG_STATEFUL_NODEPOOL_LABEL`: Label for stateful nodepool identification (default: "workload.sas.com/class")
-- `V4_CFG_MULTI_ZONE_AUTO_DETECT`: Automatically detect multi-zone clusters (default: true)
 - `V4_CFG_SINGLE_ZONE_FALLBACK`: Apply relaxed constraints for single-zone clusters (default: true)
 
 ### Default Configuration (Multi-Zone Disabled)
@@ -45,7 +46,6 @@ V4_CFG_MULTI_ZONE_REDIS_ENABLED: true
 V4_CFG_MULTI_ZONE_OPENDISTRO_ENABLED: true
 V4_CFG_MULTI_ZONE_WORKLOAD_ORCHESTRATOR_ENABLED: true
 V4_CFG_MULTI_ZONE_DATA_AGENT_ENABLED: true
-V4_CFG_MULTI_ZONE_AUTO_DETECT: true
 V4_CFG_SINGLE_ZONE_FALLBACK: true
 ```
 
@@ -106,6 +106,17 @@ This implementation provides multi-zone distribution for the following StatefulS
 - Transformer patches the CR at `/spec/template/spec/topologySpreadConstraints`
 - The `sas-opendistro-operator` watches the CR and creates the StatefulSet with constraints
 - StatefulSet name is `sas-opendistro-default` (not directly patched)
+
+**Important - OpenDistro Multi-Nodeset Configuration**:
+When using custom multi-nodeset topology (separate `sas-opendistro-custom-data` and `sas-opendistro-custom-master` StatefulSets):
+- **CRD Limitation**: The OpenDistroCluster CRD only supports a **global template** at `/spec/template` - there is no per-nodeset template override capability
+- **Global Balancing Approach**: The transformer uses a cluster-wide label selector (`opendistro.sas.com/cluster-name: sas-opendistro`) that matches **all OpenDistro pods** (both data and master)
+- **Expected Behavior**: With `maxSkew: 1` and 3 zones, the scheduler balances all 6 pods (3 data + 3 master) as a single group:
+  - Allows up to 2 pods per zone (6 pods ÷ 3 zones = 2, skew = 1)
+  - Ensures cluster-wide zone distribution: each zone gets 2 OpenDistro pods total
+  - **Does not guarantee** 1 data + 1 master per zone - distribution could vary (e.g., zone-a: 2 data + 0 master, zone-b: 1 data + 1 master, zone-c: 0 data + 2 master)
+- **Trade-off**: This approach provides zone-level fault tolerance for the OpenDistro cluster as a whole, though individual nodeset distribution may be uneven across zones
+- **Acceptable for Production**: The Elasticsearch/OpenSearch cluster remains resilient to zone failures as long as master quorum (2 of 3) and data availability are maintained across the remaining zones
 
 **PostgreSQL (sas-crunchy-platform-postgres)**:
 - Managed by Crunchy PostgreSQL Operator
