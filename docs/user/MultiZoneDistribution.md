@@ -18,6 +18,7 @@ This implementation provides balanced multi-zone pod distribution for StatefulSe
 - `V4_CFG_MULTI_ZONE_OPENDISTRO_ENABLED`: OpenDistro/OpenSearch distribution control (default: true)
 - `V4_CFG_MULTI_ZONE_WORKLOAD_ORCHESTRATOR_ENABLED`: Workload Orchestrator distribution control (default: true)
 - `V4_CFG_MULTI_ZONE_DATA_AGENT_ENABLED`: Data Agent Server distribution control (default: true)
+- `V4_CFG_MULTI_ZONE_STATELESS_ENABLED`: Stateless services (Deployments) distribution control (default: true)
 - `V4_CFG_STATEFUL_NODEPOOL_RESTRICTION`: Restrict to stateful nodepools (default: **false**)
 - `V4_CFG_STATEFUL_NODEPOOL_LABEL`: Label for stateful nodepool identification (default: "workload.sas.com/class")
 - `V4_CFG_SINGLE_ZONE_FALLBACK`: Apply relaxed constraints for single-zone clusters (default: true)
@@ -38,6 +39,9 @@ V4_CFG_MULTI_ZONE_ENABLED: true
 V4_CFG_STATEFUL_NODEPOOL_RESTRICTION: true
 V4_CFG_STATEFUL_NODEPOOL_LABEL: "workload.sas.com/class"
 
+# Enable HA for stateless services
+V4_CFG_HA_ENABLED: true
+
 # Optional: Fine-tune individual services (all default to true when multi-zone enabled)
 V4_CFG_MULTI_ZONE_RABBITMQ_ENABLED: true
 V4_CFG_MULTI_ZONE_POSTGRES_ENABLED: true
@@ -46,6 +50,7 @@ V4_CFG_MULTI_ZONE_REDIS_ENABLED: true
 V4_CFG_MULTI_ZONE_OPENDISTRO_ENABLED: true
 V4_CFG_MULTI_ZONE_WORKLOAD_ORCHESTRATOR_ENABLED: true
 V4_CFG_MULTI_ZONE_DATA_AGENT_ENABLED: true
+V4_CFG_MULTI_ZONE_STATELESS_ENABLED: true
 V4_CFG_SINGLE_ZONE_FALLBACK: true
 ```
 
@@ -130,6 +135,53 @@ When using custom multi-nodeset topology (separate `sas-opendistro-custom-data` 
 - Transformers directly patch StatefulSet resources
 - Use strict zone enforcement (`DoNotSchedule`) with soft hostname spreading (`ScheduleAnyway`)
 
+## Stateless Services Zone Distribution
+
+In addition to StatefulSet zone distribution, DaC now supports **multi-zone distribution for stateless services (Deployments)** when combined with HA mode.
+
+### Configuration
+
+To enable zone distribution for stateless services:
+```yaml
+# Enable both HA and multi-zone distribution
+V4_CFG_HA_ENABLED: true
+V4_CFG_MULTI_ZONE_ENABLED: true
+V4_CFG_MULTI_ZONE_STATELESS_ENABLED: true  # Default: true
+```
+
+**Requirements**:
+- `V4_CFG_HA_ENABLED: true` must be set (to ensure multiple replicas exist)
+- `V4_CFG_MULTI_ZONE_ENABLED: true` must be set (master switch)
+- Applies to all SAS Viya Deployments matching `sas-.*` pattern
+
+### Implementation Details
+
+**Topology Spread Constraints for Stateless Services**:
+- **Zone Distribution**: `maxSkew: 1` on `topology.kubernetes.io/zone` with `ScheduleAnyway`
+  - **Best-effort enforcement** - encourages zone distribution without blocking scheduling
+  - More relaxed than StatefulSet constraints to maintain flexibility
+  
+- **Node Distribution**: `maxSkew: 1` on `kubernetes.io/hostname` with `ScheduleAnyway`
+  - **Best-effort spreading** at node level
+  - Kubernetes attempts to spread pods across different nodes when possible
+
+**Pod Anti-Affinity**:
+- Preferred anti-affinity for both zone and node spreading
+- Weight: 100 for zone-level preference
+- Weight: 50 for hostname-level preference
+
+**Key Differences from StatefulSet Distribution**:
+- Uses `ScheduleAnyway` instead of `DoNotSchedule` for more flexibility
+- No nodepool restrictions (stateless services can run on any nodepool)
+- Focuses on best-effort distribution rather than strict enforcement
+- Designed to work with HA replicas (typically 2-3 per service)
+
+### Benefits
+- Enhanced resilience to zone failures for stateless microservices
+- Improved load distribution across availability zones
+- Maintains scheduling flexibility for dynamic scaling
+- Complements StatefulSet zone distribution for complete multi-zone coverage
+
 ## Usage
 
 ### Quick Start - Enable Multi-Zone
@@ -138,6 +190,10 @@ Multi-zone distribution is **disabled by default** for backwards compatibility. 
 # Enable multi-zone distribution (disabled by default)
 V4_CFG_MULTI_ZONE_ENABLED: true
 V4_CFG_STATEFUL_NODEPOOL_RESTRICTION: true
+
+# Also enable HA for stateless service zone distribution
+V4_CFG_HA_ENABLED: true
+V4_CFG_MULTI_ZONE_STATELESS_ENABLED: true
 ```
 
 ### Advanced Configuration

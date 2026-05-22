@@ -150,8 +150,21 @@ The playbook uses Ansible variables for configuration. SAS recommends that you e
 The Ansible vars.yaml file is the main configuration file. Create a file named ansible-vars.yaml to specify values for any input variables. Example variable definition files are provided in the `./examples` folder:
 
 - [ansible-vars.yaml](examples/ansible-vars.yaml) - Standard single-zone deployment
-- [ansible-vars-multi-zone.yaml](examples/ansible-vars-multi-zone.yaml) - Multi-zone distribution for high availability
+- [ansible-vars-multi-zone.yaml](examples/ansible-vars-multi-zone.yaml) - Multi-zone distribution and HA configuration
 - [ansible-vars-iac.yaml](examples/ansible-vars-iac.yaml) - IaC integration example
+
+**High Availability (HA) Configuration:**
+
+To enable HA for stateless microservices, add `V4_CFG_HA_ENABLED: true` to your ansible-vars.yaml. For production deployments, SAS recommends combining HA with multi-zone distribution (see [ansible-vars-multi-zone.yaml](examples/ansible-vars-multi-zone.yaml) for a complete example):
+
+```yaml
+# Production HA configuration
+V4_CFG_HA_ENABLED: true
+V4_CFG_MULTI_ZONE_ENABLED: true
+V4_CFG_STATEFUL_NODEPOOL_RESTRICTION: true
+```
+
+**Important**: Enabling HA increases replica counts for stateless microservices, significantly increasing resource requirements. Ensure your cluster has adequate capacity before enabling HA mode.
 
 For more details on the supported variables, refer to [CONFIG-VARS.md](docs/CONFIG-VARS.md).
 

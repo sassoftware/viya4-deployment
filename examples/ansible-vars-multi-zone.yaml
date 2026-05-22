@@ -79,6 +79,10 @@ V4_CFG_STATEFUL_NODEPOOL_RESTRICTION: true
 V4_CFG_STATEFUL_NODEPOOL_LABEL: "workload.sas.com/class"
 # For legacy deployments, use: "agentpool"
 
+## High Availability (HA) Configuration
+# Enable HA for stateless microservices
+V4_CFG_HA_ENABLED: true
+
 # Individual service controls (all default to true when multi-zone enabled)
 V4_CFG_MULTI_ZONE_RABBITMQ_ENABLED: true              # Message queue
 V4_CFG_MULTI_ZONE_POSTGRES_ENABLED: true              # Database
@@ -87,6 +91,7 @@ V4_CFG_MULTI_ZONE_REDIS_ENABLED: true                 # Caching
 V4_CFG_MULTI_ZONE_OPENDISTRO_ENABLED: true           # Search/logging
 V4_CFG_MULTI_ZONE_WORKLOAD_ORCHESTRATOR_ENABLED: true # Job scheduling
 V4_CFG_MULTI_ZONE_DATA_AGENT_ENABLED: true           # Data services
+V4_CFG_MULTI_ZONE_STATELESS_ENABLED: true            # Stateless services (Deployments)
 
 # Advanced options
 V4_CFG_SINGLE_ZONE_FALLBACK: true          # Handle single-zone clusters gracefully

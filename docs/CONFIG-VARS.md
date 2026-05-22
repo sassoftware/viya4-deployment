@@ -376,6 +376,40 @@ This configuration ensures:
 - Optimal resource distribution based on cluster topology
 - Supports AKS, EKS, and GKE clusters
 
+## High Availability (HA) for Stateless Services
+
+| Name | Description | Type | Default | Required | Notes | Tasks |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
+| V4_CFG_HA_ENABLED | Enable High Availability mode for stateless microservices | bool | false | false | Applies the SAS-provided HA transformer (`sas-bases/overlays/scaling/ha/enable-ha-transformer.yaml`) to increase replica counts for stateless services. Cannot be used with `V4_CFG_CLUSTER_NODE_POOL_MODE: minimal`. See [SAS Viya Platform Operations documentation](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=dplyml0phy0dkr&docsetTarget=titlepage.htm) for details on HA configuration. | viya |
+
+**Important Notes**:
+- **Stateful Services**: Stateful services (PostgreSQL, RabbitMQ, Consul, Redis, OpenSearch) are deployed with HA enabled by default at initial deployment
+- **CAS and OpenSearch**: CAS and OpenSearch require additional configuration beyond this setting. See the SAS documentation for OpenSearch HA topology configuration
+- **Resource Requirements**: Enabling HA significantly increases CPU and memory requirements as it adds redundant replicas for stateless microservices
+- **Incompatible with Minimal Mode**: Cannot be enabled when `V4_CFG_CLUSTER_NODE_POOL_MODE: minimal` is set
+- **Multi-Zone Recommendation**: For production HA deployments, consider enabling both `V4_CFG_HA_ENABLED: true` and `V4_CFG_MULTI_ZONE_ENABLED: true` to ensure both replica redundancy and zone distribution
+
+**Example HA Configuration**:
+```yaml
+# Enable High Availability for stateless services
+V4_CFG_HA_ENABLED: true
+
+# Recommended: Combine with multi-zone distribution for production
+V4_CFG_MULTI_ZONE_ENABLED: true
+V4_CFG_STATEFUL_NODEPOOL_RESTRICTION: true
+```
+
+**Expected Results**:
+- Increased replica counts for stateless microservices (typically 2-3 replicas per service)
+- Enhanced resilience to pod and node failures
+- Ability to perform rolling updates with zero downtime
+- Compatible with ingress-nginx, cert-manager, and other third-party dependencies
+
+**Additional Considerations**:
+- Your SAS Viya platform may depend on third-party software (ingress-nginx, SAS Viya Platform Monitoring) that should also be configured for HA
+- Review node taints and tolerations to ensure third-party software can schedule alongside SAS workloads
+- Consider dedicating nodes or adding tolerations to third-party software for optimal availability
+
 ## Third-Party Tools
 
 ### Cert-manager

@@ -21,3 +21,21 @@
     - install
     - uninstall
     - update
+
+# Add overlay for High Availability (HA) to increase replica counts for stateless services
+- name: Sizing - High Availability (HA)
+  overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { transformers: overlays/scaling/ha/enable-ha-transformer.yaml, priority: 51 }
+  when:
+    # Only run if HA is enabled
+    - V4_CFG_HA_ENABLED | bool
+    # Cannot combine HA with minimal mode
+    - V4_CFG_CLUSTER_NODE_POOL_MODE != "minimal"
+  tags:
+    - install
+    - uninstall
+    - update
