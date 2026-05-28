@@ -347,7 +347,7 @@ Notes:
 **Important**: `V4_CFG_MULTI_ZONE_ENABLED` acts as a master switch - ALL individual service flags (V4_CFG_MULTI_ZONE_*_ENABLED) are ignored unless this is set to `true`.
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
-| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | V4_CFG_MULTI_ZONE_ENABLED | Enable multi-zone pod distribution for StatefulSets | bool | false | false | Adds topology spread constraints and node affinity to prevent StatefulSet pods from co-locating in same zone during zone failures. **Note**: Internal PostgreSQL is NOT supported for multi-zone - you must use external PostgreSQL (see PostgreSQL section above). | viya |
 | V4_CFG_MULTI_ZONE_RABBITMQ_ENABLED | Enable multi-zone distribution for RabbitMQ StatefulSet | bool | true | false | Ensures RabbitMQ pods are distributed across zones with nodepool restrictions to maintain quorum during zone failures | viya |
 | V4_CFG_MULTI_ZONE_CONSUL_ENABLED | Enable multi-zone distribution for Consul StatefulSet | bool | true | false | Ensures Consul pods are distributed across zones for service discovery high availability | viya |

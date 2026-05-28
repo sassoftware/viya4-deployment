@@ -1,5 +1,38 @@
 # Multi-Zone StatefulSet Distribution - Implementation Guide
 
+## Table of Contents
+
+- [Multi-Zone StatefulSet Distribution - Implementation Guide](#multi-zone-statefulset-distribution---implementation-guide)
+  - [Table of Contents](#table-of-contents)
+  - [Overview](#overview)
+  - [Important Limitations](#important-limitations)
+    - [Internal PostgreSQL Not Supported](#internal-postgresql-not-supported)
+  - [Configuration Variables](#configuration-variables)
+    - [Core Settings (roles/vdm/defaults/main.yaml)](#core-settings-rolesvdmdefaultsmainyaml)
+    - [Default Configuration (Multi-Zone Disabled)](#default-configuration-multi-zone-disabled)
+    - [Enable Multi-Zone Distribution in ansible-vars.yaml](#enable-multi-zone-distribution-in-ansible-varsyaml)
+  - [Implementation Details](#implementation-details)
+    - [Topology Spread Constraints (Balanced Approach)](#topology-spread-constraints-balanced-approach)
+    - [Node Affinity (Nodepool Restriction)](#node-affinity-nodepool-restriction)
+    - [Preferred Pod Anti-Affinity](#preferred-pod-anti-affinity)
+  - [Key Benefits](#key-benefits)
+  - [Supported StatefulSets](#supported-statefulsets)
+    - [Implementation Notes](#implementation-notes)
+  - [Stateless Services Zone Distribution](#stateless-services-zone-distribution)
+    - [Configuration](#configuration)
+    - [Implementation Details](#implementation-details-1)
+    - [Benefits](#benefits)
+  - [Usage](#usage)
+    - [Quick Start - Enable Multi-Zone](#quick-start---enable-multi-zone)
+    - [Advanced Configuration](#advanced-configuration)
+    - [Sample Configuration Files](#sample-configuration-files)
+  - [Nodepool Requirements](#nodepool-requirements)
+    - [Comprehensive Validation Report](#comprehensive-validation-report)
+  - [Chaos Testing \& Validation](#chaos-testing--validation)
+    - [Zone Failure Simulation Results](#zone-failure-simulation-results)
+    - [Known Limitation (By Design)](#known-limitation-by-design)
+    - [Alternative Constraint Options](#alternative-constraint-options)
+
 ## Overview
 This implementation provides balanced multi-zone pod distribution for StatefulSets in AKS, EKS, and GKE clusters to prevent quorum loss during zone failures while ensuring reliable scheduling.
 
