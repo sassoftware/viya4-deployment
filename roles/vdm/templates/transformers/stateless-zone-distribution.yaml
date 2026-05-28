@@ -1,14 +1,14 @@
 # Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-# Transformer to add topology spread constraints for stateless services (Deployments)
-# to ensure zone distribution for high availability
+# Transformer to set topology spread constraints for stateless services (Deployments)
+# Targets ALL Deployments - no selector (will apply to all including non-SAS)
 apiVersion: builtin
 kind: PatchTransformer
 metadata:
   name: stateless-zone-distribution
 patch: |-
-  - op: add
+  - op: replace
     path: /spec/template/spec/topologySpreadConstraints
     value:
       - maxSkew: 1
@@ -16,42 +16,14 @@ patch: |-
         whenUnsatisfiable: ScheduleAnyway
         labelSelector:
           matchLabels:
-            app.kubernetes.io/name: PLACEHOLDER_APP_NAME
+            sas.com/deployment: sas-viya
       - maxSkew: 1
         topologyKey: kubernetes.io/hostname
         whenUnsatisfiable: ScheduleAnyway
         labelSelector:
           matchLabels:
-            app.kubernetes.io/name: PLACEHOLDER_APP_NAME
-  - op: add
-    path: /spec/template/spec/affinity
-    value:
-      podAntiAffinity:
-        preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            podAffinityTerm:
-              labelSelector:
-                matchLabels:
-                  app.kubernetes.io/name: PLACEHOLDER_APP_NAME
-              topologyKey: topology.kubernetes.io/zone
-          - weight: 50
-            podAffinityTerm:
-              labelSelector:
-                matchLabels:
-                  app.kubernetes.io/name: PLACEHOLDER_APP_NAME
-              topologyKey: kubernetes.io/hostname
+            sas.com/deployment: sas-viya
 target:
   kind: Deployment
-  name: "sas-.*"
   version: v1
-  # Exclude certain system deployments that may have specific placement requirements
-  # Adjust the name pattern as needed based on deployment patterns
-replacements:
-  - source:
-      kind: Deployment
-      fieldPath: metadata.labels['app.kubernetes.io/name']
-    targets:
-      - select:
-          kind: PatchTransformer
-        fieldPaths:
-          - patch
+  group: apps

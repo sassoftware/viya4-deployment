@@ -7,14 +7,15 @@ Supported configuration variables are listed in the table below.  All variables 
   - [Cloud](#cloud)
     - [Authentication](#authentication)
   - [Jump Server](#jump-server)
-  - [Storage for AWS](#storage-for-aws)
-  - [Storage for Azure](#storage-for-azure)
-  - [Storage for Google Cloud](#storage-for-google-cloud)
-  - [NFS Storage](#nfs-storage)
-    - [RWX Filestore](#rwx-filestore)
-    - [Azure](#azure)
-    - [AWS](#aws)
-    - [Google Cloud](#google-cloud)
+  - [Storage](#storage)
+    - [Storage for AWS](#storage-for-aws)
+    - [Storage for Azure](#storage-for-azure)
+    - [Storage for Google Cloud](#storage-for-google-cloud)
+    - [NFS Storage](#nfs-storage)
+      - [RWX Filestore](#rwx-filestore)
+      - [Azure](#azure)
+      - [AWS](#aws)
+      - [Google Cloud](#google-cloud)
   - [SAS Software Order](#sas-software-order)
   - [SAS API Access](#sas-api-access)
   - [Container Registry Access](#container-registry-access)
@@ -26,11 +27,14 @@ Supported configuration variables are listed in the table below.  All variables 
   - [CONNECT](#connect)
   - [Workload Orchestrator](#workload-orchestrator)
   - [Miscellaneous](#miscellaneous)
+  - [Multi-Zone Pod Distribution](#multi-zone-pod-distribution)
+  - [High Availability (HA) for Stateless Services](#high-availability-ha-for-stateless-services)
   - [Third-Party Tools](#third-party-tools)
     - [Cert-manager](#cert-manager)
     - [Cluster Autoscaler](#cluster-autoscaler)
     - [Contour](#contour)
     - [EBS CSI Driver](#ebs-csi-driver)
+    - [Azure managed disk CSI Driver](#azure-managed-disk-csi-driver)
     - [Ingress-nginx](#ingress-nginx)
     - [Metrics Server](#metrics-server)
     - [NFS Client](#nfs-client)
@@ -344,14 +348,14 @@ Notes:
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_MULTI_ZONE_ENABLED | Enable multi-zone pod distribution for StatefulSets | bool | false | false | Adds topology spread constraints and node affinity to prevent StatefulSet pods from co-locating in same zone during zone failures. | viya |
+| V4_CFG_MULTI_ZONE_ENABLED | Enable multi-zone pod distribution for StatefulSets | bool | false | false | Adds topology spread constraints and node affinity to prevent StatefulSet pods from co-locating in same zone during zone failures. **Note**: Internal PostgreSQL is NOT supported for multi-zone - you must use external PostgreSQL (see PostgreSQL section above). | viya |
 | V4_CFG_MULTI_ZONE_RABBITMQ_ENABLED | Enable multi-zone distribution for RabbitMQ StatefulSet | bool | true | false | Ensures RabbitMQ pods are distributed across zones with nodepool restrictions to maintain quorum during zone failures | viya |
-| V4_CFG_MULTI_ZONE_POSTGRES_ENABLED | Enable multi-zone distribution for PostgreSQL StatefulSet | bool | true | false | Ensures PostgreSQL pods are distributed across zones for high availability. Only applies to internal PostgreSQL deployments | viya |
 | V4_CFG_MULTI_ZONE_CONSUL_ENABLED | Enable multi-zone distribution for Consul StatefulSet | bool | true | false | Ensures Consul pods are distributed across zones for service discovery high availability | viya |
 | V4_CFG_MULTI_ZONE_REDIS_ENABLED | Enable multi-zone distribution for Redis StatefulSet | bool | true | false | Ensures Redis pods are distributed across zones for caching and session store availability | viya |
 | V4_CFG_MULTI_ZONE_OPENDISTRO_ENABLED | Enable multi-zone distribution for OpenDistro/OpenSearch StatefulSets | bool | true | false | Ensures OpenDistro/OpenSearch pods are distributed across zones for search and logging availability | viya |
 | V4_CFG_MULTI_ZONE_WORKLOAD_ORCHESTRATOR_ENABLED | Enable multi-zone distribution for Workload Orchestrator StatefulSet | bool | true | false | Ensures Workload Orchestrator pods are distributed across zones for job scheduling availability | viya |
 | V4_CFG_MULTI_ZONE_DATA_AGENT_ENABLED | Enable multi-zone distribution for Data Agent Server StatefulSet | bool | true | false | Ensures Data Agent Server pods are distributed across zones for data services availability | viya |
+| V4_CFG_MULTI_ZONE_STATELESS_ENABLED | Enable multi-zone distribution for stateless services (Deployments) | bool | true | false | Enables zone distribution for SAS Viya Deployment resources when combined with HA mode. Requires V4_CFG_HA_ENABLED: true | viya |
 | V4_CFG_STATEFUL_NODEPOOL_RESTRICTION | Restrict StatefulSets to dedicated stateful nodepools | bool | false | false | Adds node affinity to ensure StatefulSets only run on nodes with the specified stateful nodepool label. | viya |
 | V4_CFG_STATEFUL_NODEPOOL_LABEL | Label key for identifying stateful nodepool nodes | string | workload.sas.com/class | false | Configures the node label used for nodepool affinity. Common values: `workload.sas.com/class` (modern) or `agentpool` (legacy AKS) | viya |
 | V4_CFG_SINGLE_ZONE_FALLBACK | Apply relaxed constraints for single-zone clusters | bool | true | false | When enabled, uses relaxed scheduling constraints for single-zone deployments to prevent scheduling failures | viya |

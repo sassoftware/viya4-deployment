@@ -5,6 +5,39 @@ This implementation provides balanced multi-zone pod distribution for StatefulSe
 
 **Note**: As of DaC 9.7.0, multi-zone distribution is **disabled by default** to maintain backwards compatibility. Enable it explicitly when your cluster has proper multi-zone setup.
 
+## Important Limitations
+
+### Internal PostgreSQL Not Supported
+**An internal SAS PostgreSQL server is NOT supported for a multi-zone deployment at this time.**
+
+When deploying SAS Viya in a multi-zone configuration:
+- **DO NOT use** `V4_CFG_POSTGRES_SERVERS.default.internal: true`
+- **MUST use** external PostgreSQL service from your cloud provider:
+  - **Azure**: PostgreSQL Flexible Server with `--high-availability ZoneRedundant`
+  - **AWS**: RDS for PostgreSQL with Multi-AZ deployment
+  - **GCP**: Cloud SQL for PostgreSQL with High Availability configuration
+
+**Why this limitation exists:**
+- Complex storage requirements for multi-zone persistent volumes
+- Crunchy PostgreSQL operator limitations in zone-failure scenarios
+- Data consistency and backup/restore complications across zones
+- Not fully validated/tested by SAS for production use
+
+**Configuration Example for Multi-Zone:**
+```yaml
+# Required: Use external PostgreSQL
+V4_CFG_POSTGRES_SERVERS:
+  default:
+    internal: false  # Required for multi-zone
+    fqdn: your-postgres-server.postgres.database.azure.com
+    admin: pgadmin
+    password: your-password
+    ssl_enforcement_enabled: true
+    database: postgres
+```
+
+For zone redundancy configuration of external PostgreSQL, see the [PostgreSQL Documentation](PostgreSQL.md).
+
 ## Configuration Variables
 
 ### Core Settings (roles/vdm/defaults/main.yaml)
@@ -12,7 +45,6 @@ This implementation provides balanced multi-zone pod distribution for StatefulSe
 
 - `V4_CFG_MULTI_ZONE_ENABLED`: Master switch for multi-zone distribution (default: **false**)
 - `V4_CFG_MULTI_ZONE_RABBITMQ_ENABLED`: RabbitMQ distribution control (default: true)
-- `V4_CFG_MULTI_ZONE_POSTGRES_ENABLED`: PostgreSQL distribution control (default: true)
 - `V4_CFG_MULTI_ZONE_CONSUL_ENABLED`: Consul distribution control (default: true)
 - `V4_CFG_MULTI_ZONE_REDIS_ENABLED`: Redis distribution control (default: true)
 - `V4_CFG_MULTI_ZONE_OPENDISTRO_ENABLED`: OpenDistro/OpenSearch distribution control (default: true)
@@ -42,9 +74,18 @@ V4_CFG_STATEFUL_NODEPOOL_LABEL: "workload.sas.com/class"
 # Enable HA for stateless services
 V4_CFG_HA_ENABLED: true
 
+# REQUIRED: Use external PostgreSQL for multi-zone deployments
+V4_CFG_POSTGRES_SERVERS:
+  default:
+    internal: false  # Must be false for multi-zone
+    fqdn: your-postgres-server.postgres.database.azure.com
+    admin: pgadmin
+    password: "YourPassword"
+    ssl_enforcement_enabled: true
+    database: postgres
+
 # Optional: Fine-tune individual services (all default to true when multi-zone enabled)
 V4_CFG_MULTI_ZONE_RABBITMQ_ENABLED: true
-V4_CFG_MULTI_ZONE_POSTGRES_ENABLED: true
 V4_CFG_MULTI_ZONE_CONSUL_ENABLED: true
 V4_CFG_MULTI_ZONE_REDIS_ENABLED: true
 V4_CFG_MULTI_ZONE_OPENDISTRO_ENABLED: true

@@ -137,7 +137,7 @@
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
     existing: "{{ vdm_overlays }}"
     add:
-      - { transformers: stateless-zone-distribution.yaml, vdm: true }
+      - { transformers: stateless-zone-distribution.yaml, vdm: true, priority: 52 }
   when:
     - V4_CFG_MULTI_ZONE_ENABLED | bool
     - V4_CFG_MULTI_ZONE_STATELESS_ENABLED | bool
