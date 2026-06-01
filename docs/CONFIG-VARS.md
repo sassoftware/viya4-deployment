@@ -27,6 +27,7 @@ Supported configuration variables are listed in the table below.  All variables 
   - [CONNECT](#connect)
   - [Workload Orchestrator](#workload-orchestrator)
   - [Miscellaneous](#miscellaneous)
+  - [Multi-Zone Pod Distribution](#multi-zone-pod-distribution)
   - [Third-Party Tools](#third-party-tools)
     - [Cert-manager](#cert-manager)
     - [Cluster Autoscaler](#cluster-autoscaler)
@@ -180,7 +181,7 @@ When V4_CFG_MANAGE_STORAGE is set to `true`, the `sas` and `pg-storage` storage 
 | V4_CFG_INGRESS_TYPE | The ingress controller to deploy | string | "contour" | true | Possible values: "ingress", "contour" | baseline, viya |
 | V4_CFG_INGRESS_FQDN | FQDN to the ingress for SAS Vya installation | string | | true | | viya |
 | V4_CFG_INGRESS_MODE | Whether to create a public or private Loadbalancer endpoint | string | "public" | false | Possible values: "public", "private". Setting this option to "private" adds options to the ingress controller that create a LoadBalancer with private IP address(es) only. | baseline |
-| V4_CFG_ENABLE_IPV6 | Enable IPv6/dual-stack networking for ingress LoadBalancer | bool | false | false | When true on AWS, configures dualstack NLB with IPv6 SingleStack for both ingress-nginx and Contour. When true on Azure, configures dual-stack with ipFamilies ["IPv6", "IPv4"] and ipFamilyPolicy "PreferDualStack". Requires cluster with IPv6 enabled at creation time. Not supported on GCP. | baseline |
+| V4_CFG_ENABLE_IPV6 | Enable IPv6/dual-stack networking for ingress LoadBalancer | bool | false | false | When true on AWS, configures dualstack NLB annotations for both ingress-nginx and Contour. Kubernetes will auto-detect the IP family from the cluster configuration. When true on Azure, configures dual-stack with ipFamilies ["IPv6", "IPv4"] and ipFamilyPolicy "PreferDualStack". Requires cluster with IPv6 enabled at creation time. Not supported on GCP. | baseline |
 
 ## Load Balancer
 

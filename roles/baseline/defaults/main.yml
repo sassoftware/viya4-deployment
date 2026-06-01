@@ -95,6 +95,8 @@ INGRESS_NGINX_AWS_LB_SUBNETS:
         service.beta.kubernetes.io/aws-load-balancer-subnets: "{{ V4_CFG_AWS_LB_SUBNETS }}"
 
 # Update ipFamily for ingress-nginx service for IPv6 support (AWS)
+# Note: For IPv6 EKS clusters, explicit ipFamilyPolicy may cause deployment issues
+# The dualstack NLB annotations are sufficient for IPv6 support
 INGRESS_NGINX_IPV6_CONFIG:
   controller:
     service:
@@ -102,8 +104,6 @@ INGRESS_NGINX_IPV6_CONFIG:
         service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
         service.beta.kubernetes.io/aws-load-balancer-ip-address-type: "dualstack"
         service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
-      ipFamilyPolicy: "SingleStack"
-      ipFamilies: ["IPv6"]
 
 # Update ipFamily for ingress-nginx service for IPv6 dual-stack support (Azure)
 INGRESS_NGINX_AZURE_IPV6_CONFIG:
@@ -255,6 +255,8 @@ CONTOUR_AWS_LB_SUBNETS:
         service.beta.kubernetes.io/aws-load-balancer-subnets: "{{ V4_CFG_AWS_LB_SUBNETS }}"
 
 # Update ipFamily for Contour service for IPv6 support (AWS)
+# Note: For IPv6 EKS clusters, explicit ipFamilyPolicy may cause deployment issues
+# The dualstack NLB annotations are sufficient for IPv6 support
 CONTOUR_IPV6_CONFIG:
   envoy:
     service:
@@ -262,8 +264,6 @@ CONTOUR_IPV6_CONFIG:
         service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
         service.beta.kubernetes.io/aws-load-balancer-ip-address-type: "dualstack"
         service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
-      ipFamilyPolicy: "SingleStack"
-      ipFamilies: ["IPv6"]
 
 # Update ipFamily for Contour service for IPv6 dual-stack support (Azure)
 CONTOUR_AZURE_IPV6_CONFIG:
