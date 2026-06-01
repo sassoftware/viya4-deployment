@@ -213,6 +213,14 @@
     - uninstall
     - update
 
+# Include Multi-Zone Pod Distribution configuration
+- name: Include Multi-Zone Distribution
+  include_tasks: multi_zone_distribution.yaml
+  tags:
+    - install
+    - uninstall
+    - update
+
 # Include Sizing configuration and resources
 - name: Include Sizing
   include_tasks: sizing.yaml

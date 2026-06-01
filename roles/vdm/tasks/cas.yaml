@@ -145,7 +145,7 @@
     - install
     - uninstall
     - update
-    
+
 # Add shutdown transformer for programming-only deployments (CAS disabled)
 # This approach keeps CAS resources in the manifest (avoiding prune risks) but shuts down CAS pods
 - name: CAS - shutdown for programming-only deployment

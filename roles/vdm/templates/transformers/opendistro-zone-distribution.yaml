@@ -1,0 +1,82 @@
+# Copyright © 2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+# Transformer for OpenDistro/OpenSearch with custom multi-nodeset topology and zone distribution
+# NOTE: The OpenDistroCluster CRD only supports a GLOBAL template at /spec/template
+
+---
+# STEP 1: Create custom multi-nodeset topology
+# Define the nodes array with master and data nodesets
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: opendistro-custom-topology
+patch: |-
+  - op: replace
+    path: /spec/nodes
+    value:
+      - name: custom-master
+        replicas: 3
+        roles:
+          - master
+        heapsize: 2G
+      - name: custom-data
+        replicas: 3
+        roles:
+          - data
+        heapsize: 4G
+target:
+  kind: OpenDistroCluster
+  name: sas-opendistro
+  group: opendistro.sas.com
+  version: v1alpha1
+
+---
+# STEP 2: Add zone distribution using GLOBAL template
+# This applies to ALL OpenDistro pods (both master and data nodesets)
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: opendistro-zone-distribution
+patch: |-
+  - op: add
+    path: /spec/template/spec/topologySpreadConstraints
+    value:
+      - maxSkew: 1
+        topologyKey: topology.kubernetes.io/zone
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            opendistro.sas.com/cluster-name: sas-opendistro
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            opendistro.sas.com/cluster-name: sas-opendistro
+  - op: add
+    path: /spec/template/spec/affinity
+    value:
+{% if V4_CFG_STATEFUL_NODEPOOL_RESTRICTION | bool %}
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: "{{ V4_CFG_STATEFUL_NODEPOOL_LABEL }}"
+                  operator: In
+                  values:
+                    - stateful
+{% endif %}
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  opendistro.sas.com/cluster-name: sas-opendistro
+              topologyKey: kubernetes.io/hostname
+target:
+  kind: OpenDistroCluster
+  name: sas-opendistro
+  group: opendistro.sas.com
+  version: v1alpha1

@@ -30,6 +30,7 @@ Supported configuration variables are listed in the table below.  All variables 
   - [Third-Party Tools](#third-party-tools)
     - [Cert-manager](#cert-manager)
     - [Cluster Autoscaler](#cluster-autoscaler)
+    - [Contour](#contour)
     - [EBS CSI Driver](#ebs-csi-driver)
     - [Azure managed disk CSI Driver](#azure-managed-disk-csi-driver)
     - [Ingress-nginx](#ingress-nginx)
@@ -156,8 +157,13 @@ When V4_CFG_MANAGE_STORAGE is set to `true`, the `sas` and `pg-storage` storage 
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_SAS_API_KEY | SAS API Key| string | | true | [API credentials](https://developer.sas.com/guides/sas-viya-orders.html) can be obtained from the [SAS API Portal](https://apiportal.sas.com/get-started) | viya |
-| V4_CFG_SAS_API_SECRET | SAS API Secret | string | | true | [API credentials](https://developer.sas.com/guides/sas-viya-orders.html) can be obtained from the [SAS API Portal](https://apiportal.sas.com/get-started) | viya |
+| V4_CFG_APIM_CLIENT_ID | APIM Client ID | string | | true | [APIM credentials](https://developer.sas.com/rest-apis/mysas/docs/getting-started/authentication#obtain-client-credentials) can be obtained from the [SAS API Portal](https://apiportal.sas.com/get-started) | viya |
+| V4_CFG_APIM_CLIENT_SECRET | APIM Client Secret | string | | true | [APIM credentials](https://developer.sas.com/rest-apis/mysas/docs/getting-started/authentication#obtain-client-credentials) can be obtained from the [SAS API Portal](https://apiportal.sas.com/get-started) | viya |
+| V4_CFG_REPOSITORY_WAREHOUSE | Repository warehouse endpoint override | string | | false | Use `https://ses.sas.com` if your enterprise firewall or proxy blocks `ses.sas.download` due to certificate trust policies. This is passed as `--repository-warehouse` flag to the sas-orchestration container during deployment. | viya |
+
+**SAS API Access Notes:**
+
+* When creating an application in the SAS Viya Orders API portal, ensure you select the environment as **PROD(mysas)** to obtain the APIM credentials
 
 ## Container Registry Access
 
@@ -171,7 +177,7 @@ When V4_CFG_MANAGE_STORAGE is set to `true`, the `sas` and `pg-storage` storage 
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_INGRESS_TYPE | The ingress controller to deploy | string | "ingress" | true | Possible values: "ingress" | baseline, viya |
+| V4_CFG_INGRESS_TYPE | The ingress controller to deploy | string | "contour" | true | Possible values: "ingress", "contour" | baseline, viya |
 | V4_CFG_INGRESS_FQDN | FQDN to the ingress for SAS Vya installation | string | | true | | viya |
 | V4_CFG_INGRESS_MODE | Whether to create a public or private Loadbalancer endpoint | string | "public" | false | Possible values: "public", "private". Setting this option to "private" adds options to the ingress controller that create a LoadBalancer with private IP address(es) only. | baseline |
 | V4_CFG_ENABLE_IPV6 | Enable IPv6/dual-stack networking for ingress LoadBalancer | bool | false | false | When true on AWS, configures dualstack NLB with IPv6 SingleStack for both ingress-nginx and Contour. When true on Azure, configures dual-stack with ipFamilies ["IPv6", "IPv4"] and ipFamilyPolicy "PreferDualStack". Requires cluster with IPv6 enabled at creation time. Not supported on GCP. | baseline |
@@ -335,6 +341,44 @@ Notes:
     - For example, defining `V4_CFG_VIYA_STOP_SCHEDULE` and not `V4_CFG_VIYA_START_SCHEDULE` will result in a Viya stop job that runs on a schedule and a suspended Viya start job that you will be able to manually trigger.
   - Defining both `V4_CFG_VIYA_START_SCHEDULE` and `V4_CFG_VIYA_STOP_SCHEDULE` will result in a non-suspended Viya start and stop job that runs on the schedule you defined.
 
+## Multi-Zone Pod Distribution
+
+**Important**: `V4_CFG_MULTI_ZONE_ENABLED` acts as a master switch - ALL individual service flags (V4_CFG_MULTI_ZONE_*_ENABLED) are ignored unless this is set to `true`.
+
+| Name | Description | Type | Default | Required | Notes | Tasks |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
+| V4_CFG_MULTI_ZONE_ENABLED | Enable multi-zone pod distribution for StatefulSets | bool | false | false | Adds topology spread constraints and node affinity to prevent StatefulSet pods from co-locating in same zone during zone failures. | viya |
+| V4_CFG_MULTI_ZONE_RABBITMQ_ENABLED | Enable multi-zone distribution for RabbitMQ StatefulSet | bool | true | false | Ensures RabbitMQ pods are distributed across zones with nodepool restrictions to maintain quorum during zone failures | viya |
+| V4_CFG_MULTI_ZONE_POSTGRES_ENABLED | Enable multi-zone distribution for PostgreSQL StatefulSet | bool | true | false | Ensures PostgreSQL pods are distributed across zones for high availability. Only applies to internal PostgreSQL deployments | viya |
+| V4_CFG_MULTI_ZONE_CONSUL_ENABLED | Enable multi-zone distribution for Consul StatefulSet | bool | true | false | Ensures Consul pods are distributed across zones for service discovery high availability | viya |
+| V4_CFG_MULTI_ZONE_REDIS_ENABLED | Enable multi-zone distribution for Redis StatefulSet | bool | true | false | Ensures Redis pods are distributed across zones for caching and session store availability | viya |
+| V4_CFG_MULTI_ZONE_OPENDISTRO_ENABLED | Enable multi-zone distribution for OpenDistro/OpenSearch StatefulSets | bool | true | false | Ensures OpenDistro/OpenSearch pods are distributed across zones for search and logging availability | viya |
+| V4_CFG_MULTI_ZONE_WORKLOAD_ORCHESTRATOR_ENABLED | Enable multi-zone distribution for Workload Orchestrator StatefulSet | bool | true | false | Ensures Workload Orchestrator pods are distributed across zones for job scheduling availability | viya |
+| V4_CFG_MULTI_ZONE_DATA_AGENT_ENABLED | Enable multi-zone distribution for Data Agent Server StatefulSet | bool | true | false | Ensures Data Agent Server pods are distributed across zones for data services availability | viya |
+| V4_CFG_STATEFUL_NODEPOOL_RESTRICTION | Restrict StatefulSets to dedicated stateful nodepools | bool | false | false | Adds node affinity to ensure StatefulSets only run on nodes with the specified stateful nodepool label. | viya |
+| V4_CFG_STATEFUL_NODEPOOL_LABEL | Label key for identifying stateful nodepool nodes | string | workload.sas.com/class | false | Configures the node label used for nodepool affinity. Common values: `workload.sas.com/class` (modern) or `agentpool` (legacy AKS) | viya |
+| V4_CFG_SINGLE_ZONE_FALLBACK | Apply relaxed constraints for single-zone clusters | bool | true | false | When enabled, uses relaxed scheduling constraints for single-zone deployments to prevent scheduling failures | viya |
+
+**Expected Results**:
+- StatefulSet replicas distributed across different availability zones
+- All StatefulSet pods restricted to stateful nodepool only
+- Zone failure protection - single zone outage won't cause StatefulSet quorum loss
+- Compatible with both single-zone and multi-zone cluster deployments
+
+**Example Multi-Zone Distribution**:
+```
+RabbitMQ (3 replicas):
+├── sas-rabbitmq-server-0 → stateful-node-1 → zone-1
+├── sas-rabbitmq-server-1 → stateful-node-2 → zone-2  
+└── sas-rabbitmq-server-2 → stateful-node-3 → zone-3
+```
+
+This configuration ensures:
+- No StatefulSet quorum loss during zone failures in multi-zone clusters
+- No scheduling failures in single-zone deployments
+- Optimal resource distribution based on cluster topology
+- Supports AKS, EKS, and GKE clusters
+
 ## Third-Party Tools
 
 ### Cert-manager
@@ -344,7 +388,7 @@ Notes:
 | CERT_MANAGER_NAMESPACE | cert-manager Helm installation namespace | string | cert-manager | false | | baseline |
 | CERT_MANAGER_CHART_URL | cert-manager Helm chart URL | string | https://charts.jetstack.io/ | false | | baseline |
 | CERT_MANAGER_CHART_NAME| cert-manager Helm chart name | string | cert-manager| false | | baseline |
-| CERT_MANAGER_CHART_VERSION | cert-manager Helm chart version | string | 1.18.2 | false | | baseline |
+| CERT_MANAGER_CHART_VERSION | cert-manager Helm chart version | string | 1.20.0 | false | | baseline |
 | CERT_MANAGER_CONFIG | cert-manager Helm values | string | See [this file](../roles/baseline/defaults/main.yml) for more information. | false | | baseline |
 
 Notes:
@@ -367,6 +411,19 @@ Cluster-autoscaler is currently only used for AWS EKS clusters. Google GKE and A
 **Cluster Autoscaler Notes:**
 
 If you used [viya4-iac-aws:5.6.0](https://github.com/sassoftware/viya4-iac-aws/releases) or newer to create your infrastructure, a cluster autoscaler account should have been created for you with a policy that is compatible with both our default versions for the `CLUSTER_AUTOSCALER_CHART_VERSION` variable. If you choose an alternative version ensure that your autoscaler account has a policy that matches the recommendation from the [kubernetes/autoscaler documentation](https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/cloudprovider/aws/README.md#iam-policy). This note is only applicable for EKS clusters.
+
+### Contour
+
+Contour is an open source ingress controller that provides dynamic configuration updates. Contour support is available starting with the 2026.02 cadence release.
+
+| Name | Description | Type | Default | Required | Notes | Tasks |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
+| CONTOUR_NAME | Contour Helm release name | string | contour | false | | baseline |
+| CONTOUR_NAMESPACE | Contour Helm installation namespace | string | projectcontour | false | | baseline |
+| CONTOUR_CHART_NAME | Contour Helm chart name | string | contour | false | | baseline |
+| CONTOUR_CHART_URL | Contour Helm chart URL | string | https://projectcontour.github.io/helm-charts/ | false | | baseline |
+| CONTOUR_CHART_VERSION | Contour Helm chart version | string | 0.2.1 | false | | baseline |
+| CONTOUR_CONFIG | Contour Helm values | string | See [this file](../roles/baseline/defaults/main.yml) for more information. Altering this value will affect the cluster. | false | | baseline |
 
 ### EBS CSI Driver
 
