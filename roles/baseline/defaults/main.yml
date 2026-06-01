@@ -239,6 +239,24 @@ CONTOUR_AWS_LB_SUBNETS:
       annotations:
         service.beta.kubernetes.io/aws-load-balancer-subnets: "{{ V4_CFG_AWS_LB_SUBNETS }}"
 
+# Update ipFamily for Contour service for IPv6 support (AWS)
+CONTOUR_IPV6_CONFIG:
+  envoy:
+    service:
+      annotations:
+        service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
+        service.beta.kubernetes.io/aws-load-balancer-ip-address-type: "dualstack"
+        service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+      ipFamilyPolicy: "SingleStack"
+      ipFamilies: ["IPv6"]
+
+# Update ipFamily for Contour service for IPv6 dual-stack support (Azure)
+CONTOUR_AZURE_IPV6_CONFIG:
+  envoy:
+    service:
+      ipFamilies: ["IPv6", "IPv4"]
+      ipFamilyPolicy: "PreferDualStack"
+
 ## Cluster Autoscaler
 CLUSTER_AUTOSCALER_ENABLED: true
 CLUSTER_AUTOSCALER_NAME: cluster-autoscaler

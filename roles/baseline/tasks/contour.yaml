@@ -65,6 +65,28 @@
     - install
     - update
 
+# Update CONTOUR_CONFIG to set service ipFamily to IPv6 for AWS
+- name: Update CONTOUR_CONFIG to set service ipFamily to IPv6
+  set_fact:
+    CONTOUR_CONFIG: "{{ CONTOUR_CONFIG | combine(CONTOUR_IPV6_CONFIG, recursive=True) }}"
+  when:
+    - PROVIDER == "aws"
+    - V4_CFG_ENABLE_IPV6
+  tags:
+    - install
+    - update
+
+# Update CONTOUR_CONFIG to set service ipFamilies for Azure IPv6 dual-stack
+- name: Update CONTOUR_CONFIG to set service ipFamilies for Azure IPv6 dual-stack
+  set_fact:
+    CONTOUR_CONFIG: "{{ CONTOUR_CONFIG | combine(CONTOUR_AZURE_IPV6_CONFIG, recursive=True) }}"
+  when:
+    - PROVIDER == "azure"
+    - V4_CFG_ENABLE_IPV6
+  tags:
+    - install
+    - update
+
 # Deploy the Contour ingress controller using Helm
 - name: Deploy contour
   kubernetes.core.helm:
@@ -77,6 +99,7 @@
     kubeconfig: "{{ KUBECONFIG }}"               # Kubeconfig for cluster access
     create_namespace: true                       # Create namespace if it doesn't exist
     wait: true                                   # Wait for deployment to complete
+    wait_timeout: 15m                            # Timeout for LoadBalancer provisioning
   tags:
     - install
     - update

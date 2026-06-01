@@ -7,14 +7,15 @@ Supported configuration variables are listed in the table below.  All variables 
   - [Cloud](#cloud)
     - [Authentication](#authentication)
   - [Jump Server](#jump-server)
-  - [Storage for AWS](#storage-for-aws)
-  - [Storage for Azure](#storage-for-azure)
-  - [Storage for Google Cloud](#storage-for-google-cloud)
-  - [NFS Storage](#nfs-storage)
-    - [RWX Filestore](#rwx-filestore)
-    - [Azure](#azure)
-    - [AWS](#aws)
-    - [Google Cloud](#google-cloud)
+  - [Storage](#storage)
+    - [Storage for AWS](#storage-for-aws)
+    - [Storage for Azure](#storage-for-azure)
+    - [Storage for Google Cloud](#storage-for-google-cloud)
+    - [NFS Storage](#nfs-storage)
+      - [RWX Filestore](#rwx-filestore)
+      - [Azure](#azure)
+      - [AWS](#aws)
+      - [Google Cloud](#google-cloud)
   - [SAS Software Order](#sas-software-order)
   - [SAS API Access](#sas-api-access)
   - [Container Registry Access](#container-registry-access)
@@ -30,6 +31,7 @@ Supported configuration variables are listed in the table below.  All variables 
     - [Cert-manager](#cert-manager)
     - [Cluster Autoscaler](#cluster-autoscaler)
     - [EBS CSI Driver](#ebs-csi-driver)
+    - [Azure managed disk CSI Driver](#azure-managed-disk-csi-driver)
     - [Ingress-nginx](#ingress-nginx)
     - [Metrics Server](#metrics-server)
     - [NFS Client](#nfs-client)
@@ -172,7 +174,7 @@ When V4_CFG_MANAGE_STORAGE is set to `true`, the `sas` and `pg-storage` storage 
 | V4_CFG_INGRESS_TYPE | The ingress controller to deploy | string | "ingress" | true | Possible values: "ingress" | baseline, viya |
 | V4_CFG_INGRESS_FQDN | FQDN to the ingress for SAS Vya installation | string | | true | | viya |
 | V4_CFG_INGRESS_MODE | Whether to create a public or private Loadbalancer endpoint | string | "public" | false | Possible values: "public", "private". Setting this option to "private" adds options to the ingress controller that create a LoadBalancer with private IP address(es) only. | baseline |
-| V4_CFG_ENABLE_IPV6 | Enable IPv6/dual-stack networking for ingress-nginx LoadBalancer | bool | false | false | When true on AWS, configures dualstack NLB with IPv6 SingleStack. When true on Azure, configures dual-stack with ipFamilies ["IPv6", "IPv4"] and ipFamilyPolicy "PreferDualStack". Requires cluster with IPv6 enabled at creation time. Not supported on GCP. | baseline |
+| V4_CFG_ENABLE_IPV6 | Enable IPv6/dual-stack networking for ingress LoadBalancer | bool | false | false | When true on AWS, configures dualstack NLB with IPv6 SingleStack for both ingress-nginx and Contour. When true on Azure, configures dual-stack with ipFamilies ["IPv6", "IPv4"] and ipFamilyPolicy "PreferDualStack". Requires cluster with IPv6 enabled at creation time. Not supported on GCP. | baseline |
 
 ## Load Balancer
 

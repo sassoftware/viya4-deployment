@@ -147,6 +147,7 @@
     kubeconfig: "{{ KUBECONFIG }}"
     create_namespace: true
     wait: true
+    wait_timeout: 15m
   tags:
     - install
     - update
