@@ -77,7 +77,7 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
-              - key: kubernetes.azure.com/mode
+              - key: kubernetes.com/mode
                 operator: NotIn
                 values:
                 - system
