@@ -212,7 +212,7 @@ CONTOUR_NAME: contour
 CONTOUR_NAMESPACE: projectcontour
 CONTOUR_CHART_NAME: contour
 CONTOUR_CHART_URL: https://projectcontour.github.io/helm-charts/
-CONTOUR_CHART_VERSION: 0.2.1
+CONTOUR_CHART_VERSION: 0.6.0  # Updated for IPv6 support
 CONTOUR_CONFIG:
   contour:
     resources:
