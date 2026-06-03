@@ -257,9 +257,12 @@ CONTOUR_AWS_LB_SUBNETS:
 # Update ipFamily for Contour service for IPv6 support (AWS)
 # Note: For IPv6 EKS clusters, explicit ipFamilyPolicy may cause deployment issues
 # The dualstack NLB annotations are sufficient for IPv6 support
+# AWS NLB does not support IPv6 CIDRs in loadBalancerSourceRanges - use Security Groups instead
+# Note: Envoy probes cannot be overridden via Helm values - patched post-deployment via DaemonSet
 CONTOUR_IPV6_CONFIG:
   envoy:
     service:
+      loadBalancerSourceRanges: []
       annotations:
         service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
         service.beta.kubernetes.io/aws-load-balancer-ip-address-type: "dualstack"
