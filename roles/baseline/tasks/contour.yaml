@@ -89,48 +89,7 @@
     kubeconfig: "{{ KUBECONFIG }}"               # Kubeconfig for cluster access
     create_namespace: true                       # Create namespace if it doesn't exist
     wait: true                                   # Wait for deployment to complete
-    wait_timeout: 15m                            # Timeout for LoadBalancer provisioning
-  tags:
-    - install
-    - update
-
-# Patch envoy DaemonSet probes for IPv6 compatibility
-- name: Patch envoy DaemonSet probes to use process checks for IPv6
-  kubernetes.core.k8s:
-    state: patched
-    kind: DaemonSet
-    name: contour-envoy
-    namespace: "{{ CONTOUR_NAMESPACE }}"
-    kubeconfig: "{{ KUBECONFIG }}"
-    definition:
-      spec:
-        template:
-          spec:
-            containers:
-              - name: envoy
-                livenessProbe:
-                  exec:
-                    command:
-                      - /bin/sh
-                      - -c
-                      - pgrep envoy
-                  initialDelaySeconds: 120
-                  periodSeconds: 20
-                  timeoutSeconds: 5
-                  failureThreshold: 6
-                readinessProbe:
-                  exec:
-                    command:
-                      - /bin/sh
-                      - -c
-                      - pgrep envoy
-                  initialDelaySeconds: 15
-                  periodSeconds: 10
-                  timeoutSeconds: 5
-                  failureThreshold: 3
-  when:
-    - V4_CFG_ENABLE_IPV6 | default(false) | bool
-    - PROVIDER == "aws"
+    wait_timeout: 20m                            # Increased timeout for IPv6 NLB provisioning (dual-stack takes longer)
   tags:
     - install
     - update
