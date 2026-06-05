@@ -168,15 +168,16 @@ V4_CFG_SINGLE_ZONE_FALLBACK: true
 
 This implementation provides multi-zone distribution for the following StatefulSet workloads:
 
+**Note**: Internal PostgreSQL is NOT supported for multi-zone deployments. You must use external PostgreSQL with your cloud provider's zone-redundant HA service.
+
 | # | StatefulSet Name | Description | Transformer Target |
 |---|------------------|-------------|--------------------|
 | 1 | sas-rabbitmq-server | Message queue service | StatefulSet (direct) |
-| 2 | sas-crunchy-platform-postgres-* | PostgreSQL database | PostgresCluster CR (Crunchy operator) |
-| 3 | sas-consul-server | Service discovery and configuration | StatefulSet (direct) |
-| 4 | sas-redis-server | Caching and session store | StatefulSet (direct) |
-| 5 | sas-opendistro-default | Search and logging (OpenSearch) | OpenDistroCluster CR (operator-managed) |
-| 6 | sas-workload-orchestrator | Job scheduling and orchestration | StatefulSet (direct) |
-| 7 | sas-data-agent-server-colocated | Data agent services | StatefulSet (direct) |
+| 2 | sas-consul-server | Service discovery and configuration | StatefulSet (direct) |
+| 3 | sas-redis-server | Caching and session store | StatefulSet (direct) |
+| 4 | sas-opendistro-default | Search and logging (OpenSearch) | OpenDistroCluster CR (operator-managed) |
+| 5 | sas-workload-orchestrator | Job scheduling and orchestration | StatefulSet (direct) |
+| 6 | sas-data-agent-server-colocated | Data agent services | StatefulSet (direct) |
 
 ### Implementation Notes
 
@@ -196,13 +197,6 @@ When using custom multi-nodeset topology (separate `sas-opendistro-custom-data` 
   - **Does not guarantee** 1 data + 1 master per zone - distribution could vary (e.g., zone-a: 2 data + 0 master, zone-b: 1 data + 1 master, zone-c: 0 data + 2 master)
 - **Trade-off**: This approach provides zone-level fault tolerance for the OpenDistro cluster as a whole, though individual nodeset distribution may be uneven across zones
 - **Acceptable for Production**: The Elasticsearch/OpenSearch cluster remains resilient to zone failures as long as master quorum (2 of 3) and data availability are maintained across the remaining zones
-
-**PostgreSQL (sas-crunchy-platform-postgres)**:
-- Managed by Crunchy PostgreSQL Operator
-- Transformer patches `PostgresCluster` CR
-- Operator creates multiple StatefulSets (e.g., `sas-crunchy-platform-postgres-00-xxxx-0`)
-- Uses `ScheduleAnyway` for both zone and hostname constraints (operator default)
-- Zone awareness provided without strict enforcement
 
 **Direct StatefulSet Transformers**:
 - RabbitMQ, Consul, Redis, Workload Orchestrator, Data Agent
