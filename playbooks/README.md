@@ -30,7 +30,7 @@
     - Action: Includes the `baseline` role for install actions.
     - Condition: Runs only if both `'baseline'` and `'install'` are in `ansible_run_tags`.
     - Tags: `baseline`
-    - **Networking Considerations:** Deploys core components (ingress-nginx, cert-manager, metrics-server, csi-driver-nfs, ebs-csi-driver, etc.) that impact cluster networking, ingress, and storage. See [NetworkingConsiderations.md](../docs/user/NetworkingConsiderations.md)
+    - **Networking Considerations:** Deploys core components (contour or ingress-nginx, cert-manager, metrics-server, csi-driver-nfs, ebs-csi-driver, etc.) that impact cluster networking, ingress, and storage. See [NetworkingConsiderations.md](../docs/user/NetworkingConsiderations.md)
 6. **Optionally Include Multi-Tenancy Role**
     
     - Task: `Multi-tenancy role`

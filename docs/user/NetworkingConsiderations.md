@@ -2,8 +2,8 @@
 
 ### 1. **Ingress Controllers**
 
-- **ingress-nginx** is deployed as the ingress controller.
-- It exposes internal Kubernetes services to external clients, typically via AWS Network Load Balancer (NLB) or cloud-specific load balancers.
+- **contour** is deployed as the default ingress controller (as of SAS Viya 2026.03). Alternatively, **ingress-nginx** can be configured.
+- The ingress controller exposes internal Kubernetes services to external clients, typically via AWS Network Load Balancer (NLB) or cloud-specific load balancers.
 - It manages routing of HTTP/HTTPS traffic into the cluster, enforcing TLS, host/path rules, and sometimes source IP restrictions.
 - The choice of ingress controller and its configuration (e.g., annotations, load balancer type) directly affects how external traffic enters your cluster.
 - **Note:**
@@ -12,7 +12,8 @@
         - Ingress controller endpoints (HTTP/HTTPS)
         - Cloud load balancer endpoints (varies by provider)
     - **Container registries that may need to be allowlisted:**
-        - quay.io
+        - ghcr.io (contour)
+        - quay.io (ingress-nginx)
         
 ### 2. **Load Balancers**
 
@@ -103,22 +104,26 @@
 ### Container Registries to Allowlist by Cloud Provider
 
 #### AWS
+- ghcr.io (contour)
 - quay.io (ingress-nginx, cert-manager)
 - registry.k8s.io (metrics-server, csi-driver-nfs)
 - gcr.io (csi-driver-nfs)
 - public.ecr.aws (ebs-csi-driver)
 
 #### Azure
+- ghcr.io (contour)
 - quay.io (ingress-nginx, cert-manager)
 - registry.k8s.io (csi-driver-nfs)
 - gcr.io (csi-driver-nfs)
 
 #### GCP
+- ghcr.io (contour)
 - quay.io (ingress-nginx, cert-manager)
 - registry.k8s.io (csi-driver-nfs)
 - gcr.io (csi-driver-nfs)
 
 #### Generic K8s / NFS
+- ghcr.io (contour)
 - quay.io (ingress-nginx, cert-manager)
 - registry.k8s.io (csi-driver-nfs)
 - gcr.io (csi-driver-nfs)
@@ -133,7 +138,7 @@
 
 |Component|Networking Considerations|
 |---|---|
-|ingress-nginx|Exposes services externally, manages HTTP/S routing, uses cloud load balancers|
+|Ingress Controllers (contour/ingress-nginx)|Exposes services externally, manages HTTP/S routing, uses cloud load balancers|
 |Cluster Autoscaler|Indirectly affects networking by scaling nodes/pods|
 |metrics-server|Minimal, requires API access|
 |cert-manager|Minimal, may require outbound access for ACME|

@@ -61,7 +61,7 @@ More than one task can be run at the same time. An action can run against a sing
 
 | Name | Description |
 | :--- | :--- |
-| baseline | Installs cluster level tooling needed for all SAS Viya platform deployments. These may include, cert-manager, ingress-nginx, nfs-client-provisioners and more. |
+| baseline | Installs cluster level tooling needed for all SAS Viya platform deployments. These may include cert-manager, contour (default) or ingress-nginx, nfs-client-provisioners and more. |
 | viya | Deploys the SAS Viya platform |
 
 ### Examples
