@@ -384,7 +384,7 @@ This configuration ensures:
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_HA_ENABLED | Enable High Availability mode for stateless microservices | bool | false | false | Applies the SAS-provided HA transformer (`sas-bases/overlays/scaling/ha/enable-ha-transformer.yaml`) to increase replica counts for stateless services. Cannot be used with `V4_CFG_CLUSTER_NODE_POOL_MODE: minimal`. See [SAS Viya Platform Operations documentation](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=dplyml0phy0dkr&docsetTarget=titlepage.htm) for details on HA configuration. | viya |
+| V4_CFG_HA_ENABLED | Enable High Availability mode for stateless microservices | bool | false | false | Applies the SAS-provided HA transformer (`sas-bases/overlays/scaling/ha/enable-ha-transformer.yaml`) to enable ha for stateless services. Cannot be used with `V4_CFG_CLUSTER_NODE_POOL_MODE: minimal`. See [SAS Viya Platform Operations documentation](https://go.documentation.sas.com/doc/en/itopscdc/v_076/dplyml0phy0dkr/n08u2yg8tdkb4jn18u8zsi6yfv3d.htm#n14iqy05lb736yn1e01m2hmzu1xr) for details on HA configuration. | viya |
 
 **Important Notes**:
 - **Stateful Services**: Stateful services (PostgreSQL, RabbitMQ, Consul, Redis, OpenSearch) are deployed with HA enabled by default at initial deployment
