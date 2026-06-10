@@ -75,6 +75,7 @@ Supported configuration variables are listed in the table below.  All variables 
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_CLOUD_SERVICE_ACCOUNT_NAME | Cloud service account | string | | false | See [Ansible Cloud Authentication](user/AnsibleCloudAuthentication.md) for more information. | viya |
 | V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH | Full path to service account credentials file | string | | false | See [Ansible Cloud Authentication](user/AnsibleCloudAuthentication.md) for more information. | viya |
+| V4_CFG_POSTGRES_CLOUD_SQL_PROXY_VERSION | Cloud SQL proxy image version tag | string | 1.38.0 | false | Optional override for GCP external postgres cloud-sql-proxy image tag. Final image format: `gcr.io/cloudsql-docker/gce-proxy:<version>`. | viya |
 
 ## Jump Server
 
