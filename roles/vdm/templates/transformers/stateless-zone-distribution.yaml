@@ -3,6 +3,8 @@
 
 # Transformer to set topology spread constraints for stateless services (Deployments)
 # Targets ALL Deployments - no selector (will apply to all including non-SAS)
+# labelSelector omitted - Kubernetes automatically uses each Deployment's pod template labels
+# This ensures each service's replicas are spread independently, not evaluated globally
 apiVersion: builtin
 kind: PatchTransformer
 metadata:
@@ -14,15 +16,9 @@ patch: |-
       - maxSkew: 1
         topologyKey: topology.kubernetes.io/zone
         whenUnsatisfiable: ScheduleAnyway
-        labelSelector:
-          matchLabels:
-            sas.com/deployment: sas-viya
       - maxSkew: 1
         topologyKey: kubernetes.io/hostname
         whenUnsatisfiable: ScheduleAnyway
-        labelSelector:
-          matchLabels:
-            sas.com/deployment: sas-viya
 target:
   kind: Deployment
   version: v1
