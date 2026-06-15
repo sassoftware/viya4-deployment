@@ -1,4 +1,4 @@
-# PostgreSQL
+# External PostgreSQL Deployment and Data Migration
 
 * [PostgreSQL](#postgresql)
   * [Use IAC To Create an External PostgreSQL Database Cluster](#use-iac-to-create-an-external-postgresql-database-cluster)
