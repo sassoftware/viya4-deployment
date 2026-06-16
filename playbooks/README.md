@@ -31,27 +31,20 @@
     - Condition: Runs only if both `'baseline'` and `'install'` are in `ansible_run_tags`.
     - Tags: `baseline`
     - **Networking Considerations:** Deploys core components (contour or ingress-nginx, cert-manager, metrics-server, csi-driver-nfs, ebs-csi-driver, etc.) that impact cluster networking, ingress, and storage. See [NetworkingConsiderations.md](../docs/user/NetworkingConsiderations.md)
-6. **Optionally Include Multi-Tenancy Role**
-    
-    - Task: `Multi-tenancy role`
-    - Action: Includes the `multi-tenancy` role.
-    - Condition: Runs only if `V4MT_ENABLE` is defined.
-    - Tags: `multi-tenancy`
-    - **Networking Considerations:** May create namespaces and network policies. See [NetworkingConsiderations.md](../docs/user/NetworkingConsiderations.md)
-7. **Include VDM Role**
+6. **Include VDM Role**
     
     - Task: `vdm role`
     - Action: Includes the `vdm` role.
-    - Tags: `viya`, `multi-tenancy`
+    - Tags: `viya`, `multi-tenancy` (legacy)
     - **Networking Considerations:** May create services and resources that affect networking within the cluster.
-8. **Optionally Include Baseline Role for Uninstall**
+7. **Optionally Include Baseline Role for Uninstall**
     
     - Task: `baseline role uninstall`
     - Action: Includes the `baseline` role for uninstall actions.
     - Condition: Runs only if both `'baseline'` and `'uninstall'` are in `ansible_run_tags`.
     - Tags: `baseline`
     - **Networking Considerations:** Removes core components and may affect networking and storage resources. See [NetworkingConsiderations.md](../docs/user/NetworkingConsiderations.md)
-9. **Delete Temporary Directory**
+8. **Delete Temporary Directory**
     
     - Task: `Delete tmpdir`
     - Action: Removes the temporary directory created at the start.
