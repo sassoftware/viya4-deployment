@@ -59,8 +59,6 @@
         - tfstate.nat_ip is defined
         - tfstate.nat_ip.value|length > 0
         - (tfstate.nat_ip.value+'/32') not in LOADBALANCER_SOURCE_RANGES
-        - not (V4_CFG_ENABLE_IPV6 | default(false) | bool)
-        - not (LOADBALANCER_SOURCE_RANGES | select('search', ':') | list | length > 0 and LOADBALANCER_SOURCE_RANGES | select('search', '\\.') | list | length == 0)
     # Add GKE pod subnet CIDR for GCP provider
     - name: tfstate - Add GKE pod subnet cidr to LOADBALANCER_SOURCE_RANGES # noqa: name[casing]
       set_fact:
