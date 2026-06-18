@@ -297,6 +297,12 @@ CONTOUR_AZURE_IPV6_CONFIG:
       ipFamilies: ["IPv6", "IPv4"]
       ipFamilyPolicy: "PreferDualStack"
 
+## Contour IPv6 Security Group Rules (AWS only)
+# Configuration for automatically adding IPv6 inbound rules to the k8s-traffic-* security group
+# created by the Contour Envoy service NLB on AWS
+# Uses LOADBALANCER_SOURCE_RANGES for IPv6 CIDR blocks and tfstate to discover NLB/SG details
+CONTOUR_IPV6_SG_RULES_ENABLED: false  # Set to true to enable IPv6 SG rule management for AWS
+
 ## Cluster Autoscaler
 CLUSTER_AUTOSCALER_ENABLED: true
 CLUSTER_AUTOSCALER_NAME: cluster-autoscaler

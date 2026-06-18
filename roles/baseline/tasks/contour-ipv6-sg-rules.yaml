@@ -1,0 +1,232 @@
+# Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+---
+# This file contains tasks for configuring IPv6 inbound rules in the k8s-traffic-* security group
+# created by the Contour Envoy Service NLB on AWS. This is necessary because AWS does not
+# automatically create IPv6 inbound rules when the NLB is created, causing external IPv6 access to fail.
+#
+# This task uses:
+#   - tfstate lookup to discover NLB and security group details (if available)
+#   - LOADBALANCER_SOURCE_RANGES for IPv6 CIDR blocks (filters for IPv6 entries)
+#   - Kubernetes service discovery as fallback/validation
+#
+# These tasks run only when:
+#   - Provider is AWS
+#   - V4_CFG_ENABLE_IPV6 is true
+#   - CONTOUR_IPV6_SG_RULES_ENABLED is true
+#   - Contour is deployed (V4_CFG_INGRESS_TYPE is 'contour' or 'contour' tag is present)
+
+# Skip this entire block if AWS, IPv6, and IPv6 SG rules are not all enabled
+- name: IPv6 Security Group Rules Configuration
+  block:
+    # Parse tfstate if available to get NLB and security group information
+    - name: Parse tfstate for NLB and security group details
+      set_fact:
+        contour_tfstate: "{{ lookup('tfstate', TFSTATE) }}"
+      when:
+        - TFSTATE is defined
+        - TFSTATE|length > 0
+      tags:
+        - install
+        - update
+
+    # Extract NLB and security group information from tfstate if available
+    - name: Extract NLB and security group from tfstate
+      set_fact:
+        contour_nlb_sg_id: "{{ contour_tfstate.nlb_security_group_id.value | default(None) }}"
+        contour_nlb_dns_tfstate: "{{ contour_tfstate.nlb_dns_name.value | default(None) }}"
+      when:
+        - contour_tfstate is defined
+      tags:
+        - install
+        - update
+
+    # Discover the Contour Envoy service for NLB DNS validation (if tfstate discovery failed)
+    - name: Get Contour Envoy service information
+      kubernetes.core.k8s_info:
+        kind: Service
+        namespace: "{{ CONTOUR_NAMESPACE }}"
+        name: "{{ CONTOUR_NAME }}-envoy"
+        kubeconfig: "{{ KUBECONFIG }}"
+      register: contour_envoy_svc
+      tags:
+        - install
+        - update
+
+    # Extract the NLB DNS name from the service status
+    - name: Set NLB DNS name from Contour Envoy service
+      set_fact:
+        contour_nlb_dns: "{{ contour_envoy_svc.resources[0].status.loadBalancer.ingress[0].hostname }}"
+      when:
+        - contour_envoy_svc.resources | length > 0
+        - contour_envoy_svc.resources[0].status.loadBalancer.ingress is defined
+        - contour_envoy_svc.resources[0].status.loadBalancer.ingress | length > 0
+      tags:
+        - install
+        - update
+
+    # Use tfstate NLB info if available, otherwise use service discovery
+    - name: Set final NLB DNS name (prefer tfstate)
+      set_fact:
+        contour_nlb_dns_final: "{{ contour_nlb_dns_tfstate | default(contour_nlb_dns | default(None)) }}"
+      tags:
+        - install
+        - update
+
+    # Filter LOADBALANCER_SOURCE_RANGES for IPv6 entries (contains ':')
+    - name: Filter IPv6 CIDR blocks from LOADBALANCER_SOURCE_RANGES
+      set_fact:
+        contour_ipv6_cidrs: "{{ LOADBALANCER_SOURCE_RANGES | default(['0.0.0.0/0'], -1) | select('search', ':') | list }}"
+      tags:
+        - install
+        - update
+
+    # Log discovered information
+    - name: Log IPv6 discovery results
+      debug:
+        msg: |
+          Contour IPv6 Security Group Configuration:
+            NLB DNS Name: {{ contour_nlb_dns_final | default('NOT DISCOVERED') }}
+            Security Group ID (from tfstate): {{ contour_nlb_sg_id | default('NOT FOUND IN TFSTATE') }}
+            IPv6 CIDR Blocks: {{ contour_ipv6_cidrs | default([]) }}
+      tags:
+        - install
+        - update
+
+    # If NLB DNS was found, proceed to discover and configure the security group
+    - name: Configure IPv6 Inbound Rules
+      block:
+        # Query AWS to find the NLB if SG ID is not from tfstate
+        - name: Get NLB information from AWS
+          amazon.aws.elb_network_lb:
+            name: "{{ contour_nlb_dns_final.split('.')[0] }}"
+            state: present
+            region: "{{ AWS_REGION | default(CLUSTER_AUTOSCALER_LOCATION) }}"
+          register: contour_nlb_info
+          when:
+            - contour_nlb_sg_id is none
+          tags:
+            - install
+            - update
+
+        # Extract the security group IDs from the NLB if not from tfstate
+        - name: Get security group IDs from NLB
+          set_fact:
+            contour_nlb_sg_ids: "{{ contour_nlb_info.network_load_balancers[0].security_groups | default([]) }}"
+          when:
+            - contour_nlb_info.network_load_balancers is defined
+            - contour_nlb_info.network_load_balancers | length > 0
+          tags:
+            - install
+            - update
+
+        # Find the k8s-traffic-* security group if not from tfstate
+        - name: Find k8s-traffic security group
+          amazon.aws.ec2_group_info:
+            filters:
+              group-id: "{{ contour_nlb_sg_ids | default([contour_nlb_sg_id]) }}"
+              group-name: "k8s-traffic-*"
+            region: "{{ AWS_REGION | default(CLUSTER_AUTOSCALER_LOCATION) }}"
+          register: k8s_traffic_sg_query
+          when:
+            - contour_nlb_sg_id is none or contour_nlb_sg_ids is defined
+          tags:
+            - install
+            - update
+
+        # Set the final security group ID (prefer tfstate, fallback to discovery)
+        - name: Set final security group ID
+          set_fact:
+            k8s_traffic_sg_id_final: "{{ contour_nlb_sg_id | default(k8s_traffic_sg_query.security_groups[0].group_id if k8s_traffic_sg_query.security_groups | length > 0 else None) }}"
+          tags:
+            - install
+            - update
+
+        # Add IPv6 inbound rules for HTTP (80) and HTTPS (443)
+        - name: Add IPv6 inbound rules for standard ports
+          amazon.aws.ec2_group:
+            group_id: "{{ k8s_traffic_sg_id_final }}"
+            description: "Security group for Contour Envoy NLB"
+            rules:
+              - proto: tcp
+                ports: 80
+                cidr_ipv6: "{{ ipv6_cidr }}"
+                rule_desc: "IPv6 TCP rule for Contour Envoy HTTP traffic"
+              - proto: tcp
+                ports: 443
+                cidr_ipv6: "{{ ipv6_cidr }}"
+                rule_desc: "IPv6 TCP rule for Contour Envoy HTTPS traffic"
+            state: present
+            region: "{{ AWS_REGION | default(CLUSTER_AUTOSCALER_LOCATION) }}"
+          loop: "{{ contour_ipv6_cidrs }}"
+          loop_control:
+            loop_var: ipv6_cidr
+          when:
+            - k8s_traffic_sg_id_final is not none
+            - contour_ipv6_cidrs | length > 0
+          tags:
+            - install
+            - update
+
+        # Log the configuration for transparency
+        - name: Log IPv6 SG rule configuration success
+          debug:
+            msg: |
+              Successfully configured IPv6 inbound rules for Contour Envoy NLB:
+                Security Group ID: {{ k8s_traffic_sg_id_final }}
+                IPv6 CIDR Blocks: {{ contour_ipv6_cidrs }}
+                Ports: 80 (HTTP), 443 (HTTPS)
+          when:
+            - k8s_traffic_sg_id_final is not none
+            - contour_ipv6_cidrs | length > 0
+          tags:
+            - install
+            - update
+
+        # Handle case where security group is not found
+        - name: Warn if security group not found
+          debug:
+            msg: |
+              WARNING: Could not find security group for Contour Envoy NLB.
+              This may occur if:
+              - The Contour Envoy service has not yet provisioned the NLB
+              - The NLB is in a different AWS account or region
+              - The security group naming pattern has changed
+              
+              Manual configuration may be required. Check the NLB ({{ contour_nlb_dns_final }}) in the AWS console
+              and ensure the attached security group has IPv6 inbound rules for ports 80 and 443.
+          when:
+            - k8s_traffic_sg_id_final is none
+          tags:
+            - install
+            - update
+
+      when:
+        - contour_nlb_dns_final is not none
+
+    # Handle case where NLB DNS is not found
+    - name: Warn if Contour Envoy service NLB is not yet provisioned
+      debug:
+        msg: |
+          INFO: Contour Envoy service NLB not yet provisioned or discovered.
+          This is expected if:
+          - This is the first deployment and the NLB is still being created
+          - The Contour Envoy service is in a pending state
+          - tfstate does not contain NLB information
+          
+          The IPv6 Security Group rules will be configured when the NLB becomes available.
+          You can re-run this playbook to configure IPv6 rules once the NLB is provisioned.
+      when:
+        - contour_nlb_dns_final is none
+      tags:
+        - install
+        - update
+
+  when:
+    - PROVIDER == "aws"
+    - V4_CFG_ENABLE_IPV6 | bool
+    - CONTOUR_IPV6_SG_RULES_ENABLED | bool
+  tags:
+    - baseline
+    - contour

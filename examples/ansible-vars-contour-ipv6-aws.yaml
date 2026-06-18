@@ -1,0 +1,44 @@
+# Example: Contour with IPv6 Security Group Configuration on AWS
+# 
+# This example demonstrates how to configure the viya4-deployment project
+# to automatically add IPv6 inbound rules to the Contour Envoy NLB security group.
+# 
+# For detailed documentation, see: docs/user/ContourIPv6SecurityGroups.md
+
+---
+# Basic IPv6 Configuration
+V4_CFG_ENABLE_IPV6: true
+
+# Enable automatic IPv6 security group rule management
+CONTOUR_IPV6_SG_RULES_ENABLED: true
+
+# Contour configuration as the ingress controller
+V4_CFG_INGRESS_TYPE: contour
+V4_CFG_INGRESS_MODE: public
+
+# IPv6 CIDR Blocks - Extracted from LOADBALANCER_SOURCE_RANGES (filters for entries containing ':')
+# Configure LOADBALANCER_SOURCE_RANGES to include both IPv4 and IPv6 CIDR blocks
+# IPv6 entries (containing ':') will automatically be used for security group rules
+# Uncomment and modify to restrict or customize IPv6 access
+LOADBALANCER_SOURCE_RANGES:
+  - "0.0.0.0/0"        # IPv4: Allow all (you can restrict to specific IPs/CIDRs)
+  - "::/0"             # IPv6: Allow from any IPv6 (recommended for public deployments)
+
+# Optional: Add organization-specific IPv6 ranges (instead of ::/0)
+# LOADBALANCER_SOURCE_RANGES:
+#   - "0.0.0.0/0"             # IPv4: allow all
+#   - "2001:db8::/32"         # IPv6: your organization's IPv6 prefix
+#   - "2001:db8:1::/48"       # IPv6: another specific IPv6 range
+
+# Terraform state file path (optional - used for discovering NLB/SG details)
+# If defined, the task will read NLB and security group information from tfstate
+# This is preferred over AWS API calls as it doesn't require credentials
+# TFSTATE: /path/to/terraform.tfstate
+
+# AWS Region (optional - auto-detected from CLUSTER_AUTOSCALER_LOCATION if not set)
+# CLUSTER_AUTOSCALER_LOCATION: us-east-1
+
+# Additional required configuration for your deployment
+CLUSTER_NAME: my-cluster
+PROVIDER: aws
+KUBECONFIG: /path/to/kubeconfig
