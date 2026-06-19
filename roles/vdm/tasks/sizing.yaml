@@ -6,18 +6,19 @@
 # It is included from main.yaml to manage sizing overlays and configuration.
 
 # Add overlays for minimal sizing if the cluster node pool mode is minimal
+
+# Check if cas-server overlay exists
 - name: Sizing - check if cas-server overlay exists
   stat:
     path: "{{ DEPLOY_DIR }}/sas-bases/overlays/cas-server"
   register: cas_server_overlay_sizing
-  when:
-    - V4_CFG_CLUSTER_NODE_POOL_MODE == "minimal"
   tags:
     - install
     - uninstall
     - update
 
-- name: Sizing - minimal
+# Add overlays for minimal sizing with CAS
+- name: Sizing - minimal (with CAS)
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
@@ -28,13 +29,14 @@
   when:
     # Only run if minimal node pool mode is set and CAS overlay exists
     - V4_CFG_CLUSTER_NODE_POOL_MODE == "minimal"
-    - cas_server_overlay_sizing.stat.exists | default(false)
+    - cas_server_overlay_sizing.stat.exists
   tags:
     - install
     - uninstall
     - update
 
-- name: Sizing - minimal (no CAS)
+# Add overlays for minimal sizing without CAS
+- name: Sizing - minimal (without CAS)
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
     cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
@@ -42,8 +44,9 @@
     add:
       - { transformers: overlays/scaling/single-replica/transformer.yaml, priority: 90, min: 2021.1.1 }
   when:
+    # Only run if minimal node pool mode is set and CAS overlay does not exist
     - V4_CFG_CLUSTER_NODE_POOL_MODE == "minimal"
-    - not (cas_server_overlay_sizing.stat.exists | default(false))
+    - not cas_server_overlay_sizing.stat.exists
   tags:
     - install
     - uninstall
