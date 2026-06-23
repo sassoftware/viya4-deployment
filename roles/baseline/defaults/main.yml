@@ -106,7 +106,6 @@ INGRESS_NGINX_AWS_LB_SUBNETS:
 INGRESS_NGINX_IPV6_CONFIG:
   controller:
     service:
-      loadBalancerSourceRanges: []  # Empty by default; override with IPv4 CIDRs (e.g., ["149.173.0.0/16"]) if needed
       annotations:
         service.beta.kubernetes.io/aws-load-balancer-type: "nlb-ip"
         service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
