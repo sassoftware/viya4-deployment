@@ -19,6 +19,9 @@ patch: |-
       - maxSkew: 1
         topologyKey: kubernetes.io/hostname
         whenUnsatisfiable: ScheduleAnyway
+  - op: replace
+    path: /spec/template/spec/affinity/podAntiAffinity/preferredDuringSchedulingIgnoredDuringExecution/0/podAffinityTerm/topologyKey
+    value: topology.kubernetes.io/zone
 target:
   kind: Deployment
   version: v1
