@@ -19,10 +19,22 @@ patch: |-
       - maxSkew: 1
         topologyKey: kubernetes.io/hostname
         whenUnsatisfiable: ScheduleAnyway
+target:
+  kind: Deployment
+  version: v1
+  group: apps
+
+---
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: centralized-zone-antiaffinity
+patch: |-
   - op: replace
     path: /spec/template/spec/affinity/podAntiAffinity/preferredDuringSchedulingIgnoredDuringExecution/0/podAffinityTerm/topologyKey
     value: topology.kubernetes.io/zone
 target:
   kind: Deployment
-  version: v1
   group: apps
+  version: v1
+  labelSelector: workload.sas.com/class=stateless
