@@ -40,14 +40,14 @@
 This project contains Ansible code that creates a baseline cluster in an existing Kubernetes environment for use with the SAS Viya platform, generates the manifest for a SAS Viya platform software order, and then deploys that order into the specified Kubernetes environment. Here is a list of tasks that this tool can perform (also see [playbook overview](./playbooks/README.md) for info on the default tasks):
 
 - Prepare Kubernetes cluster
-  - Deploy [ingress-nginx](https://kubernetes.github.io/ingress-nginx)
+  - Deploy [contour](https://projectcontour.io/) (default) or [ingress-nginx](https://kubernetes.github.io/ingress-nginx) as the ingress controller
   - Deploy [csi-driver-nfs](https://github.com/kubernetes-csi/csi-driver-nfs) for PVs
   - Deploy [cert-manager](https://github.com/jetstack/cert-manager) for TLS
   - Deploy [metrics-server](https://github.com/bitnami/charts/tree/master/bitnami/metrics-server/) (AWS only)
   - Deploy [aws-ebs-csi-driver](https://github.com/kubernetes-sigs/aws-ebs-csi-driver) (AWS only)
   - Manage storageClass settings
 
-*NOTE*: See the list of [supported third-party components](./docs/third-party-components.md) for more information. For information on networking considerations for these and other components, see [networking considerations](./docs/user/NetworkingConsiderations.md).
+*NOTE*: See the list of [supported third-party components](./docs/user/ThirdPartyComponents.md) for more information. For information on networking considerations for these and other components, see [networking considerations](./docs/user/NetworkingConsiderations.md).
 
 - Deploy the SAS Viya Platform
   - Retrieve the deployment assets using [SAS Viya Orders CLI](https://github.com/sassoftware/viya4-orders-cli)
@@ -352,6 +352,13 @@ For example:
 First, look up the ingress controller's LoadBalancer endpoint. The example below uses kubectl. This information can also be looked up in the cloud provider's admin portal.
 
 ```bash
+# For contour (default)
+$ kubectl get service -n projectcontour
+
+NAME      TYPE           CLUSTER-IP    EXTERNAL-IP      PORT(S)                      AGE
+envoy     LoadBalancer   10.0.225.39   52.52.52.52      80:30603/TCP,443:32014/TCP   12d
+
+# For ingress-nginx
 $ kubectl get service -n ingress-nginx
 
 NAME                                 TYPE           CLUSTER-IP    EXTERNAL-IP      PORT(S)                      AGE
