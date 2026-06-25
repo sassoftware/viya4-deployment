@@ -1,4 +1,4 @@
-# PostgreSQL
+# External PostgreSQL Deployment and Data Migration
 
 * [PostgreSQL](#postgresql)
   * [Use IAC To Create an External PostgreSQL Database Cluster](#use-iac-to-create-an-external-postgresql-database-cluster)
@@ -11,7 +11,7 @@
 
 To use the IAC project to create an external PostgreSQL database cluster, refer to the IAC project link below that corresponds to your cloud environment. Each link goes to provider-specific PostgreSQL database cluster configuration examples.
 
-**Note**: Before using IAC to create a new external PostgreSQL database cluster, SAS recommends that you follow the steps to [Stop a SAS Viya Platform Deployment](https://documentation.sas.com/?cdcId=sasadmincdc&cdcVersion=v_044&docsetId=calchkadm&docsetTarget=p17xfmmjjkma1dn1b5dcx3e5ejxq.htm#p0butgo7gtfyi0n14umtfv0voydt). After the external PostgreSQL database cluster has been created by IAC, follow the steps to [Start a SAS Viya Platform Deployment](https://documentation.sas.com/?cdcId=sasadmincdc&cdcVersion=v_044&docsetId=calchkadm&docsetTarget=p17xfmmjjkma1dn1b5dcx3e5ejxq.htm#p0butgo7gtfyi0n14umtfv0voydt).
+**Note**: Before using IAC to create a new external PostgreSQL database cluster, SAS recommends that you follow the steps to [Stop a SAS Viya Platform Deployment](https://go.documentation.sas.com/doc/en/sasadmincdc/v_076/calchkadm/p17xfmmjjkma1dn1b5dcx3e5ejxq.htm#p0butgo7gtfyi0n14umtfv0voydt). After the external PostgreSQL database cluster has been created by IAC, follow the steps to [Start a SAS Viya Platform Deployment](https://go.documentation.sas.com/doc/en/sasadmincdc/v_076/calchkadm/p17xfmmjjkma1dn1b5dcx3e5ejxq.htm#p0butgo7gtfyi0n14umtfv0voydt).
 
 [Azure PostgreSQL Cluster](https://github.com/sassoftware/viya4-iac-azure/blob/main/docs/CONFIG-VARS.md#postgres-servers)
 

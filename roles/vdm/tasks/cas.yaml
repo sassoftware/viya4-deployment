@@ -5,6 +5,26 @@
 # This file contains the CAS server deployment tasks for the vdm role.
 # It is included from main.yaml to manage CAS server deployment.
 
+# Check if CAS server overlay exists in sas-bases (may not exist for ESP-only orders)
+- name: CAS - check if cas-server overlay exists
+  stat:
+    path: "{{ DEPLOY_DIR }}/sas-bases/overlays/cas-server"
+  register: cas_server_overlay
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: CAS - skip notice
+  debug:
+    msg: "CAS server overlay not found in sas-bases. Skipping CAS configuration (ESP-only or non-CAS deployment)."
+  when:
+    - not cas_server_overlay.stat.exists
+  tags:
+    - install
+    - uninstall
+    - update
+
 # Add overlay for CAS server base resources
 - name: CAS - base
   overlay_facts:
@@ -13,6 +33,8 @@
     existing: "{{ vdm_overlays }}"
     add:
       - { resources: overlays/cas-server }
+  when:
+    - cas_server_overlay.stat.exists
   tags:
     - install
     - uninstall
@@ -21,7 +43,8 @@
 # If user provides SSSD config, create the directory, copy the file, and add overlays
 - name: CAS - user defined sssd
   when:
-    # Only run if SSSD config is provided
+    # Only run if SSSD config is provided and CAS overlay exists
+    - cas_server_overlay.stat.exists
     - V4_CFG_SSSD is not none
   tags:
     - install
@@ -60,7 +83,8 @@
     add:
       - { transformers: cas-manage-backup.yaml, vdm: true }
   when:
-    # Only run if backup controller is enabled
+    # Only run if backup controller is enabled and CAS overlay exists
+    - cas_server_overlay.stat.exists
     - V4_CFG_CAS_ENABLE_BACKUP_CONTROLLER
   tags:
     - install
@@ -77,7 +101,8 @@
       - { resources: overlays/cas-server/auto-resources, priority: 40 }
       - { transformers: overlays/cas-server/auto-resources/remove-resources.yaml, priority: 90 }
   when:
-    # Only run if RAM or cores are not set
+    # Only run if CAS overlay exists and RAM or cores are not set
+    - cas_server_overlay.stat.exists
     - V4_CFG_CAS_RAM is none or V4_CFG_CAS_CORES is none
   tags:
     - install
@@ -93,7 +118,8 @@
     add:
       - { transformers: cas-manage-cpu-and-memory.yaml, vdm: true }
   when:
-    # Only run if both RAM and cores are set
+    # Only run if CAS overlay exists and both RAM and cores are set
+    - cas_server_overlay.stat.exists
     - V4_CFG_CAS_RAM is not none
     - V4_CFG_CAS_CORES is not none
   tags:
@@ -110,7 +136,8 @@
     add:
       - { transformers: cas-manage-workers.yaml, vdm: true }
   when:
-    # Only run if worker count is greater than 1
+    # Only run if CAS overlay exists and worker count is greater than 1
+    - cas_server_overlay.stat.exists
     - V4_CFG_CAS_WORKER_COUNT |int > 1
   tags:
     - install
@@ -125,6 +152,7 @@
     add:
       - { transformers: cas-enable-external-services.yaml, vdm: true }
   when:
+    - cas_server_overlay.stat.exists
     - V4_CFG_CAS_ENABLE_LOADBALANCER
   tags:
     - install
@@ -139,6 +167,7 @@
     add:
       - { transformers: cas-auto-restart.yaml, vdm: true, min: "2021.2" }
   when:
+    - cas_server_overlay.stat.exists
     - V4_DEPLOYMENT_OPERATOR_ENABLED
     - V4_CFG_CAS_ENABLE_AUTO_RESTART
   tags:
@@ -148,6 +177,7 @@
 
 # Add shutdown transformer for programming-only deployments (CAS disabled)
 # This approach keeps CAS resources in the manifest (avoiding prune risks) but shuts down CAS pods
+# Only applies when CAS overlay exists but user explicitly disabled CAS
 - name: CAS - shutdown for programming-only deployment
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
@@ -156,7 +186,8 @@
     add:
       - { transformers: cas-shutdown.yaml, vdm: true, priority: 100 }
   when:
-    # Only add shutdown transformer when CAS is disabled
+    # Only add shutdown transformer when CAS overlay exists but CAS is explicitly disabled
+    - cas_server_overlay.stat.exists
     - not (V4_CFG_ENABLE_CAS | default(true) | bool)
   tags:
     - install
