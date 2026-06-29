@@ -1,0 +1,37 @@
+# Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+---
+# This file contains the Envoy Gateway setup tasks for the baseline role.
+# Purpose: Installs and manages Envoy Gateway controller resources.
+
+# Download the Envoy Gateway install manifest to the session temp directory.
+- name: Download Envoy Gateway manifest
+  get_url:
+    url: "{{ ENVOY_GATEWAY_MANIFEST_URL }}"
+    dest: "{{ tmpdir.path }}/envoy-gateway-install.yaml"
+    mode: "0640"
+  tags:
+    - install
+    - update
+
+# Install or update Envoy Gateway.
+- name: Deploy Envoy Gateway
+  kubernetes.core.k8s:
+    state: present
+    src: "{{ tmpdir.path }}/envoy-gateway-install.yaml"
+    kubeconfig: "{{ KUBECONFIG }}"
+    wait: true
+  tags:
+    - install
+    - update
+
+# Remove Envoy Gateway when uninstalling and the feature is enabled.
+- name: Remove Envoy Gateway
+  kubernetes.core.k8s:
+    state: absent
+    src: "{{ tmpdir.path }}/envoy-gateway-install.yaml"
+    kubeconfig: "{{ KUBECONFIG }}"
+    wait: true
+  tags:
+    - uninstall

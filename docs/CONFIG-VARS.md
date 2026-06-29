@@ -178,6 +178,14 @@ When V4_CFG_MANAGE_STORAGE is set to `true`, the `sas` and `pg-storage` storage 
 | V4_CFG_INGRESS_TYPE | The ingress controller to deploy | string | "contour" | true | Possible values: "ingress", "contour" | baseline, viya |
 | V4_CFG_INGRESS_FQDN | FQDN to the ingress for SAS Vya installation | string | | true | | viya |
 | V4_CFG_INGRESS_MODE | Whether to create a public or private Loadbalancer endpoint | string | "public" | false | Possible values: "public", "private". Setting this option to "private" adds options to the ingress controller that create a LoadBalancer with private IP address(es) only. | baseline |
+| V4_CFG_INSTALL_GATEWAY_API | Whether to install Gateway API CRDs | bool | false | false | Optional feature flag. Existing ingress controller behavior remains unchanged. | baseline |
+| V4_CFG_INSTALL_ENVOY_GATEWAY | Whether to install Envoy Gateway | bool | false | false | Optional feature flag. Existing ingress controller behavior remains unchanged. | baseline |
+| V4_CFG_GENERATE_GATEWAY_API_RESOURCES | Whether to generate Gateway and HTTPRoute resources for Viya | bool | false | false | Requires setting V4_CFG_VIYA_HTTPROUTE_BACKEND_SERVICE. Existing ingress controller behavior remains unchanged. | viya |
+| V4_CFG_VIYA_GATEWAY_NAME | Gateway resource name for Viya traffic | string | sas-viya-gateway | false | Used only when V4_CFG_GENERATE_GATEWAY_API_RESOURCES=true. | viya |
+| V4_CFG_VIYA_GATEWAY_CLASS_NAME | GatewayClass name used by Viya Gateway resource | string | envoy-gateway-class | false | Used only when V4_CFG_GENERATE_GATEWAY_API_RESOURCES=true. | viya |
+| V4_CFG_VIYA_HTTPROUTE_NAME | HTTPRoute resource name for Viya traffic | string | sas-viya-httproute | false | Used only when V4_CFG_GENERATE_GATEWAY_API_RESOURCES=true. | viya |
+| V4_CFG_VIYA_HTTPROUTE_BACKEND_SERVICE | Backend service name referenced by Viya HTTPRoute | string | | false | Required when V4_CFG_GENERATE_GATEWAY_API_RESOURCES=true. | viya |
+| V4_CFG_VIYA_HTTPROUTE_BACKEND_PORT | Backend service port referenced by Viya HTTPRoute | int | 80 | false | Used only when V4_CFG_GENERATE_GATEWAY_API_RESOURCES=true. | viya |
 
 ## Load Balancer
 

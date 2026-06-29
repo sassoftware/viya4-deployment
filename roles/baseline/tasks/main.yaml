@@ -17,6 +17,26 @@
   tags:
     - baseline
 
+# Include Gateway API CRD install tasks when explicitly enabled
+- name: Include Gateway API
+  include_tasks:
+    file: gateway-api.yaml
+  when:
+    - V4_CFG_INSTALL_GATEWAY_API is defined
+    - V4_CFG_INSTALL_GATEWAY_API|bool
+  tags:
+    - baseline
+
+# Include Envoy Gateway install tasks when explicitly enabled
+- name: Include Envoy Gateway
+  include_tasks:
+    file: envoy-gateway.yaml
+  when:
+    - V4_CFG_INSTALL_ENVOY_GATEWAY is defined
+    - V4_CFG_INSTALL_ENVOY_GATEWAY|bool
+  tags:
+    - baseline
+
 # Include ingress-nginx tasks if ingress type is 'ingress' or 'nginx' tag is present
 - name: Include ingress nginx
   include_tasks:

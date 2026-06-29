@@ -6,10 +6,21 @@ V4_CFG_TLS_MODE: full-stack # other valid values are front-door, ingress-only, a
 V4_CFG_RWX_FILESTORE_PATH: /export
 V4_CFG_INGRESS_TYPE: contour
 V4_CFG_INGRESS_MODE: public
+V4_CFG_INSTALL_GATEWAY_API: false
+V4_CFG_INSTALL_ENVOY_GATEWAY: false
 V4_CFG_MANAGE_STORAGE: true
 V4_CFG_AWS_LB_SUBNETS: ""
 STORAGE_TYPE_BACKEND: ""
 NETAPP_VOLUME_PATH: ""
+
+## Gateway API
+GATEWAY_API_VERSION: v1.5.0
+GATEWAY_API_NAMESPACE_LABEL_MODE: standard
+GATEWAY_API_MANIFEST_URL: "https://github.com/kubernetes-sigs/gateway-api/releases/download/{{ GATEWAY_API_VERSION }}/{{ GATEWAY_API_NAMESPACE_LABEL_MODE }}-install.yaml"
+
+## Envoy Gateway
+ENVOY_GATEWAY_VERSION: v1.8.0
+ENVOY_GATEWAY_MANIFEST_URL: "https://github.com/envoyproxy/gateway/releases/download/{{ ENVOY_GATEWAY_VERSION }}/install.yaml"
 
 ## Cert-manager
 CERT_MANAGER_NAME: cert-manager
