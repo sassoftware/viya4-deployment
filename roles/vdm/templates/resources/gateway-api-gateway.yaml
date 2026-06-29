@@ -1,0 +1,23 @@
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: {{ V4_CFG_VIYA_GATEWAY_NAME }}
+spec:
+  gatewayClassName: {{ V4_CFG_VIYA_GATEWAY_CLASS_NAME }}
+  listeners:
+  - name: http
+    protocol: HTTP
+    port: 80
+    hostname: "{{ V4_CFG_INGRESS_FQDN }}"
+  {% if V4_CFG_TLS_MODE != "disabled" %}
+  - name: https
+    protocol: HTTPS
+    port: 443
+    hostname: "{{ V4_CFG_INGRESS_FQDN }}"
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - kind: Secret
+        name: sas-ingress-certificate
+  {% endif %}
