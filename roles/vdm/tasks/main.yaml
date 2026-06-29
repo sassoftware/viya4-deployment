@@ -54,6 +54,19 @@
     - update
     - multi-tenancy
 
+# Validate required Gateway API resource inputs when feature flag is enabled
+- name: Validate Gateway API resource configuration
+  fail:
+    msg: "V4_CFG_VIYA_HTTPROUTE_BACKEND_SERVICE is required when V4_CFG_GENERATE_GATEWAY_API_RESOURCES=true"
+  when:
+    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES is defined
+    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES | bool
+    - V4_CFG_VIYA_HTTPROUTE_BACKEND_SERVICE is none
+  tags:
+    - install
+    - uninstall
+    - update
+
 # Add base overlays and generators for kustomize
 - name: Base overlays
   overlay_facts:
@@ -73,6 +86,23 @@
       - { generators: sas-consul-config.yaml, vdm: true, max: "2021.1" }
       - { generators: sas-consul-config-secret.yaml, vdm: true, min: 2021.1.1 }
       - { generators: ingress-input.yaml, vdm: true }
+  tags:
+    - install
+    - uninstall
+    - update
+
+# Add optional Gateway API resources for Viya traffic entry via HTTPRoute
+- name: Add Gateway API overlays
+  overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { resources: gateway-api-gateway.yaml, vdm: true }
+      - { resources: gateway-api-httproute.yaml, vdm: true }
+  when:
+    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES is defined
+    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES | bool
   tags:
     - install
     - uninstall
