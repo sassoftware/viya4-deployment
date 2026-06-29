@@ -5,22 +5,6 @@
 # This file contains the deployment asset tasks for the vdm role.
 # It is included from main.yaml to manage deployment assets.
 
-# Validate APIM credentials are provided
-- name: Assets - Validate APIM credentials
-  fail:
-    msg: |
-      APIM credentials are missing.
-      Please provide:
-        - V4_CFG_APIM_CLIENT_ID
-        - V4_CFG_APIM_CLIENT_SECRET
-      Obtain credentials from: https://developer.sas.com/rest-apis/mysas/docs/getting-started/authentication#obtain-client-credentials
-  when:
-    - (V4_CFG_APIM_CLIENT_ID is none or V4_CFG_APIM_CLIENT_SECRET is none)
-  tags:
-    - install
-    - uninstall
-    - update
-
 # Download the viya4-orders-cli tool if any of the required assets are missing
 - name: Assets - Download viya4-orders-cli
   get_url:
