@@ -344,7 +344,7 @@ Notes:
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_MULTI_ZONE_ENABLED | Enable multi-zone pod distribution for StatefulSets | bool | false | false | Adds topology spread constraints and node affinity to prevent StatefulSet pods from co-locating in same zone during zone failures. | viya |
+| V4_CFG_MULTI_ZONE_ENABLED | Enable multi-zone pod distribution for StatefulSets and the Contour ingress controller | bool | false | false | Adds topology spread constraints and node affinity to prevent StatefulSet pods from co-locating in same zone during zone failures. Also enables Contour multi-zone HA when `V4_CFG_MULTI_ZONE_CONTOUR_ENABLED` is true. | viya, baseline |
 | V4_CFG_MULTI_ZONE_RABBITMQ_ENABLED | Enable multi-zone distribution for RabbitMQ StatefulSet | bool | true | false | Ensures RabbitMQ pods are distributed across zones with nodepool restrictions to maintain quorum during zone failures | viya |
 | V4_CFG_MULTI_ZONE_POSTGRES_ENABLED | Enable multi-zone distribution for PostgreSQL StatefulSet | bool | true | false | Ensures PostgreSQL pods are distributed across zones for high availability. Only applies to internal PostgreSQL deployments | viya |
 | V4_CFG_MULTI_ZONE_CONSUL_ENABLED | Enable multi-zone distribution for Consul StatefulSet | bool | true | false | Ensures Consul pods are distributed across zones for service discovery high availability | viya |
@@ -352,6 +352,7 @@ Notes:
 | V4_CFG_MULTI_ZONE_OPENDISTRO_ENABLED | Enable multi-zone distribution for OpenDistro/OpenSearch StatefulSets | bool | true | false | Ensures OpenDistro/OpenSearch pods are distributed across zones for search and logging availability | viya |
 | V4_CFG_MULTI_ZONE_WORKLOAD_ORCHESTRATOR_ENABLED | Enable multi-zone distribution for Workload Orchestrator StatefulSet | bool | true | false | Ensures Workload Orchestrator pods are distributed across zones for job scheduling availability | viya |
 | V4_CFG_MULTI_ZONE_DATA_AGENT_ENABLED | Enable multi-zone distribution for Data Agent Server StatefulSet | bool | true | false | Ensures Data Agent Server pods are distributed across zones for data services availability | viya |
+| V4_CFG_MULTI_ZONE_CONTOUR_ENABLED | Enable multi-zone HA distribution for the Contour ingress controller | bool | true | false | When `V4_CFG_MULTI_ZONE_ENABLED` is true, sets Contour controller `replicaCount` to 2 and applies `topologySpreadConstraints` and pod anti-affinity to distribute Contour pods across availability zones. Envoy runs as a DaemonSet and is inherently zone-distributed. | baseline |
 | V4_CFG_STATEFUL_NODEPOOL_RESTRICTION | Restrict StatefulSets to dedicated stateful nodepools | bool | false | false | Adds node affinity to ensure StatefulSets only run on nodes with the specified stateful nodepool label. | viya |
 | V4_CFG_STATEFUL_NODEPOOL_LABEL | Label key for identifying stateful nodepool nodes | string | workload.sas.com/class | false | Configures the node label used for nodepool affinity. Common values: `workload.sas.com/class` (modern) or `agentpool` (legacy AKS) | viya |
 | V4_CFG_SINGLE_ZONE_FALLBACK | Apply relaxed constraints for single-zone clusters | bool | true | false | When enabled, uses relaxed scheduling constraints for single-zone deployments to prevent scheduling failures | viya |
@@ -412,6 +413,8 @@ If you used [viya4-iac-aws:5.6.0](https://github.com/sassoftware/viya4-iac-aws/r
 ### Contour
 
 Contour is an open source ingress controller that provides dynamic configuration updates. Contour support is available starting with the 2026.02 cadence release.
+
+When `V4_CFG_MULTI_ZONE_ENABLED` is `true` and `V4_CFG_MULTI_ZONE_CONTOUR_ENABLED` is `true` (the default), DaC automatically configures the Contour controller Deployment for multi-zone high availability by setting `replicaCount: 2`, adding `topologySpreadConstraints` across `topology.kubernetes.io/zone` and `kubernetes.io/hostname`, and adding preferred pod anti-affinity. The Envoy component runs as a DaemonSet and is inherently distributed across all cluster nodes and zones without additional configuration.
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |

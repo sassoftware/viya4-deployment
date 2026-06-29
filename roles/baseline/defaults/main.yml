@@ -235,6 +235,41 @@ CONTOUR_AWS_LB_SUBNETS:
       annotations:
         service.beta.kubernetes.io/aws-load-balancer-subnets: "{{ V4_CFG_AWS_LB_SUBNETS }}"
 
+# Multi-zone HA configuration for Contour (contour controller Deployment).
+# Applied when V4_CFG_MULTI_ZONE_ENABLED and V4_CFG_MULTI_ZONE_CONTOUR_ENABLED are both true.
+# Sets replicaCount >= 2 and applies topology spread constraints so that contour
+# controller pods are distributed across availability zones.
+# NOTE: Envoy runs as a DaemonSet and is inherently distributed across all nodes/zones;
+#       no additional scheduling changes are needed for the Envoy component.
+CONTOUR_MULTI_ZONE_CONFIG:
+  contour:
+    replicaCount: 2
+    topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: topology.kubernetes.io/zone
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: contour
+            app.kubernetes.io/component: contour
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: contour
+            app.kubernetes.io/component: contour
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: contour
+                  app.kubernetes.io/component: contour
+              topologyKey: topology.kubernetes.io/zone
+
 ## Cluster Autoscaler
 CLUSTER_AUTOSCALER_ENABLED: true
 CLUSTER_AUTOSCALER_NAME: cluster-autoscaler
