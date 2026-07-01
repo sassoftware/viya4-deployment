@@ -394,3 +394,37 @@ AZURE_CRUNCHY_STORAGE_CLASS:
   provisioner: disk.csi.azure.com
   reclaimPolicy: "{{ AZURE_CRUNCHY_STORAGE_CLASS_RECLAIM_POLICY }}"
   volumeBindingMode: WaitForFirstConsumer
+
+## GCP StorageClass config
+CREATE_GCP_RABBITMQ_STORAGE_CLASS: true
+GCP_RABBITMQ_STORAGE_CLASS_NAME: pd-ssd-mq
+GCP_RABBITMQ_STORAGE_CLASS_DISK_TYPE: pd-ssd
+GCP_RABBITMQ_STORAGE_CLASS:
+  allowVolumeExpansion: true
+  apiVersion: storage.k8s.io/v1
+  kind: StorageClass
+  metadata:
+    name: "{{ GCP_RABBITMQ_STORAGE_CLASS_NAME }}"
+  parameters:
+    type: "{{ GCP_RABBITMQ_STORAGE_CLASS_DISK_TYPE }}"
+    csi.storage.k8s.io/fstype: ext4
+  provisioner: pd.csi.storage.gke.io
+  reclaimPolicy: Delete
+  volumeBindingMode: WaitForFirstConsumer
+
+CREATE_GCP_CRUNCHY_STORAGE_CLASS: true
+GCP_CRUNCHY_STORAGE_CLASS_NAME: pd-ssd-pg
+GCP_CRUNCHY_STORAGE_CLASS_DISK_TYPE: pd-ssd
+GCP_CRUNCHY_STORAGE_CLASS_RECLAIM_POLICY: Delete
+GCP_CRUNCHY_STORAGE_CLASS:
+  allowVolumeExpansion: true
+  apiVersion: storage.k8s.io/v1
+  kind: StorageClass
+  metadata:
+    name: "{{ GCP_CRUNCHY_STORAGE_CLASS_NAME }}"
+  parameters:
+    type: "{{ GCP_CRUNCHY_STORAGE_CLASS_DISK_TYPE }}"
+    csi.storage.k8s.io/fstype: ext4
+  provisioner: pd.csi.storage.gke.io
+  reclaimPolicy: "{{ GCP_CRUNCHY_STORAGE_CLASS_RECLAIM_POLICY }}"
+  volumeBindingMode: WaitForFirstConsumer

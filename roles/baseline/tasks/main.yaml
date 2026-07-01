@@ -83,12 +83,12 @@
   tags:
     - baseline
 
-# Include StorageClasses tasks for Azure (RabbitMQ/Crunchy) and AWS (gp3 default)
+# Include provider-specific StorageClasses tasks for Azure and GCP and AWS
 - name: Include StorageClasses
   include_tasks:
     file: storage-classes.yaml
   when:
-    - PROVIDER in ["azure", "aws"]
+    - PROVIDER in ["azure", "aws", "gcp"]
     - V4_CFG_MANAGE_STORAGE is defined
     - V4_CFG_MANAGE_STORAGE|bool
   tags:
