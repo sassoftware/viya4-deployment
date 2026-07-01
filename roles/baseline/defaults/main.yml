@@ -391,7 +391,7 @@ GCP_RABBITMQ_STORAGE_CLASS:
     name: "{{ GCP_RABBITMQ_STORAGE_CLASS_NAME }}"
   parameters:
     type: "{{ GCP_RABBITMQ_STORAGE_CLASS_DISK_TYPE }}"
-    fstype: ext4
+    csi.storage.k8s.io/fstype: ext4
   provisioner: pd.csi.storage.gke.io
   reclaimPolicy: Delete
   volumeBindingMode: WaitForFirstConsumer
@@ -408,7 +408,7 @@ GCP_CRUNCHY_STORAGE_CLASS:
     name: "{{ GCP_CRUNCHY_STORAGE_CLASS_NAME }}"
   parameters:
     type: "{{ GCP_CRUNCHY_STORAGE_CLASS_DISK_TYPE }}"
-    fstype: ext4
+    csi.storage.k8s.io/fstype: ext4
   provisioner: pd.csi.storage.gke.io
   reclaimPolicy: "{{ GCP_CRUNCHY_STORAGE_CLASS_RECLAIM_POLICY }}"
   volumeBindingMode: WaitForFirstConsumer
