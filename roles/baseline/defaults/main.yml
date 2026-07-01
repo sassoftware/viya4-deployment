@@ -265,12 +265,12 @@ EBS_CSI_DRIVER_ACCOUNT: null
 EBS_CSI_DRIVER_LOCATION: us-east-1
 EBS_CSI_RABBITMQ_STORAGE_CLASS_NAME: gp3-vol-mq
 EBS_CSI_RABBITMQ_STORAGE_CLASS_VOLUME_TYPE: gp3
-EBS_CSI_RABBITMQ_STORAGE_CLASS_IOPSPERGB: 500
-EBS_CSI_RABBITMQ_STORAGE_CLASS_THROUGHPUT: 250
+EBS_CSI_RABBITMQ_STORAGE_CLASS_IOPS: 3000
+EBS_CSI_RABBITMQ_STORAGE_CLASS_THROUGHPUT: 400
 
 EBS_CSI_CRUNCHY_STORAGE_CLASS_NAME: gp3-vol-pg
 EBS_CSI_CRUNCHY_STORAGE_CLASS_VOLUME_TYPE: gp3
-EBS_CSI_CRUNCHY_STORAGE_CLASS_IOPSPERGB: 40
+EBS_CSI_CRUNCHY_STORAGE_CLASS_IOPS: 5000
 EBS_CSI_CRUNCHY_STORAGE_CLASS_THROUGHPUT: 400
 EBS_CSI_CRUNCHY_STORAGE_CLASS_RECLAIM_POLICY: Delete
 
@@ -288,7 +288,7 @@ EBS_CSI_DRIVER_CONFIG:
       parameters:
         type: "{{ EBS_CSI_RABBITMQ_STORAGE_CLASS_VOLUME_TYPE }}"
         fstype: ext4
-        iopsPerGB: "{{ EBS_CSI_RABBITMQ_STORAGE_CLASS_IOPSPERGB | int }}"
+        iops: "{{ EBS_CSI_RABBITMQ_STORAGE_CLASS_IOPS | int }}"
         throughput: "{{ EBS_CSI_RABBITMQ_STORAGE_CLASS_THROUGHPUT | int }}"
       reclaimPolicy: Delete
       volumeBindingMode: WaitForFirstConsumer
@@ -297,11 +297,27 @@ EBS_CSI_DRIVER_CONFIG:
       parameters:
         type: "{{ EBS_CSI_CRUNCHY_STORAGE_CLASS_VOLUME_TYPE }}"
         fstype: ext4
-        iopsPerGB: "{{ EBS_CSI_CRUNCHY_STORAGE_CLASS_IOPSPERGB | int }}"
+        iops: "{{ EBS_CSI_CRUNCHY_STORAGE_CLASS_IOPS | int }}"
         throughput: "{{ EBS_CSI_CRUNCHY_STORAGE_CLASS_THROUGHPUT | int }}"
       reclaimPolicy: "{{ EBS_CSI_CRUNCHY_STORAGE_CLASS_RECLAIM_POLICY }}"
       volumeBindingMode: WaitForFirstConsumer
       allowVolumeExpansion: true
+
+## EBS GP3 default StorageClass
+CREATE_EBS_GP3_DEFAULT_STORAGE_CLASS: true
+EBS_GP3_DEFAULT_STORAGE_CLASS_NAME: gp3
+EBS_GP3_DEFAULT_STORAGE_CLASS:
+  apiVersion: storage.k8s.io/v1
+  kind: StorageClass
+  metadata:
+    annotations:
+      storageclass.kubernetes.io/is-default-class: "true"
+    name: "{{ EBS_GP3_DEFAULT_STORAGE_CLASS_NAME }}"
+  parameters:
+    type: gp3
+  provisioner: ebs.csi.aws.com
+  reclaimPolicy: Delete
+  volumeBindingMode: WaitForFirstConsumer
 
 private_ingress:
   aws:
