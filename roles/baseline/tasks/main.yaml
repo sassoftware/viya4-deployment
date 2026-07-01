@@ -83,12 +83,12 @@
   tags:
     - baseline
 
-# Include Azure StorageClasses tasks if provider is Azure
+# Include provider-specific StorageClasses tasks for Azure and GCP
 - name: Include StorageClasses
   include_tasks:
     file: storage-classes.yaml
   when:
-    - PROVIDER == "azure"
+    - PROVIDER in ["azure", "gcp"]
     - V4_CFG_MANAGE_STORAGE is defined
     - V4_CFG_MANAGE_STORAGE|bool
   tags:
