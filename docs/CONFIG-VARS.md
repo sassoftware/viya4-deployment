@@ -102,7 +102,10 @@ By default, viya4-deployment uses the [Azure managed disks CSI driver](#azure-ma
 viya4-deployment also creates the `sas` storage class using the csi-driver-nfs Helm chart. If a jump server is used, viya4-deployment uses that server to create the folders for the `astores`, `bin`, `data` and `homes` RWX Filestore NFS paths that are outlined below in the [RWX Filestore](#rwx-filestore) section.
 
 ### Storage for Google Cloud
-When `V4_CFG_MANAGE_STORAGE` is set to `true`, viya4-deployment creates the `sas` and `pg-storage` storage classes using the csi-driver-nfs Helm chart. If a jump server is used, viya4-deployment uses that server to create the folders for the `astores`, `bin`, `data` and `homes` RWX Filestore NFS paths that are outlined below in the [RWX Filestore](#rwx-filestore) section.
+
+By default, viya4-deployment uses the [GCP Persistent Disk CSI driver](#gcp-persistent-disk-csi-driver) to create two block storage based storage classes with the default names of `pd-ssd-mq` and `pd-ssd-pg`. The disk type for both storage classes defaults to `pd-ssd`. For GKE clusters, RabbitMQ makes PVC requests to create block storage persistent volumes using the `pd-ssd-mq` storage class while Crunchy Postgres makes PVC requests to create block storage persistent volumes using the `pd-ssd-pg` storage class. To use a different StorageClass for RabbitMQ, set the `V4_CFG_RABBITMQ_STORAGECLASS` property to the name of the StorageClass to use. To use a different StorageClass for Crunchy Postgres, set the `V4_CFG_CRUNCHY_STORAGECLASS` property to the name of the StorageClass to use.
+
+viya4-deployment also creates the `sas` storage class using the csi-driver-nfs Helm chart. If a jump server is used, viya4-deployment uses that server to create the folders for the `astores`, `bin`, `data` and `homes` RWX Filestore NFS paths that are outlined below in the [RWX Filestore](#rwx-filestore) section.
 
 ### NFS Storage
 
@@ -465,6 +468,22 @@ By default, two block storage StorageClasses are created using the driver, one f
 |AZURE_CRUNCHY_STORAGE_CLASS_DISKIOPS | Disk total IOPS parameter for the `AZURE_CRUNCHY_STORAGE_CLASS_NAME` storage class | string | 5000 | false | Refer to the [Azure documentation](https://learn.microsoft.com/en-us/azure/virtual-machines/disks-types) for IOPS limits considerations | baseline |
 |AZURE_CRUNCHY_STORAGE_CLASS_THROUGHPUT | Maximum volume throughput in MiB/s for the `AZURE_CRUNCHY_STORAGE_CLASS_NAME` storage class | string| 400 | false | Refer to the [Azure documentation](https://learn.microsoft.com/en-us/azure/virtual-machines/disks-types) for throughput limits considerations | baseline |
 |AZURE_CRUNCHY_STORAGE_CLASS_RECLAIM_POLICY | The ReclaimPolicy for the `AZURE_CRUNCHY_STORAGE_CLASS_NAME` storage class | string | Delete | false | Supported values: [`Delete`, `Retain`] **Note**: If set to `Retain`, manual deletion of the Crunchy Persistent Volumes is required after deleting the PostgresCluster. | baseline |
+
+### GCP Persistent Disk CSI Driver
+
+The GCP Persistent Disk CSI Driver is included in all GKE clusters by default, and any GKE clusters created with viya4-iac-gcp will have the driver installed. If you did not use the viya4-iac-gcp project to create your GKE cluster, ensure that you have enabled the Persistent Disk CSI driver prior to using this project or disable the creation of the StorageClasses.
+
+By default, two block storage StorageClasses are created using the driver, one for RabbitMQ and one for Crunchy Postgres. The defaults for these StorageClasses are listed below.
+
+| Name | Description | Type | Default | Required | Notes | Tasks |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
+|CREATE_GCP_RABBITMQ_STORAGE_CLASS| Whether to create a GCP StorageClass for RabbitMQ | bool | true | false | | baseline |
+|GCP_RABBITMQ_STORAGE_CLASS_NAME| The StorageClass name for RabbitMQ | string | pd-ssd-mq | false | | baseline |
+|GCP_RABBITMQ_STORAGE_CLASS_DISK_TYPE| The persistent disk type to use for RabbitMQ persistent volumes | string | pd-ssd | false | Supported values: [`pd-ssd`, `pd-balanced`, `pd-extreme`] | baseline |
+|CREATE_GCP_CRUNCHY_STORAGE_CLASS| Whether to create a GCP StorageClass for Crunchy Postgres | bool | true | false | | baseline |
+|GCP_CRUNCHY_STORAGE_CLASS_NAME| The StorageClass name for Crunchy Postgres | string | pd-ssd-pg | false | | baseline |
+|GCP_CRUNCHY_STORAGE_CLASS_DISK_TYPE| The persistent disk type to use for Crunchy Postgres persistent volumes | string | pd-ssd | false | Supported values: [`pd-ssd`, `pd-balanced`, `pd-extreme`] | baseline |
+|GCP_CRUNCHY_STORAGE_CLASS_RECLAIM_POLICY | The ReclaimPolicy for the `GCP_CRUNCHY_STORAGE_CLASS_NAME` storage class | string | Delete | false | Supported values: [`Delete`, `Retain`] **Note**: If set to `Retain`, manual deletion of the Crunchy Persistent Volumes is required after deleting the PostgresCluster. | baseline |
 
 ### Ingress-nginx
 
