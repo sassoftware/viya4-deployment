@@ -5,6 +5,79 @@
 # This file contains the storage class setup tasks for the baseline role.
 # It is included from main.yaml when storage-classes are required.
 
+# ── AWS: gp3 default StorageClass ────────────────────────────────────────────
+
+# Remove the is-default-class annotation from the existing gp2 StorageClass so
+# that our new gp3 StorageClass can become the cluster default.
+- name: Remove default-class annotation from gp2 StorageClass
+  kubernetes.core.k8s:
+    kubeconfig: "{{ KUBECONFIG }}"
+    api_version: storage.k8s.io/v1
+    kind: StorageClass
+    name: gp2
+    merge_type: strategic-merge
+    definition:
+      metadata:
+        annotations:
+          storageclass.kubernetes.io/is-default-class: "false"
+  when:
+    - PROVIDER == "aws"
+    - CREATE_EBS_GP3_DEFAULT_STORAGE_CLASS
+  ignore_errors: true  # gp2 may not exist on all clusters
+  tags:
+    - install
+
+# Create a generic gp3 StorageClass and mark it as the cluster default.
+# This ensures workloads that rely on the default StorageClass (e.g., OpenDistro,
+# Redis) use gp3 instead of the legacy gp2 class.
+- name: Create gp3 default StorageClass
+  kubernetes.core.k8s:
+    kubeconfig: "{{ KUBECONFIG }}"
+    definition: "{{ EBS_GP3_DEFAULT_STORAGE_CLASS }}"
+    wait: true
+    wait_timeout: 600
+    state: present
+  when:
+    - PROVIDER == "aws"
+    - CREATE_EBS_GP3_DEFAULT_STORAGE_CLASS
+  tags:
+    - install
+
+# Remove the gp3 default StorageClass on uninstall
+- name: Remove gp3 default StorageClass
+  kubernetes.core.k8s:
+    kubeconfig: "{{ KUBECONFIG }}"
+    definition: "{{ EBS_GP3_DEFAULT_STORAGE_CLASS }}"
+    wait: true
+    wait_timeout: 600
+    state: absent
+  when:
+    - PROVIDER == "aws"
+    - CREATE_EBS_GP3_DEFAULT_STORAGE_CLASS
+  tags:
+    - uninstall
+
+# Restore is-default-class annotation on gp2 StorageClass on uninstall
+- name: Restore default-class annotation on gp2 StorageClass
+  kubernetes.core.k8s:
+    kubeconfig: "{{ KUBECONFIG }}"
+    api_version: storage.k8s.io/v1
+    kind: StorageClass
+    name: gp2
+    merge_type: strategic-merge
+    definition:
+      metadata:
+        annotations:
+          storageclass.kubernetes.io/is-default-class: "true"
+  when:
+    - PROVIDER == "aws"
+    - CREATE_EBS_GP3_DEFAULT_STORAGE_CLASS
+  ignore_errors: true  # gp2 may not exist on all clusters
+  tags:
+    - uninstall
+
+# ── Azure: RabbitMQ and Crunchy StorageClasses ────────────────────────────────
+
 # Create the Azure storage class for RabbitMQ if required
 - name: Create Azure storage class for RabbitMQ
   kubernetes.core.k8s:
