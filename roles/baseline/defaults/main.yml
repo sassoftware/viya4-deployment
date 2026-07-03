@@ -237,13 +237,14 @@ CONTOUR_AWS_LB_SUBNETS:
 
 # Multi-zone HA configuration for Contour (contour controller Deployment).
 # Applied when V4_CFG_MULTI_ZONE_ENABLED and V4_CFG_MULTI_ZONE_CONTOUR_ENABLED are both true.
-# Sets replicaCount >= 2 and applies topology spread constraints so that contour
-# controller pods are distributed across availability zones.
+# Applies topology spread constraints and pod anti-affinity so contour controller
+# pods are distributed across availability zones.
+# replicaCount is set dynamically at deploy time to match detected zone count
+# (minimum 2 replicas).
 # NOTE: Envoy runs as a DaemonSet and is inherently distributed across all nodes/zones;
 #       no additional scheduling changes are needed for the Envoy component.
 CONTOUR_MULTI_ZONE_CONFIG:
   contour:
-    replicaCount: 2
     topologySpreadConstraints:
       - maxSkew: 1
         topologyKey: topology.kubernetes.io/zone
