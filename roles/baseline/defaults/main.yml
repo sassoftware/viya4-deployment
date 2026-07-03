@@ -204,6 +204,10 @@ CONTOUR_CONFIG:
         cpu: 200m
         memory: 512Mi
   envoy:
+    tolerations:
+      - key: workload.sas.com/class
+        operator: Exists
+        effect: NoSchedule
     service:
       loadBalancerSourceRanges: "{{ LOADBALANCER_SOURCE_RANGES | default(['0.0.0.0/0'], -1) }}"
     resources:
@@ -241,8 +245,8 @@ CONTOUR_AWS_LB_SUBNETS:
 # pods are distributed across availability zones.
 # replicaCount is set dynamically at deploy time to match detected zone count
 # (minimum 2 replicas).
-# NOTE: Envoy runs as a DaemonSet and is inherently distributed across all nodes/zones;
-#       no additional scheduling changes are needed for the Envoy component.
+# NOTE: Envoy runs as a DaemonSet. The default toleration on workload.sas.com/class
+#       NoSchedule taints allows it to run on all eligible DaC-managed node classes.
 CONTOUR_MULTI_ZONE_CONFIG:
   contour:
     topologySpreadConstraints:
