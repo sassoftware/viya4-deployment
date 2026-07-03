@@ -68,10 +68,25 @@
     - install
     - update
 
+# Collect detected node zones for contour replica sizing
+- name: Collect detected zones for Contour multi-zone sizing
+  set_fact:
+    contour_detected_zones: "{{ (contour_detected_zones | default([])) + [item.metadata.labels['topology.kubernetes.io/zone']] }}"
+  loop: "{{ contour_node_info.resources | default([]) }}"
+  when:
+    - V4_CFG_MULTI_ZONE_ENABLED | default(false) | bool
+    - V4_CFG_MULTI_ZONE_CONTOUR_ENABLED | default(true) | bool
+    - item.metadata is defined
+    - item.metadata.labels is defined
+    - item.metadata.labels['topology.kubernetes.io/zone'] is defined
+  tags:
+    - install
+    - update
+
 # Derive contour replica count from the number of detected zones (minimum 2)
 - name: Set Contour multi-zone replica count
   set_fact:
-    CONTOUR_MULTI_ZONE_REPLICA_COUNT: "{{ [2, (contour_node_info.resources | json_query('[].metadata.labels.\"topology.kubernetes.io/zone\"') | reject('equalto', None) | unique | list | length)] | max }}"
+    CONTOUR_MULTI_ZONE_REPLICA_COUNT: "{{ [2, (contour_detected_zones | default([]) | unique | length)] | max }}"
   when:
     - V4_CFG_MULTI_ZONE_ENABLED | default(false) | bool
     - V4_CFG_MULTI_ZONE_CONTOUR_ENABLED | default(true) | bool
