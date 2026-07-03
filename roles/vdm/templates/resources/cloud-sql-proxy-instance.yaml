@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
         - name: sql-proxy
-          image: '{{ PROXY_SQL_IMAGE }}'
+          image: '{{ PROXY_SQL_IMAGE_REPOSITORY }}:{{ V4_CFG_POSTGRES_CLOUD_SQL_PROXY_VERSION|default(PROXY_SQL_IMAGE_VERSION, true) }}'
           env:
             - name: POSTGRES_CONNECTION_NAME
               value: {{ settings.connection_name }}
