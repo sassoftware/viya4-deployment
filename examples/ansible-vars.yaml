@@ -46,6 +46,8 @@ V4_CFG_GENERATE_GATEWAY_API_RESOURCES: false
 # V4_CFG_VIYA_HTTPROUTE_BACKEND_PORT: 80
 
 ## Postgres
+# Optional for Google Cloud external postgres cloud-sql-proxy image version override
+# V4_CFG_POSTGRES_CLOUD_SQL_PROXY_VERSION: "1.38.0"
 V4_CFG_POSTGRES_SERVERS:
   default:
     internal: false
