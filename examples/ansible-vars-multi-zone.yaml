@@ -49,16 +49,6 @@ V4_CFG_INGRESS_TYPE: contour
 V4_CFG_INGRESS_FQDN: <desired_fqdn>
 V4_CFG_TLS_MODE: full-stack # [full-stack|front-door|ingress-only|disabled]
 
-## Postgres
-V4_CFG_POSTGRES_SERVERS:
-  default:
-    internal: false
-    admin: <existing_pg_user>
-    password: <existing_pg_password>
-    fqdn: <existing_pg_fqdn>
-    ssl_enforcement_enabled: true
-    database: <desired_database>
-
 ## LDAP
 V4_CFG_EMBEDDED_LDAP_ENABLE: true
 
@@ -79,17 +69,39 @@ V4_CFG_STATEFUL_NODEPOOL_RESTRICTION: true
 V4_CFG_STATEFUL_NODEPOOL_LABEL: "workload.sas.com/class"
 # For legacy deployments, use: "agentpool"
 
+## High Availability (HA) Configuration
+# Enable HA for stateless microservices
+V4_CFG_HA_ENABLED: true
+
 # Individual service controls (all default to true when multi-zone enabled)
+# Note: PostgreSQL multi-zone control removed - internal PostgreSQL is NOT supported for multi-zone
 V4_CFG_MULTI_ZONE_RABBITMQ_ENABLED: true              # Message queue
-V4_CFG_MULTI_ZONE_POSTGRES_ENABLED: true              # Database
 V4_CFG_MULTI_ZONE_CONSUL_ENABLED: true                # Service discovery
 V4_CFG_MULTI_ZONE_REDIS_ENABLED: true                 # Caching
 V4_CFG_MULTI_ZONE_OPENDISTRO_ENABLED: true           # Search/logging
 V4_CFG_MULTI_ZONE_WORKLOAD_ORCHESTRATOR_ENABLED: true # Job scheduling
 V4_CFG_MULTI_ZONE_DATA_AGENT_ENABLED: true           # Data services
+V4_CFG_MULTI_ZONE_STATELESS_ENABLED: true            # Stateless services (Deployments)
 
 # Advanced options
 V4_CFG_SINGLE_ZONE_FALLBACK: true          # Handle single-zone clusters gracefully
+
+## PostgreSQL Configuration for Multi-Zone
+## IMPORTANT: Multi-zone deployments REQUIRE external PostgreSQL with zone-redundant HA
+## Internal PostgreSQL (internal: true) is NOT supported for multi-zone deployments
+V4_CFG_POSTGRES_SERVERS:
+  default:
+    internal: false  # Required for multi-zone
+    fqdn: your-postgres-server.postgres.database.azure.com  # Azure Flexible Server
+    # OR: your-postgres.rds.amazonaws.com (AWS RDS)
+    # OR: your-instance.region.gcp.cloudsql.com (GCP Cloud SQL)
+    admin: pgadmin
+    password: "YourSecurePassword"
+    ssl_enforcement_enabled: true
+    database: postgres
+    # Azure: Configure with --high-availability ZoneRedundant
+    # AWS: Create with Multi-AZ enabled
+    # GCP: Create with High Availability enabled
 
 ## Monitoring and Logging
 ## uncomment and update the below values when deploying the viya4-monitoring-kubernetes stack
