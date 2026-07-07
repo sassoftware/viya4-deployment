@@ -220,7 +220,6 @@ V4_CFG_MULTI_ZONE_STATELESS_ENABLED: true  # Default: true
 **Requirements**:
 - `V4_CFG_HA_ENABLED: true` must be set (to ensure multiple replicas exist)
 - `V4_CFG_MULTI_ZONE_ENABLED: true` must be set (master switch)
-- Applies to all SAS Viya Deployments matching `sas-.*` pattern
 
 ### Implementation Details
 
@@ -236,7 +235,6 @@ V4_CFG_MULTI_ZONE_STATELESS_ENABLED: true  # Default: true
 **Pod Anti-Affinity**:
 - Preferred anti-affinity for both zone and node spreading
 - Weight: 100 for zone-level preference
-- Weight: 50 for hostname-level preference
 
 **Key Differences from StatefulSet Distribution**:
 - Uses `ScheduleAnyway` instead of `DoNotSchedule` for more flexibility
