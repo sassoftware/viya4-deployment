@@ -15,6 +15,63 @@
     - install
     - update
 
+# Remove ValidatingAdmissionPolicy if using experimental Gateway API to prevent conflicts
+# between standard and experimental CRDs
+- name: Remove Gateway API ValidatingAdmissionPolicy for experimental mode
+  kubernetes.core.k8s:
+    state: absent
+    kind: ValidatingAdmissionPolicy
+    name: safe-upgrades.gateway.networking.k8s.io
+    kubeconfig: "{{ KUBECONFIG }}"
+    wait: true
+  ignore_errors: true
+  when:
+    - GATEWAY_API_NAMESPACE_LABEL_MODE is defined
+    - GATEWAY_API_NAMESPACE_LABEL_MODE == 'experimental'
+  tags:
+    - install
+    - update
+
+# Create Envoy Gateway namespace if it doesn't exist
+- name: Create Envoy Gateway namespace
+  kubernetes.core.k8s:
+    state: present
+    kind: Namespace
+    name: envoy-gateway-system
+    kubeconfig: "{{ KUBECONFIG }}"
+  tags:
+    - install
+    - update
+
+# Create Envoy Gateway TLS secret for HTTPS listeners when TLS is enabled
+- name: Create Envoy Gateway TLS secret
+  kubernetes.core.k8s:
+    state: present
+    kind: Secret
+    name: envoy-gateway
+    namespace: envoy-gateway-system
+    type: kubernetes.io/tls
+    definition:
+      apiVersion: v1
+      metadata:
+        name: envoy-gateway
+        namespace: envoy-gateway-system
+      type: kubernetes.io/tls
+      data:
+        tls.crt: "{{ lookup('file', V4_CFG_TLS_CERT) | b64encode }}"
+        tls.key: "{{ lookup('file', V4_CFG_TLS_KEY) | b64encode }}"
+    kubeconfig: "{{ KUBECONFIG }}"
+  when:
+    - V4_CFG_TLS_MODE != "disabled"
+    - V4_CFG_TLS_CERT is defined
+    - V4_CFG_TLS_CERT != None
+    - V4_CFG_TLS_KEY is defined
+    - V4_CFG_TLS_KEY != None
+  ignore_errors: true
+  tags:
+    - install
+    - update
+
 # Install or update Gateway API CRDs.
 - name: Deploy Gateway API CRDs
   kubernetes.core.k8s:
