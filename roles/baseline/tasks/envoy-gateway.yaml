@@ -16,12 +16,53 @@
     - update
 
 # Install or update Envoy Gateway.
+# Note: Don't use wait_condition as the manifest contains multiple resource types (CRDs, Deployments, Services)
+# CRDs don't support wait_condition for Deployment type, causing timeout.
+# Instead, apply the manifest without waiting and verify the Deployment separately.
 - name: Deploy Envoy Gateway
   kubernetes.core.k8s:
     state: present
     src: "{{ tmpdir.path }}/envoy-gateway-install.yaml"
     kubeconfig: "{{ KUBECONFIG }}"
-    wait: true
+    wait: false
+  register: deploy_result
+  tags:
+    - install
+    - update
+
+- name: Debug - Show deployment result
+  debug:
+    msg: "{{ deploy_result }}"
+  tags:
+    - install
+    - update
+
+# Wait for Envoy Gateway Deployment to be created and ready
+- name: Wait for Envoy Gateway Deployment creation
+  kubernetes.core.k8s_info:
+    kind: Deployment
+    name: envoy-gateway
+    namespace: envoy-gateway-system
+    kubeconfig: "{{ KUBECONFIG }}"
+  register: eg_deployment
+  until: eg_deployment.resources | length > 0
+  retries: 30
+  delay: 2
+  tags:
+    - install
+    - update
+
+# Verify Envoy Gateway pod is running and ready (extended wait for slow startup)
+- name: Verify Envoy Gateway deployment readiness
+  kubernetes.core.k8s_info:
+    kind: Deployment
+    name: envoy-gateway
+    namespace: envoy-gateway-system
+    kubeconfig: "{{ KUBECONFIG }}"
+  register: envoy_deployment
+  until: envoy_deployment.resources[0].status.readyReplicas | default(0) > 0
+  retries: 120
+  delay: 5
   tags:
     - install
     - update
