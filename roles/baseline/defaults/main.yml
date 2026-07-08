@@ -204,6 +204,10 @@ CONTOUR_CONFIG:
         cpu: 200m
         memory: 512Mi
   envoy:
+    tolerations:
+      - key: workload.sas.com/class
+        operator: Exists
+        effect: NoSchedule
     service:
       loadBalancerSourceRanges: "{{ LOADBALANCER_SOURCE_RANGES | default(['0.0.0.0/0'], -1) }}"
     resources:
@@ -234,6 +238,42 @@ CONTOUR_AWS_LB_SUBNETS:
     service:
       annotations:
         service.beta.kubernetes.io/aws-load-balancer-subnets: "{{ V4_CFG_AWS_LB_SUBNETS }}"
+
+# Multi-zone HA configuration for Contour (contour controller Deployment).
+# Applied when V4_CFG_MULTI_ZONE_ENABLED and V4_CFG_MULTI_ZONE_CONTOUR_ENABLED are both true.
+# Applies topology spread constraints and pod anti-affinity so contour controller
+# pods are distributed across availability zones.
+# replicaCount is set dynamically at deploy time to match detected zone count
+# (minimum 2 replicas).
+# NOTE: Envoy runs as a DaemonSet. The default toleration on workload.sas.com/class
+#       NoSchedule taints allows it to run on all eligible DaC-managed node classes.
+CONTOUR_MULTI_ZONE_CONFIG:
+  contour:
+    topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: topology.kubernetes.io/zone
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: contour
+            app.kubernetes.io/component: contour
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: contour
+            app.kubernetes.io/component: contour
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: contour
+                  app.kubernetes.io/component: contour
+              topologyKey: topology.kubernetes.io/zone
 
 ## Cluster Autoscaler
 CLUSTER_AUTOSCALER_ENABLED: true
