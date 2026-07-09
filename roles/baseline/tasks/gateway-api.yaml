@@ -9,15 +9,63 @@
 - name: Download Gateway API manifest
   get_url:
     url: "{{ GATEWAY_API_MANIFEST_URL }}"
-    dest: "{{ tmpdir.path }}/gateway-api-install.yaml"
+    dest: "{{ tmpdir.path }}/gateway-api-install-orig.yaml"
     mode: "0640"
   tags:
     - install
     - update
 
-# Remove ValidatingAdmissionPolicy if using experimental Gateway API to prevent conflicts
-# between standard and experimental CRDs
-- name: Remove Gateway API ValidatingAdmissionPolicy for experimental mode
+# Remove ValidatingAdmissionPolicy and ValidatingAdmissionPolicyBinding from the manifest
+# These resources can block CRD deployment due to conflicts between channels
+- name: Filter out blocking policies from Gateway API manifest
+  shell: |
+    python3 << 'EOF'
+    import yaml
+    
+    input_file = "{{ tmpdir.path }}/gateway-api-install-orig.yaml"
+    output_file = "{{ tmpdir.path }}/gateway-api-install.yaml"
+    
+    # Read entire file first
+    with open(input_file, 'r') as f:
+        content = f.read()
+    
+    # Parse all documents
+    docs = list(yaml.safe_load_all(content))
+    
+    # Filter out blocking resources
+    filtered_docs = []
+    for doc in docs:
+        if doc is None:
+            continue
+        kind = doc.get('kind', '')
+        if kind not in ['ValidatingAdmissionPolicy', 'ValidatingAdmissionPolicyBinding']:
+            filtered_docs.append(doc)
+    
+    # Write filtered documents
+    with open(output_file, 'w') as f:
+        yaml.dump_all(filtered_docs, f, default_flow_style=False)
+    
+    print(f"Filtered manifest: kept {len(filtered_docs)} resources")
+    EOF
+  tags:
+    - install
+    - update
+
+# Remove ValidatingAdmissionPolicy and binding to prevent conflicts between standard and experimental CRDs
+# This policy may exist from previous deployments and can block CRD creation
+- name: Remove Gateway API ValidatingAdmissionPolicyBinding
+  kubernetes.core.k8s:
+    state: absent
+    kind: ValidatingAdmissionPolicyBinding
+    name: safe-upgrades.gateway.networking.k8s.io
+    kubeconfig: "{{ KUBECONFIG }}"
+    wait: true
+  ignore_errors: true
+  tags:
+    - install
+    - update
+
+- name: Remove Gateway API ValidatingAdmissionPolicy
   kubernetes.core.k8s:
     state: absent
     kind: ValidatingAdmissionPolicy
@@ -25,9 +73,21 @@
     kubeconfig: "{{ KUBECONFIG }}"
     wait: true
   ignore_errors: true
-  when:
-    - GATEWAY_API_NAMESPACE_LABEL_MODE is defined
-    - GATEWAY_API_NAMESPACE_LABEL_MODE == 'experimental'
+  tags:
+    - install
+    - update
+
+# Verify policy and binding are removed before proceeding
+- name: Verify ValidatingAdmissionPolicy is removed
+  kubernetes.core.k8s_info:
+    kind: ValidatingAdmissionPolicy
+    name: safe-upgrades.gateway.networking.k8s.io
+    kubeconfig: "{{ KUBECONFIG }}"
+  register: policy_check
+  until: policy_check.resources | length == 0
+  retries: 10
+  delay: 2
+  ignore_errors: true
   tags:
     - install
     - update
@@ -44,22 +104,24 @@
     - update
 
 # Create Envoy Gateway TLS secret for HTTPS listeners when TLS is enabled
+# Envoy Gateway requires tls.crt, tls.key, and ca.crt files
 - name: Create Envoy Gateway TLS secret
   kubernetes.core.k8s:
     state: present
     kind: Secret
     name: envoy-gateway
     namespace: envoy-gateway-system
-    type: kubernetes.io/tls
+    type: Opaque
     definition:
       apiVersion: v1
       metadata:
         name: envoy-gateway
         namespace: envoy-gateway-system
-      type: kubernetes.io/tls
+      type: Opaque
       data:
         tls.crt: "{{ lookup('file', V4_CFG_TLS_CERT) | b64encode }}"
         tls.key: "{{ lookup('file', V4_CFG_TLS_KEY) | b64encode }}"
+        ca.crt: "{{ lookup('file', V4_CFG_TLS_CERT) | b64encode }}"
     kubeconfig: "{{ KUBECONFIG }}"
   when:
     - V4_CFG_TLS_MODE != "disabled"
