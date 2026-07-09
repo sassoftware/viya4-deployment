@@ -6,6 +6,9 @@ metadata:
 spec:
   parentRefs:
   - name: {{ V4_CFG_VIYA_GATEWAY_NAME }}
+{% if V4_CFG_TLS_MODE != "disabled" %}
+    sectionName: https
+{% endif %}
   hostnames:
   - "{{ V4_CFG_INGRESS_FQDN }}"
   rules:
