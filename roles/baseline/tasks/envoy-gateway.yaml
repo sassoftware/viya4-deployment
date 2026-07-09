@@ -67,7 +67,53 @@
     - install
     - update
 
+# Create the GatewayClass resource pointing to the Envoy Gateway controller.
+# Envoy Gateway does not auto-create a GatewayClass; it must be applied manually.
+- name: Create Envoy GatewayClass
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ KUBECONFIG }}"
+    definition:
+      apiVersion: gateway.networking.k8s.io/v1
+      kind: GatewayClass
+      metadata:
+        name: "{{ ENVOY_GATEWAY_GATEWAYCLASS_NAME }}"
+      spec:
+        controllerName: gateway.envoyproxy.io/gatewayclass-controller
+  tags:
+    - install
+    - update
+
+# Wait for GatewayClass to be accepted by the controller.
+- name: Wait for GatewayClass to be accepted
+  kubernetes.core.k8s_info:
+    api_version: gateway.networking.k8s.io/v1
+    kind: GatewayClass
+    name: "{{ ENVOY_GATEWAY_GATEWAYCLASS_NAME }}"
+    kubeconfig: "{{ KUBECONFIG }}"
+  register: gwclass_info
+  until: >
+    gwclass_info.resources | length > 0 and
+    (gwclass_info.resources[0].status.conditions | default([]) |
+     selectattr('type', 'equalto', 'Accepted') |
+     selectattr('status', 'equalto', 'True') | list | length > 0)
+  retries: 30
+  delay: 5
+  tags:
+    - install
+    - update
+
 # Remove Envoy Gateway when uninstalling and the feature is enabled.
+- name: Remove Envoy GatewayClass
+  kubernetes.core.k8s:
+    state: absent
+    api_version: gateway.networking.k8s.io/v1
+    kind: GatewayClass
+    name: "{{ ENVOY_GATEWAY_GATEWAYCLASS_NAME }}"
+    kubeconfig: "{{ KUBECONFIG }}"
+  tags:
+    - uninstall
+
 - name: Remove Envoy Gateway
   kubernetes.core.k8s:
     state: absent
