@@ -15,4 +15,4 @@ spec:
         value: /
     backendRefs:
     - name: {{ V4_CFG_VIYA_HTTPROUTE_BACKEND_SERVICE }}
-      port: {{ V4_CFG_VIYA_HTTPROUTE_BACKEND_PORT }}
+      port: {{ V4_CFG_VIYA_HTTPROUTE_BACKEND_PORT | int }}
