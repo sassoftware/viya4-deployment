@@ -21,6 +21,7 @@ GATEWAY_API_MANIFEST_URL: "https://github.com/kubernetes-sigs/gateway-api/releas
 ## Envoy Gateway
 ENVOY_GATEWAY_VERSION: v1.8.0
 ENVOY_GATEWAY_MANIFEST_URL: "https://github.com/envoyproxy/gateway/releases/download/{{ ENVOY_GATEWAY_VERSION }}/install.yaml"
+ENVOY_GATEWAY_GATEWAYCLASS_NAME: envoy-gateway-class
 
 ## Cert-manager
 CERT_MANAGER_NAME: cert-manager
