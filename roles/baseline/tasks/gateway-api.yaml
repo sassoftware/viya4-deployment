@@ -103,36 +103,60 @@
     - install
     - update
 
-# Create Envoy Gateway TLS secret for HTTPS listeners when TLS is enabled
-# Envoy Gateway requires tls.crt, tls.key, and ca.crt files
-- name: Create Envoy Gateway TLS secret
-  kubernetes.core.k8s:
-    state: present
-    kind: Secret
-    name: envoy-gateway
-    namespace: envoy-gateway-system
-    type: Opaque
-    definition:
-      apiVersion: v1
-      metadata:
-        name: envoy-gateway
-        namespace: envoy-gateway-system
-      type: Opaque
-      data:
-        tls.crt: "{{ lookup('file', V4_CFG_TLS_CERT) | b64encode }}"
-        tls.key: "{{ lookup('file', V4_CFG_TLS_KEY) | b64encode }}"
-        ca.crt: "{{ lookup('file', V4_CFG_TLS_CERT) | b64encode }}"
-    kubeconfig: "{{ KUBECONFIG }}"
+# Create Envoy Gateway TLS secret for HTTPS listeners when TLS is enabled.
+# Envoy Gateway deployment mounts this secret, so it must always exist.
+- name: Prepare Envoy Gateway TLS materials
   when:
     - V4_CFG_TLS_MODE != "disabled"
-    - V4_CFG_TLS_CERT is defined
-    - V4_CFG_TLS_CERT != None
-    - V4_CFG_TLS_KEY is defined
-    - V4_CFG_TLS_KEY != None
-  ignore_errors: true
   tags:
     - install
     - update
+  block:
+    - name: Remove existing Envoy Gateway TLS secret for clean recreation
+      kubernetes.core.k8s:
+        state: absent
+        kind: Secret
+        name: envoy-gateway
+        namespace: envoy-gateway-system
+        kubeconfig: "{{ KUBECONFIG }}"
+        wait: true
+
+    - name: Check if user-provided TLS files are configured
+      set_fact:
+        envoy_gateway_has_user_tls: >
+          {{
+            (V4_CFG_TLS_CERT is defined and V4_CFG_TLS_CERT is not none and (V4_CFG_TLS_CERT | string | length) > 0)
+            and
+            (V4_CFG_TLS_KEY is defined and V4_CFG_TLS_KEY is not none and (V4_CFG_TLS_KEY | string | length) > 0)
+          }}
+
+    - name: Generate temporary self-signed cert for Envoy Gateway
+      shell: |
+        openssl req -x509 -nodes -newkey rsa:2048 -sha256 \
+          -keyout "{{ tmpdir.path }}/envoy-gateway-tls.key" \
+          -out "{{ tmpdir.path }}/envoy-gateway-tls.crt" \
+          -days 365 -subj "/CN=envoy-gateway.local"
+      args:
+        executable: /bin/bash
+      when: not envoy_gateway_has_user_tls
+
+    - name: Create Envoy Gateway TLS secret
+      kubernetes.core.k8s:
+        state: present
+        kind: Secret
+        name: envoy-gateway
+        namespace: envoy-gateway-system
+        definition:
+          apiVersion: v1
+          metadata:
+            name: envoy-gateway
+            namespace: envoy-gateway-system
+          type: Opaque
+          data:
+            tls.crt: "{{ lookup('file', (V4_CFG_TLS_CERT if envoy_gateway_has_user_tls else (tmpdir.path + '/envoy-gateway-tls.crt'))) | b64encode }}"
+            tls.key: "{{ lookup('file', (V4_CFG_TLS_KEY if envoy_gateway_has_user_tls else (tmpdir.path + '/envoy-gateway-tls.key'))) | b64encode }}"
+            ca.crt: "{{ lookup('file', (V4_CFG_TLS_CERT if envoy_gateway_has_user_tls else (tmpdir.path + '/envoy-gateway-tls.crt'))) | b64encode }}"
+        kubeconfig: "{{ KUBECONFIG }}"
 
 # Install or update Gateway API CRDs.
 - name: Deploy Gateway API CRDs
