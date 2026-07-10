@@ -67,6 +67,19 @@
     - uninstall
     - update
 
+# Prevent combining Gateway API routing with traditional ingress controllers to avoid duplicate LBs/public ports.
+- name: Validate ingress controller selection for Gateway API resources
+  fail:
+    msg: "When V4_CFG_GENERATE_GATEWAY_API_RESOURCES=true, set V4_CFG_INGRESS_TYPE to none (do not use contour, ingress, or istio)."
+  when:
+    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES is defined
+    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES | bool
+    - V4_CFG_INGRESS_TYPE in ['contour', 'ingress', 'istio']
+  tags:
+    - install
+    - uninstall
+    - update
+
 # Add base overlays and generators for kustomize
 - name: Base overlays
   overlay_facts:
