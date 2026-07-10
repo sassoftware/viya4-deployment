@@ -52,17 +52,65 @@
     - install
     - update
 
-# Verify Envoy Gateway pod is running and ready (extended wait for slow startup)
-- name: Verify Envoy Gateway deployment readiness
-  kubernetes.core.k8s_info:
+# Restart Envoy Gateway deployment to ensure fresh pods pick up current mounted secret/config.
+- name: Restart Envoy Gateway deployment
+  kubernetes.core.k8s:
+    state: patched
     kind: Deployment
     name: envoy-gateway
     namespace: envoy-gateway-system
     kubeconfig: "{{ KUBECONFIG }}"
-  register: envoy_deployment
-  until: envoy_deployment.resources[0].status.readyReplicas | default(0) > 0
-  retries: 120
-  delay: 5
+    definition:
+      spec:
+        template:
+          metadata:
+            annotations:
+              kubectl.kubernetes.io/restartedAt: "{{ ansible_date_time.iso8601 }}"
+  tags:
+    - install
+    - update
+
+# Verify Envoy Gateway pod is running and ready (extended wait for slow startup).
+# On timeout, collect pod and event diagnostics for root-cause visibility.
+- name: Verify Envoy Gateway deployment readiness
+  block:
+    - name: Wait for Envoy Gateway deployment to become ready
+      kubernetes.core.k8s_info:
+        kind: Deployment
+        name: envoy-gateway
+        namespace: envoy-gateway-system
+        kubeconfig: "{{ KUBECONFIG }}"
+      register: envoy_deployment
+      until: envoy_deployment.resources[0].status.readyReplicas | default(0) > 0
+      retries: 120
+      delay: 5
+  rescue:
+    - name: Gather Envoy Gateway pod status
+      kubernetes.core.k8s_info:
+        kind: Pod
+        namespace: envoy-gateway-system
+        kubeconfig: "{{ KUBECONFIG }}"
+        label_selectors:
+          - "control-plane=envoy-gateway"
+      register: envoy_gateway_pods
+
+    - name: Gather Envoy Gateway events
+      kubernetes.core.k8s_info:
+        api_version: v1
+        kind: Event
+        namespace: envoy-gateway-system
+        kubeconfig: "{{ KUBECONFIG }}"
+      register: envoy_gateway_events
+
+    - name: Fail with detailed Envoy Gateway diagnostics
+      fail:
+        msg: >-
+          Envoy Gateway did not become ready. Pod phases:
+          {{ envoy_gateway_pods.resources | map(attribute='status.phase') | list }};
+          containerStatuses:
+          {{ envoy_gateway_pods.resources | map(attribute='status.containerStatuses') | list }};
+          recent events:
+          {{ (envoy_gateway_events.resources | sort(attribute='lastTimestamp') | map(attribute='message') | list)[-12:] }}
   tags:
     - install
     - update
