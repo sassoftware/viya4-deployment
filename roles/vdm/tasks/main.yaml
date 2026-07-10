@@ -68,13 +68,26 @@
     - update
 
 # Prevent combining Gateway API routing with traditional ingress controllers to avoid duplicate LBs/public ports.
-- name: Validate ingress controller selection for Gateway API resources
-  fail:
-    msg: "When V4_CFG_GENERATE_GATEWAY_API_RESOURCES=true, set V4_CFG_INGRESS_TYPE to none (do not use contour, ingress, or istio)."
+# Normalize ingress type to none during Gateway API runs so existing configs can continue safely.
+- name: Normalize ingress controller selection for Gateway API resources
+  set_fact:
+    V4_CFG_INGRESS_TYPE: none
   when:
     - V4_CFG_GENERATE_GATEWAY_API_RESOURCES is defined
     - V4_CFG_GENERATE_GATEWAY_API_RESOURCES | bool
     - V4_CFG_INGRESS_TYPE in ['contour', 'ingress', 'istio']
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: Gateway API ingress mode normalization notice
+  debug:
+    msg: "Gateway API resources are enabled, so V4_CFG_INGRESS_TYPE has been normalized to 'none' for this run."
+  when:
+    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES is defined
+    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES | bool
+    - V4_CFG_INGRESS_TYPE == 'none'
   tags:
     - install
     - uninstall
