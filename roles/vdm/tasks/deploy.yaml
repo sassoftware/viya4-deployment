@@ -134,6 +134,55 @@
         - deployment_tooling == "ansible"
         - V4_CFG_BELOW_THE_LINE
 
+# For Azure + Gateway API deployments, force Envoy-generated LB service to internal
+# to avoid public NSG exposure on HTTPS listener ports.
+- name: Deploy - Gather Envoy Gateway services
+  kubernetes.core.k8s_info:
+    kind: Service
+    namespace: envoy-gateway-system
+    kubeconfig: "{{ KUBECONFIG }}"
+  register: envoy_gateway_services
+  until: >
+    (envoy_gateway_services.resources |
+     selectattr('metadata.name', 'match', '^envoy-' ~ NAMESPACE ~ '-' ~ V4_CFG_VIYA_GATEWAY_NAME ~ '-.*') |
+     list | length) > 0
+  retries: 60
+  delay: 5
+  when:
+    - PROVIDER == "azure"
+    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES is defined
+    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES | bool
+  tags:
+    - install
+    - update
+    - cas-onboard
+
+- name: Deploy - Patch Envoy Gateway service to internal LB on Azure
+  kubernetes.core.k8s:
+    state: patched
+    kind: Service
+    name: "{{ item.metadata.name }}"
+    namespace: envoy-gateway-system
+    kubeconfig: "{{ KUBECONFIG }}"
+    definition:
+      metadata:
+        annotations:
+          service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+  loop: >
+    {{
+      envoy_gateway_services.resources |
+      selectattr('metadata.name', 'match', '^envoy-' ~ NAMESPACE ~ '-' ~ V4_CFG_VIYA_GATEWAY_NAME ~ '-.*') |
+      list
+    }}
+  when:
+    - PROVIDER == "azure"
+    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES is defined
+    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES | bool
+  tags:
+    - install
+    - update
+    - cas-onboard
+
 # Uninstall all postgresclusters labeled for this deployment (for uninstall)
 - name: Deploy - Uninstall postgresclusters
   environment:
