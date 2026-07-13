@@ -458,6 +458,8 @@ Contour is an open source ingress controller that provides dynamic configuration
 
 When `V4_CFG_MULTI_ZONE_ENABLED` is `true` and `V4_CFG_MULTI_ZONE_CONTOUR_ENABLED` is `true` (the default), DaC automatically configures the Contour controller Deployment for multi-zone high availability by setting `replicaCount` to the detected zone count (minimum `2`), adding `topologySpreadConstraints` across `topology.kubernetes.io/zone` and `kubernetes.io/hostname`, and adding preferred pod anti-affinity. The Envoy component runs as a DaemonSet and includes a default toleration for `workload.sas.com/class:NoSchedule`, allowing it to run on DaC-managed node classes across zones.
 
+**For detailed information about Contour deployment scenarios, configuration options, and integration with SAS Viya platform, see [Contour Documentation](user/Contour.md).**
+
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | CONTOUR_NAME | Contour Helm release name | string | contour | false | | baseline |
