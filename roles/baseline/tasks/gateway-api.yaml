@@ -103,17 +103,30 @@
     - install
     - update
 
+- name: Resolve Gateway listener namespace
+  set_fact:
+    gateway_listener_namespace: >-
+      {{
+        (V4_CFG_BASELINE_GATEWAY_NAMESPACE if (V4_CFG_BASELINE_CREATE_BOOTSTRAP_GATEWAY | default(false) | bool)
+         else (V4_CFG_VIYA_GATEWAY_NAMESPACE | default(NAMESPACE | default('default'))))
+      }}
+  when:
+    - (V4_CFG_GENERATE_GATEWAY_API_RESOURCES is defined and V4_CFG_GENERATE_GATEWAY_API_RESOURCES | bool) or
+      (V4_CFG_BASELINE_CREATE_BOOTSTRAP_GATEWAY is defined and V4_CFG_BASELINE_CREATE_BOOTSTRAP_GATEWAY | bool)
+  tags:
+    - install
+    - update
+
 # Create Gateway resource namespace when using Gateway API resources.
 - name: Create Gateway API resource namespace
   kubernetes.core.k8s:
     state: present
     kind: Namespace
-    name: "{{ V4_CFG_VIYA_GATEWAY_NAMESPACE | default(NAMESPACE | default('default')) }}"
+    name: "{{ gateway_listener_namespace }}"
     kubeconfig: "{{ KUBECONFIG }}"
   when:
-    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES is defined
-    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES | bool
-    - (V4_CFG_VIYA_GATEWAY_NAMESPACE | default(NAMESPACE | default('default'))) is not none
+    - gateway_listener_namespace is defined
+    - gateway_listener_namespace is not none
   tags:
     - install
     - update
@@ -123,9 +136,10 @@
 - name: Prepare Gateway listener TLS materials in Gateway namespace
   when:
     - V4_CFG_TLS_MODE != "disabled"
-    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES is defined
-    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES | bool
-    - (V4_CFG_VIYA_GATEWAY_NAMESPACE | default(NAMESPACE | default('default'))) != (NAMESPACE | default('default'))
+    - gateway_listener_namespace is defined
+    - (V4_CFG_BASELINE_CREATE_BOOTSTRAP_GATEWAY is defined and V4_CFG_BASELINE_CREATE_BOOTSTRAP_GATEWAY | bool) or
+      ((V4_CFG_GENERATE_GATEWAY_API_RESOURCES is defined and V4_CFG_GENERATE_GATEWAY_API_RESOURCES | bool) and
+       gateway_listener_namespace != (NAMESPACE | default('default')))
   tags:
     - install
     - update
@@ -154,12 +168,12 @@
         state: present
         kind: Secret
         name: sas-ingress-certificate
-        namespace: "{{ V4_CFG_VIYA_GATEWAY_NAMESPACE | default(NAMESPACE | default('default')) }}"
+        namespace: "{{ gateway_listener_namespace }}"
         definition:
           apiVersion: v1
           metadata:
             name: sas-ingress-certificate
-            namespace: "{{ V4_CFG_VIYA_GATEWAY_NAMESPACE | default(NAMESPACE | default('default')) }}"
+            namespace: "{{ gateway_listener_namespace }}"
           type: kubernetes.io/tls
           data:
             tls.crt: "{{ lookup('file', (V4_CFG_TLS_CERT if gateway_listener_has_user_tls else (tmpdir.path + '/gateway-listener-tls.crt'))) | b64encode }}"
