@@ -117,7 +117,32 @@
 
 # Create the GatewayClass resource pointing to the Envoy Gateway controller.
 # Envoy Gateway does not auto-create a GatewayClass; it must be applied manually.
-- name: Create Envoy GatewayClass
+- name: Configure EnvoyProxy for Azure internal LoadBalancer
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ KUBECONFIG }}"
+    definition:
+      apiVersion: gateway.envoyproxy.io/v1alpha1
+      kind: EnvoyProxy
+      metadata:
+        name: envoy-gateway-private-lb
+        namespace: envoy-gateway-system
+      spec:
+        provider:
+          type: Kubernetes
+          kubernetes:
+            envoyService:
+              annotations:
+                service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+  when:
+    - PROVIDER is defined
+    - "'azure' in (PROVIDER | lower)"
+    - V4_CFG_INGRESS_MODE == "private"
+  tags:
+    - install
+    - update
+
+- name: Create Envoy GatewayClass (Azure private LB)
   kubernetes.core.k8s:
     state: present
     kubeconfig: "{{ KUBECONFIG }}"
@@ -128,6 +153,32 @@
         name: "{{ ENVOY_GATEWAY_GATEWAYCLASS_NAME }}"
       spec:
         controllerName: gateway.envoyproxy.io/gatewayclass-controller
+        parametersRef:
+          group: gateway.envoyproxy.io
+          kind: EnvoyProxy
+          name: envoy-gateway-private-lb
+          namespace: envoy-gateway-system
+  when:
+    - PROVIDER is defined
+    - "'azure' in (PROVIDER | lower)"
+    - V4_CFG_INGRESS_MODE == "private"
+  tags:
+    - install
+    - update
+
+- name: Create Envoy GatewayClass (default)
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ KUBECONFIG }}"
+    definition:
+      apiVersion: gateway.networking.k8s.io/v1
+      kind: GatewayClass
+      metadata:
+        name: "{{ ENVOY_GATEWAY_GATEWAYCLASS_NAME }}"
+      spec:
+        controllerName: gateway.envoyproxy.io/gatewayclass-controller
+  when:
+    - PROVIDER is not defined or "'azure' not in (PROVIDER | lower)" or V4_CFG_INGRESS_MODE != "private"
   tags:
     - install
     - update
@@ -159,6 +210,18 @@
     kind: GatewayClass
     name: "{{ ENVOY_GATEWAY_GATEWAYCLASS_NAME }}"
     kubeconfig: "{{ KUBECONFIG }}"
+  tags:
+    - uninstall
+
+- name: Remove EnvoyProxy Azure private LB config
+  kubernetes.core.k8s:
+    state: absent
+    api_version: gateway.envoyproxy.io/v1alpha1
+    kind: EnvoyProxy
+    name: envoy-gateway-private-lb
+    namespace: envoy-gateway-system
+    kubeconfig: "{{ KUBECONFIG }}"
+  ignore_errors: true
   tags:
     - uninstall
 

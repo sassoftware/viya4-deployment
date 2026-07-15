@@ -3,6 +3,7 @@ apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
   name: {{ V4_CFG_VIYA_GATEWAY_NAME }}
+  namespace: {{ V4_CFG_VIYA_GATEWAY_NAMESPACE | default(NAMESPACE) }}
 spec:
   gatewayClassName: "{{ V4_CFG_VIYA_GATEWAY_CLASS_NAME }}"
 {% if V4_CFG_TLS_MODE == "disabled" %}
@@ -11,8 +12,20 @@ spec:
       protocol: HTTP
       port: 80
       hostname: "{{ V4_CFG_INGRESS_FQDN }}"
+      allowedRoutes:
+        namespaces:
+          from: All
 {% else %}
   listeners:
+{% if V4_CFG_VIYA_GATEWAY_ENABLE_HTTP_LISTENER | default(false) | bool %}
+    - name: http
+      protocol: HTTP
+      port: 80
+      hostname: "{{ V4_CFG_INGRESS_FQDN }}"
+      allowedRoutes:
+        namespaces:
+          from: All
+{% endif %}
     - name: https
       protocol: HTTPS
       port: 443
@@ -22,4 +35,7 @@ spec:
         certificateRefs:
           - kind: Secret
             name: sas-ingress-certificate
+      allowedRoutes:
+        namespaces:
+          from: All
 {% endif %}
