@@ -61,6 +61,7 @@
   when:
     - V4_CFG_GENERATE_GATEWAY_API_RESOURCES is defined
     - V4_CFG_GENERATE_GATEWAY_API_RESOURCES | bool
+    - V4_CFG_INGRESS_TYPE != 'envoy-gateway'
     - not (V4_CFG_VIYA_HTTPROUTE_AUTO_DISCOVER | default(false) | bool)
     - V4_CFG_VIYA_HTTPROUTES is not defined or (V4_CFG_VIYA_HTTPROUTES | length) == 0
     - V4_CFG_VIYA_HTTPROUTE_BACKEND_SERVICE is none
@@ -77,6 +78,7 @@
   when:
     - V4_CFG_GENERATE_GATEWAY_API_RESOURCES is defined
     - V4_CFG_GENERATE_GATEWAY_API_RESOURCES | bool
+    - V4_CFG_INGRESS_TYPE != 'envoy-gateway'
     - V4_CFG_VIYA_HTTPROUTES is defined
     - V4_CFG_VIYA_HTTPROUTES | length > 0
     - V4_CFG_VIYA_HTTPROUTE_BACKEND_SERVICE is none
@@ -179,6 +181,22 @@
   when:
     - V4_CFG_GENERATE_GATEWAY_API_RESOURCES is defined
     - V4_CFG_GENERATE_GATEWAY_API_RESOURCES | bool
+    - V4_CFG_INGRESS_TYPE != 'envoy-gateway'
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: Add Envoy Gateway ListenerSet overlays
+  overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { resources: gateway-api-listenerset.yaml, vdm: true }
+      - { transformers: gateway-api-httproute-parent-listenerset.yaml, vdm: true }
+  when:
+    - V4_CFG_INGRESS_TYPE == 'envoy-gateway'
   tags:
     - install
     - uninstall
@@ -398,7 +416,7 @@
     manifest_dir = {{ ORCHESTRATION_TOOLING_INSTALL_MANIFESTS_DIRECTORY | to_json }}
     namespace = {{ NAMESPACE | to_json }}
     default_host = {{ V4_CFG_INGRESS_FQDN | to_json }}
-    default_backend_service = {{ V4_CFG_VIYA_HTTPROUTE_BACKEND_SERVICE | to_json }}
+    default_backend_service = {{ (V4_CFG_VIYA_HTTPROUTE_BACKEND_SERVICE | default('', true)) | to_json }}
     default_backend_port = int({{ (V4_CFG_VIYA_HTTPROUTE_BACKEND_PORT | default(80)) | int }})
 
     routes = []
