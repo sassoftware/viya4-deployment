@@ -93,6 +93,35 @@
     - uninstall
     - update
 
+# For Azure Gateway API deployments, force private ingress mode to avoid public NSG exposure.
+- name: Normalize ingress mode to private for Azure Gateway API resources
+  set_fact:
+    V4_CFG_INGRESS_MODE: private
+  when:
+    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES is defined
+    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES | bool
+    - PROVIDER is defined
+    - "'azure' in (PROVIDER | lower)"
+    - V4_CFG_INGRESS_MODE != 'private'
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: Gateway API ingress privacy normalization notice
+  debug:
+    msg: "Gateway API resources are enabled on Azure, so V4_CFG_INGRESS_MODE has been normalized to 'private' for this run."
+  when:
+    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES is defined
+    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES | bool
+    - PROVIDER is defined
+    - "'azure' in (PROVIDER | lower)"
+    - V4_CFG_INGRESS_MODE == 'private'
+  tags:
+    - install
+    - uninstall
+    - update
+
 # Add base overlays and generators for kustomize
 - name: Base overlays
   overlay_facts:
