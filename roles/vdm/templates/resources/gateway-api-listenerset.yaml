@@ -1,0 +1,36 @@
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: ListenerSet
+metadata:
+  name: {{ V4_CFG_VIYA_LISTENERSET_NAME }}
+  namespace: {{ NAMESPACE }}
+spec:
+  parentRef:
+    namespace: {{ V4_CFG_BASELINE_GATEWAY_NAMESPACE }}
+    name: {{ V4_CFG_BASELINE_GATEWAY_NAME }}
+    kind: Gateway
+    group: gateway.networking.k8s.io
+  listeners:
+{% if V4_CFG_TLS_MODE == "disabled" %}
+    - name: http
+      protocol: HTTP
+      port: 80
+      hostname: "{{ V4_CFG_INGRESS_FQDN }}"
+{% else %}
+{% if V4_CFG_BASELINE_GATEWAY_ENABLE_HTTP_LISTENER | default(true) | bool %}
+    - name: http
+      protocol: HTTP
+      port: 80
+      hostname: "{{ V4_CFG_INGRESS_FQDN }}"
+{% endif %}
+    - name: https
+      protocol: HTTPS
+      port: 443
+      hostname: "{{ V4_CFG_INGRESS_FQDN }}"
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            group: ""
+            name: sas-ingress-certificate
+{% endif %}
