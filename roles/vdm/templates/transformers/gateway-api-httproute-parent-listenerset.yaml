@@ -1,0 +1,20 @@
+---
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: patch-httproute-parent-listenerset
+patch: |-
+  - op: replace
+    path: /spec/parentRefs
+    value:
+      - name: {{ V4_CFG_VIYA_LISTENERSET_NAME }}
+        namespace: {{ NAMESPACE }}
+        kind: ListenerSet
+        group: gateway.networking.k8s.io
+{% if V4_CFG_TLS_MODE != "disabled" %}
+        sectionName: https
+{% endif %}
+target:
+  group: gateway.networking.k8s.io
+  version: v1
+  kind: HTTPRoute

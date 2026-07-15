@@ -215,6 +215,9 @@
         namespace: "{{ V4_CFG_BASELINE_GATEWAY_NAMESPACE }}"
       spec:
         gatewayClassName: "{{ ENVOY_GATEWAY_GATEWAYCLASS_NAME }}"
+        allowedListeners:
+          namespaces:
+            from: All
         listeners:
           - name: http
             protocol: HTTP
@@ -243,6 +246,9 @@
         namespace: "{{ V4_CFG_BASELINE_GATEWAY_NAMESPACE }}"
       spec:
         gatewayClassName: "{{ ENVOY_GATEWAY_GATEWAYCLASS_NAME }}"
+        allowedListeners:
+          namespaces:
+            from: All
         listeners:
           - name: http
             protocol: HTTP
@@ -284,6 +290,9 @@
         namespace: "{{ V4_CFG_BASELINE_GATEWAY_NAMESPACE }}"
       spec:
         gatewayClassName: "{{ ENVOY_GATEWAY_GATEWAYCLASS_NAME }}"
+        allowedListeners:
+          namespaces:
+            from: All
         listeners:
           - name: https
             protocol: HTTPS

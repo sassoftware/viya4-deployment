@@ -183,7 +183,7 @@ When V4_CFG_MANAGE_STORAGE is set to `true`, the `sas` and `pg-storage` storage 
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_INGRESS_TYPE | The ingress controller to deploy | string | "contour" | true | Possible values: "ingress", "contour" | baseline, viya |
+| V4_CFG_INGRESS_TYPE | The ingress controller to deploy | string | "contour" | true | Possible values: "ingress", "contour", "envoy-gateway". `envoy-gateway` enables UDA-aligned shared Gateway + ListenerSet flow. | baseline, viya |
 | V4_CFG_INGRESS_FQDN | FQDN to the ingress for SAS Vya installation | string | | true | | viya |
 | V4_CFG_INGRESS_MODE | Whether to create a public or private Loadbalancer endpoint | string | "public" | false | Possible values: "public", "private". Setting this option to "private" adds options to the ingress controller that create a LoadBalancer with private IP address(es) only. | baseline |
 | V4_CFG_INSTALL_GATEWAY_API | Whether to install Gateway API CRDs | bool | false | false | Optional feature flag. Existing ingress controller behavior remains unchanged. | baseline |
@@ -197,6 +197,7 @@ When V4_CFG_MANAGE_STORAGE is set to `true`, the `sas` and `pg-storage` storage 
 | V4_CFG_VIYA_GATEWAY_CLASS_NAME | GatewayClass name used by Viya Gateway resource | string | envoy-gateway-class | false | Used only when V4_CFG_GENERATE_GATEWAY_API_RESOURCES=true. | viya |
 | V4_CFG_VIYA_GATEWAY_NAMESPACE | Namespace where the Gateway resource is created | string | `{{ NAMESPACE }}` | false | Set to a dedicated namespace (for example `gw-system`) to separate Gateway ownership from the Viya namespace. | baseline, viya |
 | V4_CFG_VIYA_GATEWAY_ENABLE_HTTP_LISTENER | Whether to add HTTP port 80 listener when TLS is enabled | bool | false | false | When `true`, Gateway includes both HTTP:80 and HTTPS:443 listeners; HTTPRoute attaches to both listeners. | viya |
+| V4_CFG_VIYA_LISTENERSET_NAME | ListenerSet name used for UDA-aligned `envoy-gateway` routing | string | `{{ NAMESPACE }}-listeners` | false | Used when `V4_CFG_INGRESS_TYPE=envoy-gateway` to parent all generated HTTPRoutes through a namespace-local ListenerSet attached to the shared Gateway. | viya |
 | V4_CFG_VIYA_HTTPROUTE_NAME | HTTPRoute resource name for Viya traffic | string | sas-viya-httproute | false | Used only when V4_CFG_GENERATE_GATEWAY_API_RESOURCES=true. | viya |
 | V4_CFG_VIYA_HTTPROUTE_BACKEND_SERVICE | Backend service name referenced by Viya HTTPRoute | string | | false | Required when V4_CFG_GENERATE_GATEWAY_API_RESOURCES=true. | viya |
 | V4_CFG_VIYA_HTTPROUTE_BACKEND_PORT | Backend service port referenced by Viya HTTPRoute | int | 80 | false | Used only when V4_CFG_GENERATE_GATEWAY_API_RESOURCES=true. | viya |
