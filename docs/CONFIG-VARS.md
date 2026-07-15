@@ -191,9 +191,12 @@ When V4_CFG_MANAGE_STORAGE is set to `true`, the `sas` and `pg-storage` storage 
 | V4_CFG_GENERATE_GATEWAY_API_RESOURCES | Whether to generate Gateway and HTTPRoute resources for Viya | bool | false | false | Requires setting V4_CFG_VIYA_HTTPROUTE_BACKEND_SERVICE. Existing ingress controller behavior remains unchanged. | viya |
 | V4_CFG_VIYA_GATEWAY_NAME | Gateway resource name for Viya traffic | string | sas-viya-gateway | false | Used only when V4_CFG_GENERATE_GATEWAY_API_RESOURCES=true. | viya |
 | V4_CFG_VIYA_GATEWAY_CLASS_NAME | GatewayClass name used by Viya Gateway resource | string | envoy-gateway-class | false | Used only when V4_CFG_GENERATE_GATEWAY_API_RESOURCES=true. | viya |
+| V4_CFG_VIYA_GATEWAY_NAMESPACE | Namespace where the Gateway resource is created | string | `{{ NAMESPACE }}` | false | Set to a dedicated namespace (for example `gw-system`) to separate Gateway ownership from the Viya namespace. | baseline, viya |
+| V4_CFG_VIYA_GATEWAY_ENABLE_HTTP_LISTENER | Whether to add HTTP port 80 listener when TLS is enabled | bool | false | false | When `true`, Gateway includes both HTTP:80 and HTTPS:443 listeners; HTTPRoute attaches to both listeners. | viya |
 | V4_CFG_VIYA_HTTPROUTE_NAME | HTTPRoute resource name for Viya traffic | string | sas-viya-httproute | false | Used only when V4_CFG_GENERATE_GATEWAY_API_RESOURCES=true. | viya |
 | V4_CFG_VIYA_HTTPROUTE_BACKEND_SERVICE | Backend service name referenced by Viya HTTPRoute | string | | false | Required when V4_CFG_GENERATE_GATEWAY_API_RESOURCES=true. | viya |
 | V4_CFG_VIYA_HTTPROUTE_BACKEND_PORT | Backend service port referenced by Viya HTTPRoute | int | 80 | false | Used only when V4_CFG_GENERATE_GATEWAY_API_RESOURCES=true. | viya |
+| V4_CFG_VIYA_HTTPROUTES | List of HTTPRoute definitions for multi-service routing | list[object] | [] | false | When set, one HTTPRoute is generated per list item. Item fields: `name`, `namespace`, `hostnames`, `path`, `backend_service`, `backend_port`, `section_name`. If omitted, the single-route variables are used. | viya |
 
 ## Load Balancer
 

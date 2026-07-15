@@ -57,11 +57,29 @@
 # Validate required Gateway API resource inputs when feature flag is enabled
 - name: Validate Gateway API resource configuration
   fail:
-    msg: "V4_CFG_VIYA_HTTPROUTE_BACKEND_SERVICE is required when V4_CFG_GENERATE_GATEWAY_API_RESOURCES=true"
+    msg: "V4_CFG_VIYA_HTTPROUTE_BACKEND_SERVICE is required when V4_CFG_GENERATE_GATEWAY_API_RESOURCES=true unless V4_CFG_VIYA_HTTPROUTES is provided"
   when:
     - V4_CFG_GENERATE_GATEWAY_API_RESOURCES is defined
     - V4_CFG_GENERATE_GATEWAY_API_RESOURCES | bool
+    - V4_CFG_VIYA_HTTPROUTES is not defined or (V4_CFG_VIYA_HTTPROUTES | length) == 0
     - V4_CFG_VIYA_HTTPROUTE_BACKEND_SERVICE is none
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: Validate Gateway API multi-route configuration
+  fail:
+    msg: >-
+      Each item in V4_CFG_VIYA_HTTPROUTES must include backend_service,
+      or V4_CFG_VIYA_HTTPROUTE_BACKEND_SERVICE must be set as a global fallback.
+  when:
+    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES is defined
+    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES | bool
+    - V4_CFG_VIYA_HTTPROUTES is defined
+    - V4_CFG_VIYA_HTTPROUTES | length > 0
+    - V4_CFG_VIYA_HTTPROUTE_BACKEND_SERVICE is none
+    - (V4_CFG_VIYA_HTTPROUTES | selectattr('backend_service', 'undefined') | list | length) > 0
   tags:
     - install
     - uninstall

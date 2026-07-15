@@ -1,12 +1,49 @@
+{% if V4_CFG_VIYA_HTTPROUTES is defined and (V4_CFG_VIYA_HTTPROUTES | length) > 0 %}
+{% for route in V4_CFG_VIYA_HTTPROUTES %}
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: {{ route.name | default(V4_CFG_VIYA_HTTPROUTE_NAME ~ '-' ~ loop.index, true) }}
+  namespace: {{ route.namespace | default(NAMESPACE, true) }}
+spec:
+  parentRefs:
+  - name: {{ V4_CFG_VIYA_GATEWAY_NAME }}
+    namespace: {{ V4_CFG_VIYA_GATEWAY_NAMESPACE | default(NAMESPACE) }}
+{% if route.section_name is defined and route.section_name is not none and (route.section_name | string | length) > 0 %}
+    sectionName: {{ route.section_name }}
+{% elif V4_CFG_TLS_MODE != "disabled" and not (V4_CFG_VIYA_GATEWAY_ENABLE_HTTP_LISTENER | default(false) | bool) %}
+    sectionName: https
+{% endif %}
+  hostnames:
+{% if route.hostnames is defined and (route.hostnames | length) > 0 %}
+{% for host in route.hostnames %}
+  - "{{ host }}"
+{% endfor %}
+{% else %}
+  - "{{ V4_CFG_INGRESS_FQDN }}"
+{% endif %}
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: {{ route.path | default('/', true) }}
+    backendRefs:
+    - name: {{ route.backend_service | default(V4_CFG_VIYA_HTTPROUTE_BACKEND_SERVICE, true) }}
+      port: {{ route.backend_port | default(V4_CFG_VIYA_HTTPROUTE_BACKEND_PORT, true) | int }}
+{% endfor %}
+{% else %}
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
   name: {{ V4_CFG_VIYA_HTTPROUTE_NAME }}
+  namespace: {{ NAMESPACE }}
 spec:
   parentRefs:
   - name: {{ V4_CFG_VIYA_GATEWAY_NAME }}
-{% if V4_CFG_TLS_MODE != "disabled" %}
+    namespace: {{ V4_CFG_VIYA_GATEWAY_NAMESPACE | default(NAMESPACE) }}
+{% if V4_CFG_TLS_MODE != "disabled" and not (V4_CFG_VIYA_GATEWAY_ENABLE_HTTP_LISTENER | default(false) | bool) %}
     sectionName: https
 {% endif %}
   hostnames:
@@ -19,3 +56,4 @@ spec:
     backendRefs:
     - name: {{ V4_CFG_VIYA_HTTPROUTE_BACKEND_SERVICE }}
       port: {{ V4_CFG_VIYA_HTTPROUTE_BACKEND_PORT | int }}
+{% endif %}
