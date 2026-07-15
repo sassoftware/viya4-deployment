@@ -188,6 +188,10 @@ When V4_CFG_MANAGE_STORAGE is set to `true`, the `sas` and `pg-storage` storage 
 | V4_CFG_INGRESS_MODE | Whether to create a public or private Loadbalancer endpoint | string | "public" | false | Possible values: "public", "private". Setting this option to "private" adds options to the ingress controller that create a LoadBalancer with private IP address(es) only. | baseline |
 | V4_CFG_INSTALL_GATEWAY_API | Whether to install Gateway API CRDs | bool | false | false | Optional feature flag. Existing ingress controller behavior remains unchanged. | baseline |
 | V4_CFG_INSTALL_ENVOY_GATEWAY | Whether to install Envoy Gateway | bool | false | false | Optional feature flag. Existing ingress controller behavior remains unchanged. | baseline |
+| V4_CFG_BASELINE_CREATE_BOOTSTRAP_GATEWAY | Whether baseline should create a cluster-side bootstrap Gateway | bool | true | false | Baseline-driven Gateway creation for clusters where Viya may be deployed separately/manual. Useful for OpenStack-style Gateway creation (`gw-system` / `k8s-gw`) before Viya HTTPRoutes are generated. | baseline |
+| V4_CFG_BASELINE_GATEWAY_NAMESPACE | Namespace for baseline bootstrap Gateway | string | gw-system | false | Used when `V4_CFG_BASELINE_CREATE_BOOTSTRAP_GATEWAY=true`. | baseline |
+| V4_CFG_BASELINE_GATEWAY_NAME | Name of baseline bootstrap Gateway | string | k8s-gw | false | Used when `V4_CFG_BASELINE_CREATE_BOOTSTRAP_GATEWAY=true`. | baseline |
+| V4_CFG_BASELINE_GATEWAY_ENABLE_HTTP_LISTENER | Whether baseline bootstrap Gateway includes HTTP:80 when TLS is enabled | bool | true | false | If true and TLS enabled, baseline bootstrap Gateway includes both 80 and 443 listeners. | baseline |
 | V4_CFG_GENERATE_GATEWAY_API_RESOURCES | Whether to generate Gateway and HTTPRoute resources for Viya | bool | false | false | Requires setting V4_CFG_VIYA_HTTPROUTE_BACKEND_SERVICE. Existing ingress controller behavior remains unchanged. | viya |
 | V4_CFG_VIYA_GATEWAY_NAME | Gateway resource name for Viya traffic | string | sas-viya-gateway | false | Used only when V4_CFG_GENERATE_GATEWAY_API_RESOURCES=true. | viya |
 | V4_CFG_VIYA_GATEWAY_CLASS_NAME | GatewayClass name used by Viya Gateway resource | string | envoy-gateway-class | false | Used only when V4_CFG_GENERATE_GATEWAY_API_RESOURCES=true. | viya |
@@ -197,6 +201,7 @@ When V4_CFG_MANAGE_STORAGE is set to `true`, the `sas` and `pg-storage` storage 
 | V4_CFG_VIYA_HTTPROUTE_BACKEND_SERVICE | Backend service name referenced by Viya HTTPRoute | string | | false | Required when V4_CFG_GENERATE_GATEWAY_API_RESOURCES=true. | viya |
 | V4_CFG_VIYA_HTTPROUTE_BACKEND_PORT | Backend service port referenced by Viya HTTPRoute | int | 80 | false | Used only when V4_CFG_GENERATE_GATEWAY_API_RESOURCES=true. | viya |
 | V4_CFG_VIYA_HTTPROUTES | List of HTTPRoute definitions for multi-service routing | list[object] | [] | false | When set, one HTTPRoute is generated per list item. Item fields: `name`, `namespace`, `hostnames`, `path`, `backend_service`, `backend_port`, `section_name`. If omitted, the single-route variables are used. | viya |
+| V4_CFG_VIYA_HTTPROUTE_AUTO_DISCOVER | Auto-generate HTTPRoutes from all Viya Ingress resources in `NAMESPACE` | bool | false | false | Baseline can provide Gateway; after Viya is deployed, set this to generate routes for all discovered ingress paths without manually listing each route. | viya |
 
 ## Load Balancer
 

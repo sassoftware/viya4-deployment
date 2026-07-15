@@ -61,6 +61,7 @@
   when:
     - V4_CFG_GENERATE_GATEWAY_API_RESOURCES is defined
     - V4_CFG_GENERATE_GATEWAY_API_RESOURCES | bool
+    - not (V4_CFG_VIYA_HTTPROUTE_AUTO_DISCOVER | default(false) | bool)
     - V4_CFG_VIYA_HTTPROUTES is not defined or (V4_CFG_VIYA_HTTPROUTES | length) == 0
     - V4_CFG_VIYA_HTTPROUTE_BACKEND_SERVICE is none
   tags:
@@ -80,6 +81,67 @@
     - V4_CFG_VIYA_HTTPROUTES | length > 0
     - V4_CFG_VIYA_HTTPROUTE_BACKEND_SERVICE is none
     - (V4_CFG_VIYA_HTTPROUTES | selectattr('backend_service', 'undefined') | list | length) > 0
+  tags:
+    - install
+    - uninstall
+    - update
+
+# Optionally discover all Viya ingress paths and convert them to HTTPRoute items.
+- name: Discover Viya ingress resources for HTTPRoute auto-generation
+  kubernetes.core.k8s_info:
+    api_version: networking.k8s.io/v1
+    kind: Ingress
+    namespace: "{{ NAMESPACE }}"
+    kubeconfig: "{{ KUBECONFIG }}"
+  register: viya_ingresses_discovered
+  when:
+    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES is defined
+    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES | bool
+    - V4_CFG_VIYA_HTTPROUTE_AUTO_DISCOVER | default(false) | bool
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: Build HTTPRoute list from discovered Viya ingresses
+  set_fact:
+    V4_CFG_VIYA_HTTPROUTES: >-
+      {%- set ns = namespace(counter=0, routes=[]) -%}
+      {%- for ing in (viya_ingresses_discovered.resources | default([])) -%}
+        {%- for rule in (ing.spec.rules | default([])) -%}
+          {%- for p in (rule.http.paths | default([])) -%}
+            {%- set ns.counter = ns.counter + 1 -%}
+            {%- set _ = ns.routes.append({
+              'name': ('hr-' ~ ing.metadata.name ~ '-' ~ ns.counter|string),
+              'namespace': NAMESPACE,
+              'hostnames': ([rule.host] if (rule.host is defined and rule.host is not none and (rule.host | string | length) > 0) else [V4_CFG_INGRESS_FQDN]),
+              'path': (p.path | default('/', true)),
+              'backend_service': (p.backend.service.name if (p.backend is defined and p.backend.service is defined and p.backend.service.name is defined) else V4_CFG_VIYA_HTTPROUTE_BACKEND_SERVICE),
+              'backend_port': ((p.backend.service.port.number if (p.backend is defined and p.backend.service is defined and p.backend.service.port is defined and p.backend.service.port.number is defined) else V4_CFG_VIYA_HTTPROUTE_BACKEND_PORT) | int)
+            }) -%}
+          {%- endfor -%}
+        {%- endfor -%}
+      {%- endfor -%}
+      {{ ns.routes }}
+  when:
+    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES is defined
+    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES | bool
+    - V4_CFG_VIYA_HTTPROUTE_AUTO_DISCOVER | default(false) | bool
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: Validate HTTPRoute auto-discovery produced routes
+  fail:
+    msg: >-
+      V4_CFG_VIYA_HTTPROUTE_AUTO_DISCOVER=true but no ingress rules were found in namespace {{ NAMESPACE }}.
+      Deploy Viya first or provide V4_CFG_VIYA_HTTPROUTES manually.
+  when:
+    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES is defined
+    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES | bool
+    - V4_CFG_VIYA_HTTPROUTE_AUTO_DISCOVER | default(false) | bool
+    - V4_CFG_VIYA_HTTPROUTES | default([]) | length == 0
   tags:
     - install
     - uninstall
