@@ -6,6 +6,16 @@
 # Purpose: Installs and manages Gateway API CRDs used by Gateway API providers.
 
 # Download the Gateway API manifest to the session temp directory.
+- name: Use experimental Gateway API channel for envoy-gateway ingress type
+  set_fact:
+    GATEWAY_API_NAMESPACE_LABEL_MODE: experimental
+  when:
+    - V4_CFG_INGRESS_TYPE is defined
+    - V4_CFG_INGRESS_TYPE == 'envoy-gateway'
+  tags:
+    - install
+    - update
+
 - name: Download Gateway API manifest
   get_url:
     url: "{{ GATEWAY_API_MANIFEST_URL }}"
