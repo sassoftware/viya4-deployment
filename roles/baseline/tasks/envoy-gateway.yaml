@@ -202,6 +202,64 @@
     - install
     - update
 
+# Optional baseline bootstrap Gateway for cluster-side Envoy validation/use cases.
+- name: Create baseline bootstrap Gateway
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ KUBECONFIG }}"
+    definition:
+      apiVersion: gateway.networking.k8s.io/v1
+      kind: Gateway
+      metadata:
+        name: "{{ V4_CFG_BASELINE_GATEWAY_NAME }}"
+        namespace: "{{ V4_CFG_BASELINE_GATEWAY_NAMESPACE }}"
+      spec:
+        gatewayClassName: "{{ ENVOY_GATEWAY_GATEWAYCLASS_NAME }}"
+        listeners:
+{% if V4_CFG_TLS_MODE == "disabled" %}
+          - name: http
+            protocol: HTTP
+            port: 80
+{% if V4_CFG_INGRESS_FQDN is defined and V4_CFG_INGRESS_FQDN is not none %}
+            hostname: "{{ V4_CFG_INGRESS_FQDN }}"
+{% endif %}
+            allowedRoutes:
+              namespaces:
+                from: All
+{% else %}
+{% if V4_CFG_BASELINE_GATEWAY_ENABLE_HTTP_LISTENER | default(true) | bool %}
+          - name: http
+            protocol: HTTP
+            port: 80
+{% if V4_CFG_INGRESS_FQDN is defined and V4_CFG_INGRESS_FQDN is not none %}
+            hostname: "{{ V4_CFG_INGRESS_FQDN }}"
+{% endif %}
+            allowedRoutes:
+              namespaces:
+                from: All
+{% endif %}
+          - name: https
+            protocol: HTTPS
+            port: 443
+{% if V4_CFG_INGRESS_FQDN is defined and V4_CFG_INGRESS_FQDN is not none %}
+            hostname: "{{ V4_CFG_INGRESS_FQDN }}"
+{% endif %}
+            tls:
+              mode: Terminate
+              certificateRefs:
+                - kind: Secret
+                  name: sas-ingress-certificate
+            allowedRoutes:
+              namespaces:
+                from: All
+{% endif %}
+  when:
+    - V4_CFG_BASELINE_CREATE_BOOTSTRAP_GATEWAY is defined
+    - V4_CFG_BASELINE_CREATE_BOOTSTRAP_GATEWAY | bool
+  tags:
+    - install
+    - update
+
 # Remove Envoy Gateway when uninstalling and the feature is enabled.
 - name: Remove Envoy GatewayClass
   kubernetes.core.k8s:
@@ -210,6 +268,21 @@
     kind: GatewayClass
     name: "{{ ENVOY_GATEWAY_GATEWAYCLASS_NAME }}"
     kubeconfig: "{{ KUBECONFIG }}"
+  tags:
+    - uninstall
+
+- name: Remove baseline bootstrap Gateway
+  kubernetes.core.k8s:
+    state: absent
+    api_version: gateway.networking.k8s.io/v1
+    kind: Gateway
+    name: "{{ V4_CFG_BASELINE_GATEWAY_NAME }}"
+    namespace: "{{ V4_CFG_BASELINE_GATEWAY_NAMESPACE }}"
+    kubeconfig: "{{ KUBECONFIG }}"
+  ignore_errors: true
+  when:
+    - V4_CFG_BASELINE_CREATE_BOOTSTRAP_GATEWAY is defined
+    - V4_CFG_BASELINE_CREATE_BOOTSTRAP_GATEWAY | bool
   tags:
     - uninstall
 
