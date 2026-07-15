@@ -330,7 +330,7 @@ The `envoy-gateway` secret is always recreated fresh during baseline install. If
 
 ### Internal Load Balancer (Recommended)
 
-When `V4_CFG_INGRESS_MODE: private` is set and `PROVIDER == "azure"`, the deployment framework patches the Envoy-generated LoadBalancer service with:
+When `V4_CFG_INGRESS_MODE: private` is set and the provider is Azure, the deployment framework patches the Envoy-generated LoadBalancer service with:
 
 ```yaml
 metadata:
@@ -338,7 +338,9 @@ metadata:
     service.beta.kubernetes.io/azure-load-balancer-internal: "true"
 ```
 
-This causes Azure to provision an internal (VNet-only) IP address instead of a public IP, preventing NSG security policy violations.
+This is intended to cause Azure to provision an internal (VNet-only) IP address instead of a public IP.
+
+The deployment also verifies the resulting Envoy LoadBalancer service IP. If a public IP is detected, the service is deleted and allowed to reconcile again with the internal annotation. If the service still has a public IP after remediation, the playbook fails fast so the deployment does not continue in a non-compliant state.
 
 The patch is applied automatically in [`roles/vdm/tasks/deploy.yaml`](../../roles/vdm/tasks/deploy.yaml) after Viya resources are deployed, by matching services with the naming pattern `envoy-<namespace>-<gateway-name>-*` in the `envoy-gateway-system` namespace.
 
@@ -352,7 +354,7 @@ To remain compliant:
   ```bash
   kubectl get svc -A --field-selector spec.type=LoadBalancer -o wide
   ```
-- All `EXTERNAL-IP` values should be private RFC1918 addresses (e.g., `10.x.x.x`, `172.16-31.x.x`, `192.168.x.x`)
+- All `EXTERNAL-IP` values must resolve to private RFC1918 addresses before the deployment is considered successful (e.g., `10.x.x.x`, `172.16-31.x.x`, `192.168.x.x`)
 - If a public IP is ever assigned, delete the LB service and redeploy to trigger the internal annotation
 
 ## Key Benefits
@@ -360,7 +362,7 @@ To remain compliant:
 - **Standard Kubernetes API**: Uses the official Gateway API spec, not vendor-specific annotations
 - **TLS at gateway layer**: Certificate termination at the Envoy proxy; backend services use cluster-internal TLS
 - **Port 80 never exposed**: When TLS is enabled, only the 443 listener is created in the Gateway spec
-- **Azure NSG compliant**: Internal LB annotation prevents public NSG exposure when `V4_CFG_INGRESS_MODE: private`
+- **Azure NSG compliant controls**: Internal LB annotation plus post-deploy verification/remediation prevent silent public LB exposure when `V4_CFG_INGRESS_MODE: private`
 - **Backwards compatible**: Existing Contour/nginx deployments are completely unaffected when all feature flags remain `false`
 - **Controller isolation**: Envoy Gateway controller and data-plane pods run in their own namespace (`envoy-gateway-system`)
 - **Mutual exclusivity enforced**: Contour, ingress-nginx, and Istio are skipped when Envoy Gateway mode is active
@@ -680,7 +682,7 @@ kubectl describe httproute sas-viya-httproute -n viya4
 
 3. **Contour co-existence not supported**: Contour and Envoy Gateway cannot run in the same deployment for the same namespace. If Contour is already installed, remove it before switching to Gateway API mode by running a baseline uninstall.
 
-4. **Azure public LB on first install**: On the very first install, the Envoy proxy LB service may briefly receive a public IP before the internal annotation patch runs in `roles/vdm/tasks/deploy.yaml`. If a security violation notification arrives on first install, delete the LB service and rerun the deployment.
+4. **Azure LB convergence timing**: During provisioning, Azure may temporarily surface a non-final LoadBalancer address. The deployment now enforces private mode by patching, verifying, and remediating Envoy LB services, and fails if it cannot converge to private RFC1918 addressing.
 
 5. **No per-service HTTPRoute automation**: There is no current automated path to generate one `HTTPRoute` per Viya service during deployment. Multi-service conversion must be performed manually post-deploy using the Ingress conversion script in [Multi-Service Routing](#multi-service-routing).
 
