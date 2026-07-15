@@ -50,6 +50,7 @@ V4_CFG_VIYA_HTTPROUTE_NAME: sas-viya-httproute
 V4_CFG_VIYA_HTTPROUTE_BACKEND_SERVICE: null
 V4_CFG_VIYA_HTTPROUTE_BACKEND_PORT: 80
 V4_CFG_VIYA_HTTPROUTES: []
+V4_CFG_VIYA_HTTPROUTE_AUTO_DISCOVER: false
 
 V4_CFG_TLS_MODE: front-door # other valid values are full-stack, ingress-only, and disabled
 V4_CFG_TLS_CERT: null
