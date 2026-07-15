@@ -86,66 +86,7 @@
     - uninstall
     - update
 
-# Optionally discover all Viya ingress paths and convert them to HTTPRoute items.
-- name: Discover Viya ingress resources for HTTPRoute auto-generation
-  kubernetes.core.k8s_info:
-    api_version: networking.k8s.io/v1
-    kind: Ingress
-    namespace: "{{ NAMESPACE }}"
-    kubeconfig: "{{ KUBECONFIG }}"
-  register: viya_ingresses_discovered
-  when:
-    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES is defined
-    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES | bool
-    - V4_CFG_VIYA_HTTPROUTE_AUTO_DISCOVER | default(false) | bool
-  tags:
-    - install
-    - uninstall
-    - update
-
-- name: Build HTTPRoute list from discovered Viya ingresses
-  set_fact:
-    V4_CFG_VIYA_HTTPROUTES: >-
-      {%- set ns = namespace(counter=0, routes=[]) -%}
-      {%- for ing in (viya_ingresses_discovered.resources | default([])) -%}
-        {%- for rule in (ing.spec.rules | default([])) -%}
-          {%- for p in (rule.http.paths | default([])) -%}
-            {%- set ns.counter = ns.counter + 1 -%}
-            {%- set _ = ns.routes.append({
-              'name': ('hr-' ~ ing.metadata.name ~ '-' ~ ns.counter|string),
-              'namespace': NAMESPACE,
-              'hostnames': ([rule.host] if (rule.host is defined and rule.host is not none and (rule.host | string | length) > 0) else [V4_CFG_INGRESS_FQDN]),
-              'path': (p.path | default('/', true)),
-              'backend_service': (p.backend.service.name if (p.backend is defined and p.backend.service is defined and p.backend.service.name is defined) else V4_CFG_VIYA_HTTPROUTE_BACKEND_SERVICE),
-              'backend_port': ((p.backend.service.port.number if (p.backend is defined and p.backend.service is defined and p.backend.service.port is defined and p.backend.service.port.number is defined) else V4_CFG_VIYA_HTTPROUTE_BACKEND_PORT) | int)
-            }) -%}
-          {%- endfor -%}
-        {%- endfor -%}
-      {%- endfor -%}
-      {{ ns.routes }}
-  when:
-    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES is defined
-    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES | bool
-    - V4_CFG_VIYA_HTTPROUTE_AUTO_DISCOVER | default(false) | bool
-  tags:
-    - install
-    - uninstall
-    - update
-
-- name: Validate HTTPRoute auto-discovery produced routes
-  fail:
-    msg: >-
-      V4_CFG_VIYA_HTTPROUTE_AUTO_DISCOVER=true but no ingress rules were found in namespace {{ NAMESPACE }}.
-      Deploy Viya first or provide V4_CFG_VIYA_HTTPROUTES manually.
-  when:
-    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES is defined
-    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES | bool
-    - V4_CFG_VIYA_HTTPROUTE_AUTO_DISCOVER | default(false) | bool
-    - V4_CFG_VIYA_HTTPROUTES | default([]) | length == 0
-  tags:
-    - install
-    - uninstall
-    - update
+# HTTPRoute auto-discovery runs later, after SASDeployment manifests are generated.
 
 # Prevent combining Gateway API routing with traditional ingress controllers to avoid duplicate LBs/public ports.
 # Normalize ingress type to none during Gateway API runs so existing configs can continue safely.
@@ -443,6 +384,93 @@
     - uninstall
     - update
     - multi-tenancy
+
+# Optionally discover Viya ingress rules from generated SASDeployment manifests and
+# convert them to HTTPRoute items before deployment apply.
+- name: Build HTTPRoute list from generated SASDeployment manifests
+  shell: |
+    python3 << 'EOF'
+    import glob
+    import json
+    import os
+    import yaml
+
+    manifest_dir = {{ ORCHESTRATION_TOOLING_INSTALL_MANIFESTS_DIRECTORY | to_json }}
+    namespace = {{ NAMESPACE | to_json }}
+    default_host = {{ V4_CFG_INGRESS_FQDN | to_json }}
+    default_backend_service = {{ V4_CFG_VIYA_HTTPROUTE_BACKEND_SERVICE | to_json }}
+    default_backend_port = int({{ (V4_CFG_VIYA_HTTPROUTE_BACKEND_PORT | default(80)) | int }})
+
+    routes = []
+    counter = 0
+
+    for path in sorted(glob.glob(os.path.join(manifest_dir, '*.yaml'))):
+        with open(path, 'r', encoding='utf-8') as stream:
+            for doc in yaml.safe_load_all(stream):
+                if not isinstance(doc, dict):
+                    continue
+                if doc.get('kind') != 'Ingress':
+                    continue
+                metadata = doc.get('metadata', {})
+                if metadata.get('namespace') != namespace:
+                    continue
+                spec = doc.get('spec', {})
+                for rule in spec.get('rules', []) or []:
+                    http = rule.get('http') or {}
+                    for ingress_path in http.get('paths', []) or []:
+                        backend = ingress_path.get('backend') or {}
+                        service = backend.get('service') or {}
+                        port = service.get('port') or {}
+                        counter += 1
+                        routes.append({
+                            'name': f"hr-{metadata.get('name', 'ingress')}-{counter}",
+                            'namespace': namespace,
+                            'hostnames': [rule.get('host')] if rule.get('host') else [default_host],
+                            'path': ingress_path.get('path') or '/',
+                            'backend_service': service.get('name') or default_backend_service,
+                            'backend_port': int(port.get('number') or default_backend_port),
+                        })
+
+    print(json.dumps(routes))
+    EOF
+  register: viya_httproute_autodiscovery
+  changed_when: false
+  when:
+    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES is defined
+    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES | bool
+    - V4_CFG_VIYA_HTTPROUTE_AUTO_DISCOVER | default(false) | bool
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: Set HTTPRoute list from generated SASDeployment manifests
+  set_fact:
+    V4_CFG_VIYA_HTTPROUTES: "{{ viya_httproute_autodiscovery.stdout | default('[]') | from_json }}"
+  when:
+    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES is defined
+    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES | bool
+    - V4_CFG_VIYA_HTTPROUTE_AUTO_DISCOVER | default(false) | bool
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: Validate HTTPRoute auto-discovery produced routes
+  fail:
+    msg: >-
+      V4_CFG_VIYA_HTTPROUTE_AUTO_DISCOVER=true but no ingress rules were found in the generated
+      SASDeployment manifests for namespace {{ NAMESPACE }}. Provide V4_CFG_VIYA_HTTPROUTES manually
+      if your cadence does not emit Ingress resources.
+  when:
+    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES is defined
+    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES | bool
+    - V4_CFG_VIYA_HTTPROUTE_AUTO_DISCOVER | default(false) | bool
+    - V4_CFG_VIYA_HTTPROUTES | default([]) | length == 0
+  tags:
+    - install
+    - uninstall
+    - update
 
 # Include application deployment tasks
 - name: Include Deploy
