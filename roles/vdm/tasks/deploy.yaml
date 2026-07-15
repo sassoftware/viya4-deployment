@@ -149,9 +149,11 @@
   retries: 60
   delay: 5
   when:
-    - PROVIDER == "azure"
+    - PROVIDER is defined
+    - "'azure' in (PROVIDER | lower)"
     - V4_CFG_GENERATE_GATEWAY_API_RESOURCES is defined
     - V4_CFG_GENERATE_GATEWAY_API_RESOURCES | bool
+    - V4_CFG_INGRESS_MODE == "private"
   tags:
     - install
     - update
@@ -175,9 +177,171 @@
       list
     }}
   when:
-    - PROVIDER == "azure"
+    - PROVIDER is defined
+    - "'azure' in (PROVIDER | lower)"
     - V4_CFG_GENERATE_GATEWAY_API_RESOURCES is defined
     - V4_CFG_GENERATE_GATEWAY_API_RESOURCES | bool
+    - V4_CFG_INGRESS_MODE == "private"
+  tags:
+    - install
+    - update
+    - cas-onboard
+
+- name: Deploy - Refresh Envoy Gateway services after internal LB patch
+  kubernetes.core.k8s_info:
+    kind: Service
+    namespace: envoy-gateway-system
+    kubeconfig: "{{ KUBECONFIG }}"
+  register: envoy_gateway_services_after_patch
+  when:
+    - PROVIDER is defined
+    - "'azure' in (PROVIDER | lower)"
+    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES is defined
+    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES | bool
+    - V4_CFG_INGRESS_MODE == "private"
+  tags:
+    - install
+    - update
+    - cas-onboard
+
+- name: Deploy - Collect Envoy Gateway services with public LB IPs
+  set_fact:
+    envoy_public_gateway_services: >-
+      {{
+        (envoy_gateway_services_after_patch.resources |
+         selectattr('metadata.name', 'match', '^envoy-' ~ NAMESPACE ~ '-' ~ V4_CFG_VIYA_GATEWAY_NAME ~ '-.*') |
+         list)
+        | selectattr('status.loadBalancer.ingress', 'defined')
+        | selectattr('status.loadBalancer.ingress', 'ne', [])
+        | rejectattr('status.loadBalancer.ingress.0.ip', 'undefined')
+        | rejectattr('status.loadBalancer.ingress.0.ip', 'regex', '^(10\\.|192\\.168\\.|172\\.(1[6-9]|2[0-9]|3[0-1])\\.)')
+        | list
+      }}
+  when:
+    - PROVIDER is defined
+    - "'azure' in (PROVIDER | lower)"
+    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES is defined
+    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES | bool
+    - V4_CFG_INGRESS_MODE == "private"
+  tags:
+    - install
+    - update
+    - cas-onboard
+
+- name: Deploy - Delete public Envoy Gateway service to force internal LB recreation
+  kubernetes.core.k8s:
+    state: absent
+    kind: Service
+    name: "{{ item.metadata.name }}"
+    namespace: envoy-gateway-system
+    kubeconfig: "{{ KUBECONFIG }}"
+    wait: true
+  loop: "{{ envoy_public_gateway_services | default([]) }}"
+  when:
+    - PROVIDER is defined
+    - "'azure' in (PROVIDER | lower)"
+    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES is defined
+    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES | bool
+    - V4_CFG_INGRESS_MODE == "private"
+    - envoy_public_gateway_services | default([]) | length > 0
+  tags:
+    - install
+    - update
+    - cas-onboard
+
+- name: Deploy - Wait for Envoy Gateway service recreation after public cleanup
+  kubernetes.core.k8s_info:
+    kind: Service
+    namespace: envoy-gateway-system
+    kubeconfig: "{{ KUBECONFIG }}"
+  register: envoy_gateway_services_recreated
+  until: >
+    (envoy_gateway_services_recreated.resources |
+     selectattr('metadata.name', 'match', '^envoy-' ~ NAMESPACE ~ '-' ~ V4_CFG_VIYA_GATEWAY_NAME ~ '-.*') |
+     list | length) > 0
+  retries: 60
+  delay: 5
+  when:
+    - PROVIDER is defined
+    - "'azure' in (PROVIDER | lower)"
+    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES is defined
+    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES | bool
+    - V4_CFG_INGRESS_MODE == "private"
+    - envoy_public_gateway_services | default([]) | length > 0
+  tags:
+    - install
+    - update
+    - cas-onboard
+
+- name: Deploy - Reapply internal LB annotation after recreation
+  kubernetes.core.k8s:
+    state: patched
+    kind: Service
+    name: "{{ item.metadata.name }}"
+    namespace: envoy-gateway-system
+    kubeconfig: "{{ KUBECONFIG }}"
+    definition:
+      metadata:
+        annotations:
+          service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+  loop: >
+    {{
+      envoy_gateway_services_recreated.resources |
+      selectattr('metadata.name', 'match', '^envoy-' ~ NAMESPACE ~ '-' ~ V4_CFG_VIYA_GATEWAY_NAME ~ '-.*') |
+      list
+    }}
+  when:
+    - PROVIDER is defined
+    - "'azure' in (PROVIDER | lower)"
+    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES is defined
+    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES | bool
+    - V4_CFG_INGRESS_MODE == "private"
+    - envoy_public_gateway_services | default([]) | length > 0
+  tags:
+    - install
+    - update
+    - cas-onboard
+
+- name: Deploy - Verify Envoy Gateway services in private mode
+  kubernetes.core.k8s_info:
+    kind: Service
+    namespace: envoy-gateway-system
+    kubeconfig: "{{ KUBECONFIG }}"
+  register: envoy_gateway_services_final
+  when:
+    - PROVIDER is defined
+    - "'azure' in (PROVIDER | lower)"
+    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES is defined
+    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES | bool
+    - V4_CFG_INGRESS_MODE == "private"
+  tags:
+    - install
+    - update
+    - cas-onboard
+
+- name: Deploy - Fail if Envoy LB still has a public IP in private mode
+  fail:
+    msg: >-
+      Envoy Gateway service still has a public LoadBalancer IP while V4_CFG_INGRESS_MODE=private.
+      Services checked: {{ (envoy_gateway_services_final.resources |
+      selectattr('metadata.name', 'match', '^envoy-' ~ NAMESPACE ~ '-' ~ V4_CFG_VIYA_GATEWAY_NAME ~ '-.*') |
+      map(attribute='metadata.name') | list) }}.
+      Confirm Azure internal load balancer provisioning and rerun deployment.
+  when:
+    - PROVIDER is defined
+    - "'azure' in (PROVIDER | lower)"
+    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES is defined
+    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES | bool
+    - V4_CFG_INGRESS_MODE == "private"
+    - >
+      ((envoy_gateway_services_final.resources |
+        selectattr('metadata.name', 'match', '^envoy-' ~ NAMESPACE ~ '-' ~ V4_CFG_VIYA_GATEWAY_NAME ~ '-.*') |
+        list)
+        | selectattr('status.loadBalancer.ingress', 'defined')
+        | selectattr('status.loadBalancer.ingress', 'ne', [])
+        | rejectattr('status.loadBalancer.ingress.0.ip', 'undefined')
+        | rejectattr('status.loadBalancer.ingress.0.ip', 'regex', '^(10\\.|192\\.168\\.|172\\.(1[6-9]|2[0-9]|3[0-1])\\.)')
+        | list | length) > 0
   tags:
     - install
     - update
