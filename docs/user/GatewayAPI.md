@@ -55,6 +55,10 @@ This implementation adds optional support for **Gateway API v1.5.0** and **Envoy
 
 This feature was introduced as part of **ADR 0151 (Kubernetes Ingress Support Strategy)**, which requires support for Gateway API v1.5.0 (minimum) and Envoy Gateway v1.8.0 (minimum).
 
+**Release alignment note**: Deployment assets for Gateway API and Envoy Gateway are available in recent cadences (including 2026.06), while broader product-level official support milestones may be tracked separately by release governance (for example, 2026.11).
+
+**UDA interoperability note**: Some UDA cluster setups provision both `gw-system` and `envoy-gateway-system`. This repository relies on `envoy-gateway-system` for Envoy Gateway controller and data-plane resources.
+
 ## Architecture
 
 ### Component Roles
@@ -68,7 +72,7 @@ This feature was introduced as part of **ADR 0151 (Kubernetes Ingress Support St
 | HTTPRoute | Routes traffic from Gateway to Viya backend services | Viya namespace |
 | Envoy proxy (data plane) | Created automatically by Envoy Gateway per Gateway resource; handles actual traffic | `envoy-gateway-system` |
 | `envoy-gateway` secret | Internal TLS material for the Envoy Gateway controller itself | `envoy-gateway-system` |
-| `sas-ingress-certificate` secret | TLS certificate for the Viya HTTPS listener | Viya namespace |
+| `sas-ingress-certificate` secret | TLS certificate for the Gateway HTTPS listener | Gateway namespace (`V4_CFG_VIYA_GATEWAY_NAMESPACE`, defaults to Viya namespace) |
 
 ### Traffic Flow
 
@@ -118,9 +122,13 @@ To avoid security policy violations:
 - This annotates the Envoy-generated LoadBalancer service with `service.beta.kubernetes.io/azure-load-balancer-internal: "true"`
 - The LoadBalancer receives only an internal (VNet) IP, never a public IP
 
+### Hostname Convention
+
+The deployment uses the value of `V4_CFG_INGRESS_FQDN` as the Gateway listener hostname. If your environment follows a naming convention that includes `envoy-gateway` in the FQDN, provide that value directly in `V4_CFG_INGRESS_FQDN`.
+
 ### TLS Certificate Requirement
 
-The `Gateway` resource references a secret named `sas-ingress-certificate` in the Viya namespace. Envoy Gateway will not fully program the listener until this secret exists. The secret must contain:
+The `Gateway` resource references a secret named `sas-ingress-certificate` in the Gateway resource namespace (`V4_CFG_VIYA_GATEWAY_NAMESPACE`). Envoy Gateway will not fully program the listener until this secret exists. The secret must contain:
 
 - `tls.crt` — Certificate (PEM format)
 - `tls.key` — Private key (PEM format)
@@ -134,7 +142,7 @@ If the secret is missing and you need to recover manually:
 kubectl create secret tls sas-ingress-certificate \
   --cert=/path/to/cert.crt \
   --key=/path/to/cert.key \
-  -n viya4
+  -n <gateway-namespace>
 ```
 
 ### Backend Service Requirement
