@@ -67,7 +67,7 @@ This feature was introduced as part of **ADR 0151 (Kubernetes Ingress Support St
 |---|---|---|
 | Gateway API CRDs | Kubernetes resource type definitions (`Gateway`, `HTTPRoute`, `GatewayClass`, etc.) | Cluster-scoped |
 | Envoy Gateway controller | Watches `Gateway` and `HTTPRoute` resources and programs Envoy data plane | `envoy-gateway-system` |
-| GatewayClass | Declares a gateway implementation (`envoy-gateway-class`) | Cluster-scoped |
+| GatewayClass | Declares a gateway implementation (`envoy`) | Cluster-scoped |
 | Gateway | Defines the HTTPS/HTTP listener, hostname, and TLS certificate reference | Viya namespace |
 | HTTPRoute | Routes traffic from Gateway to Viya backend services | Viya namespace |
 | Envoy proxy (data plane) | Created automatically by Envoy Gateway per Gateway resource; handles actual traffic | `envoy-gateway-system` |
@@ -171,7 +171,7 @@ For full Viya application coverage, multiple HTTPRoute resources are needed. See
 | `GATEWAY_API_VERSION` | `v1.5.0` | Gateway API CRD version to install |
 | `GATEWAY_API_NAMESPACE_LABEL_MODE` | `standard` | CRD channel: `standard` or `experimental` |
 | `ENVOY_GATEWAY_VERSION` | `v1.8.0` | Envoy Gateway controller version |
-| `ENVOY_GATEWAY_GATEWAYCLASS_NAME` | `envoy-gateway-class` | Name of the GatewayClass resource created automatically |
+| `ENVOY_GATEWAY_GATEWAYCLASS_NAME` | `envoy` | Name of the GatewayClass resource created automatically |
 
 ### VDM Settings (roles/vdm/defaults/main.yaml)
 
@@ -179,7 +179,7 @@ For full Viya application coverage, multiple HTTPRoute resources are needed. See
 |---|---|---|---|
 | `V4_CFG_GENERATE_GATEWAY_API_RESOURCES` | `false` | No | Generate Gateway and HTTPRoute Kubernetes resources during Viya deployment |
 | `V4_CFG_VIYA_GATEWAY_NAME` | `sas-viya-gateway` | No | Name of the Gateway resource |
-| `V4_CFG_VIYA_GATEWAY_CLASS_NAME` | `envoy-gateway-class` | No | GatewayClass to reference in the Gateway spec |
+| `V4_CFG_VIYA_GATEWAY_CLASS_NAME` | `envoy` | No | GatewayClass to reference in the Gateway spec |
 | `V4_CFG_VIYA_HTTPROUTE_NAME` | `sas-viya-httproute` | No | Name of the HTTPRoute resource |
 | `V4_CFG_VIYA_HTTPROUTE_BACKEND_SERVICE` | `null` | **Yes** (when enabled) | Backend Viya service name for the HTTPRoute |
 | `V4_CFG_VIYA_HTTPROUTE_BACKEND_PORT` | `80` | No | Backend service port |
@@ -262,7 +262,7 @@ Envoy Gateway does not auto-create a `GatewayClass`. The framework creates one e
 apiVersion: gateway.networking.k8s.io/v1
 kind: GatewayClass
 metadata:
-  name: envoy-gateway-class
+  name: envoy
 spec:
   controllerName: gateway.envoyproxy.io/gatewayclass-controller
 ```
@@ -282,7 +282,7 @@ kind: Gateway
 metadata:
   name: sas-viya-gateway
 spec:
-  gatewayClassName: envoy-gateway-class
+  gatewayClassName: envoy
   listeners:
     - name: https
       protocol: HTTPS
@@ -420,7 +420,7 @@ V4_CFG_INSTALL_ENVOY_GATEWAY: true
 ## Gateway API Viya Resources
 V4_CFG_GENERATE_GATEWAY_API_RESOURCES: true
 V4_CFG_VIYA_GATEWAY_NAME: sas-viya-gateway
-V4_CFG_VIYA_GATEWAY_CLASS_NAME: envoy-gateway-class
+V4_CFG_VIYA_GATEWAY_CLASS_NAME: envoy
 V4_CFG_VIYA_HTTPROUTE_NAME: sas-viya-httproute
 V4_CFG_VIYA_HTTPROUTE_BACKEND_SERVICE: sas-logon-app
 V4_CFG_VIYA_HTTPROUTE_BACKEND_PORT: 443
@@ -449,7 +449,7 @@ V4_CFG_TLS_KEY: /data/certs/viya4.key
 GATEWAY_API_VERSION: v1.5.0
 GATEWAY_API_NAMESPACE_LABEL_MODE: standard   # or: experimental
 ENVOY_GATEWAY_VERSION: v1.8.0
-ENVOY_GATEWAY_GATEWAYCLASS_NAME: envoy-gateway-class
+ENVOY_GATEWAY_GATEWAYCLASS_NAME: envoy
 ```
 
 **Disabling individual Gateway API features while keeping infrastructure:**
@@ -505,11 +505,11 @@ curl -vkI https://your-fqdn.example.com/SASLogon
 ```
 GatewayClass:
   NAME                  CONTROLLER                                      ACCEPTED   AGE
-  envoy-gateway-class   gateway.envoyproxy.io/gatewayclass-controller   True       5m
+  envoy                gateway.envoyproxy.io/gatewayclass-controller   True       5m
 
 Gateway:
   NAMESPACE   NAME               CLASS                 ADDRESS       PROGRAMMED   AGE
-  viya4       sas-viya-gateway   envoy-gateway-class   10.x.x.x      True         4m
+  viya4       sas-viya-gateway   envoy                10.x.x.x      True         4m
 
 HTTPRoute:
   NAMESPACE   NAME                 HOSTNAMES               AGE
@@ -599,7 +599,7 @@ kubectl describe gateway sas-viya-gateway -n viya4
 |---|---|---|
 | `ResolvedRefs=False` / `InvalidCertificateRef` | `sas-ingress-certificate` secret missing | `kubectl create secret tls sas-ingress-certificate --cert=<crt> --key=<key> -n viya4` |
 | `Programmed=False` / `NoResources` | Envoy proxy pods not ready | See [Envoy Proxy 1/2 Containers Ready](#envoy-proxy-12-containers-ready) |
-| `Accepted=False` | Invalid or missing GatewayClass name | Verify `kubectl get gatewayclass` shows `Accepted=True` for `envoy-gateway-class` |
+| `Accepted=False` | Invalid or missing GatewayClass name | Verify `kubectl get gatewayclass` shows `Accepted=True` for `envoy` |
 | `AddressNotAssigned` | No LoadBalancer IP provisioned yet | Wait 2-3 minutes; check Azure LB provisioning in portal |
 
 ### Envoy Proxy 1/2 Containers Ready
