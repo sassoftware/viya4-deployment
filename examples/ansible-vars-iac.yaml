@@ -26,14 +26,6 @@ V4_CFG_INGRESS_TYPE: contour
 V4_CFG_INGRESS_FQDN: <desired_fqdn>
 V4_CFG_TLS_MODE: full-stack # [full-stack|front-door|ingress-only|disabled]
 
-## Optional Gateway API + Envoy Gateway
-V4_CFG_INSTALL_GATEWAY_API: false
-V4_CFG_INSTALL_ENVOY_GATEWAY: false
-V4_CFG_GENERATE_GATEWAY_API_RESOURCES: false
-# V4_CFG_VIYA_GATEWAY_CLASS_NAME: envoy
-# V4_CFG_VIYA_HTTPROUTE_BACKEND_SERVICE: <viya_backend_service_name>
-# V4_CFG_VIYA_HTTPROUTE_BACKEND_PORT: 80
-
 ## Postgres
 
 ## LDAP
