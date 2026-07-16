@@ -199,15 +199,6 @@
     - install
     - update
   block:
-    - name: Remove existing Envoy Gateway TLS secret for clean recreation
-      kubernetes.core.k8s:
-        state: absent
-        kind: Secret
-        name: envoy-gateway
-        namespace: envoy-gateway-system
-        kubeconfig: "{{ KUBECONFIG }}"
-        wait: true
-
     - name: Check if user-provided TLS files are configured
       set_fact:
         envoy_gateway_has_user_tls: >
@@ -217,6 +208,15 @@
             (V4_CFG_TLS_KEY is defined and V4_CFG_TLS_KEY is not none and (V4_CFG_TLS_KEY | string | length) > 0)
           }}
 
+    - name: Check existing Envoy Gateway TLS secret
+      kubernetes.core.k8s_info:
+        api_version: v1
+        kind: Secret
+        name: envoy-gateway
+        namespace: envoy-gateway-system
+        kubeconfig: "{{ KUBECONFIG }}"
+      register: existing_envoy_gateway_tls_secret
+
     - name: Generate temporary self-signed cert for Envoy Gateway
       shell: |
         openssl req -x509 -nodes -newkey rsa:2048 -sha256 \
@@ -225,7 +225,9 @@
           -days 365 -subj "/CN=envoy-gateway.local"
       args:
         executable: /bin/bash
-      when: not envoy_gateway_has_user_tls
+      when:
+        - not envoy_gateway_has_user_tls
+        - existing_envoy_gateway_tls_secret.resources | default([]) | length == 0
 
     - name: Create Envoy Gateway TLS secret
       kubernetes.core.k8s:
@@ -244,6 +246,8 @@
             tls.key: "{{ lookup('file', (V4_CFG_TLS_KEY if envoy_gateway_has_user_tls else (tmpdir.path + '/envoy-gateway-tls.key'))) | b64encode }}"
             ca.crt: "{{ lookup('file', (V4_CFG_TLS_CERT if envoy_gateway_has_user_tls else (tmpdir.path + '/envoy-gateway-tls.crt'))) | b64encode }}"
         kubeconfig: "{{ KUBECONFIG }}"
+      when:
+        - envoy_gateway_has_user_tls or (existing_envoy_gateway_tls_secret.resources | default([]) | length == 0)
 
 # Install or update Gateway API CRDs.
 - name: Deploy Gateway API CRDs
