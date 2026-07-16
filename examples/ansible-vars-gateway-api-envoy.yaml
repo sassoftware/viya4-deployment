@@ -23,8 +23,6 @@ V4_CFG_CR_PASSWORD: <container_registry_password>
 V4_CFG_INGRESS_TYPE: envoy-gateway
 V4_CFG_INGRESS_MODE: private # set public only if required
 V4_CFG_TLS_MODE: full-stack # [full-stack|front-door|ingress-only|disabled]
-V4_CFG_INGRESS_FQDN: aksgw.unx.sas.com
-V4_CFG_BASE_DOMAIN: viya4.aksgw.unx.sas.com
 
 ## Install Gateway API + Envoy Gateway in baseline
 V4_CFG_INSTALL_GATEWAY_API: true
