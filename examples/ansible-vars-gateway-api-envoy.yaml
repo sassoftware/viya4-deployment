@@ -1,0 +1,54 @@
+---
+## Cluster
+PROVIDER: <provider> # [azure|aws|gcp|custom]
+CLUSTER_NAME: <cluster_name>
+NAMESPACE: <viya_namespace>
+
+## MISC
+DEPLOY: true
+LOADBALANCER_SOURCE_RANGES: [<desired_cidr_blocks>]
+
+## SAS API Access
+V4_CFG_APIM_CLIENT_ID: <apim_client_id>
+V4_CFG_APIM_CLIENT_SECRET: <apim_client_secret>
+V4_CFG_ORDER_NUMBER: <order_number>
+V4_CFG_CADENCE_NAME: <cadence_name> # [lts|stable]
+V4_CFG_CADENCE_VERSION: <cadence_version>
+
+## CR Access
+V4_CFG_CR_USER: <container_registry_user>
+V4_CFG_CR_PASSWORD: <container_registry_password>
+
+## Ingress / TLS
+V4_CFG_INGRESS_TYPE: envoy-gateway
+V4_CFG_INGRESS_MODE: private # set public only if required
+V4_CFG_TLS_MODE: full-stack # [full-stack|front-door|ingress-only|disabled]
+V4_CFG_INGRESS_FQDN: aksgw.unx.sas.com
+V4_CFG_BASE_DOMAIN: viya4.aksgw.unx.sas.com
+
+## Install Gateway API + Envoy Gateway in baseline
+V4_CFG_INSTALL_GATEWAY_API: true
+V4_CFG_INSTALL_ENVOY_GATEWAY: true
+ENVOY_GATEWAY_GATEWAYCLASS_NAME: envoy
+V4_CFG_VIYA_GATEWAY_CLASS_NAME: envoy
+
+## Baseline shared Gateway (parent for ListenerSet)
+V4_CFG_BASELINE_CREATE_BOOTSTRAP_GATEWAY: true
+V4_CFG_BASELINE_GATEWAY_NAMESPACE: gw-system
+V4_CFG_BASELINE_GATEWAY_NAME: k8s-gw
+V4_CFG_BASELINE_GATEWAY_ENABLE_HTTP_LISTENER: true
+V4_CFG_BASELINE_GATEWAY_TLS_SECRET_NAME: gateway-secret
+
+## Generate Gateway API resources for viya flow
+V4_CFG_GENERATE_GATEWAY_API_RESOURCES: true
+
+## ListenerSet name in viya namespace (optional override)
+# V4_CFG_VIYA_LISTENERSET_NAME: "{{ NAMESPACE }}-listeners"
+
+## Do not set V4_CFG_VIYA_GATEWAY_NAMESPACE/V4_CFG_VIYA_GATEWAY_NAME
+## for envoy-gateway mode unless you intentionally want extra secret sync behavior.
+
+## Optional runtime toggles
+# V4_CFG_VIYA_HTTPROUTE_AUTO_DISCOVER: true
+# GATEWAY_API_VERSION: v1.5.0
+# GATEWAY_API_NAMESPACE_LABEL_MODE: experimental
