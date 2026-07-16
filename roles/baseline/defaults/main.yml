@@ -21,7 +21,7 @@ GATEWAY_API_MANIFEST_URL: "https://github.com/kubernetes-sigs/gateway-api/releas
 ## Envoy Gateway
 ENVOY_GATEWAY_VERSION: v1.8.0
 ENVOY_GATEWAY_MANIFEST_URL: "https://github.com/envoyproxy/gateway/releases/download/{{ ENVOY_GATEWAY_VERSION }}/install.yaml"
-ENVOY_GATEWAY_GATEWAYCLASS_NAME: envoy-gateway-class
+ENVOY_GATEWAY_GATEWAYCLASS_NAME: envoy
 
 ## Optional baseline bootstrap Gateway (cluster-side, OpenStack-style)
 V4_CFG_BASELINE_CREATE_BOOTSTRAP_GATEWAY: true
