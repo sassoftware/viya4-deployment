@@ -222,7 +222,6 @@
           - name: http
             protocol: HTTP
             port: 80
-            hostname: "{{ V4_CFG_INGRESS_FQDN }}"
             allowedRoutes:
               namespaces:
                 from: All
@@ -253,19 +252,17 @@
           - name: http
             protocol: HTTP
             port: 80
-            hostname: "{{ V4_CFG_INGRESS_FQDN }}"
             allowedRoutes:
               namespaces:
                 from: All
           - name: https
             protocol: HTTPS
             port: 443
-            hostname: "{{ V4_CFG_INGRESS_FQDN }}"
             tls:
               mode: Terminate
               certificateRefs:
                 - kind: Secret
-                  name: sas-ingress-certificate
+                  name: "{{ V4_CFG_BASELINE_GATEWAY_TLS_SECRET_NAME | default('gateway-secret') }}"
             allowedRoutes:
               namespaces:
                 from: All
@@ -297,12 +294,11 @@
           - name: https
             protocol: HTTPS
             port: 443
-            hostname: "{{ V4_CFG_INGRESS_FQDN }}"
             tls:
               mode: Terminate
               certificateRefs:
                 - kind: Secret
-                  name: sas-ingress-certificate
+                  name: "{{ V4_CFG_BASELINE_GATEWAY_TLS_SECRET_NAME | default('gateway-secret') }}"
             allowedRoutes:
               namespaces:
                 from: All
