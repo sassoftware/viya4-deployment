@@ -82,6 +82,7 @@ V4_CFG_MULTI_ZONE_OPENDISTRO_ENABLED: true           # Search/logging
 V4_CFG_MULTI_ZONE_WORKLOAD_ORCHESTRATOR_ENABLED: true # Job scheduling
 V4_CFG_MULTI_ZONE_DATA_AGENT_ENABLED: true           # Data services
 V4_CFG_MULTI_ZONE_STATELESS_ENABLED: true            # Stateless services (Deployments)
+V4_CFG_MULTI_ZONE_CONTOUR_ENABLED: true              # Contour ingress controller HA (replicaCount=detected zones, min=2 + zone spread)
 
 # Advanced options
 V4_CFG_SINGLE_ZONE_FALLBACK: true          # Handle single-zone clusters gracefully
