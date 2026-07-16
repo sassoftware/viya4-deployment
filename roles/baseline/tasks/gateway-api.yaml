@@ -177,12 +177,12 @@
       kubernetes.core.k8s:
         state: present
         kind: Secret
-        name: sas-ingress-certificate
+        name: "{{ V4_CFG_BASELINE_GATEWAY_TLS_SECRET_NAME | default('gateway-secret') }}"
         namespace: "{{ gateway_listener_namespace }}"
         definition:
           apiVersion: v1
           metadata:
-            name: sas-ingress-certificate
+            name: "{{ V4_CFG_BASELINE_GATEWAY_TLS_SECRET_NAME | default('gateway-secret') }}"
             namespace: "{{ gateway_listener_namespace }}"
           type: kubernetes.io/tls
           data:

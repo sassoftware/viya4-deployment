@@ -145,6 +145,36 @@
     - uninstall
     - update
 
+- name: Envoy Gateway mode - check shared parent Gateway exists
+  kubernetes.core.k8s_info:
+    api_version: gateway.networking.k8s.io/v1
+    kind: Gateway
+    name: "{{ V4_CFG_BASELINE_GATEWAY_NAME | default('k8s-gw') }}"
+    namespace: "{{ V4_CFG_BASELINE_GATEWAY_NAMESPACE | default('gw-system') }}"
+    kubeconfig: "{{ KUBECONFIG }}"
+  register: shared_parent_gateway_info
+  when:
+    - DEPLOY | default(true) | bool
+    - V4_CFG_INGRESS_TYPE == 'envoy-gateway'
+  tags:
+    - install
+    - update
+
+- name: Envoy Gateway mode - fail when shared parent Gateway is missing
+  fail:
+    msg: >-
+      Shared parent Gateway {{ V4_CFG_BASELINE_GATEWAY_NAMESPACE | default('gw-system') }}/{{ V4_CFG_BASELINE_GATEWAY_NAME | default('k8s-gw') }}
+      was not found. In envoy-gateway mode, run baseline first (with V4_CFG_INSTALL_GATEWAY_API=true,
+      V4_CFG_INSTALL_ENVOY_GATEWAY=true, and V4_CFG_BASELINE_CREATE_BOOTSTRAP_GATEWAY=true)
+      so ListenerSet can attach to an existing Gateway.
+  when:
+    - DEPLOY | default(true) | bool
+    - V4_CFG_INGRESS_TYPE == 'envoy-gateway'
+    - shared_parent_gateway_info.resources | default([]) | length == 0
+  tags:
+    - install
+    - update
+
 # Add base overlays and generators for kustomize
 - name: Base overlays
   overlay_facts:
