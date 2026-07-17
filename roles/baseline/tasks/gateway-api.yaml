@@ -218,6 +218,11 @@
       register: existing_envoy_gateway_tls_secret
 
     - name: Generate temporary self-signed cert for Envoy Gateway
+      # The envoy-gateway secret is used exclusively for internal xDS (control-plane ↔ data-plane)
+      # TLS. It must be self-signed so that ca.crt equals the cert that signed tls.crt.
+      # Using the user-provided deployment cert here is incorrect: the deployment cert is signed
+      # by an external CA chain, so ca.crt would be a leaf cert rather than the root, causing
+      # CERTIFICATE_VERIFY_FAILED at depth 2 (self-signed root not trusted).
       shell: |
         openssl req -x509 -nodes -newkey rsa:2048 -sha256 \
           -keyout "{{ tmpdir.path }}/envoy-gateway-tls.key" \
@@ -226,7 +231,6 @@
       args:
         executable: /bin/bash
       when:
-        - not envoy_gateway_has_user_tls
         - existing_envoy_gateway_tls_secret.resources | default([]) | length == 0
 
     - name: Create Envoy Gateway TLS secret
@@ -242,12 +246,12 @@
             namespace: envoy-gateway-system
           type: Opaque
           data:
-            tls.crt: "{{ lookup('file', (V4_CFG_TLS_CERT if envoy_gateway_has_user_tls else (tmpdir.path + '/envoy-gateway-tls.crt'))) | b64encode }}"
-            tls.key: "{{ lookup('file', (V4_CFG_TLS_KEY if envoy_gateway_has_user_tls else (tmpdir.path + '/envoy-gateway-tls.key'))) | b64encode }}"
-            ca.crt: "{{ lookup('file', (V4_CFG_TLS_CERT if envoy_gateway_has_user_tls else (tmpdir.path + '/envoy-gateway-tls.crt'))) | b64encode }}"
+            tls.crt: "{{ lookup('file', tmpdir.path + '/envoy-gateway-tls.crt') | b64encode }}"
+            tls.key: "{{ lookup('file', tmpdir.path + '/envoy-gateway-tls.key') | b64encode }}"
+            ca.crt: "{{ lookup('file', tmpdir.path + '/envoy-gateway-tls.crt') | b64encode }}"
         kubeconfig: "{{ KUBECONFIG }}"
       when:
-        - envoy_gateway_has_user_tls or (existing_envoy_gateway_tls_secret.resources | default([]) | length == 0)
+        - existing_envoy_gateway_tls_secret.resources | default([]) | length == 0
 
 # Install or update Gateway API CRDs.
 - name: Deploy Gateway API CRDs
