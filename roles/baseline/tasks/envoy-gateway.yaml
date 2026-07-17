@@ -271,6 +271,10 @@
     - V4_CFG_BASELINE_CREATE_BOOTSTRAP_GATEWAY | bool
     - V4_CFG_TLS_MODE != "disabled"
     - V4_CFG_BASELINE_GATEWAY_ENABLE_HTTP_LISTENER | default(true) | bool
+    # When envoy-gateway is the ingress type the ListenerSet owns the HTTPS listener;
+    # adding one here would cause duplicate SANs on port 443 and trigger the
+    # "certificate SAN overlaps" / ALPN coalescing warning from Envoy.
+    - V4_CFG_INGRESS_TYPE is not defined or V4_CFG_INGRESS_TYPE != 'envoy-gateway'
   tags:
     - install
     - update
@@ -307,6 +311,47 @@
     - V4_CFG_BASELINE_CREATE_BOOTSTRAP_GATEWAY | bool
     - V4_CFG_TLS_MODE != "disabled"
     - not (V4_CFG_BASELINE_GATEWAY_ENABLE_HTTP_LISTENER | default(true) | bool)
+    # When envoy-gateway is the ingress type the ListenerSet owns the HTTPS listener;
+    # adding one here would cause duplicate SANs on port 443 and trigger the
+    # "certificate SAN overlaps" / ALPN coalescing warning from Envoy.
+    - V4_CFG_INGRESS_TYPE is not defined or V4_CFG_INGRESS_TYPE != 'envoy-gateway'
+  tags:
+    - install
+    - update
+
+# When using envoy-gateway ingress type with TLS enabled, create a bootstrap Gateway that
+# contains only an HTTP listener. The HTTPS (and optional HTTP) listeners for Viya traffic
+# are contributed by the ListenerSet, so they must NOT also be declared on the parent
+# Gateway — doing so would produce two HTTPS certificate entries with the same SAN on
+# port 443, triggering Envoy's "certificate SAN overlaps" / ALPN coalescing warning.
+- name: Create baseline bootstrap Gateway for envoy-gateway with TLS (HTTP-only parent)
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ KUBECONFIG }}"
+    definition:
+      apiVersion: gateway.networking.k8s.io/v1
+      kind: Gateway
+      metadata:
+        name: "{{ V4_CFG_BASELINE_GATEWAY_NAME }}"
+        namespace: "{{ V4_CFG_BASELINE_GATEWAY_NAMESPACE }}"
+      spec:
+        gatewayClassName: "{{ ENVOY_GATEWAY_GATEWAYCLASS_NAME }}"
+        allowedListeners:
+          namespaces:
+            from: All
+        listeners:
+          - name: http
+            protocol: HTTP
+            port: 80
+            allowedRoutes:
+              namespaces:
+                from: All
+  when:
+    - V4_CFG_BASELINE_CREATE_BOOTSTRAP_GATEWAY is defined
+    - V4_CFG_BASELINE_CREATE_BOOTSTRAP_GATEWAY | bool
+    - V4_CFG_TLS_MODE != "disabled"
+    - V4_CFG_INGRESS_TYPE is defined
+    - V4_CFG_INGRESS_TYPE == 'envoy-gateway'
   tags:
     - install
     - update
