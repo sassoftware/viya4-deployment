@@ -55,6 +55,59 @@
     - install
     - update
 
+# Discover node zones to size contour replicas by zone count in multi-zone mode
+- name: Get node topology information for Contour multi-zone sizing
+  kubernetes.core.k8s_info:
+    kind: Node
+    kubeconfig: "{{ KUBECONFIG }}"
+  register: contour_node_info
+  when:
+    - V4_CFG_MULTI_ZONE_ENABLED | default(false) | bool
+    - V4_CFG_MULTI_ZONE_CONTOUR_ENABLED | default(true) | bool
+  tags:
+    - install
+    - update
+
+# Collect detected node zones for contour replica sizing
+- name: Collect detected zones for Contour multi-zone sizing
+  set_fact:
+    contour_detected_zones: "{{ (contour_detected_zones | default([])) + [item.metadata.labels['topology.kubernetes.io/zone']] }}"
+  loop: "{{ contour_node_info.resources | default([]) }}"
+  when:
+    - V4_CFG_MULTI_ZONE_ENABLED | default(false) | bool
+    - V4_CFG_MULTI_ZONE_CONTOUR_ENABLED | default(true) | bool
+    - item.metadata is defined
+    - item.metadata.labels is defined
+    - item.metadata.labels['topology.kubernetes.io/zone'] is defined
+  tags:
+    - install
+    - update
+
+# Derive contour replica count from the number of detected zones (minimum 2)
+- name: Set Contour multi-zone replica count
+  set_fact:
+    CONTOUR_MULTI_ZONE_REPLICA_COUNT: "{{ [2, (contour_detected_zones | default([]) | unique | length)] | max }}"
+  when:
+    - V4_CFG_MULTI_ZONE_ENABLED | default(false) | bool
+    - V4_CFG_MULTI_ZONE_CONTOUR_ENABLED | default(true) | bool
+  tags:
+    - install
+    - update
+
+# Apply multi-zone HA configuration for Contour when multi-zone is enabled.
+# Sets replica count to match detected zone count (minimum 2) and adds topology
+# spread constraints and pod anti-affinity to distribute contour controller pods
+# across availability zones.
+- name: Update CONTOUR_CONFIG for multi-zone HA distribution
+  set_fact:
+    CONTOUR_CONFIG: "{{ CONTOUR_CONFIG | combine(CONTOUR_MULTI_ZONE_CONFIG, recursive=True) | combine({'contour': {'replicaCount': CONTOUR_MULTI_ZONE_REPLICA_COUNT}}, recursive=True) }}"
+  when:
+    - V4_CFG_MULTI_ZONE_ENABLED | default(false) | bool
+    - V4_CFG_MULTI_ZONE_CONTOUR_ENABLED | default(true) | bool
+  tags:
+    - install
+    - update
+
 # Deploy the Contour ingress controller using Helm
 - name: Deploy contour
   kubernetes.core.helm:
