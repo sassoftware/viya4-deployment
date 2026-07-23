@@ -1,0 +1,114 @@
+# AWS Resource Tagging Configuration Example
+# This file demonstrates how tags are automatically applied to AWS resources created during Viya4 deployment
+
+# ============================================================================
+# AUTOMATIC TAGGING FROM TERRAFORM STATE (Recommended)
+# ============================================================================
+# If you used viya4-iac-aws to create your infrastructure, tags defined in the
+# viya4-iac-aws terraform code (local.tags) are automatically extracted from the
+# terraform state file and applied to:
+# - Contour/ingress-nginx load balancers (Kubernetes Service annotations)
+# - EBS volumes (CSI StorageClass parameters)
+#
+# This happens automatically when you set TFSTATE variable during playbook run:
+#
+# ansible-playbook \
+#   -e CONFIG=ansible-vars.yaml \
+#   -e TFSTATE=../../viya4-iac-aws/terraform.tfstate \
+#   playbooks/playbook.yaml --tags "baseline,viya,install"
+#
+# No additional configuration is needed - tags flow automatically from IaC to deployment!
+
+# ============================================================================
+# MANUAL TAGGING (for custom tags or non-IaC deployments)
+# ============================================================================
+# If you are NOT using viya4-iac-aws, or if you want to add additional custom tags
+# beyond what IaC provides, use these configurations in your ansible-vars.yaml file.
+
+# 1. CONTOUR INGRESS CONTROLLER - LOAD BALANCER TAGS
+# ============================================================================
+# Apply custom tags to the AWS Network Load Balancer (NLB) created by Contour
+# These tags will be MERGED with any tags from terraform state
+CONTOUR_AWS_LB_TAGS_CONFIG:
+  envoy:
+    service:
+      annotations:
+        service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags: |
+          CustomTag1=value1,CustomTag2=value2,Environment=production
+
+# ============================================================================
+# 2. INGRESS-NGINX - LOAD BALANCER TAGS (Alternative Ingress Controller)
+# ============================================================================
+# If you're using ingress-nginx instead of Contour, apply tags via:
+
+INGRESS_NGINX_CONFIG:
+  controller:
+    service:
+      externalTrafficPolicy: Local
+      sessionAffinity: None
+      loadBalancerSourceRanges: ["0.0.0.0/0"]
+      annotations:
+        service.beta.kubernetes.io/aws-load-balancer-type: nlb
+        service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags: |
+          CustomTag1=value1,CustomTag2=value2,Environment=production
+
+# 3. EBS CSI DRIVER - DYNAMIC EBS VOLUME TAGS
+# ============================================================================
+# Apply custom tags to EBS volumes created dynamically by Kubernetes PersistentVolumeClaims (PVCs)
+# These tags will be applied to all EBS volumes provisioned by the RabbitMQ and Crunchy Postgres
+# storage classes and will be MERGED with any tags from terraform state.
+
+EBS_CSI_DRIVER_TAGS:
+  CustomTag1: value1
+  CustomTag2: value2
+  Environment: production
+  Team: platform
+  CostCenter: "12345"
+
+# The tags above will be applied to volumes created by these storage classes:
+# - gp3-vol-mq (RabbitMQ persistent volumes)
+# - gp3-vol-pg (Crunchy Postgres persistent volumes)
+
+# ============================================================================
+# USAGE NOTES
+# ============================================================================
+# 
+# RECOMMENDED APPROACH - Use viya4-iac-aws Terraform State:
+# ─────────────────────────────────────────────────────────
+# 1. Define tags in your viya4-iac-aws terraform variables
+# 2. Run viya4-deployment with both CONFIG and TFSTATE parameters:
+#
+#    ansible-playbook \
+#      -e CONFIG=$HOME/ansible-vars.yaml \
+#      -e TFSTATE=$HOME/viya4-iac-aws/terraform.tfstate \
+#      playbooks/playbook.yaml --tags "baseline,viya,install"
+#
+# 3. Tags from viya4-iac-aws (local.tags) are automatically:
+#    - Extracted from the terraform state
+#    - Applied to Contour/ingress-nginx load balancers
+#    - Applied to EBS volumes
+#
+# 4. If you also define EBS_CSI_DRIVER_TAGS in ansible-vars.yaml,
+#    they are MERGED (user-provided tags override terraform state tags)
+#
+# MANUAL APPROACH - Without viya4-iac-aws:
+# ────────────────────────────────────────
+# 1. Define custom tags directly in ansible-vars.yaml using the 
+#    CONTOUR_AWS_LB_TAGS_CONFIG and EBS_CSI_DRIVER_TAGS variables (shown above)
+# 2. These tags will be applied to all AWS resources
+#
+# TAG MERGING BEHAVIOR:
+# ─────────────────────
+# Priority order (highest to lowest):
+# 1. User-provided tags in ansible-vars.yaml
+# 2. Tags from terraform state (viya4-iac-aws local.tags)
+# 3. Default tags (cluster name via k8sTagClusterId for EBS)
+#
+# EXAMPLE - Complete Configuration:
+# ─────────────────────────────────
+# If viya4-iac-aws defines local.tags = {Environment=prod, Owner=platform}
+# And your ansible-vars.yaml defines:
+#   EBS_CSI_DRIVER_TAGS:
+#     Owner: engineering        # overrides the terraform value
+#     CostCenter: "12345"       # new additional tag
+# Result: EBS volumes will have: Environment=prod, Owner=engineering, CostCenter=12345

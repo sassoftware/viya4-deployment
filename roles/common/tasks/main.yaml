@@ -278,6 +278,32 @@
         - tfstate.cluster_api_mode is defined
         - tfstate.cluster_api_mode.value|length > 0
         - V4_CFG_INGRESS_MODE is not defined
+    # Extract local tags from terraform state (viya4-iac-aws integration)
+    - name: tfstate - extract local tags for AWS resources # noqa: name[casing]
+      set_fact:
+        TFSTATE_LOCAL_TAGS: "{{ tfstate.local_tags.value }}"
+      when:
+        - tfstate.local_tags is defined
+        - tfstate.local_tags.value is not none
+        - tfstate.local_tags.value|length > 0
+    # Merge terraform state tags with user-provided tags for Contour load balancer
+    - name: Merge local tags with user tags for Contour
+      set_fact:
+        CONTOUR_AWS_LB_TAGS_CONFIG:
+          envoy:
+            service:
+              annotations:
+                service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags: "{{ (TFSTATE_LOCAL_TAGS.items() | map('join', '=') | join(',')) if TFSTATE_LOCAL_TAGS is defined else '' }}"
+      when:
+        - PROVIDER == "aws"
+        - TFSTATE_LOCAL_TAGS is defined
+    # Merge terraform state tags with user-provided tags for EBS volumes
+    - name: Merge local tags with user tags for EBS CSI
+      set_fact:
+        EBS_CSI_DRIVER_TAGS: "{{ TFSTATE_LOCAL_TAGS | combine(EBS_CSI_DRIVER_TAGS | default({}), recursive=True) }}"
+      when:
+        - PROVIDER == "aws"
+        - TFSTATE_LOCAL_TAGS is defined
     - name: tfstate - set tfstate to empty string # noqa: name[casing]
       set_fact:
         tfstate: ""

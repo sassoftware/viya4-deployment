@@ -239,6 +239,13 @@ CONTOUR_AWS_LB_SUBNETS:
       annotations:
         service.beta.kubernetes.io/aws-load-balancer-subnets: "{{ V4_CFG_AWS_LB_SUBNETS }}"
 
+# Add AWS load balancer tags to the configuration for Contour (optional)
+CONTOUR_AWS_LB_TAGS_CONFIG:
+  envoy:
+    service:
+      annotations:
+        service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags: ""
+
 # Multi-zone HA configuration for Contour (contour controller Deployment).
 # Applied when V4_CFG_MULTI_ZONE_ENABLED and V4_CFG_MULTI_ZONE_CONTOUR_ENABLED are both true.
 # Applies topology spread constraints and pod anti-affinity so contour controller
@@ -314,6 +321,9 @@ EBS_CSI_CRUNCHY_STORAGE_CLASS_IOPS: 5000
 EBS_CSI_CRUNCHY_STORAGE_CLASS_THROUGHPUT: 400
 EBS_CSI_CRUNCHY_STORAGE_CLASS_RECLAIM_POLICY: Delete
 
+# Optional tags to be added to dynamically provisioned EBS volumes
+EBS_CSI_DRIVER_TAGS: {}
+
 EBS_CSI_DRIVER_CONFIG:
   controller:
     k8sTagClusterId: "{{ CLUSTER_NAME }}"
@@ -330,6 +340,13 @@ EBS_CSI_DRIVER_CONFIG:
         fstype: ext4
         iops: "{{ EBS_CSI_RABBITMQ_STORAGE_CLASS_IOPS | int }}"
         throughput: "{{ EBS_CSI_RABBITMQ_STORAGE_CLASS_THROUGHPUT | int }}"
+        {% if EBS_CSI_DRIVER_TAGS %}
+        tags: |
+          {% for key, value in EBS_CSI_DRIVER_TAGS.items() %}
+          "{{ key }}": "{{ value }}"
+          {% if not loop.last %},{% endif %}
+          {% endfor %}
+        {% endif %}
       reclaimPolicy: Delete
       volumeBindingMode: WaitForFirstConsumer
       allowVolumeExpansion: true
@@ -339,6 +356,13 @@ EBS_CSI_DRIVER_CONFIG:
         fstype: ext4
         iops: "{{ EBS_CSI_CRUNCHY_STORAGE_CLASS_IOPS | int }}"
         throughput: "{{ EBS_CSI_CRUNCHY_STORAGE_CLASS_THROUGHPUT | int }}"
+        {% if EBS_CSI_DRIVER_TAGS %}
+        tags: |
+          {% for key, value in EBS_CSI_DRIVER_TAGS.items() %}
+          "{{ key }}": "{{ value }}"
+          {% if not loop.last %},{% endif %}
+          {% endfor %}
+        {% endif %}
       reclaimPolicy: "{{ EBS_CSI_CRUNCHY_STORAGE_CLASS_RECLAIM_POLICY }}"
       volumeBindingMode: WaitForFirstConsumer
       allowVolumeExpansion: true
