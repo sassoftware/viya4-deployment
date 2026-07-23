@@ -28,12 +28,14 @@ Supported configuration variables are listed in the table below.  All variables 
   - [Workload Orchestrator](#workload-orchestrator)
   - [Miscellaneous](#miscellaneous)
   - [Multi-Zone Pod Distribution](#multi-zone-pod-distribution)
+  - [High Availability (HA) for Stateless Services](#high-availability-ha-for-stateless-services)
   - [Third-Party Tools](#third-party-tools)
     - [Cert-manager](#cert-manager)
     - [Cluster Autoscaler](#cluster-autoscaler)
     - [Contour](#contour)
     - [EBS CSI Driver](#ebs-csi-driver)
     - [Azure managed disk CSI Driver](#azure-managed-disk-csi-driver)
+    - [GCP Persistent Disk CSI Driver](#gcp-persistent-disk-csi-driver)
     - [Ingress-nginx](#ingress-nginx)
     - [Metrics Server](#metrics-server)
     - [NFS Client](#nfs-client)
@@ -78,6 +80,7 @@ Supported configuration variables are listed in the table below.  All variables 
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_CLOUD_SERVICE_ACCOUNT_NAME | Cloud service account | string | | false | See [Ansible Cloud Authentication](user/AnsibleCloudAuthentication.md) for more information. | viya |
 | V4_CFG_CLOUD_SERVICE_ACCOUNT_AUTH | Full path to service account credentials file | string | | false | See [Ansible Cloud Authentication](user/AnsibleCloudAuthentication.md) for more information. | viya |
+| V4_CFG_POSTGRES_CLOUD_SQL_PROXY_VERSION | Cloud SQL proxy image version tag | string | 1.38.0 | false | Optional override for GCP external postgres cloud-sql-proxy image tag. Final image format: `gcr.io/cloudsql-docker/gce-proxy:<version>`. | viya |
 
 ## Jump Server
 
@@ -94,7 +97,7 @@ Viya4-deployment uses the jump server to interact with the RWX filestore, which 
 
 ### Storage for AWS
 
-When `V4_CFG_MANAGE_STORAGE` is set to `true`, viya4-deployment uses the [EBS CSI driver](#ebs-csi-driver) to create two elastic block storage based storage classes with the default names of `io2-vol-mq` and `io2-vol-pg`. The volume type for both storage classes defaults to `io2`. For EKS clusters, RabbitMQ makes PVC requests to create block storage persistent volumes using the `io2-vol-mq` storage class while Crunchy Postgres makes PVC requests to create block storage persistent volumes using the `io2-vol-pg` storage class. Viya4-deployment also creates the `sas` storage class using the csi-driver-nfs Helm chart. If a jump server is used, viya4-deployment uses that server to create the folders for the `astores`, `bin`, `data` and `homes` RWX Filestore NFS paths that are outlined below in the [RWX Filestore](#rwx-filestore) section.
+When `V4_CFG_MANAGE_STORAGE` is set to `true`, viya4-deployment uses the [EBS CSI driver](#ebs-csi-driver) to create two elastic block storage based storage classes with the default names of `gp3-vol-mq` and `gp3-vol-pg`. The volume type for both storage classes defaults to `gp3`. For EKS clusters, RabbitMQ makes PVC requests to create block storage persistent volumes using the `gp3-vol-mq` storage class while Crunchy Postgres makes PVC requests to create block storage persistent volumes using the `gp3-vol-pg` storage class. Viya4-deployment also creates the `sas` storage class using the csi-driver-nfs Helm chart. If a jump server is used, viya4-deployment uses that server to create the folders for the `astores`, `bin`, `data` and `homes` RWX Filestore NFS paths that are outlined below in the [RWX Filestore](#rwx-filestore) section.
 
 ### Storage for Azure
 
@@ -105,7 +108,10 @@ By default, viya4-deployment uses the [Azure managed disks CSI driver](#azure-ma
 viya4-deployment also creates the `sas` storage class using the csi-driver-nfs Helm chart. If a jump server is used, viya4-deployment uses that server to create the folders for the `astores`, `bin`, `data` and `homes` RWX Filestore NFS paths that are outlined below in the [RWX Filestore](#rwx-filestore) section.
 
 ### Storage for Google Cloud
-When `V4_CFG_MANAGE_STORAGE` is set to `true`, viya4-deployment creates the `sas` and `pg-storage` storage classes using the csi-driver-nfs Helm chart. If a jump server is used, viya4-deployment uses that server to create the folders for the `astores`, `bin`, `data` and `homes` RWX Filestore NFS paths that are outlined below in the [RWX Filestore](#rwx-filestore) section.
+
+By default, viya4-deployment uses the [GCP Persistent Disk CSI driver](#gcp-persistent-disk-csi-driver) to create two block storage based storage classes with the default names of `pd-ssd-mq` and `pd-ssd-pg`. The disk type for both storage classes defaults to `pd-ssd`. For GKE clusters, RabbitMQ makes PVC requests to create block storage persistent volumes using the `pd-ssd-mq` storage class while Crunchy Postgres makes PVC requests to create block storage persistent volumes using the `pd-ssd-pg` storage class. To use a different StorageClass for RabbitMQ, set the `V4_CFG_RABBITMQ_STORAGECLASS` property to the name of the StorageClass to use. To use a different StorageClass for Crunchy Postgres, set the `V4_CFG_CRUNCHY_STORAGECLASS` property to the name of the StorageClass to use.
+
+viya4-deployment also creates the `sas` storage class using the csi-driver-nfs Helm chart. If a jump server is used, viya4-deployment uses that server to create the folders for the `astores`, `bin`, `data` and `homes` RWX Filestore NFS paths that are outlined below in the [RWX Filestore](#rwx-filestore) section.
 
 ### NFS Storage
 
@@ -347,15 +353,16 @@ Notes:
 **Important**: `V4_CFG_MULTI_ZONE_ENABLED` acts as a master switch - ALL individual service flags (V4_CFG_MULTI_ZONE_*_ENABLED) are ignored unless this is set to `true`.
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
-| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_MULTI_ZONE_ENABLED | Enable multi-zone pod distribution for StatefulSets | bool | false | false | Adds topology spread constraints and node affinity to prevent StatefulSet pods from co-locating in same zone during zone failures. | viya |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| V4_CFG_MULTI_ZONE_ENABLED | Enable multi-zone pod distribution for StatefulSets and the Contour ingress controller | bool | false | false | Adds topology spread constraints and node affinity to prevent StatefulSet pods from co-locating in same zone during zone failures. Also enables Contour multi-zone HA when `V4_CFG_MULTI_ZONE_CONTOUR_ENABLED` is true. **Note**: Internal PostgreSQL is NOT supported for multi-zone - you must use external PostgreSQL (see PostgreSQL section above). | viya, baseline |
 | V4_CFG_MULTI_ZONE_RABBITMQ_ENABLED | Enable multi-zone distribution for RabbitMQ StatefulSet | bool | true | false | Ensures RabbitMQ pods are distributed across zones with nodepool restrictions to maintain quorum during zone failures | viya |
-| V4_CFG_MULTI_ZONE_POSTGRES_ENABLED | Enable multi-zone distribution for PostgreSQL StatefulSet | bool | true | false | Ensures PostgreSQL pods are distributed across zones for high availability. Only applies to internal PostgreSQL deployments | viya |
 | V4_CFG_MULTI_ZONE_CONSUL_ENABLED | Enable multi-zone distribution for Consul StatefulSet | bool | true | false | Ensures Consul pods are distributed across zones for service discovery high availability | viya |
 | V4_CFG_MULTI_ZONE_REDIS_ENABLED | Enable multi-zone distribution for Redis StatefulSet | bool | true | false | Ensures Redis pods are distributed across zones for caching and session store availability | viya |
 | V4_CFG_MULTI_ZONE_OPENDISTRO_ENABLED | Enable multi-zone distribution for OpenDistro/OpenSearch StatefulSets | bool | true | false | Ensures OpenDistro/OpenSearch pods are distributed across zones for search and logging availability | viya |
 | V4_CFG_MULTI_ZONE_WORKLOAD_ORCHESTRATOR_ENABLED | Enable multi-zone distribution for Workload Orchestrator StatefulSet | bool | true | false | Ensures Workload Orchestrator pods are distributed across zones for job scheduling availability | viya |
 | V4_CFG_MULTI_ZONE_DATA_AGENT_ENABLED | Enable multi-zone distribution for Data Agent Server StatefulSet | bool | true | false | Ensures Data Agent Server pods are distributed across zones for data services availability | viya |
+| V4_CFG_MULTI_ZONE_STATELESS_ENABLED | Enable multi-zone distribution for stateless services (Deployments) | bool | true | false | Enables zone distribution for SAS Viya Deployment resources when combined with HA mode. Requires V4_CFG_HA_ENABLED: true | viya |
+| V4_CFG_MULTI_ZONE_CONTOUR_ENABLED | Enable multi-zone HA distribution for the Contour ingress controller | bool | true | false | When `V4_CFG_MULTI_ZONE_ENABLED` is true, sets Contour controller `replicaCount` to match detected zone count (minimum 2) and applies `topologySpreadConstraints` and pod anti-affinity to distribute Contour pods across availability zones. Envoy runs as a DaemonSet and includes a default toleration for `workload.sas.com/class:NoSchedule` to run on DaC-managed node classes. | baseline |
 | V4_CFG_STATEFUL_NODEPOOL_RESTRICTION | Restrict StatefulSets to dedicated stateful nodepools | bool | false | false | Adds node affinity to ensure StatefulSets only run on nodes with the specified stateful nodepool label. | viya |
 | V4_CFG_STATEFUL_NODEPOOL_LABEL | Label key for identifying stateful nodepool nodes | string | workload.sas.com/class | false | Configures the node label used for nodepool affinity. Common values: `workload.sas.com/class` (modern) or `agentpool` (legacy AKS) | viya |
 | V4_CFG_SINGLE_ZONE_FALLBACK | Apply relaxed constraints for single-zone clusters | bool | true | false | When enabled, uses relaxed scheduling constraints for single-zone deployments to prevent scheduling failures | viya |
@@ -379,6 +386,40 @@ This configuration ensures:
 - No scheduling failures in single-zone deployments
 - Optimal resource distribution based on cluster topology
 - Supports AKS, EKS, and GKE clusters
+
+## High Availability (HA) for Stateless Services
+
+| Name | Description | Type | Default | Required | Notes | Tasks |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
+| V4_CFG_HA_ENABLED | Enable High Availability mode for stateless microservices | bool | false | false | Applies the SAS-provided HA transformer (`sas-bases/overlays/scaling/ha/enable-ha-transformer.yaml`) to enable ha for stateless services. Cannot be used with `V4_CFG_CLUSTER_NODE_POOL_MODE: minimal`. See [SAS Viya Platform Operations documentation](https://go.documentation.sas.com/doc/en/itopscdc/v_076/dplyml0phy0dkr/n08u2yg8tdkb4jn18u8zsi6yfv3d.htm#n14iqy05lb736yn1e01m2hmzu1xr) for details on HA configuration. | viya |
+
+**Important Notes**:
+- **Stateful Services**: Stateful services (PostgreSQL, RabbitMQ, Consul, Redis, OpenSearch) are deployed with HA enabled by default at initial deployment
+- **CAS and OpenSearch**: CAS and OpenSearch require additional configuration beyond this setting. See the SAS documentation for OpenSearch HA topology configuration
+- **Resource Requirements**: Enabling HA significantly increases CPU and memory requirements as it adds redundant replicas for stateless microservices
+- **Incompatible with Minimal Mode**: Cannot be enabled when `V4_CFG_CLUSTER_NODE_POOL_MODE: minimal` is set
+- **Multi-Zone Recommendation**: For production HA deployments, consider enabling both `V4_CFG_HA_ENABLED: true` and `V4_CFG_MULTI_ZONE_ENABLED: true` to ensure both replica redundancy and zone distribution
+
+**Example HA Configuration**:
+```yaml
+# Enable High Availability for stateless services
+V4_CFG_HA_ENABLED: true
+
+# Recommended: Combine with multi-zone distribution for production
+V4_CFG_MULTI_ZONE_ENABLED: true
+V4_CFG_STATEFUL_NODEPOOL_RESTRICTION: true
+```
+
+**Expected Results**:
+- Increased replica counts for stateless microservices (typically 2-3 replicas per service)
+- Enhanced resilience to pod and node failures
+- Ability to perform rolling updates with zero downtime
+- Compatible with ingress-nginx, cert-manager, and other third-party dependencies
+
+**Additional Considerations**:
+- Your SAS Viya platform may depend on third-party software (ingress-nginx, SAS Viya Platform Monitoring) that should also be configured for HA
+- Review node taints and tolerations to ensure third-party software can schedule alongside SAS workloads
+- Consider dedicating nodes or adding tolerations to third-party software for optimal availability
 
 ## Third-Party Tools
 
@@ -417,6 +458,10 @@ If you used [viya4-iac-aws:5.6.0](https://github.com/sassoftware/viya4-iac-aws/r
 
 Contour is an open source ingress controller that provides dynamic configuration updates. Contour support is available starting with the 2026.02 cadence release.
 
+When `V4_CFG_MULTI_ZONE_ENABLED` is `true` and `V4_CFG_MULTI_ZONE_CONTOUR_ENABLED` is `true` (the default), DaC automatically configures the Contour controller Deployment for multi-zone high availability by setting `replicaCount` to the detected zone count (minimum `2`), adding `topologySpreadConstraints` across `topology.kubernetes.io/zone` and `kubernetes.io/hostname`, and adding preferred pod anti-affinity. The Envoy component runs as a DaemonSet and includes a default toleration for `workload.sas.com/class:NoSchedule`, allowing it to run on DaC-managed node classes across zones.
+
+**For detailed information about Contour deployment scenarios, configuration options, and integration with SAS Viya platform, see [Contour Documentation](user/Contour.md).**
+
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | CONTOUR_NAME | Contour Helm release name | string | contour | false | | baseline |
@@ -438,15 +483,17 @@ The EBS CSI driver is only used for kubernetes v1.23 or later AWS EKS clusters.
 | EBS_CSI_DRIVER_CONFIG | aws ebs csi driver helm values | string | see [here](../roles/baseline/defaults/main.yml) | false | | baseline |
 | EBS_CSI_DRIVER_ACCOUNT | aws ebs csi driver IAM role ARN | string | | false | Required to enable the aws ebs csi driver on AWS | baseline |
 | EBS_CSI_DRIVER_LOCATION | aws region where kubernetes cluster resides | string | us-east-1 | false | | baseline |
-|EBS_CSI_RABBITMQ_STORAGE_CLASS_NAME| The EBS CSI storage class name for RabbitMQ | string | io2-vol-mq | false | | baseline |
-|EBS_CSI_RABBITMQ_STORAGE_CLASS_VOLUME_TYPE| The EBS CSI volume type to use for RabbitMQ persistent volumes| string | io2 | false | Supported values: [`io2`, `io1`, `gp3`]  | baseline |
-|EBS_CSI_RABBITMQ_STORAGE_CLASS_IOPSPERGB | IOPs per GB parameter for the `EBS_CSI_RABBITMQ_STORAGE_CLASS_NAME` storage class|string|1250|false |Multiply this value by the volume size in GiB to obtain total IOPS per volume  | baseline |
+|EBS_CSI_RABBITMQ_STORAGE_CLASS_NAME| The EBS CSI storage class name for RabbitMQ | string | gp3-vol-mq | false | | baseline |
+|EBS_CSI_RABBITMQ_STORAGE_CLASS_VOLUME_TYPE| The EBS CSI volume type to use for RabbitMQ persistent volumes| string | gp3 | false | Supported values: [`io2`, `io1`, `gp3`]  | baseline |
+|EBS_CSI_RABBITMQ_STORAGE_CLASS_IOPS | Total IOPS for the `EBS_CSI_RABBITMQ_STORAGE_CLASS_NAME` storage class | string | 3000 | false | The baseline for gp3 is 3000 IOPS. The maximum for gp3 is 16000 IOPS. | baseline |
 |EBS_CSI_RABBITMQ_STORAGE_CLASS_THROUGHPUT| Maximum volume throughput in MiB/s for the `EBS_CSI_RABBITMQ_STORAGE_CLASS_NAME` storage class| string| 400 | false | The maximum value for io2, io1 and gp3 volume types is 1000.| baseline |
-|EBS_CSI_CRUNCHY_STORAGE_CLASS_NAME| The EBS CSI storage class name for Crunchy Postgres use| string| io2-vol-pg | false | | baseline |
-|EBS_CSI_CRUNCHY_STORAGE_CLASS_VOLUME_TYPE| The EBS CSI volume type to use for Crunchy Postgres persistent volumes | string | io2 | false | Supported values: [`io2`, `io1`, `gp3`] | baseline |
-|EBS_CSI_CRUNCHY_STORAGE_CLASS_IOPSPERGB | IOPs per GB parameter for the `EBS_CSI_CRUNCHY_STORAGE_CLASS_NAME` storage class | string | 40 | false |Multiply this value by the volume size in GiB to obtain total IOPS per volume. The maximum value for gp3 volume types is 500 | baseline |
+|EBS_CSI_CRUNCHY_STORAGE_CLASS_NAME| The EBS CSI storage class name for Crunchy Postgres use| string| gp3-vol-pg | false | | baseline |
+|EBS_CSI_CRUNCHY_STORAGE_CLASS_VOLUME_TYPE| The EBS CSI volume type to use for Crunchy Postgres persistent volumes | string | gp3 | false | Supported values: [`io2`, `io1`, `gp3`] | baseline |
+|EBS_CSI_CRUNCHY_STORAGE_CLASS_IOPS | Total IOPS for the `EBS_CSI_CRUNCHY_STORAGE_CLASS_NAME` storage class | string | 5000 | false | The maximum for gp3 is 16000 IOPS. | baseline |
 |EBS_CSI_CRUNCHY_STORAGE_CLASS_THROUGHPUT | Maximum volume throughput in MiB/s for the `EBS_CSI_CRUNCHY_STORAGE_CLASS_NAME` storage class | string| 400 | false | The maximum value for io2, io1 and gp3 volume types is 1000.| baseline |
 |EBS_CSI_CRUNCHY_STORAGE_CLASS_RECLAIM_POLICY | The ReclaimPolicy for the `EBS_CSI_CRUNCHY_STORAGE_CLASS_NAME` storage class. | string | Delete | false | Supported values: [`Delete`, `Retain`] **Note**: If set to `Retain`, manual deletion of the Crunchy Persistent Volumes is required after deleting the PostgresCluster.| baseline |
+|CREATE_EBS_GP3_DEFAULT_STORAGE_CLASS | Whether to create a generic gp3 StorageClass and set it as the cluster default | bool | true | false | When `true`, the existing gp2 StorageClass is annotated as non-default and a new `gp3` StorageClass is created as the default. This ensures workloads that rely on the default StorageClass (e.g., OpenDistro, Redis) use gp3 instead of the legacy gp2. | baseline |
+|EBS_GP3_DEFAULT_STORAGE_CLASS_NAME | Name of the generic gp3 default StorageClass | string | gp3 | false | | baseline |
 
 ### Azure managed disk CSI Driver
 
@@ -469,6 +516,22 @@ By default, two block storage StorageClasses are created using the driver, one f
 |AZURE_CRUNCHY_STORAGE_CLASS_DISKIOPS | Disk total IOPS parameter for the `AZURE_CRUNCHY_STORAGE_CLASS_NAME` storage class | string | 5000 | false | Refer to the [Azure documentation](https://learn.microsoft.com/en-us/azure/virtual-machines/disks-types) for IOPS limits considerations | baseline |
 |AZURE_CRUNCHY_STORAGE_CLASS_THROUGHPUT | Maximum volume throughput in MiB/s for the `AZURE_CRUNCHY_STORAGE_CLASS_NAME` storage class | string| 400 | false | Refer to the [Azure documentation](https://learn.microsoft.com/en-us/azure/virtual-machines/disks-types) for throughput limits considerations | baseline |
 |AZURE_CRUNCHY_STORAGE_CLASS_RECLAIM_POLICY | The ReclaimPolicy for the `AZURE_CRUNCHY_STORAGE_CLASS_NAME` storage class | string | Delete | false | Supported values: [`Delete`, `Retain`] **Note**: If set to `Retain`, manual deletion of the Crunchy Persistent Volumes is required after deleting the PostgresCluster. | baseline |
+
+### GCP Persistent Disk CSI Driver
+
+The GCP Persistent Disk CSI Driver is included in all GKE clusters by default, and any GKE clusters created with viya4-iac-gcp will have the driver installed. If you did not use the viya4-iac-gcp project to create your GKE cluster, ensure that you have enabled the Persistent Disk CSI driver prior to using this project or disable the creation of the StorageClasses.
+
+By default, two block storage StorageClasses are created using the driver, one for RabbitMQ and one for Crunchy Postgres. The defaults for these StorageClasses are listed below.
+
+| Name | Description | Type | Default | Required | Notes | Tasks |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
+|CREATE_GCP_RABBITMQ_STORAGE_CLASS| Whether to create a GCP StorageClass for RabbitMQ | bool | true | false | | baseline |
+|GCP_RABBITMQ_STORAGE_CLASS_NAME| The StorageClass name for RabbitMQ | string | pd-ssd-mq | false | | baseline |
+|GCP_RABBITMQ_STORAGE_CLASS_DISK_TYPE| The persistent disk type to use for RabbitMQ persistent volumes | string | pd-ssd | false | Supported values: [`pd-ssd`, `pd-balanced`, `pd-extreme`] | baseline |
+|CREATE_GCP_CRUNCHY_STORAGE_CLASS| Whether to create a GCP StorageClass for Crunchy Postgres | bool | true | false | | baseline |
+|GCP_CRUNCHY_STORAGE_CLASS_NAME| The StorageClass name for Crunchy Postgres | string | pd-ssd-pg | false | | baseline |
+|GCP_CRUNCHY_STORAGE_CLASS_DISK_TYPE| The persistent disk type to use for Crunchy Postgres persistent volumes | string | pd-ssd | false | Supported values: [`pd-ssd`, `pd-balanced`, `pd-extreme`] | baseline |
+|GCP_CRUNCHY_STORAGE_CLASS_RECLAIM_POLICY | The ReclaimPolicy for the `GCP_CRUNCHY_STORAGE_CLASS_NAME` storage class | string | Delete | false | Supported values: [`Delete`, `Retain`] **Note**: If set to `Retain`, manual deletion of the Crunchy Persistent Volumes is required after deleting the PostgresCluster. | baseline |
 
 ### Ingress-nginx
 

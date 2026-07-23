@@ -233,6 +233,10 @@ CONTOUR_CONFIG:
         cpu: 200m
         memory: 512Mi
   envoy:
+    tolerations:
+      - key: workload.sas.com/class
+        operator: Exists
+        effect: NoSchedule
     service:
       loadBalancerSourceRanges: "{{ LOADBALANCER_SOURCE_RANGES | default(['0.0.0.0/0'], -1) }}"
     resources:
@@ -263,6 +267,42 @@ CONTOUR_AWS_LB_SUBNETS:
     service:
       annotations:
         service.beta.kubernetes.io/aws-load-balancer-subnets: "{{ V4_CFG_AWS_LB_SUBNETS }}"
+
+# Multi-zone HA configuration for Contour (contour controller Deployment).
+# Applied when V4_CFG_MULTI_ZONE_ENABLED and V4_CFG_MULTI_ZONE_CONTOUR_ENABLED are both true.
+# Applies topology spread constraints and pod anti-affinity so contour controller
+# pods are distributed across availability zones.
+# replicaCount is set dynamically at deploy time to match detected zone count
+# (minimum 2 replicas).
+# NOTE: Envoy runs as a DaemonSet. The default toleration on workload.sas.com/class
+#       NoSchedule taints allows it to run on all eligible DaC-managed node classes.
+CONTOUR_MULTI_ZONE_CONFIG:
+  contour:
+    topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: topology.kubernetes.io/zone
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: contour
+            app.kubernetes.io/component: contour
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: contour
+            app.kubernetes.io/component: contour
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: contour
+                  app.kubernetes.io/component: contour
+              topologyKey: topology.kubernetes.io/zone
 
 # Update ipFamily for Contour service for IPv6 support (AWS)
 # Production-validated configuration for IPv6-only EKS with dual-stack NLB
@@ -324,14 +364,14 @@ EBS_CSI_DRIVER_CHART_URL: https://kubernetes-sigs.github.io/aws-ebs-csi-driver
 EBS_CSI_DRIVER_CHART_VERSION: 2.38.1
 EBS_CSI_DRIVER_ACCOUNT: null
 EBS_CSI_DRIVER_LOCATION: us-east-1
-EBS_CSI_RABBITMQ_STORAGE_CLASS_NAME: io2-vol-mq
-EBS_CSI_RABBITMQ_STORAGE_CLASS_VOLUME_TYPE: io2
-EBS_CSI_RABBITMQ_STORAGE_CLASS_IOPSPERGB: 1250
+EBS_CSI_RABBITMQ_STORAGE_CLASS_NAME: gp3-vol-mq
+EBS_CSI_RABBITMQ_STORAGE_CLASS_VOLUME_TYPE: gp3
+EBS_CSI_RABBITMQ_STORAGE_CLASS_IOPS: 3000
 EBS_CSI_RABBITMQ_STORAGE_CLASS_THROUGHPUT: 400
 
-EBS_CSI_CRUNCHY_STORAGE_CLASS_NAME: io2-vol-pg
-EBS_CSI_CRUNCHY_STORAGE_CLASS_VOLUME_TYPE: io2
-EBS_CSI_CRUNCHY_STORAGE_CLASS_IOPSPERGB: 40
+EBS_CSI_CRUNCHY_STORAGE_CLASS_NAME: gp3-vol-pg
+EBS_CSI_CRUNCHY_STORAGE_CLASS_VOLUME_TYPE: gp3
+EBS_CSI_CRUNCHY_STORAGE_CLASS_IOPS: 5000
 EBS_CSI_CRUNCHY_STORAGE_CLASS_THROUGHPUT: 400
 EBS_CSI_CRUNCHY_STORAGE_CLASS_RECLAIM_POLICY: Delete
 
@@ -349,7 +389,7 @@ EBS_CSI_DRIVER_CONFIG:
       parameters:
         type: "{{ EBS_CSI_RABBITMQ_STORAGE_CLASS_VOLUME_TYPE }}"
         fstype: ext4
-        iopsPerGB: "{{ EBS_CSI_RABBITMQ_STORAGE_CLASS_IOPSPERGB | int }}"
+        iops: "{{ EBS_CSI_RABBITMQ_STORAGE_CLASS_IOPS | int }}"
         throughput: "{{ EBS_CSI_RABBITMQ_STORAGE_CLASS_THROUGHPUT | int }}"
       reclaimPolicy: Delete
       volumeBindingMode: WaitForFirstConsumer
@@ -358,11 +398,27 @@ EBS_CSI_DRIVER_CONFIG:
       parameters:
         type: "{{ EBS_CSI_CRUNCHY_STORAGE_CLASS_VOLUME_TYPE }}"
         fstype: ext4
-        iopsPerGB: "{{ EBS_CSI_CRUNCHY_STORAGE_CLASS_IOPSPERGB | int }}"
+        iops: "{{ EBS_CSI_CRUNCHY_STORAGE_CLASS_IOPS | int }}"
         throughput: "{{ EBS_CSI_CRUNCHY_STORAGE_CLASS_THROUGHPUT | int }}"
       reclaimPolicy: "{{ EBS_CSI_CRUNCHY_STORAGE_CLASS_RECLAIM_POLICY }}"
       volumeBindingMode: WaitForFirstConsumer
       allowVolumeExpansion: true
+
+## EBS GP3 default StorageClass
+CREATE_EBS_GP3_DEFAULT_STORAGE_CLASS: true
+EBS_GP3_DEFAULT_STORAGE_CLASS_NAME: gp3
+EBS_GP3_DEFAULT_STORAGE_CLASS:
+  apiVersion: storage.k8s.io/v1
+  kind: StorageClass
+  metadata:
+    annotations:
+      storageclass.kubernetes.io/is-default-class: "true"
+    name: "{{ EBS_GP3_DEFAULT_STORAGE_CLASS_NAME }}"
+  parameters:
+    type: gp3
+  provisioner: ebs.csi.aws.com
+  reclaimPolicy: Delete
+  volumeBindingMode: WaitForFirstConsumer
 
 private_ingress:
   aws:
@@ -438,4 +494,38 @@ AZURE_CRUNCHY_STORAGE_CLASS:
     DiskMBpsReadWrite: "{{ AZURE_CRUNCHY_STORAGE_CLASS_THROUGHPUT | int }}"
   provisioner: disk.csi.azure.com
   reclaimPolicy: "{{ AZURE_CRUNCHY_STORAGE_CLASS_RECLAIM_POLICY }}"
+  volumeBindingMode: WaitForFirstConsumer
+
+## GCP StorageClass config
+CREATE_GCP_RABBITMQ_STORAGE_CLASS: true
+GCP_RABBITMQ_STORAGE_CLASS_NAME: pd-ssd-mq
+GCP_RABBITMQ_STORAGE_CLASS_DISK_TYPE: pd-ssd
+GCP_RABBITMQ_STORAGE_CLASS:
+  allowVolumeExpansion: true
+  apiVersion: storage.k8s.io/v1
+  kind: StorageClass
+  metadata:
+    name: "{{ GCP_RABBITMQ_STORAGE_CLASS_NAME }}"
+  parameters:
+    type: "{{ GCP_RABBITMQ_STORAGE_CLASS_DISK_TYPE }}"
+    csi.storage.k8s.io/fstype: ext4
+  provisioner: pd.csi.storage.gke.io
+  reclaimPolicy: Delete
+  volumeBindingMode: WaitForFirstConsumer
+
+CREATE_GCP_CRUNCHY_STORAGE_CLASS: true
+GCP_CRUNCHY_STORAGE_CLASS_NAME: pd-ssd-pg
+GCP_CRUNCHY_STORAGE_CLASS_DISK_TYPE: pd-ssd
+GCP_CRUNCHY_STORAGE_CLASS_RECLAIM_POLICY: Delete
+GCP_CRUNCHY_STORAGE_CLASS:
+  allowVolumeExpansion: true
+  apiVersion: storage.k8s.io/v1
+  kind: StorageClass
+  metadata:
+    name: "{{ GCP_CRUNCHY_STORAGE_CLASS_NAME }}"
+  parameters:
+    type: "{{ GCP_CRUNCHY_STORAGE_CLASS_DISK_TYPE }}"
+    csi.storage.k8s.io/fstype: ext4
+  provisioner: pd.csi.storage.gke.io
+  reclaimPolicy: "{{ GCP_CRUNCHY_STORAGE_CLASS_RECLAIM_POLICY }}"
   volumeBindingMode: WaitForFirstConsumer

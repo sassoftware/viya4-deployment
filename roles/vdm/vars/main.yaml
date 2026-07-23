@@ -2,7 +2,8 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
-PROXY_SQL_IMAGE: gcr.io/cloudsql-docker/gce-proxy:1.20.2
+PROXY_SQL_IMAGE_REPOSITORY: gcr.io/cloudsql-docker/gce-proxy
+PROXY_SQL_IMAGE_VERSION: 1.38.0
 
 vdm_overlays: {}
 
