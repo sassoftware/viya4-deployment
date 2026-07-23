@@ -96,7 +96,7 @@ Viya4-deployment uses the jump server to interact with the RWX filestore, which 
 
 ### Storage for AWS
 
-When `V4_CFG_MANAGE_STORAGE` is set to `true`, viya4-deployment uses the [EBS CSI driver](#ebs-csi-driver) to create two elastic block storage based storage classes with the default names of `io2-vol-mq` and `io2-vol-pg`. The volume type for both storage classes defaults to `io2`. For EKS clusters, RabbitMQ makes PVC requests to create block storage persistent volumes using the `io2-vol-mq` storage class while Crunchy Postgres makes PVC requests to create block storage persistent volumes using the `io2-vol-pg` storage class. Viya4-deployment also creates the `sas` storage class using the csi-driver-nfs Helm chart. If a jump server is used, viya4-deployment uses that server to create the folders for the `astores`, `bin`, `data` and `homes` RWX Filestore NFS paths that are outlined below in the [RWX Filestore](#rwx-filestore) section.
+When `V4_CFG_MANAGE_STORAGE` is set to `true`, viya4-deployment uses the [EBS CSI driver](#ebs-csi-driver) to create two elastic block storage based storage classes with the default names of `gp3-vol-mq` and `gp3-vol-pg`. The volume type for both storage classes defaults to `gp3`. For EKS clusters, RabbitMQ makes PVC requests to create block storage persistent volumes using the `gp3-vol-mq` storage class while Crunchy Postgres makes PVC requests to create block storage persistent volumes using the `gp3-vol-pg` storage class. Viya4-deployment also creates the `sas` storage class using the csi-driver-nfs Helm chart. If a jump server is used, viya4-deployment uses that server to create the folders for the `astores`, `bin`, `data` and `homes` RWX Filestore NFS paths that are outlined below in the [RWX Filestore](#rwx-filestore) section.
 
 ### Storage for Azure
 
@@ -481,15 +481,17 @@ The EBS CSI driver is only used for kubernetes v1.23 or later AWS EKS clusters.
 | EBS_CSI_DRIVER_CONFIG | aws ebs csi driver helm values | string | see [here](../roles/baseline/defaults/main.yml) | false | | baseline |
 | EBS_CSI_DRIVER_ACCOUNT | aws ebs csi driver IAM role ARN | string | | false | Required to enable the aws ebs csi driver on AWS | baseline |
 | EBS_CSI_DRIVER_LOCATION | aws region where kubernetes cluster resides | string | us-east-1 | false | | baseline |
-|EBS_CSI_RABBITMQ_STORAGE_CLASS_NAME| The EBS CSI storage class name for RabbitMQ | string | io2-vol-mq | false | | baseline |
-|EBS_CSI_RABBITMQ_STORAGE_CLASS_VOLUME_TYPE| The EBS CSI volume type to use for RabbitMQ persistent volumes| string | io2 | false | Supported values: [`io2`, `io1`, `gp3`]  | baseline |
-|EBS_CSI_RABBITMQ_STORAGE_CLASS_IOPSPERGB | IOPs per GB parameter for the `EBS_CSI_RABBITMQ_STORAGE_CLASS_NAME` storage class|string|1250|false |Multiply this value by the volume size in GiB to obtain total IOPS per volume  | baseline |
+|EBS_CSI_RABBITMQ_STORAGE_CLASS_NAME| The EBS CSI storage class name for RabbitMQ | string | gp3-vol-mq | false | | baseline |
+|EBS_CSI_RABBITMQ_STORAGE_CLASS_VOLUME_TYPE| The EBS CSI volume type to use for RabbitMQ persistent volumes| string | gp3 | false | Supported values: [`io2`, `io1`, `gp3`]  | baseline |
+|EBS_CSI_RABBITMQ_STORAGE_CLASS_IOPS | Total IOPS for the `EBS_CSI_RABBITMQ_STORAGE_CLASS_NAME` storage class | string | 3000 | false | The baseline for gp3 is 3000 IOPS. The maximum for gp3 is 16000 IOPS. | baseline |
 |EBS_CSI_RABBITMQ_STORAGE_CLASS_THROUGHPUT| Maximum volume throughput in MiB/s for the `EBS_CSI_RABBITMQ_STORAGE_CLASS_NAME` storage class| string| 400 | false | The maximum value for io2, io1 and gp3 volume types is 1000.| baseline |
-|EBS_CSI_CRUNCHY_STORAGE_CLASS_NAME| The EBS CSI storage class name for Crunchy Postgres use| string| io2-vol-pg | false | | baseline |
-|EBS_CSI_CRUNCHY_STORAGE_CLASS_VOLUME_TYPE| The EBS CSI volume type to use for Crunchy Postgres persistent volumes | string | io2 | false | Supported values: [`io2`, `io1`, `gp3`] | baseline |
-|EBS_CSI_CRUNCHY_STORAGE_CLASS_IOPSPERGB | IOPs per GB parameter for the `EBS_CSI_CRUNCHY_STORAGE_CLASS_NAME` storage class | string | 40 | false |Multiply this value by the volume size in GiB to obtain total IOPS per volume. The maximum value for gp3 volume types is 500 | baseline |
+|EBS_CSI_CRUNCHY_STORAGE_CLASS_NAME| The EBS CSI storage class name for Crunchy Postgres use| string| gp3-vol-pg | false | | baseline |
+|EBS_CSI_CRUNCHY_STORAGE_CLASS_VOLUME_TYPE| The EBS CSI volume type to use for Crunchy Postgres persistent volumes | string | gp3 | false | Supported values: [`io2`, `io1`, `gp3`] | baseline |
+|EBS_CSI_CRUNCHY_STORAGE_CLASS_IOPS | Total IOPS for the `EBS_CSI_CRUNCHY_STORAGE_CLASS_NAME` storage class | string | 5000 | false | The maximum for gp3 is 16000 IOPS. | baseline |
 |EBS_CSI_CRUNCHY_STORAGE_CLASS_THROUGHPUT | Maximum volume throughput in MiB/s for the `EBS_CSI_CRUNCHY_STORAGE_CLASS_NAME` storage class | string| 400 | false | The maximum value for io2, io1 and gp3 volume types is 1000.| baseline |
 |EBS_CSI_CRUNCHY_STORAGE_CLASS_RECLAIM_POLICY | The ReclaimPolicy for the `EBS_CSI_CRUNCHY_STORAGE_CLASS_NAME` storage class. | string | Delete | false | Supported values: [`Delete`, `Retain`] **Note**: If set to `Retain`, manual deletion of the Crunchy Persistent Volumes is required after deleting the PostgresCluster.| baseline |
+|CREATE_EBS_GP3_DEFAULT_STORAGE_CLASS | Whether to create a generic gp3 StorageClass and set it as the cluster default | bool | true | false | When `true`, the existing gp2 StorageClass is annotated as non-default and a new `gp3` StorageClass is created as the default. This ensures workloads that rely on the default StorageClass (e.g., OpenDistro, Redis) use gp3 instead of the legacy gp2. | baseline |
+|EBS_GP3_DEFAULT_STORAGE_CLASS_NAME | Name of the generic gp3 default StorageClass | string | gp3 | false | | baseline |
 
 ### Azure managed disk CSI Driver
 
