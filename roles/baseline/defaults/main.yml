@@ -118,7 +118,7 @@ CSI_DRIVER_NFS_NAME: csi-driver-nfs-sas
 CSI_DRIVER_NFS_NAMESPACE: kube-system
 CSI_DRIVER_NFS_CHART_NAME: csi-driver-nfs
 CSI_DRIVER_NFS_CHART_URL: https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts
-CSI_DRIVER_NFS_CHART_VERSION: 4.11.0
+CSI_DRIVER_NFS_CHART_VERSION: 4.13.4
 CSI_DRIVER_NFS_CONFIG:
   driver:
     mountPermissions: "0777"
@@ -156,7 +156,7 @@ CSI_DRIVER_NFS_PG_NAME: csi-driver-nfs-pg-storage
 CSI_DRIVER_NFS_PG_NAMESPACE: nfs-client
 CSI_DRIVER_NFS_PG_CHART_NAME: csi-driver-nfs
 CSI_DRIVER_NFS_PG_CHART_URL: https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts
-CSI_DRIVER_NFS_PG_CHART_VERSION: 4.11.0
+CSI_DRIVER_NFS_PG_CHART_VERSION: 4.13.4
 CSI_DRIVER_NFS_PG_CONFIG:
   driver:
     mountPermissions: "0777"
@@ -281,7 +281,7 @@ CLUSTER_AUTOSCALER_NAME: cluster-autoscaler
 CLUSTER_AUTOSCALER_NAMESPACE: kube-system
 CLUSTER_AUTOSCALER_CHART_NAME: cluster-autoscaler
 CLUSTER_AUTOSCALER_CHART_URL: https://kubernetes.github.io/autoscaler
-CLUSTER_AUTOSCALER_CHART_VERSION: 9.50.1
+CLUSTER_AUTOSCALER_CHART_VERSION: 9.58.0
 CLUSTER_AUTOSCALER_ACCOUNT: null
 CLUSTER_AUTOSCALER_LOCATION: us-east-1
 CLUSTER_AUTOSCALER_CONFIG:
