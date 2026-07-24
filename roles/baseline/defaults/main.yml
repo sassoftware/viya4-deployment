@@ -328,6 +328,7 @@ EBS_CSI_DRIVER_CONFIG:
   controller:
     k8sTagClusterId: "{{ CLUSTER_NAME }}"
     region: "{{ EBS_CSI_DRIVER_LOCATION }}"
+    extraVolumeTags: "{{ EBS_CSI_DRIVER_TAGS }}"
     serviceAccount:
       create: true
       name: ebs-csi-controller-sa
@@ -340,13 +341,6 @@ EBS_CSI_DRIVER_CONFIG:
         fstype: ext4
         iops: "{{ EBS_CSI_RABBITMQ_STORAGE_CLASS_IOPS | int }}"
         throughput: "{{ EBS_CSI_RABBITMQ_STORAGE_CLASS_THROUGHPUT | int }}"
-        {% if EBS_CSI_DRIVER_TAGS %}
-        tags: |
-          {% for key, value in EBS_CSI_DRIVER_TAGS.items() %}
-          "{{ key }}": "{{ value }}"
-          {% if not loop.last %},{% endif %}
-          {% endfor %}
-        {% endif %}
       reclaimPolicy: Delete
       volumeBindingMode: WaitForFirstConsumer
       allowVolumeExpansion: true
@@ -356,13 +350,6 @@ EBS_CSI_DRIVER_CONFIG:
         fstype: ext4
         iops: "{{ EBS_CSI_CRUNCHY_STORAGE_CLASS_IOPS | int }}"
         throughput: "{{ EBS_CSI_CRUNCHY_STORAGE_CLASS_THROUGHPUT | int }}"
-        {% if EBS_CSI_DRIVER_TAGS %}
-        tags: |
-          {% for key, value in EBS_CSI_DRIVER_TAGS.items() %}
-          "{{ key }}": "{{ value }}"
-          {% if not loop.last %},{% endif %}
-          {% endfor %}
-        {% endif %}
       reclaimPolicy: "{{ EBS_CSI_CRUNCHY_STORAGE_CLASS_RECLAIM_POLICY }}"
       volumeBindingMode: WaitForFirstConsumer
       allowVolumeExpansion: true
