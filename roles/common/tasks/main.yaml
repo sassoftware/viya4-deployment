@@ -297,10 +297,9 @@
       when:
         - PROVIDER == "aws"
         - TFSTATE_LOCAL_TAGS is defined
-    # Merge terraform state tags with user-provided tags for EBS volumes
     - name: Merge local tags with user tags for EBS CSI
       set_fact:
-        EBS_CSI_DRIVER_TAGS: "{{ TFSTATE_LOCAL_TAGS | combine(EBS_CSI_DRIVER_TAGS | default({}), recursive=True) }}"
+        EBS_CSI_DRIVER_TAGS: "{{ (TFSTATE_LOCAL_TAGS | dict2items | rejectattr('value', 'equalto', none) | rejectattr('value', 'equalto', 'undefine') | rejectattr('value', 'equalto', 'undefined') | items2dict) | combine(EBS_CSI_DRIVER_TAGS | default({}), recursive=True) }}"
       when:
         - PROVIDER == "aws"
         - TFSTATE_LOCAL_TAGS is defined
