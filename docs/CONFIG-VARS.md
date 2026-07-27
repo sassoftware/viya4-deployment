@@ -562,7 +562,7 @@ The NFS client is currently supported by the csi-driver-nfs.
 | CSI_DRIVER_NFS_NAMESPACE | csi-driver-nfs Helm installation namespace | string | kube-system | false | | baseline |
 | CSI_DRIVER_NFS_CHART_URL | csi-driver-nfs Helm chart URL | string | Go [here](https://github.com/kubernetes-csi/csi-driver-nfs/) for more information. | false | | baseline |
 | CSI_DRIVER_NFS_CHART_NAME | csi-driver-nfs Helm chart name | string | csi-driver-nfs | false | | baseline |
-| CSI_DRIVER_NFS_CHART_VERSION | csi-driver-nfs Helm chart version | string | 4.11.0 | false | | baseline |
+| CSI_DRIVER_NFS_CHART_VERSION | csi-driver-nfs Helm chart version | string | 4.13.4 | false | | baseline |
 | CSI_DRIVER_NFS_CONFIG | csi-driver-nfs Helm values | string | See [this file](../roles/baseline/defaults/main.yml) for more information. | false | | baseline |
 
 ### Postgres NFS Client
@@ -574,5 +574,5 @@ The Postgres NFS client is currently supported by the csi-driver-nfs. It creates
 | CSI_DRIVER_NFS_PG_NAMESPACE | csi-driver-nfs Helm installation namespace | string | nfs-client | false | | baseline |
 | CSI_DRIVER_NFS_PG_CHART_URL | csi-driver-nfs Helm chart URL | string | Go [here](https://github.com/kubernetes-csi/csi-driver-nfs/) for more information. | false | | baseline |
 | CSI_DRIVER_NFS_PG_CHART_NAME | csi-driver-nfs Helm chart name | string | csi-driver-nfs | false | | baseline |
-| CSI_DRIVER_NFS_PG_CHART_VERSION | csi-driver-nfs Helm chart version | string | 4.11.0 | false | | baseline |
+| CSI_DRIVER_NFS_PG_CHART_VERSION | csi-driver-nfs Helm chart version | string | 4.13.4 | false | | baseline |
 | CSI_DRIVER_NFS_PG_CONFIG | csi-driver-nfs Helm values | string | See [this file](../roles/baseline/defaults/main.yml) for more information. | false | | baseline |
