@@ -45,6 +45,17 @@
     - install
     - update
 
+# Add AWS load balancer tags to the configuration if specified
+- name: Update CONTOUR_CONFIG annotations to include AWS load balancer resource tags
+  set_fact:
+    CONTOUR_CONFIG: "{{ CONTOUR_CONFIG | combine(CONTOUR_AWS_LB_TAGS_CONFIG, recursive=True) }}"
+  when:
+    - PROVIDER == "aws"
+    - CONTOUR_AWS_LB_TAGS_CONFIG.envoy.service.annotations['service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags'] | default('') | length > 0
+  tags:
+    - install
+    - update
+
 # Add Azure load-balancer health probe request path to the configuration if provider is Azure
 - name: Update CONTOUR_CONFIG to add Azure load-balancer health probe request path
   set_fact:

@@ -239,6 +239,13 @@ CONTOUR_AWS_LB_SUBNETS:
       annotations:
         service.beta.kubernetes.io/aws-load-balancer-subnets: "{{ V4_CFG_AWS_LB_SUBNETS }}"
 
+# Add AWS load balancer tags to the configuration for Contour (optional)
+CONTOUR_AWS_LB_TAGS_CONFIG:
+  envoy:
+    service:
+      annotations:
+        service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags: ""
+
 # Multi-zone HA configuration for Contour (contour controller Deployment).
 # Applied when V4_CFG_MULTI_ZONE_ENABLED and V4_CFG_MULTI_ZONE_CONTOUR_ENABLED are both true.
 # Applies topology spread constraints and pod anti-affinity so contour controller
@@ -314,10 +321,14 @@ EBS_CSI_CRUNCHY_STORAGE_CLASS_IOPS: 5000
 EBS_CSI_CRUNCHY_STORAGE_CLASS_THROUGHPUT: 400
 EBS_CSI_CRUNCHY_STORAGE_CLASS_RECLAIM_POLICY: Delete
 
+# Optional tags to be added to dynamically provisioned EBS volumes
+EBS_CSI_DRIVER_TAGS: {}
+
 EBS_CSI_DRIVER_CONFIG:
   controller:
     k8sTagClusterId: "{{ CLUSTER_NAME }}"
     region: "{{ EBS_CSI_DRIVER_LOCATION }}"
+    extraVolumeTags: "{{ EBS_CSI_DRIVER_TAGS }}"
     serviceAccount:
       create: true
       name: ebs-csi-controller-sa
