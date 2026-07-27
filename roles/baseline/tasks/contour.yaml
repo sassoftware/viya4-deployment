@@ -202,12 +202,25 @@
     - update
 
 # Remove the Contour ingress controller Helm release
+- name: Remove Contour envoy service
+  kubernetes.core.k8s:
+    api_version: v1
+    kind: Service
+    name: envoy
+    namespace: "{{ CONTOUR_NAMESPACE }}"
+    kubeconfig: "{{ KUBECONFIG }}"
+    state: absent
+    wait: false
+  tags:
+    - uninstall
+
 - name: Remove contour
   kubernetes.core.helm:
     name: "{{ CONTOUR_NAME }}"           # Name of the Helm release
     namespace: "{{ CONTOUR_NAMESPACE }}" # Namespace for Contour
     kubeconfig: "{{ KUBECONFIG }}"       # Kubeconfig for cluster access
     wait: true                           # Wait for removal to complete
+    timeout: 20m                         # Give dual-stack LB teardown time to finish
     values: "{{ CONTOUR_CONFIG }}"       # Use the same values as install (for idempotency)
     state: absent                        # Ensure the release is removed
   tags:
@@ -220,7 +233,7 @@
     kind: Namespace                 # Resource kind
     name: "{{ CONTOUR_NAMESPACE }}" # Namespace to remove
     wait: true                      # Wait for deletion
-    wait_timeout: 600               # Timeout for deletion
+    wait_timeout: 20m               # Give load balancer cleanup time to complete
     state: absent                   # Ensure the namespace is deleted
     kubeconfig: "{{ KUBECONFIG }}"  # Kubeconfig for cluster access
   tags:
