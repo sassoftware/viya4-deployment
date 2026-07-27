@@ -281,7 +281,7 @@
     # Extract local tags from terraform state (viya4-iac-aws integration)
     - name: tfstate - extract local tags for AWS resources # noqa: name[casing]
       set_fact:
-        TFSTATE_LOCAL_TAGS: "{{ tfstate.local_tags.value }}"
+        TFSTATE_LOCAL_TAGS: "{{ tfstate.local_tags.value | dict2items | rejectattr('value', 'equalto', none) | rejectattr('value', 'equalto', 'undefine') | rejectattr('value', 'equalto', 'undefined') | items2dict }}"
       when:
         - tfstate.local_tags is defined
         - tfstate.local_tags.value is not none
@@ -299,7 +299,7 @@
         - TFSTATE_LOCAL_TAGS is defined
     - name: Merge local tags with user tags for EBS CSI
       set_fact:
-        EBS_CSI_DRIVER_TAGS: "{{ (TFSTATE_LOCAL_TAGS | dict2items | rejectattr('value', 'equalto', none) | rejectattr('value', 'equalto', 'undefine') | rejectattr('value', 'equalto', 'undefined') | items2dict) | combine(EBS_CSI_DRIVER_TAGS | default({}), recursive=True) }}"
+        EBS_CSI_DRIVER_TAGS: "{{ TFSTATE_LOCAL_TAGS | combine(EBS_CSI_DRIVER_TAGS | default({}), recursive=True) }}"
       when:
         - PROVIDER == "aws"
         - TFSTATE_LOCAL_TAGS is defined
