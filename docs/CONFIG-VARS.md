@@ -116,7 +116,7 @@ viya4-deployment also creates the `sas` storage class using the csi-driver-nfs H
 
 When `V4_CFG_MANAGE_STORAGE` is set to `true`, viya4-deployment creates NFS-based storage classes using the csi-driver-nfs Helm chart.
 
-When `V4_CFG_MANAGE_STORAGE` is set to `false`, viya4-deployment does not create the `sas` or `pg-storage` storage classes for you. In addition, viya4-deployment does not create or manage the RWX Filestore NFS paths. Before you run the SAS Viya deployment, you must set the values for `V4_CFG_RWX_FILESTORE_DATA_PATH` and `V4_CFG_RWX_FILESTORE_HOMES_PATH` to specify existing NFS folder locations. The viya4-deployment user can create the required NFS folders from the jump server before starting the deployment. Recommended attribute settings for each folder are as follows:
+When `V4_CFG_MANAGE_STORAGE` is set to `false`, viya4-deployment does not create the `sas` or `pg-storage` storage classes for you. In addition, viya4-deployment does not create or manage the RWX Filestore NFS paths. Before you run the SAS Viya deployment, you must set the values for `V4_CFG_RWX_FILESTORE_DATA_PATH` and `V4_CFG_RWX_FILESTORE_HOMES_PATH` to specify existing NFS folder locations. CAS mounts PVC claims (not direct NFS pod mounts) and those claims request RWX storage from `V4_CFG_STORAGECLASS`. The viya4-deployment user can create the required NFS folders from the jump server before starting the deployment. Recommended attribute settings for each folder are as follows:
 - **filemode**: `0777`
 - **group**: the equivalent of `nogroup` for your operating system
 - **owner**: `nobody`
@@ -134,6 +134,10 @@ When `V4_CFG_MANAGE_STORAGE` is set to `false`, viya4-deployment does not create
 | V4_CFG_RWX_FILESTORE_PATH | NFS export path | string | /export | false | If using terraform.tfstate (viya4-iac-gcp), this value will be overridden by the path from the state file (typically /volumes for Filestore).| baseline, viya |
 | V4_CFG_RWX_FILESTORE_DATA_PATH | NFS path to data directory | string | <V4_CFG_RWX_FILESTORE_PATH>/\<NAMESPACE>/data | false | | viya |
 | V4_CFG_RWX_FILESTORE_HOMES_PATH | NFS path to homes directory | string | <V4_CFG_RWX_FILESTORE_PATH>/\<NAMESPACE>/homes | false | | viya |
+| V4_CFG_CAS_DATA_PVC_NAME | CAS data PVC name | string | cas-data | false | PVC mounted to /mnt/viya-share/data in CAS controller pods. | viya |
+| V4_CFG_CAS_HOMES_PVC_NAME | CAS homes PVC name | string | cas-homes | false | PVC mounted to V4_CFG_RWX_FILESTORE_HOMES_PATH in CAS controller pods. | viya |
+| V4_CFG_CAS_DATA_PVC_SIZE | CAS data PVC request size | string | 100Gi | false | Storage request for V4_CFG_CAS_DATA_PVC_NAME. | viya |
+| V4_CFG_CAS_HOMES_PVC_SIZE | CAS homes PVC request size | string | 100Gi | false | Storage request for V4_CFG_CAS_HOMES_PVC_NAME. | viya |
 
 #### Azure
 
