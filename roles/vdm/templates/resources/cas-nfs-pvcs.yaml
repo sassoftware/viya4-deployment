@@ -1,0 +1,27 @@
+# CAS PVC resources. CAS pods mount these claims instead of direct NFS volumes.
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ V4_CFG_CAS_DATA_PVC_NAME }}
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: {{ V4_CFG_CAS_DATA_PVC_SIZE }}
+  storageClassName: {{ V4_CFG_STORAGECLASS }}
+  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ V4_CFG_CAS_HOMES_PVC_NAME }}
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: {{ V4_CFG_CAS_HOMES_PVC_SIZE }}
+  storageClassName: {{ V4_CFG_STORAGECLASS }}
+  volumeMode: Filesystem
