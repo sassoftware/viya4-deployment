@@ -18,16 +18,14 @@ patch: |-
     path: /template/spec/volumes/-
     value:
       name: nfs-data
-      nfs:
-        server: {{ V4_CFG_RWX_FILESTORE_ENDPOINT }}
-        path: {{ V4_CFG_RWX_FILESTORE_DATA_PATH }}
+      persistentVolumeClaim:
+        claimName: {{ V4_CFG_CAS_DATA_PVC_NAME }}
   - op: add
     path: /template/spec/volumes/-
     value:
       name: nfs-homes
-      nfs:
-        server: {{ V4_CFG_RWX_FILESTORE_ENDPOINT }}
-        path: {{ V4_CFG_RWX_FILESTORE_HOMES_PATH }}
+      persistentVolumeClaim:
+        claimName: {{ V4_CFG_CAS_HOMES_PVC_NAME }}
 target:
   kind: PodTemplate
   name: sas-compute-job-config
