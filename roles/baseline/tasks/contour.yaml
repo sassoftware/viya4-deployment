@@ -210,7 +210,7 @@
     namespace: "{{ CONTOUR_NAMESPACE }}"
     kubeconfig: "{{ KUBECONFIG }}"
     state: absent
-    wait: false
+    wait: true
   tags:
     - uninstall
 
