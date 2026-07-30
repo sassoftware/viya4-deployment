@@ -6,6 +6,8 @@
 # Purpose: Installs and manages Envoy Gateway controller resources.
 
 # Download the Envoy Gateway install manifest to the session temp directory.
+# Tagged with "uninstall" too since "Remove Envoy Gateway" (below) needs this same
+# rendered file to know what to delete.
 - name: Download Envoy Gateway manifest
   get_url:
     url: "{{ ENVOY_GATEWAY_MANIFEST_URL }}"
@@ -14,6 +16,7 @@
   tags:
     - install
     - update
+    - uninstall
 
 # Install or update Envoy Gateway.
 # Note: Don't use wait_condition as the manifest contains multiple resource types (CRDs, Deployments, Services)
@@ -52,23 +55,12 @@
     - install
     - update
 
-# Restart Envoy Gateway deployment to ensure fresh pods pick up current mounted secret/config.
-- name: Restart Envoy Gateway deployment
-  kubernetes.core.k8s:
-    state: patched
-    kind: Deployment
-    name: envoy-gateway
-    namespace: envoy-gateway-system
-    kubeconfig: "{{ KUBECONFIG }}"
-    definition:
-      spec:
-        template:
-          metadata:
-            annotations:
-              kubectl.kubernetes.io/restartedAt: "{{ ansible_date_time.iso8601 }}"
-  tags:
-    - install
-    - update
+# NOTE: A forced "restart deployment" step used to live here to make the control plane
+# pick up a manually-managed "envoy-gateway" xDS TLS secret. That manual secret management
+# has been removed (Envoy Gateway's own certgen Job now owns that secret's full lifecycle,
+# including reload), so the forced restart is no longer needed and has been removed to avoid
+# unnecessary pod churn on every playbook run.
+
 
 # Verify Envoy Gateway pod is running and ready (extended wait for slow startup).
 # On timeout, collect pod and event diagnostics for root-cause visibility.
