@@ -172,6 +172,8 @@
 # Only applicable when using the Deployment Operator (V4_DEPLOYMENT_OPERATOR_ENABLED=true) and
 # deploying LTS 2026.03 on Kubernetes 1.35. Without this annotation the Deployment Operator will
 # reject the deployment due to a kubectl version skew check.
+# The manifest is a multi-document YAML file, so Python yaml.safe_load_all is used to parse
+# all documents, patch the SASDeployment document, and write them all back.
 - name: sasdeployment custom resource - Patch LTS 2026.03 k8s 1.35 opt-in annotation into SASDeployment manifest # noqa: name[casing]
   when:
     - V4_DEPLOYMENT_OPERATOR_ENABLED
@@ -181,17 +183,23 @@
     - update
     - cas-onboard
     - offboard
-  block:
-    # Read the generated SASDeployment CR manifest back as a dict
-    - name: sasdeployment custom resource - Read generated SASDeployment CR manifest # noqa: name[casing]
-      set_fact:
-        _sasdeployment_cr: "{{ lookup('file', ORCHESTRATION_TOOLING_INSTALL_MANIFEST) | from_yaml }}"
-    # Deep-merge the opt-in annotation into metadata.annotations, preserving any existing annotations
-    - name: sasdeployment custom resource - Write SASDeployment CR manifest with k8s 1.35 opt-in annotation # noqa: name[casing]
-      copy:
-        content: "{{ _sasdeployment_cr | combine({'metadata': {'annotations': {'sas.com/allow-2026.03-to-deploy-to-k8s-1.35': 'enabled'}}}, recursive=True) | to_yaml }}"
-        dest: "{{ ORCHESTRATION_TOOLING_INSTALL_MANIFEST }}"
-        mode: "0660"
+  ansible.builtin.shell: |
+    python3 << 'PYEOF'
+    import yaml
+
+    manifest_path = "{{ ORCHESTRATION_TOOLING_INSTALL_MANIFEST }}"
+
+    with open(manifest_path, "r") as f:
+        docs = list(yaml.safe_load_all(f))
+
+    for doc in docs:
+        if doc and doc.get("kind") == "SASDeployment":
+            doc.setdefault("metadata", {}).setdefault("annotations", {})
+            doc["metadata"]["annotations"]["sas.com/allow-2026.03-to-deploy-to-k8s-1.35"] = "enabled"
+
+    with open(manifest_path, "w") as f:
+        yaml.dump_all(docs, f, default_flow_style=False)
+    PYEOF
 
 # Write SAS Viya deployment manifests into orchestration tooling directory if deployment operator is not enabled
 - name: sasdeployment custom resource - Write SAS Viya deployment manifests into orchestration tooling directory # noqa: name[casing]
