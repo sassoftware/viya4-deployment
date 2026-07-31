@@ -185,20 +185,45 @@
     - offboard
   ansible.builtin.shell: |
     python3 << 'PYEOF'
-    import yaml
+    import re
 
     manifest_path = "{{ ORCHESTRATION_TOOLING_INSTALL_MANIFEST }}"
+    annotation_key = "sas.com/allow-2026.03-to-deploy-to-k8s-1.35"
+    annotation_line = "    %s: enabled\n" % annotation_key
 
     with open(manifest_path, "r") as f:
-        docs = list(yaml.safe_load_all(f))
+        content = f.read()
 
-    for doc in docs:
-        if doc and doc.get("kind") == "SASDeployment":
-            doc.setdefault("metadata", {}).setdefault("annotations", {})
-            doc["metadata"]["annotations"]["sas.com/allow-2026.03-to-deploy-to-k8s-1.35"] = "enabled"
+    # Skip if the annotation is already present
+    if annotation_key in content:
+        exit(0)
+
+    # Split on document separator lines (---), preserving the separators in the result.
+    # re.split with a capturing group keeps the separators in the returned list so the
+    # file can be reassembled exactly with "".join() without losing any separators.
+    segments = re.split(r"(?m)^(---+[ \t]*)$", content)
+
+    patched = []
+    for segment in segments:
+        if re.search(r"kind:\s+SASDeployment", segment):
+            if re.search(r"^\s{2}annotations:", segment, re.MULTILINE):
+                # annotations: block already exists – insert our line right after it
+                segment = re.sub(
+                    r"(^\s{2}annotations:[ \t]*\n)",
+                    r"\g<1>" + annotation_line,
+                    segment, count=1, flags=re.MULTILINE,
+                )
+            else:
+                # No annotations: block yet – add one beneath metadata:
+                segment = re.sub(
+                    r"(^metadata:[ \t]*\n)",
+                    r"\g<1>  annotations:\n" + annotation_line,
+                    segment, count=1, flags=re.MULTILINE,
+                )
+        patched.append(segment)
 
     with open(manifest_path, "w") as f:
-        yaml.dump_all(docs, f, default_flow_style=False)
+        f.write("".join(patched))
     PYEOF
 
 # Write SAS Viya deployment manifests into orchestration tooling directory if deployment operator is not enabled
