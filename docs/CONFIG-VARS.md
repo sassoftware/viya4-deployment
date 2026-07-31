@@ -54,6 +54,7 @@ Supported configuration variables are listed in the table below.  All variables 
 | V4_DEPLOYMENT_OPERATOR_SCOPE | Where the SAS Viya Platform Deployment Operator should watch for SASDeployments | string | "cluster" | false | [namespace, cluster] [Additional documentation](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=dplyml0phy0dkr&docsetTarget=n137b56hwogd7in1onzys95awxqe.htm#p16ayulwlsuw8vn10bkpsjtw1ldg) describing these options is available. | viya |
 | V4_DEPLOYMENT_OPERATOR_NAMESPACE | Namespace where the SAS Viya Platform Deployment Operator should be installed  | string | "sasoperator" | false | Only applicable when V4_DEPLOYMENT_OPERATOR_SCOPE="cluster". | viya |
 | V4_DEPLOYMENT_OPERATOR_CRB | Name of the ClusterRoleBinding resource that is needed by the SAS Viya Platform Deployment Operator | string | "sasoperator" | false | [Additional documentation](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=dplyml0phy0dkr&docsetTarget=n137b56hwogd7in1onzys95awxqe.htm#p1arr91os91cg5n1tsmuamj6h10g) describing the resource is available. | viya |
+| V4_DEPLOYMENT_OPERATOR_ALLOW_K8S_135 | Opt in to deploying LTS 2026.03 on Kubernetes 1.35 using the Deployment Operator. When set to `true`, adds the annotation `sas.com/allow-2026.03-to-deploy-to-k8s-1.35: "enabled"` to the generated SASDeployment CR. | bool | false | false | Only applicable when `V4_DEPLOYMENT_OPERATOR_ENABLED=true`. This annotation is **required** when deploying LTS 2026.03 on a Kubernetes 1.35 cluster via the Deployment Operator; without it the deployment will fail due to a kubectl version skew check. Do **not** enable this unless you are intentionally deploying LTS 2026.03 on k8s 1.35. The `sas-orchestration deploy` command does not support this configuration. | viya |
 
 **SAS Viya Platform Deployment Operator Notes:**
 
@@ -64,6 +65,8 @@ Supported configuration variables are listed in the table below.  All variables 
 * If you are running this project using Ansible directly on your workstation, we require Docker to be installed and the executing user should be able to access it. This is required to use the sas-orchestration command. See [ansible usage](user/AnsibleUsage.md#Preparation).
 
 * Using the sas-orchestration deploy command to perform a SAS Viya platform deployment is only applicable for SAS Viya 2022.12 and later. For previous releases, use the SAS Viya Platform Deployment Operator to perform your deployments.
+
+* When deploying **LTS 2026.03 on Kubernetes 1.35** using the Deployment Operator, you must set `V4_DEPLOYMENT_OPERATOR_ALLOW_K8S_135: true`. This explicitly opts in to the extended Kubernetes version skew support and adds the annotation `sas.com/allow-2026.03-to-deploy-to-k8s-1.35: "enabled"` to the generated SASDeployment CR. Without this annotation, the Deployment Operator will reject the deployment. Note: the `sas-orchestration deploy` command does **not** support deploying LTS 2026.03 on Kubernetes 1.35 — only the Deployment Operator (or direct `kubectl` application) is supported for this combination.
 
 ## Cloud
 

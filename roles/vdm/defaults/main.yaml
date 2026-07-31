@@ -105,6 +105,10 @@ V4_DEPLOYMENT_OPERATOR_ENABLED: true
 V4_DEPLOYMENT_OPERATOR_SCOPE: cluster
 V4_DEPLOYMENT_OPERATOR_NAMESPACE: sasoperator
 V4_DEPLOYMENT_OPERATOR_CRB: sasoperator
+# Set to true to opt in to deploying LTS 2026.03 on Kubernetes 1.35 using the Deployment Operator.
+# Adds the annotation sas.com/allow-2026.03-to-deploy-to-k8s-1.35: "enabled" to the generated SASDeployment CR.
+# Must be explicitly enabled by the user; do not set to true unless deploying LTS 2026.03 on k8s 1.35.
+V4_DEPLOYMENT_OPERATOR_ALLOW_K8S_135: false
 
 ## Below the line deployment -- internal use only
 ## Setting true enables using custom du for below the line testing
