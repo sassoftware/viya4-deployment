@@ -41,9 +41,7 @@
     name: "{{ item.metadata.name }}"
     namespace: "{{ baseline_ha_namespace }}"
     kubeconfig: "{{ KUBECONFIG }}"
-    definition:
-      spec:
-        replicas: "{{ baseline_ha_replica_count | int }}"
+    definition: "{{ ('spec:\n  replicas: %s' % (baseline_ha_replica_count | int)) | from_yaml }}"
   loop: "{{ baseline_ha_deployments.resources | default([]) }}"
   loop_control:
     label: "{{ item.metadata.name | default('unknown-deployment') }}"
