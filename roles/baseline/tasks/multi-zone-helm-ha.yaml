@@ -33,14 +33,17 @@
     - update
 
 - name: Scale Deployments for multi-zone HA replicas
-  kubernetes.core.k8s_scale:
+  kubernetes.core.k8s:
     api_version: apps/v1
+    state: patched
+    merge_type: merge
     kind: Deployment
     name: "{{ item.metadata.name }}"
     namespace: "{{ baseline_ha_namespace }}"
     kubeconfig: "{{ KUBECONFIG }}"
-    replicas: "{{ baseline_ha_replica_count | int }}"
-    wait: true
+    definition:
+      spec:
+        replicas: "{{ baseline_ha_replica_count | int }}"
   loop: "{{ baseline_ha_deployments.resources | default([]) }}"
   loop_control:
     label: "{{ item.metadata.name | default('unknown-deployment') }}"
