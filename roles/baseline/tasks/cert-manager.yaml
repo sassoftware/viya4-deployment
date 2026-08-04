@@ -27,6 +27,20 @@
     - install
     - update
 
+# Apply multi-zone HA distribution across cert-manager controller Deployments.
+- name: Apply multi-zone HA for cert-manager Deployments
+  include_tasks:
+    file: multi-zone-helm-ha.yaml
+  vars:
+    baseline_ha_release_name: "{{ CERT_MANAGER_NAME }}"
+    baseline_ha_namespace: "{{ CERT_MANAGER_NAMESPACE }}"
+  when:
+    - V4_CFG_TLS_GENERATOR is defined
+    - V4_CFG_TLS_GENERATOR == 'cert-manager'
+  tags:
+    - install
+    - update
+
 # Remove the cert-manager Helm release
 - name: Remove cert-manager
   kubernetes.core.helm:

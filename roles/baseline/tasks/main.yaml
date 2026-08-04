@@ -5,6 +5,13 @@
 # This file includes baseline setup tasks for the cluster, such as storage, ingress, and version checks.
 # Each block is conditionally included based on configuration variables and tags.
 
+# Build baseline multi-zone context once and reuse it in all baseline tooling.
+- name: Build baseline multi-zone context
+  include_tasks:
+    file: multi-zone-context.yaml
+  tags:
+    - baseline
+
 # Include NFS CSI provisioner tasks if RWX filestore is managed
 - name: Include nfs.csi.k8s.io
   include_tasks:

@@ -1,0 +1,62 @@
+# Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+---
+# Build a single multi-zone context used by all baseline tooling.
+# Facts produced:
+# - BASELINE_MULTI_ZONE_ZONE_NAMES: unique zone names from node labels
+# - BASELINE_MULTI_ZONE_REGION_NAMES: unique region names from node labels
+# - BASELINE_IS_MULTI_AZ: true when 2+ zones are detected
+
+- name: Get node topology information for baseline multi-zone context
+  kubernetes.core.k8s_info:
+    kind: Node
+    kubeconfig: "{{ KUBECONFIG }}"
+  register: baseline_node_info
+  when:
+    - V4_CFG_MULTI_ZONE_ENABLED | default(false) | bool
+  tags:
+    - baseline
+
+- name: Initialize baseline multi-zone context lists
+  set_fact:
+    baseline_detected_zones: []
+    baseline_detected_regions: []
+  when:
+    - V4_CFG_MULTI_ZONE_ENABLED | default(false) | bool
+  tags:
+    - baseline
+
+- name: Collect detected zones for baseline multi-zone context
+  set_fact:
+    baseline_detected_zones: "{{ baseline_detected_zones + [item.metadata.labels['topology.kubernetes.io/zone']] }}"
+  loop: "{{ baseline_node_info.resources | default([]) }}"
+  when:
+    - V4_CFG_MULTI_ZONE_ENABLED | default(false) | bool
+    - item.metadata is defined
+    - item.metadata.labels is defined
+    - item.metadata.labels['topology.kubernetes.io/zone'] is defined
+  tags:
+    - baseline
+
+- name: Collect detected regions for baseline multi-zone context
+  set_fact:
+    baseline_detected_regions: "{{ baseline_detected_regions + [item.metadata.labels['topology.kubernetes.io/region']] }}"
+  loop: "{{ baseline_node_info.resources | default([]) }}"
+  when:
+    - V4_CFG_MULTI_ZONE_ENABLED | default(false) | bool
+    - item.metadata is defined
+    - item.metadata.labels is defined
+    - item.metadata.labels['topology.kubernetes.io/region'] is defined
+  tags:
+    - baseline
+
+- name: Publish baseline multi-zone context facts
+  set_fact:
+    BASELINE_MULTI_ZONE_ZONE_NAMES: "{{ baseline_detected_zones | default([]) | unique }}"
+    BASELINE_MULTI_ZONE_REGION_NAMES: "{{ baseline_detected_regions | default([]) | unique }}"
+    BASELINE_IS_MULTI_AZ: "{{ (baseline_detected_zones | default([]) | unique | length) > 1 }}"
+  when:
+    - V4_CFG_MULTI_ZONE_ENABLED | default(false) | bool
+  tags:
+    - baseline

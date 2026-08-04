@@ -131,6 +131,17 @@
     - install
     - update
 
+# Apply multi-zone HA distribution across ingress-nginx controller Deployments.
+- name: Apply multi-zone HA for ingress-nginx Deployments
+  include_tasks:
+    file: multi-zone-helm-ha.yaml
+  vars:
+    baseline_ha_release_name: "{{ INGRESS_NGINX_NAME }}"
+    baseline_ha_namespace: "{{ INGRESS_NGINX_NAMESPACE }}"
+  tags:
+    - install
+    - update
+
 # Remove ingress-nginx Helm release during uninstall
 - name: Remove ingress-nginx
   kubernetes.core.helm:
