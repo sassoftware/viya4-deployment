@@ -32,16 +32,37 @@
     - install
     - update
 
-- name: Patch Deployments for multi-zone HA distribution
+- name: Scale Deployments for multi-zone HA replicas
+  kubernetes.core.k8s_scale:
+    api_version: apps/v1
+    kind: Deployment
+    name: "{{ item.metadata.name }}"
+    namespace: "{{ baseline_ha_namespace }}"
+    kubeconfig: "{{ KUBECONFIG }}"
+    replicas: "{{ baseline_ha_replica_count | int }}"
+    wait: true
+  loop: "{{ baseline_ha_deployments.resources | default([]) }}"
+  loop_control:
+    label: "{{ item.metadata.name | default('unknown-deployment') }}"
+  when:
+    - V4_CFG_MULTI_ZONE_ENABLED | default(false) | bool
+    - BASELINE_IS_MULTI_AZ | default(false) | bool
+    - (baseline_ha_deployments.resources | default([]) | length) > 0
+  tags:
+    - install
+    - update
+
+- name: Patch Deployments for multi-zone HA placement
   kubernetes.core.k8s:
+    api_version: apps/v1
     state: patched
+    merge_type: merge
     kind: Deployment
     name: "{{ item.metadata.name }}"
     namespace: "{{ baseline_ha_namespace }}"
     kubeconfig: "{{ KUBECONFIG }}"
     definition:
       spec:
-        replicas: "{{ baseline_ha_replica_count | int }}"
         template:
           spec:
             topologySpreadConstraints:
@@ -76,6 +97,8 @@
                               - "{{ baseline_ha_release_name }}"
                       topologyKey: topology.kubernetes.io/zone
   loop: "{{ baseline_ha_deployments.resources | default([]) }}"
+  loop_control:
+    label: "{{ item.metadata.name | default('unknown-deployment') }}"
   when:
     - V4_CFG_MULTI_ZONE_ENABLED | default(false) | bool
     - BASELINE_IS_MULTI_AZ | default(false) | bool
