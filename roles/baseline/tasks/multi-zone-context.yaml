@@ -31,6 +31,8 @@
   set_fact:
     baseline_detected_zones: "{{ baseline_detected_zones + [item.metadata.labels['topology.kubernetes.io/zone']] }}"
   loop: "{{ baseline_node_info.resources | default([]) }}"
+  loop_control:
+    label: "{{ (item.metadata.labels['topology.kubernetes.io/zone'] | default('unknown-zone')) ~ ' @ ' ~ (item.metadata.name | default('unknown-node')) }}"
   when:
     - V4_CFG_MULTI_ZONE_ENABLED | default(false) | bool
     - item.metadata is defined
@@ -43,6 +45,8 @@
   set_fact:
     baseline_detected_regions: "{{ baseline_detected_regions + [item.metadata.labels['topology.kubernetes.io/region']] }}"
   loop: "{{ baseline_node_info.resources | default([]) }}"
+  loop_control:
+    label: "{{ (item.metadata.labels['topology.kubernetes.io/region'] | default('unknown-region')) ~ ' @ ' ~ (item.metadata.name | default('unknown-node')) }}"
   when:
     - V4_CFG_MULTI_ZONE_ENABLED | default(false) | bool
     - item.metadata is defined
