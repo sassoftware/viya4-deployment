@@ -139,8 +139,8 @@
     - install
     - update
 
-# Apply non-blocking multi-zone HA placement for csi-driver-nfs controller.
-# Keep replica count unchanged to avoid disruptive scaling behavior.
+# Apply non-blocking multi-zone HA settings for csi-driver-nfs controller.
+# Replica scaling and placement are enabled, but failures here won't fail baseline.
 - name: Apply safe multi-zone HA for csi-driver-nfs Deployments
   include_tasks:
     file: multi-zone-helm-ha.yaml
@@ -148,7 +148,7 @@
     baseline_ha_release_name: "{{ CSI_DRIVER_NFS_NAME }}"
     baseline_ha_namespace: "{{ CSI_DRIVER_NFS_NAMESPACE }}"
     baseline_ha_non_blocking: true
-    baseline_ha_apply_scaling: false
+    baseline_ha_apply_scaling: true
     baseline_ha_apply_placement: true
   tags:
     - install
