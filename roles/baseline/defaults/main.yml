@@ -326,6 +326,7 @@ CONTOUR_IPV6_CONFIG:
       - "--stats-address=::"           # Bind stats/admin to IPv6 (fixes probe issues)
       - "--envoy-service-http-address=::"   # Bind HTTP listener to IPv6
       - "--envoy-service-https-address=::"  # Bind HTTPS listener to IPv6
+      - "--use-proxy-protocol"              # Enable PROXY protocol for NLB to preserve real client IPs
   envoy:
     service:
       annotations:
@@ -336,6 +337,7 @@ CONTOUR_IPV6_CONFIG:
         service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "tcp"
         service.beta.kubernetes.io/aws-load-balancer-target-group-attributes: "preserve_client_ip.enabled=false"
         service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+        service.beta.kubernetes.io/aws-load-balancer-proxy-protocol: "*"
 
 # Update ipFamily for Contour service for IPv6 dual-stack support (Azure)
 CONTOUR_AZURE_IPV6_CONFIG:
