@@ -139,6 +139,21 @@
     - install
     - update
 
+# Apply non-blocking multi-zone HA placement for csi-driver-nfs controller.
+# Keep replica count unchanged to avoid disruptive scaling behavior.
+- name: Apply safe multi-zone HA for csi-driver-nfs Deployments
+  include_tasks:
+    file: multi-zone-helm-ha.yaml
+  vars:
+    baseline_ha_release_name: "{{ CSI_DRIVER_NFS_NAME }}"
+    baseline_ha_namespace: "{{ CSI_DRIVER_NFS_NAMESPACE }}"
+    baseline_ha_non_blocking: true
+    baseline_ha_apply_scaling: false
+    baseline_ha_apply_placement: true
+  tags:
+    - install
+    - update
+
 # Patch the fsGroupPolicy in the CSIDriver after Helm install
 - name: Patch fsGroupPolicy in CSIDriver to ReadWriteOnceWithFSType
   kubernetes.core.k8s:

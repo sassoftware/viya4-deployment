@@ -6,6 +6,10 @@
 # Expected vars:
 # - baseline_ha_release_name
 # - baseline_ha_namespace
+# Optional vars:
+# - baseline_ha_non_blocking (default false)
+# - baseline_ha_apply_scaling (default true)
+# - baseline_ha_apply_placement (default true)
 
 - name: Compute replica count for {{ baseline_ha_release_name }}
   set_fact:
@@ -28,6 +32,7 @@
   when:
     - V4_CFG_MULTI_ZONE_ENABLED | default(false) | bool
     - BASELINE_IS_MULTI_AZ | default(false) | bool
+  ignore_errors: "{{ baseline_ha_non_blocking | default(false) | bool }}"
   tags:
     - install
     - update
@@ -48,7 +53,10 @@
   when:
     - V4_CFG_MULTI_ZONE_ENABLED | default(false) | bool
     - BASELINE_IS_MULTI_AZ | default(false) | bool
+    - baseline_ha_apply_scaling | default(true) | bool
+    - baseline_ha_deployments is defined
     - (baseline_ha_deployments.resources | default([]) | length) > 0
+  ignore_errors: "{{ baseline_ha_non_blocking | default(false) | bool }}"
   tags:
     - install
     - update
@@ -103,7 +111,10 @@
   when:
     - V4_CFG_MULTI_ZONE_ENABLED | default(false) | bool
     - BASELINE_IS_MULTI_AZ | default(false) | bool
+    - baseline_ha_apply_placement | default(true) | bool
+    - baseline_ha_deployments is defined
     - (baseline_ha_deployments.resources | default([]) | length) > 0
+  ignore_errors: "{{ baseline_ha_non_blocking | default(false) | bool }}"
   tags:
     - install
     - update
