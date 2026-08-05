@@ -139,17 +139,6 @@
     - install
     - update
 
-# Apply multi-zone HA distribution across csi-driver-nfs controller Deployments.
-- name: Apply multi-zone HA for csi-driver-nfs Deployments
-  include_tasks:
-    file: multi-zone-helm-ha.yaml
-  vars:
-    baseline_ha_release_name: "{{ CSI_DRIVER_NFS_NAME }}"
-    baseline_ha_namespace: "{{ CSI_DRIVER_NFS_NAMESPACE }}"
-  tags:
-    - install
-    - update
-
 # Patch the fsGroupPolicy in the CSIDriver after Helm install
 - name: Patch fsGroupPolicy in CSIDriver to ReadWriteOnceWithFSType
   kubernetes.core.k8s:
