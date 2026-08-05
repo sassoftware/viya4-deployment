@@ -300,7 +300,6 @@
     name: "{{ item.metadata.name }}"
     namespace: envoy-gateway-system
     kubeconfig: "{{ KUBECONFIG }}"
-    wait: true
   loop: "{{ envoy_public_gateway_services | default([]) }}"
   when:
     - PROVIDER is defined
