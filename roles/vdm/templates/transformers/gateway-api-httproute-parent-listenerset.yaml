@@ -12,7 +12,9 @@ patch: |-
         kind: ListenerSet
         group: gateway.networking.k8s.io
 {% if V4_CFG_TLS_MODE != "disabled" %}
+{% if not (V4_CFG_BASELINE_GATEWAY_ENABLE_HTTP_LISTENER | default(true) | bool) %}
         sectionName: https
+{% endif %}
 {% endif %}
 target:
   group: gateway.networking.k8s.io
