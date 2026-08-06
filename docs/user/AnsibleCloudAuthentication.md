@@ -14,6 +14,10 @@ Name of the SQL cluster connection, as listed in the Google Cloud console.
 
 Name of service account in Google Cloud that has the cloudsql.admin role. This account will be mapped to a Kubernetes service account, thus granting the SQL proxy access, via workload identity, to the SQL server.
 
+### V4_CFG_POSTGRES_CLOUD_SQL_PROXY_VERSION
+
+Optional image tag override for cloud-sql-proxy. If unset, viya4-deployment uses the default supported version from role vars.
+
 ### V4_CFG_CLOUD_SERVICE_ACCOUNT_NAME 
 
 Name of service account in Google Cloud that has the iam.serviceAccountAdmin role. This account will be used to setting up the sql proxy's Google service account mapping to the kubernetes service account

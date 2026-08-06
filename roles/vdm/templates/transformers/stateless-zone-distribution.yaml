@@ -1,0 +1,40 @@
+# Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+# Transformer to set topology spread constraints for stateless services (Deployments)
+# Targets ALL Deployments - no selector (will apply to all including non-SAS)
+# labelSelector omitted - Kubernetes automatically uses each Deployment's pod template labels
+# This ensures each service's replicas are spread independently, not evaluated globally
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: stateless-zone-distribution
+patch: |-
+  - op: replace
+    path: /spec/template/spec/topologySpreadConstraints
+    value:
+      - maxSkew: 1
+        topologyKey: topology.kubernetes.io/zone
+        whenUnsatisfiable: ScheduleAnyway
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+target:
+  kind: Deployment
+  version: v1
+  group: apps
+
+---
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: centralized-zone-antiaffinity
+patch: |-
+  - op: replace
+    path: /spec/template/spec/affinity/podAntiAffinity/preferredDuringSchedulingIgnoredDuringExecution/0/podAffinityTerm/topologyKey
+    value: topology.kubernetes.io/zone
+target:
+  kind: Deployment
+  group: apps
+  version: v1
+  labelSelector: workload.sas.com/class=stateless

@@ -17,7 +17,7 @@ CERT_MANAGER_NAME: cert-manager
 CERT_MANAGER_NAMESPACE: cert-manager
 CERT_MANAGER_CHART_NAME: cert-manager
 CERT_MANAGER_CHART_URL: https://charts.jetstack.io/
-CERT_MANAGER_CHART_VERSION: 1.20.0
+CERT_MANAGER_CHART_VERSION: 1.21.0
 CERT_MANAGER_CONFIG:
   crds:
     enabled: true
@@ -147,7 +147,7 @@ CSI_DRIVER_NFS_NAME: csi-driver-nfs-sas
 CSI_DRIVER_NFS_NAMESPACE: kube-system
 CSI_DRIVER_NFS_CHART_NAME: csi-driver-nfs
 CSI_DRIVER_NFS_CHART_URL: https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts
-CSI_DRIVER_NFS_CHART_VERSION: 4.11.0
+CSI_DRIVER_NFS_CHART_VERSION: 4.13.4
 CSI_DRIVER_NFS_CONFIG:
   driver:
     mountPermissions: "0777"
@@ -160,10 +160,10 @@ CSI_DRIVER_NFS_CONFIG:
     parameters:
       server: "{{ V4_CFG_RWX_FILESTORE_ENDPOINT }}"
       share: "{{ '/ontap' if STORAGE_TYPE_BACKEND == 'ontap' else (V4_CFG_RWX_FILESTORE_PATH if (STORAGE_TYPE_BACKEND == 'netapp' and NETAPP_VOLUME_PATH | length > 0) else ('/pvs' if PROVIDER != 'azure' else (V4_CFG_RWX_FILESTORE_PATH | replace('/$', '') ~ '/pvs'))) }}"
-      subdir: ${pvc.metadata.namespace}-${pvc.metadata.name}-${pv.metadata.name}
+      subDir: ${pvc.metadata.namespace}-${pvc.metadata.name}-${pv.metadata.name}
       mountPermissions: "0777"
     mountOptions:
-      - "{{ 'vers=3' if (PROVIDER == 'gcp' and STORAGE_TYPE_BACKEND == 'netapp') else 'vers=4.1' }}"
+      - vers=4.1
       - noatime
       - nodiratime
       - rsize=262144
@@ -185,7 +185,7 @@ CSI_DRIVER_NFS_PG_NAME: csi-driver-nfs-pg-storage
 CSI_DRIVER_NFS_PG_NAMESPACE: nfs-client
 CSI_DRIVER_NFS_PG_CHART_NAME: csi-driver-nfs
 CSI_DRIVER_NFS_PG_CHART_URL: https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts
-CSI_DRIVER_NFS_PG_CHART_VERSION: 4.11.0
+CSI_DRIVER_NFS_PG_CHART_VERSION: 4.13.4
 CSI_DRIVER_NFS_PG_CONFIG:
   driver:
     mountPermissions: "0777"
@@ -201,6 +201,7 @@ CSI_DRIVER_NFS_PG_CONFIG:
       subDir: ${pvc.metadata.namespace}/${pvc.metadata.name}/${pv.metadata.name}
       mountPermissions: "0777"
     mountOptions:
+      - vers=4.1
       - noatime
       - nodiratime
       - rsize=262144
@@ -233,6 +234,10 @@ CONTOUR_CONFIG:
         cpu: 200m
         memory: 512Mi
   envoy:
+    tolerations:
+      - key: workload.sas.com/class
+        operator: Exists
+        effect: NoSchedule
     service:
       loadBalancerSourceRanges: "{{ LOADBALANCER_SOURCE_RANGES | default(['0.0.0.0/0'], -1) }}"
     resources:
@@ -264,6 +269,49 @@ CONTOUR_AWS_LB_SUBNETS:
       annotations:
         service.beta.kubernetes.io/aws-load-balancer-subnets: "{{ V4_CFG_AWS_LB_SUBNETS }}"
 
+# Add AWS load balancer tags to the configuration for Contour (optional)
+CONTOUR_AWS_LB_TAGS_CONFIG:
+  envoy:
+    service:
+      annotations:
+        service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags: ""
+
+# Multi-zone HA configuration for Contour (contour controller Deployment).
+# Applied when V4_CFG_MULTI_ZONE_ENABLED and V4_CFG_MULTI_ZONE_CONTOUR_ENABLED are both true.
+# Applies topology spread constraints and pod anti-affinity so contour controller
+# pods are distributed across availability zones.
+# replicaCount is set dynamically at deploy time to match detected zone count
+# (minimum 2 replicas).
+# NOTE: Envoy runs as a DaemonSet. The default toleration on workload.sas.com/class
+#       NoSchedule taints allows it to run on all eligible DaC-managed node classes.
+CONTOUR_MULTI_ZONE_CONFIG:
+  contour:
+    topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: topology.kubernetes.io/zone
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: contour
+            app.kubernetes.io/component: contour
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: contour
+            app.kubernetes.io/component: contour
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: contour
+                  app.kubernetes.io/component: contour
+              topologyKey: topology.kubernetes.io/zone
+
 # Update ipFamily for Contour service for IPv6 support (AWS)
 # Production-validated configuration for IPv6-only EKS with dual-stack NLB
 # Key requirements:
@@ -278,6 +326,7 @@ CONTOUR_IPV6_CONFIG:
       - "--stats-address=::"           # Bind stats/admin to IPv6 (fixes probe issues)
       - "--envoy-service-http-address=::"   # Bind HTTP listener to IPv6
       - "--envoy-service-https-address=::"  # Bind HTTPS listener to IPv6
+      - "--use-proxy-protocol"              # Enable PROXY protocol for NLB to preserve real client IPs
   envoy:
     service:
       annotations:
@@ -288,6 +337,7 @@ CONTOUR_IPV6_CONFIG:
         service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "tcp"
         service.beta.kubernetes.io/aws-load-balancer-target-group-attributes: "preserve_client_ip.enabled=false"
         service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+        service.beta.kubernetes.io/aws-load-balancer-proxy-protocol: "*"
 
 # Update ipFamily for Contour service for IPv6 dual-stack support (Azure)
 CONTOUR_AZURE_IPV6_CONFIG:
@@ -302,7 +352,7 @@ CLUSTER_AUTOSCALER_NAME: cluster-autoscaler
 CLUSTER_AUTOSCALER_NAMESPACE: kube-system
 CLUSTER_AUTOSCALER_CHART_NAME: cluster-autoscaler
 CLUSTER_AUTOSCALER_CHART_URL: https://kubernetes.github.io/autoscaler
-CLUSTER_AUTOSCALER_CHART_VERSION: 9.50.1
+CLUSTER_AUTOSCALER_CHART_VERSION: 9.58.0
 CLUSTER_AUTOSCALER_ACCOUNT: null
 CLUSTER_AUTOSCALER_LOCATION: us-east-1
 CLUSTER_AUTOSCALER_CONFIG:
@@ -324,21 +374,25 @@ EBS_CSI_DRIVER_CHART_URL: https://kubernetes-sigs.github.io/aws-ebs-csi-driver
 EBS_CSI_DRIVER_CHART_VERSION: 2.38.1
 EBS_CSI_DRIVER_ACCOUNT: null
 EBS_CSI_DRIVER_LOCATION: us-east-1
-EBS_CSI_RABBITMQ_STORAGE_CLASS_NAME: io2-vol-mq
-EBS_CSI_RABBITMQ_STORAGE_CLASS_VOLUME_TYPE: io2
-EBS_CSI_RABBITMQ_STORAGE_CLASS_IOPSPERGB: 1250
+EBS_CSI_RABBITMQ_STORAGE_CLASS_NAME: gp3-vol-mq
+EBS_CSI_RABBITMQ_STORAGE_CLASS_VOLUME_TYPE: gp3
+EBS_CSI_RABBITMQ_STORAGE_CLASS_IOPS: 3000
 EBS_CSI_RABBITMQ_STORAGE_CLASS_THROUGHPUT: 400
 
-EBS_CSI_CRUNCHY_STORAGE_CLASS_NAME: io2-vol-pg
-EBS_CSI_CRUNCHY_STORAGE_CLASS_VOLUME_TYPE: io2
-EBS_CSI_CRUNCHY_STORAGE_CLASS_IOPSPERGB: 40
+EBS_CSI_CRUNCHY_STORAGE_CLASS_NAME: gp3-vol-pg
+EBS_CSI_CRUNCHY_STORAGE_CLASS_VOLUME_TYPE: gp3
+EBS_CSI_CRUNCHY_STORAGE_CLASS_IOPS: 5000
 EBS_CSI_CRUNCHY_STORAGE_CLASS_THROUGHPUT: 400
 EBS_CSI_CRUNCHY_STORAGE_CLASS_RECLAIM_POLICY: Delete
+
+# Optional tags to be added to dynamically provisioned EBS volumes
+EBS_CSI_DRIVER_TAGS: {}
 
 EBS_CSI_DRIVER_CONFIG:
   controller:
     k8sTagClusterId: "{{ CLUSTER_NAME }}"
     region: "{{ EBS_CSI_DRIVER_LOCATION }}"
+    extraVolumeTags: "{{ EBS_CSI_DRIVER_TAGS }}"
     serviceAccount:
       create: true
       name: ebs-csi-controller-sa
@@ -349,7 +403,7 @@ EBS_CSI_DRIVER_CONFIG:
       parameters:
         type: "{{ EBS_CSI_RABBITMQ_STORAGE_CLASS_VOLUME_TYPE }}"
         fstype: ext4
-        iopsPerGB: "{{ EBS_CSI_RABBITMQ_STORAGE_CLASS_IOPSPERGB | int }}"
+        iops: "{{ EBS_CSI_RABBITMQ_STORAGE_CLASS_IOPS | int }}"
         throughput: "{{ EBS_CSI_RABBITMQ_STORAGE_CLASS_THROUGHPUT | int }}"
       reclaimPolicy: Delete
       volumeBindingMode: WaitForFirstConsumer
@@ -358,11 +412,27 @@ EBS_CSI_DRIVER_CONFIG:
       parameters:
         type: "{{ EBS_CSI_CRUNCHY_STORAGE_CLASS_VOLUME_TYPE }}"
         fstype: ext4
-        iopsPerGB: "{{ EBS_CSI_CRUNCHY_STORAGE_CLASS_IOPSPERGB | int }}"
+        iops: "{{ EBS_CSI_CRUNCHY_STORAGE_CLASS_IOPS | int }}"
         throughput: "{{ EBS_CSI_CRUNCHY_STORAGE_CLASS_THROUGHPUT | int }}"
       reclaimPolicy: "{{ EBS_CSI_CRUNCHY_STORAGE_CLASS_RECLAIM_POLICY }}"
       volumeBindingMode: WaitForFirstConsumer
       allowVolumeExpansion: true
+
+## EBS GP3 default StorageClass
+CREATE_EBS_GP3_DEFAULT_STORAGE_CLASS: true
+EBS_GP3_DEFAULT_STORAGE_CLASS_NAME: gp3
+EBS_GP3_DEFAULT_STORAGE_CLASS:
+  apiVersion: storage.k8s.io/v1
+  kind: StorageClass
+  metadata:
+    annotations:
+      storageclass.kubernetes.io/is-default-class: "true"
+    name: "{{ EBS_GP3_DEFAULT_STORAGE_CLASS_NAME }}"
+  parameters:
+    type: gp3
+  provisioner: ebs.csi.aws.com
+  reclaimPolicy: Delete
+  volumeBindingMode: WaitForFirstConsumer
 
 private_ingress:
   aws:
@@ -438,4 +508,38 @@ AZURE_CRUNCHY_STORAGE_CLASS:
     DiskMBpsReadWrite: "{{ AZURE_CRUNCHY_STORAGE_CLASS_THROUGHPUT | int }}"
   provisioner: disk.csi.azure.com
   reclaimPolicy: "{{ AZURE_CRUNCHY_STORAGE_CLASS_RECLAIM_POLICY }}"
+  volumeBindingMode: WaitForFirstConsumer
+
+## GCP StorageClass config
+CREATE_GCP_RABBITMQ_STORAGE_CLASS: true
+GCP_RABBITMQ_STORAGE_CLASS_NAME: pd-ssd-mq
+GCP_RABBITMQ_STORAGE_CLASS_DISK_TYPE: pd-ssd
+GCP_RABBITMQ_STORAGE_CLASS:
+  allowVolumeExpansion: true
+  apiVersion: storage.k8s.io/v1
+  kind: StorageClass
+  metadata:
+    name: "{{ GCP_RABBITMQ_STORAGE_CLASS_NAME }}"
+  parameters:
+    type: "{{ GCP_RABBITMQ_STORAGE_CLASS_DISK_TYPE }}"
+    csi.storage.k8s.io/fstype: ext4
+  provisioner: pd.csi.storage.gke.io
+  reclaimPolicy: Delete
+  volumeBindingMode: WaitForFirstConsumer
+
+CREATE_GCP_CRUNCHY_STORAGE_CLASS: true
+GCP_CRUNCHY_STORAGE_CLASS_NAME: pd-ssd-pg
+GCP_CRUNCHY_STORAGE_CLASS_DISK_TYPE: pd-ssd
+GCP_CRUNCHY_STORAGE_CLASS_RECLAIM_POLICY: Delete
+GCP_CRUNCHY_STORAGE_CLASS:
+  allowVolumeExpansion: true
+  apiVersion: storage.k8s.io/v1
+  kind: StorageClass
+  metadata:
+    name: "{{ GCP_CRUNCHY_STORAGE_CLASS_NAME }}"
+  parameters:
+    type: "{{ GCP_CRUNCHY_STORAGE_CLASS_DISK_TYPE }}"
+    csi.storage.k8s.io/fstype: ext4
+  provisioner: pd.csi.storage.gke.io
+  reclaimPolicy: "{{ GCP_CRUNCHY_STORAGE_CLASS_RECLAIM_POLICY }}"
   volumeBindingMode: WaitForFirstConsumer

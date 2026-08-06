@@ -27,24 +27,6 @@
     - uninstall
     - update
 
-# Add multi-zone distribution overlay for PostgreSQL StatefulSet
-- name: Multi-Zone - PostgreSQL zone distribution with balanced constraints
-  overlay_facts:
-    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
-    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
-    existing: "{{ vdm_overlays }}"
-    add:
-      - { transformers: postgres-zone-distribution.yaml, vdm: true }
-  when:
-    - V4_CFG_MULTI_ZONE_ENABLED | bool
-    - V4_CFG_MULTI_ZONE_POSTGRES_ENABLED | bool
-    - V4_CFG_POSTGRES_SERVERS.default.internal | bool
-    - PROVIDER in ["AKS", "azure", "EKS", "aws", "GKE", "gcp"]
-  tags:
-    - install
-    - uninstall
-    - update
-
 # Add multi-zone distribution overlay for Consul StatefulSet
 - name: Multi-Zone - Consul zone distribution with balanced constraints
   overlay_facts:
@@ -124,6 +106,24 @@
   when:
     - V4_CFG_MULTI_ZONE_ENABLED | bool
     - V4_CFG_MULTI_ZONE_DATA_AGENT_ENABLED | bool
+    - PROVIDER in ["AKS", "azure", "EKS", "aws", "GKE", "gcp"]
+  tags:
+    - install
+    - uninstall
+    - update
+
+# Add multi-zone distribution overlay for Stateless Services (Deployments)
+- name: Multi-Zone - Stateless services zone distribution with best-effort constraints
+  overlay_facts:
+    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
+    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
+    existing: "{{ vdm_overlays }}"
+    add:
+      - { transformers: stateless-zone-distribution.yaml, vdm: true, priority: 52 }
+  when:
+    - V4_CFG_MULTI_ZONE_ENABLED | bool
+    - V4_CFG_MULTI_ZONE_STATELESS_ENABLED | bool
+    - V4_CFG_HA_ENABLED | bool
     - PROVIDER in ["AKS", "azure", "EKS", "aws", "GKE", "gcp"]
   tags:
     - install

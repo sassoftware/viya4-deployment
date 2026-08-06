@@ -1,9 +1,75 @@
 # Multi-Zone StatefulSet Distribution - Implementation Guide
 
+## Table of Contents
+
+- [Multi-Zone StatefulSet Distribution - Implementation Guide](#multi-zone-statefulset-distribution---implementation-guide)
+  - [Table of Contents](#table-of-contents)
+  - [Overview](#overview)
+  - [Important Limitations](#important-limitations)
+    - [Internal PostgreSQL Not Supported](#internal-postgresql-not-supported)
+  - [Configuration Variables](#configuration-variables)
+    - [Core Settings (roles/vdm/defaults/main.yaml)](#core-settings-rolesvdmdefaultsmainyaml)
+    - [Default Configuration (Multi-Zone Disabled)](#default-configuration-multi-zone-disabled)
+    - [Enable Multi-Zone Distribution in ansible-vars.yaml](#enable-multi-zone-distribution-in-ansible-varsyaml)
+  - [Implementation Details](#implementation-details)
+    - [Topology Spread Constraints (Balanced Approach)](#topology-spread-constraints-balanced-approach)
+    - [Node Affinity (Nodepool Restriction)](#node-affinity-nodepool-restriction)
+    - [Preferred Pod Anti-Affinity](#preferred-pod-anti-affinity)
+  - [Key Benefits](#key-benefits)
+  - [Supported StatefulSets](#supported-statefulsets)
+    - [Implementation Notes](#implementation-notes)
+  - [Stateless Services Zone Distribution](#stateless-services-zone-distribution)
+    - [Configuration](#configuration)
+    - [Implementation Details](#implementation-details-1)
+    - [Benefits](#benefits)
+  - [Usage](#usage)
+    - [Quick Start - Enable Multi-Zone](#quick-start---enable-multi-zone)
+    - [Advanced Configuration](#advanced-configuration)
+    - [Sample Configuration Files](#sample-configuration-files)
+  - [Nodepool Requirements](#nodepool-requirements)
+    - [Comprehensive Validation Report](#comprehensive-validation-report)
+  - [Chaos Testing \& Validation](#chaos-testing--validation)
+    - [Zone Failure Simulation Results](#zone-failure-simulation-results)
+    - [Known Limitation (By Design)](#known-limitation-by-design)
+    - [Alternative Constraint Options](#alternative-constraint-options)
+
 ## Overview
 This implementation provides balanced multi-zone pod distribution for StatefulSets in AKS, EKS, and GKE clusters to prevent quorum loss during zone failures while ensuring reliable scheduling.
 
 **Note**: As of DaC 9.7.0, multi-zone distribution is **disabled by default** to maintain backwards compatibility. Enable it explicitly when your cluster has proper multi-zone setup.
+
+## Important Limitations
+
+### Internal PostgreSQL Not Supported
+**An internal SAS PostgreSQL server is NOT supported for a multi-zone deployment at this time.**
+
+When deploying SAS Viya in a multi-zone configuration:
+- **DO NOT use** `V4_CFG_POSTGRES_SERVERS.default.internal: true`
+- **MUST use** external PostgreSQL service from your cloud provider:
+  - **Azure**: PostgreSQL Flexible Server with `--high-availability ZoneRedundant`
+  - **AWS**: RDS for PostgreSQL with Multi-AZ deployment
+  - **GCP**: Cloud SQL for PostgreSQL with High Availability configuration
+
+**Why this limitation exists:**
+- Complex storage requirements for multi-zone persistent volumes
+- Crunchy PostgreSQL operator limitations in zone-failure scenarios
+- Data consistency and backup/restore complications across zones
+- Not fully validated/tested by SAS for production use
+
+**Configuration Example for Multi-Zone:**
+```yaml
+# Required: Use external PostgreSQL
+V4_CFG_POSTGRES_SERVERS:
+  default:
+    internal: false  # Required for multi-zone
+    fqdn: your-postgres-server.postgres.database.azure.com
+    admin: pgadmin
+    password: your-password
+    ssl_enforcement_enabled: true
+    database: postgres
+```
+
+For zone redundancy configuration of external PostgreSQL, see the [PostgreSQL Documentation](PostgreSQL.md).
 
 ## Configuration Variables
 
@@ -12,12 +78,12 @@ This implementation provides balanced multi-zone pod distribution for StatefulSe
 
 - `V4_CFG_MULTI_ZONE_ENABLED`: Master switch for multi-zone distribution (default: **false**)
 - `V4_CFG_MULTI_ZONE_RABBITMQ_ENABLED`: RabbitMQ distribution control (default: true)
-- `V4_CFG_MULTI_ZONE_POSTGRES_ENABLED`: PostgreSQL distribution control (default: true)
 - `V4_CFG_MULTI_ZONE_CONSUL_ENABLED`: Consul distribution control (default: true)
 - `V4_CFG_MULTI_ZONE_REDIS_ENABLED`: Redis distribution control (default: true)
 - `V4_CFG_MULTI_ZONE_OPENDISTRO_ENABLED`: OpenDistro/OpenSearch distribution control (default: true)
 - `V4_CFG_MULTI_ZONE_WORKLOAD_ORCHESTRATOR_ENABLED`: Workload Orchestrator distribution control (default: true)
 - `V4_CFG_MULTI_ZONE_DATA_AGENT_ENABLED`: Data Agent Server distribution control (default: true)
+- `V4_CFG_MULTI_ZONE_STATELESS_ENABLED`: Stateless services (Deployments) distribution control (default: true)
 - `V4_CFG_STATEFUL_NODEPOOL_RESTRICTION`: Restrict to stateful nodepools (default: **false**)
 - `V4_CFG_STATEFUL_NODEPOOL_LABEL`: Label for stateful nodepool identification (default: "workload.sas.com/class")
 - `V4_CFG_SINGLE_ZONE_FALLBACK`: Apply relaxed constraints for single-zone clusters (default: true)
@@ -38,14 +104,27 @@ V4_CFG_MULTI_ZONE_ENABLED: true
 V4_CFG_STATEFUL_NODEPOOL_RESTRICTION: true
 V4_CFG_STATEFUL_NODEPOOL_LABEL: "workload.sas.com/class"
 
+# Enable HA for stateless services
+V4_CFG_HA_ENABLED: true
+
+# REQUIRED: Use external PostgreSQL for multi-zone deployments
+V4_CFG_POSTGRES_SERVERS:
+  default:
+    internal: false  # Must be false for multi-zone
+    fqdn: your-postgres-server.postgres.database.azure.com
+    admin: pgadmin
+    password: "YourPassword"
+    ssl_enforcement_enabled: true
+    database: postgres
+
 # Optional: Fine-tune individual services (all default to true when multi-zone enabled)
 V4_CFG_MULTI_ZONE_RABBITMQ_ENABLED: true
-V4_CFG_MULTI_ZONE_POSTGRES_ENABLED: true
 V4_CFG_MULTI_ZONE_CONSUL_ENABLED: true
 V4_CFG_MULTI_ZONE_REDIS_ENABLED: true
 V4_CFG_MULTI_ZONE_OPENDISTRO_ENABLED: true
 V4_CFG_MULTI_ZONE_WORKLOAD_ORCHESTRATOR_ENABLED: true
 V4_CFG_MULTI_ZONE_DATA_AGENT_ENABLED: true
+V4_CFG_MULTI_ZONE_STATELESS_ENABLED: true
 V4_CFG_SINGLE_ZONE_FALLBACK: true
 ```
 
@@ -89,15 +168,16 @@ V4_CFG_SINGLE_ZONE_FALLBACK: true
 
 This implementation provides multi-zone distribution for the following StatefulSet workloads:
 
+**Note**: Internal PostgreSQL is NOT supported for multi-zone deployments. You must use external PostgreSQL with your cloud provider's zone-redundant HA service.
+
 | # | StatefulSet Name | Description | Transformer Target |
 |---|------------------|-------------|--------------------|
 | 1 | sas-rabbitmq-server | Message queue service | StatefulSet (direct) |
-| 2 | sas-crunchy-platform-postgres-* | PostgreSQL database | PostgresCluster CR (Crunchy operator) |
-| 3 | sas-consul-server | Service discovery and configuration | StatefulSet (direct) |
-| 4 | sas-redis-server | Caching and session store | StatefulSet (direct) |
-| 5 | sas-opendistro-default | Search and logging (OpenSearch) | OpenDistroCluster CR (operator-managed) |
-| 6 | sas-workload-orchestrator | Job scheduling and orchestration | StatefulSet (direct) |
-| 7 | sas-data-agent-server-colocated | Data agent services | StatefulSet (direct) |
+| 2 | sas-consul-server | Service discovery and configuration | StatefulSet (direct) |
+| 3 | sas-redis-server | Caching and session store | StatefulSet (direct) |
+| 4 | sas-opendistro-default | Search and logging (OpenSearch) | OpenDistroCluster CR (operator-managed) |
+| 5 | sas-workload-orchestrator | Job scheduling and orchestration | StatefulSet (direct) |
+| 6 | sas-data-agent-server-colocated | Data agent services | StatefulSet (direct) |
 
 ### Implementation Notes
 
@@ -118,17 +198,55 @@ When using custom multi-nodeset topology (separate `sas-opendistro-custom-data` 
 - **Trade-off**: This approach provides zone-level fault tolerance for the OpenDistro cluster as a whole, though individual nodeset distribution may be uneven across zones
 - **Acceptable for Production**: The Elasticsearch/OpenSearch cluster remains resilient to zone failures as long as master quorum (2 of 3) and data availability are maintained across the remaining zones
 
-**PostgreSQL (sas-crunchy-platform-postgres)**:
-- Managed by Crunchy PostgreSQL Operator
-- Transformer patches `PostgresCluster` CR
-- Operator creates multiple StatefulSets (e.g., `sas-crunchy-platform-postgres-00-xxxx-0`)
-- Uses `ScheduleAnyway` for both zone and hostname constraints (operator default)
-- Zone awareness provided without strict enforcement
-
 **Direct StatefulSet Transformers**:
 - RabbitMQ, Consul, Redis, Workload Orchestrator, Data Agent
 - Transformers directly patch StatefulSet resources
 - Use strict zone enforcement (`DoNotSchedule`) with soft hostname spreading (`ScheduleAnyway`)
+
+## Stateless Services Zone Distribution
+
+In addition to StatefulSet zone distribution, DaC now supports **multi-zone distribution for stateless services (Deployments)** when combined with HA mode.
+
+### Configuration
+
+To enable zone distribution for stateless services:
+```yaml
+# Enable both HA and multi-zone distribution
+V4_CFG_HA_ENABLED: true
+V4_CFG_MULTI_ZONE_ENABLED: true
+V4_CFG_MULTI_ZONE_STATELESS_ENABLED: true  # Default: true
+```
+
+**Requirements**:
+- `V4_CFG_HA_ENABLED: true` must be set (to ensure multiple replicas exist)
+- `V4_CFG_MULTI_ZONE_ENABLED: true` must be set (master switch)
+
+### Implementation Details
+
+**Topology Spread Constraints for Stateless Services**:
+- **Zone Distribution**: `maxSkew: 1` on `topology.kubernetes.io/zone` with `ScheduleAnyway`
+  - **Best-effort enforcement** - encourages zone distribution without blocking scheduling
+  - More relaxed than StatefulSet constraints to maintain flexibility
+  
+- **Node Distribution**: `maxSkew: 1` on `kubernetes.io/hostname` with `ScheduleAnyway`
+  - **Best-effort spreading** at node level
+  - Kubernetes attempts to spread pods across different nodes when possible
+
+**Pod Anti-Affinity**:
+- Preferred anti-affinity for both zone and node spreading
+- Weight: 100 for zone-level preference
+
+**Key Differences from StatefulSet Distribution**:
+- Uses `ScheduleAnyway` instead of `DoNotSchedule` for more flexibility
+- No nodepool restrictions (stateless services can run on any nodepool)
+- Focuses on best-effort distribution rather than strict enforcement
+- Designed to work with HA replicas (typically 2-3 per service)
+
+### Benefits
+- Enhanced resilience to zone failures for stateless microservices
+- Improved load distribution across availability zones
+- Maintains scheduling flexibility for dynamic scaling
+- Complements StatefulSet zone distribution for complete multi-zone coverage
 
 ## Usage
 
@@ -138,6 +256,10 @@ Multi-zone distribution is **disabled by default** for backwards compatibility. 
 # Enable multi-zone distribution (disabled by default)
 V4_CFG_MULTI_ZONE_ENABLED: true
 V4_CFG_STATEFUL_NODEPOOL_RESTRICTION: true
+
+# Also enable HA for stateless service zone distribution
+V4_CFG_HA_ENABLED: true
+V4_CFG_MULTI_ZONE_STATELESS_ENABLED: true
 ```
 
 ### Advanced Configuration
