@@ -219,7 +219,7 @@
     name: "{{ CONTOUR_NAME }}"           # Name of the Helm release
     namespace: "{{ CONTOUR_NAMESPACE }}" # Namespace for Contour
     kubeconfig: "{{ KUBECONFIG }}"       # Kubeconfig for cluster access
-    wait: false                          # Avoid Helm timeout on slow IPv6 LB teardown
+    wait: true                          # Avoid Helm timeout on slow IPv6 LB teardown
     values: "{{ CONTOUR_CONFIG }}"       # Use the same values as install (for idempotency)
     state: absent                        # Ensure the release is removed
   tags:
@@ -227,49 +227,14 @@
 
 # Remove the Contour namespace from the cluster
 - name: Remove {{ CONTOUR_NAMESPACE }} namespace
-  block:
-    - name: Remove {{ CONTOUR_NAMESPACE }} namespace (graceful)
-      kubernetes.core.k8s:
-        api_version: v1                 # Kubernetes API version
-        kind: Namespace                 # Resource kind
-        name: "{{ CONTOUR_NAMESPACE }}" # Namespace to remove
-        wait: true                      # Wait for deletion
-        wait_timeout: 180               # Fail fast and trigger finalize fallback
-        state: absent                   # Ensure the namespace is deleted
-        kubeconfig: "{{ KUBECONFIG }}"  # Kubeconfig for cluster access
-  rescue:
-    - name: Get {{ CONTOUR_NAMESPACE }} namespace status after timeout
-      kubernetes.core.k8s_info:
-        api_version: v1
-        kind: Namespace
-        name: "{{ CONTOUR_NAMESPACE }}"
-        kubeconfig: "{{ KUBECONFIG }}"
-      register: contour_namespace_info
-
-    - name: Force-finalize {{ CONTOUR_NAMESPACE }} namespace
-      ansible.builtin.shell:
-        cmd: >-
-          echo '{"apiVersion":"v1","kind":"Namespace","metadata":{"name":"{{ CONTOUR_NAMESPACE }}"},"spec":{"finalizers":[]}}' |
-          kubectl --kubeconfig "{{ KUBECONFIG }}" replace --raw "/api/v1/namespaces/{{ CONTOUR_NAMESPACE }}/finalize" -f -
-      register: contour_namespace_finalize_replace
-      changed_when: contour_namespace_finalize_replace.rc == 0
-      failed_when:
-        - contour_namespace_finalize_replace.rc != 0
-        - "'NotFound' not in contour_namespace_finalize_replace.stderr"
-      when:
-        - contour_namespace_info.resources | length > 0
-        - contour_namespace_info.resources[0].status.phase | default('') == 'Terminating'
-
-    - name: Wait for {{ CONTOUR_NAMESPACE }} namespace removal after force-finalize
-      kubernetes.core.k8s:
-        api_version: v1
-        kind: Namespace
-        name: "{{ CONTOUR_NAMESPACE }}"
-        wait: true
-        wait_timeout: 180
-        state: absent
-        kubeconfig: "{{ KUBECONFIG }}"
-      when:
-        - contour_namespace_info.resources | length > 0
+  kubernetes.core.k8s:
+    api_version: v1                 # Kubernetes API version
+    kind: Namespace                 # Resource kind
+    name: "{{ CONTOUR_NAMESPACE }}" # Namespace to remove
+    wait: true                      # Wait for deletion
+    wait_timeout: 600               # Timeout for deletion
+    state: absent                   # Ensure the namespace is deleted
+    kubeconfig: "{{ KUBECONFIG }}"  # Kubeconfig for cluster access
   tags:
     - uninstall
+    
