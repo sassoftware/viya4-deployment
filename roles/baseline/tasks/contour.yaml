@@ -237,4 +237,3 @@
     kubeconfig: "{{ KUBECONFIG }}"  # Kubeconfig for cluster access
   tags:
     - uninstall
-    
