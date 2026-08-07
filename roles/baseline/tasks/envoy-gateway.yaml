@@ -346,17 +346,6 @@
     - install
     - update
 
-# Remove Envoy Gateway when uninstalling and the feature is enabled.
-- name: Remove Envoy GatewayClass
-  kubernetes.core.k8s:
-    state: absent
-    api_version: gateway.networking.k8s.io/v1
-    kind: GatewayClass
-    name: "{{ ENVOY_GATEWAY_GATEWAYCLASS_NAME }}"
-    kubeconfig: "{{ KUBECONFIG }}"
-  tags:
-    - uninstall
-
 - name: Remove baseline bootstrap Gateway
   kubernetes.core.k8s:
     state: absent
@@ -369,6 +358,48 @@
   when:
     - V4_CFG_BASELINE_CREATE_BOOTSTRAP_GATEWAY is defined
     - V4_CFG_BASELINE_CREATE_BOOTSTRAP_GATEWAY | bool
+  tags:
+    - uninstall
+
+- name: Wait for baseline bootstrap Gateway removal
+  kubernetes.core.k8s_info:
+    api_version: gateway.networking.k8s.io/v1
+    kind: Gateway
+    name: "{{ V4_CFG_BASELINE_GATEWAY_NAME }}"
+    namespace: "{{ V4_CFG_BASELINE_GATEWAY_NAMESPACE }}"
+    kubeconfig: "{{ KUBECONFIG }}"
+  register: baseline_gateway_removed
+  until: baseline_gateway_removed.resources | length == 0
+  retries: 30
+  delay: 2
+  ignore_errors: true
+  when:
+    - V4_CFG_BASELINE_CREATE_BOOTSTRAP_GATEWAY is defined
+    - V4_CFG_BASELINE_CREATE_BOOTSTRAP_GATEWAY | bool
+  tags:
+    - uninstall
+
+- name: Remove Envoy GatewayClass
+  kubernetes.core.k8s:
+    state: absent
+    api_version: gateway.networking.k8s.io/v1
+    kind: GatewayClass
+    name: "{{ ENVOY_GATEWAY_GATEWAYCLASS_NAME }}"
+    kubeconfig: "{{ KUBECONFIG }}"
+  tags:
+    - uninstall
+
+- name: Wait for Envoy GatewayClass removal
+  kubernetes.core.k8s_info:
+    api_version: gateway.networking.k8s.io/v1
+    kind: GatewayClass
+    name: "{{ ENVOY_GATEWAY_GATEWAYCLASS_NAME }}"
+    kubeconfig: "{{ KUBECONFIG }}"
+  register: gwclass_removed
+  until: gwclass_removed.resources | length == 0
+  retries: 30
+  delay: 2
+  ignore_errors: true
   tags:
     - uninstall
 
