@@ -13,6 +13,18 @@ patch: |-
       spec:
         type: LoadBalancer
         loadBalancerSourceRanges: {{ LOADBALANCER_SOURCE_RANGES }}
+{% if PROVIDER == "azure" and V4_CFG_ENABLE_IPV6 %}
+        ipFamilies: ["IPv6", "IPv4"]
+        ipFamilyPolicy: "PreferDualStack"
+{% endif %}
+{% if PROVIDER == "aws" %}
+      metadata:
+        annotations:
+          service.beta.kubernetes.io/aws-load-balancer-type: nlb
+{% if V4_CFG_ENABLE_IPV6 %}
+          service.beta.kubernetes.io/aws-load-balancer-ip-address-type: "dualstack"
+{% endif %}
+{% endif %}
 target:
   group: viya.sas.com
   kind: CASDeployment
