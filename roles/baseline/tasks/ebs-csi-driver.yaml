@@ -24,6 +24,18 @@
     - install
     - update
 
+- name: Apply multi-zone HA for ebs-csi-driver Deployments
+  include_tasks:
+    file: multi-zone-helm-ha.yaml
+  vars:
+    baseline_ha_release_name: "{{ EBS_CSI_DRIVER_NAME }}"
+    baseline_ha_namespace: "{{ EBS_CSI_DRIVER_NAMESPACE }}"
+  when:
+    - EBS_CSI_DRIVER_ENABLED
+  tags:
+    - install
+    - update
+
 - name: Remove ebs-csi-driver
   kubernetes.core.helm:
     name: "{{ EBS_CSI_DRIVER_NAME }}"

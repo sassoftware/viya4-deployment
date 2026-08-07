@@ -1,0 +1,120 @@
+# Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+---
+# Apply multi-zone HA settings to all Deployments created by a Helm release.
+# Expected vars:
+# - baseline_ha_release_name
+# - baseline_ha_namespace
+# Optional vars:
+# - baseline_ha_non_blocking (default false)
+# - baseline_ha_apply_scaling (default true)
+# - baseline_ha_apply_placement (default true)
+
+- name: Compute replica count for {{ baseline_ha_release_name }}
+  set_fact:
+    baseline_ha_replica_count: "{{ (V4_CFG_MULTI_ZONE_TOOL_REPLICAS | default({})).get(baseline_ha_release_name, [2, (BASELINE_MULTI_ZONE_ZONE_NAMES | default([]) | length)] | max) | int }}"
+  when:
+    - V4_CFG_MULTI_ZONE_ENABLED | default(false) | bool
+    - BASELINE_IS_MULTI_AZ | default(false) | bool
+  tags:
+    - install
+    - update
+
+- name: Discover Helm-managed Deployments for {{ baseline_ha_release_name }}
+  kubernetes.core.k8s_info:
+    kind: Deployment
+    namespace: "{{ baseline_ha_namespace }}"
+    kubeconfig: "{{ KUBECONFIG }}"
+    label_selectors:
+      - "app.kubernetes.io/instance={{ baseline_ha_release_name }}"
+  register: baseline_ha_deployments
+  when:
+    - V4_CFG_MULTI_ZONE_ENABLED | default(false) | bool
+    - BASELINE_IS_MULTI_AZ | default(false) | bool
+  ignore_errors: "{{ baseline_ha_non_blocking | default(false) | bool }}"
+  tags:
+    - install
+    - update
+
+- name: Scale Deployments for multi-zone HA replicas
+  kubernetes.core.k8s:
+    api_version: apps/v1
+    state: patched
+    merge_type: merge
+    kind: Deployment
+    name: "{{ item.metadata.name }}"
+    namespace: "{{ baseline_ha_namespace }}"
+    kubeconfig: "{{ KUBECONFIG }}"
+    definition: "{{ ('spec:\n  replicas: %s' % (baseline_ha_replica_count | int)) | from_yaml }}"
+  loop: "{{ baseline_ha_deployments.resources | default([]) }}"
+  loop_control:
+    label: "{{ item.metadata.name | default('unknown-deployment') }}"
+  when:
+    - V4_CFG_MULTI_ZONE_ENABLED | default(false) | bool
+    - BASELINE_IS_MULTI_AZ | default(false) | bool
+    - baseline_ha_apply_scaling | default(true) | bool
+    - baseline_ha_deployments is defined
+    - (baseline_ha_deployments.resources | default([]) | length) > 0
+  ignore_errors: "{{ baseline_ha_non_blocking | default(false) | bool }}"
+  tags:
+    - install
+    - update
+
+- name: Patch Deployments for multi-zone HA placement
+  kubernetes.core.k8s:
+    api_version: apps/v1
+    state: patched
+    merge_type: merge
+    kind: Deployment
+    name: "{{ item.metadata.name }}"
+    namespace: "{{ baseline_ha_namespace }}"
+    kubeconfig: "{{ KUBECONFIG }}"
+    definition:
+      spec:
+        template:
+          spec:
+            topologySpreadConstraints:
+              - maxSkew: 1
+                topologyKey: topology.kubernetes.io/zone
+                whenUnsatisfiable: ScheduleAnyway
+                labelSelector:
+                  matchExpressions:
+                    - key: app.kubernetes.io/instance
+                      operator: In
+                      values:
+                        - "{{ baseline_ha_release_name }}"
+              - maxSkew: 1
+                topologyKey: kubernetes.io/hostname
+                whenUnsatisfiable: ScheduleAnyway
+                labelSelector:
+                  matchExpressions:
+                    - key: app.kubernetes.io/instance
+                      operator: In
+                      values:
+                        - "{{ baseline_ha_release_name }}"
+            affinity:
+              podAntiAffinity:
+                preferredDuringSchedulingIgnoredDuringExecution:
+                  - weight: 100
+                    podAffinityTerm:
+                      labelSelector:
+                        matchExpressions:
+                          - key: app.kubernetes.io/instance
+                            operator: In
+                            values:
+                              - "{{ baseline_ha_release_name }}"
+                      topologyKey: topology.kubernetes.io/zone
+  loop: "{{ baseline_ha_deployments.resources | default([]) }}"
+  loop_control:
+    label: "{{ item.metadata.name | default('unknown-deployment') }}"
+  when:
+    - V4_CFG_MULTI_ZONE_ENABLED | default(false) | bool
+    - BASELINE_IS_MULTI_AZ | default(false) | bool
+    - baseline_ha_apply_placement | default(true) | bool
+    - baseline_ha_deployments is defined
+    - (baseline_ha_deployments.resources | default([]) | length) > 0
+  ignore_errors: "{{ baseline_ha_non_blocking | default(false) | bool }}"
+  tags:
+    - install
+    - update

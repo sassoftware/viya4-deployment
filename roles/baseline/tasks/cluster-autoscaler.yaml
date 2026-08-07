@@ -28,6 +28,19 @@
     - install
     - update
 
+# Apply multi-zone HA distribution across cluster-autoscaler Deployments.
+- name: Apply multi-zone HA for cluster-autoscaler Deployments
+  include_tasks:
+    file: multi-zone-helm-ha.yaml
+  vars:
+    baseline_ha_release_name: "{{ CLUSTER_AUTOSCALER_NAME }}"
+    baseline_ha_namespace: "{{ CLUSTER_AUTOSCALER_NAMESPACE }}"
+  when:
+    - CLUSTER_AUTOSCALER_ENABLED
+  tags:
+    - install
+    - update
+
 # Remove the cluster-autoscaler Helm release
 - name: Remove cluster-autoscaler
   kubernetes.core.helm:

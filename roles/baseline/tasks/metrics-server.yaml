@@ -46,6 +46,19 @@
     - ('resources' not in metrics_service) or ((metrics_service.resources | length) == 0)  # Only if not already present
     - METRICS_SERVER_ENABLED
 
+# Apply multi-zone HA distribution across metrics-server Deployments.
+- name: Apply multi-zone HA for metrics-server Deployments
+  include_tasks:
+    file: multi-zone-helm-ha.yaml
+  vars:
+    baseline_ha_release_name: "{{ METRICS_SERVER_NAME }}"
+    baseline_ha_namespace: "kube-system"
+  when:
+    - METRICS_SERVER_ENABLED
+  tags:
+    - install
+    - update
+
 # Remove the metrics-server Helm release if present (uninstall)
 - name: Remove metrics-server
   kubernetes.core.helm:
