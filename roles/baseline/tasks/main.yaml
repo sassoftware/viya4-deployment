@@ -32,7 +32,7 @@
   when:
     - V4_CFG_INSTALL_ENVOY_GATEWAY is defined
     - V4_CFG_INSTALL_ENVOY_GATEWAY | bool
-    - 'uninstall' in ansible_run_tags
+    - "'uninstall' in ansible_run_tags"
   tags:
     - baseline
 
@@ -43,7 +43,7 @@
   when:
     - V4_CFG_INSTALL_GATEWAY_API is defined
     - V4_CFG_INSTALL_GATEWAY_API|bool
-    - 'uninstall' not in ansible_run_tags
+    - "'uninstall' not in ansible_run_tags"
   tags:
     - baseline
 
