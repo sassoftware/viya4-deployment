@@ -57,7 +57,7 @@ This feature was introduced as part of **ADR 0151 (Kubernetes Ingress Support St
 
 **Release alignment note**: Deployment assets for Gateway API and Envoy Gateway are available in recent cadences (including 2026.06), while broader product-level official support milestones may be tracked separately by release governance (for example, 2026.11).
 
-**UDA interoperability note**: Some UDA cluster setups provision both `gw-system` and `envoy-gateway-system`. This repository relies on `envoy-gateway-system` for Envoy Gateway controller and data-plane resources.
+**UDA interoperability note**: Some UDA cluster setups provision both `gw-system` and `envoy-gateway-system`. This repository relies on `envoy-gateway-system` for Envoy Gateway controller and data-plane resources, and the default shared bootstrap Gateway now lives there too.
 
 ## Architecture
 
