@@ -116,21 +116,6 @@
     - uninstall
     - update
 
-# # For Azure Gateway API deployments, force private ingress mode to avoid public NSG exposure.
-# - name: Normalize ingress mode to private for Azure Gateway API resources
-#   set_fact:
-#     V4_CFG_INGRESS_MODE: private
-#   when:
-#     - V4_CFG_GENERATE_GATEWAY_API_RESOURCES is defined
-#     - V4_CFG_GENERATE_GATEWAY_API_RESOURCES | bool
-#     - PROVIDER is defined
-#     - "'azure' in (PROVIDER | lower)"
-#     - V4_CFG_INGRESS_MODE != 'private'
-#   tags:
-#     - install
-#     - uninstall
-#     - update
-
 - name: Gateway API ingress privacy normalization notice
   debug:
     msg: "Gateway API resources are enabled on Azure, so V4_CFG_INGRESS_MODE has been normalized to 'private' for this run."
@@ -150,7 +135,7 @@
     api_version: gateway.networking.k8s.io/v1
     kind: Gateway
     name: "{{ V4_CFG_BASELINE_GATEWAY_NAME | default('k8s-gw') }}"
-    namespace: "{{ V4_CFG_BASELINE_GATEWAY_NAMESPACE | default('gw-system') }}"
+    namespace: "{{ V4_CFG_BASELINE_GATEWAY_NAMESPACE | default('envoy-gateway-system') }}"
     kubeconfig: "{{ KUBECONFIG }}"
   register: shared_parent_gateway_info
   when:
@@ -163,7 +148,7 @@
 - name: Envoy Gateway mode - fail when shared parent Gateway is missing
   fail:
     msg: >-
-      Shared parent Gateway {{ V4_CFG_BASELINE_GATEWAY_NAMESPACE | default('gw-system') }}/{{ V4_CFG_BASELINE_GATEWAY_NAME | default('k8s-gw') }}
+      Shared parent Gateway {{ V4_CFG_BASELINE_GATEWAY_NAMESPACE | default('envoy-gateway-system') }}/{{ V4_CFG_BASELINE_GATEWAY_NAME | default('k8s-gw') }}
       was not found. In envoy-gateway mode, run baseline first (with V4_CFG_INSTALL_GATEWAY_API=true,
       V4_CFG_INSTALL_ENVOY_GATEWAY=true, and V4_CFG_BASELINE_CREATE_BOOTSTRAP_GATEWAY=true)
       so ListenerSet can attach to an existing Gateway.
