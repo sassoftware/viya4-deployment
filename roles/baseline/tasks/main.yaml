@@ -24,6 +24,18 @@
   tags:
     - baseline
 
+# Include Envoy Gateway uninstall tasks before Gateway API CRD removal so
+# cluster-scoped Gateway/GatewayClass instances are gone before CRD teardown.
+- name: Include Envoy Gateway
+  include_tasks:
+    file: envoy-gateway.yaml
+  when:
+    - V4_CFG_INSTALL_ENVOY_GATEWAY is defined
+    - V4_CFG_INSTALL_ENVOY_GATEWAY | bool
+    - 'uninstall' in ansible_run_tags
+  tags:
+    - baseline
+
 # Include Gateway API CRD install tasks when explicitly enabled
 - name: Include Gateway API
   include_tasks:
@@ -31,6 +43,7 @@
   when:
     - V4_CFG_INSTALL_GATEWAY_API is defined
     - V4_CFG_INSTALL_GATEWAY_API|bool
+    - 'uninstall' not in ansible_run_tags
   tags:
     - baseline
 
@@ -41,6 +54,7 @@
   when:
     - V4_CFG_INSTALL_ENVOY_GATEWAY is defined
     - V4_CFG_INSTALL_ENVOY_GATEWAY|bool
+    - 'uninstall' not in ansible_run_tags
   tags:
     - baseline
 
