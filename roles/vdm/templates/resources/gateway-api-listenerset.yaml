@@ -6,8 +6,8 @@ metadata:
   namespace: {{ NAMESPACE }}
 spec:
   parentRef:
-    namespace: {{ V4_CFG_BASELINE_GATEWAY_NAMESPACE }}
-    name: {{ V4_CFG_BASELINE_GATEWAY_NAME }}
+    namespace: {{ V4_CFG_BASELINE_GATEWAY_NAMESPACE | default('envoy-gateway-system') }}
+    name: {{ V4_CFG_BASELINE_GATEWAY_NAME | default('k8s-gw') }}
     kind: Gateway
     group: gateway.networking.k8s.io
   listeners:
