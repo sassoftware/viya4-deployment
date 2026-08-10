@@ -16,7 +16,7 @@ spec:
       hostname: ldap-svc
       imagePullSecrets: []
       containers:
-        - image: "bitnami/openldap:2.6"
+        - image: "public.ecr.aws/bitnami/openldap:2.6"
           imagePullPolicy: IfNotPresent
           name: openldap
           ports:
