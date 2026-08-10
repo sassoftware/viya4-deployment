@@ -13,7 +13,7 @@ patch: |-
       spec:
         type: LoadBalancer
         loadBalancerSourceRanges: {{ LOADBALANCER_SOURCE_RANGES }}
-{% if PROVIDER == "azure" and V4_CFG_ENABLE_IPV6 %}
+{% if V4_CFG_ENABLE_IPV6 %}
         ipFamilies: ["IPv6", "IPv4"]
         ipFamilyPolicy: "PreferDualStack"
 {% endif %}

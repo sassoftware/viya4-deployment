@@ -20,10 +20,10 @@ spec:
     sas.com/deployment: sas-viya
   type: LoadBalancer
   loadBalancerSourceRanges: {{ LOADBALANCER_SOURCE_RANGES }}
-  {% if PROVIDER == "azure" -%}
-  externalTrafficPolicy: Local
-  {% if V4_CFG_ENABLE_IPV6 -%}
+{% if V4_CFG_ENABLE_IPV6 %}
   ipFamilies: ["IPv6", "IPv4"]
   ipFamilyPolicy: "PreferDualStack"
-  {% endif -%}
+{% endif %}
+  {% if PROVIDER == "azure" -%}
+  externalTrafficPolicy: Local
   {% endif %}
