@@ -65,6 +65,9 @@
 # Verify Envoy Gateway pod is running and ready (extended wait for slow startup).
 # On timeout, collect pod and event diagnostics for root-cause visibility.
 - name: Verify Envoy Gateway deployment readiness
+  tags:
+    - install
+    - update
   block:
     - name: Wait for Envoy Gateway deployment to become ready
       kubernetes.core.k8s_info:
@@ -103,9 +106,6 @@
           {{ envoy_gateway_pods.resources | map(attribute='status.containerStatuses') | list }};
           recent events:
           {{ (envoy_gateway_events.resources | sort(attribute='lastTimestamp') | map(attribute='message') | list)[-12:] }}
-  tags:
-    - install
-    - update
 
 # Create the GatewayClass resource pointing to the Envoy Gateway controller.
 # Envoy Gateway does not auto-create a GatewayClass; it must be applied manually.
