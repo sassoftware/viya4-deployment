@@ -12,6 +12,15 @@
   tags:
     - baseline
 
+- name: Normalize envoy-gateway baseline install defaults
+  set_fact:
+    V4_CFG_INSTALL_GATEWAY_API: >-
+      {{ (V4_CFG_INGRESS_TYPE == 'envoy-gateway') if (V4_CFG_INSTALL_GATEWAY_API is none) else V4_CFG_INSTALL_GATEWAY_API }}
+    V4_CFG_INSTALL_ENVOY_GATEWAY: >-
+      {{ (V4_CFG_INGRESS_TYPE == 'envoy-gateway') if (V4_CFG_INSTALL_ENVOY_GATEWAY is none) else V4_CFG_INSTALL_ENVOY_GATEWAY }}
+  tags:
+    - baseline
+
 # Include NFS CSI provisioner tasks if RWX filestore is managed
 - name: Include nfs.csi.k8s.io
   include_tasks:
