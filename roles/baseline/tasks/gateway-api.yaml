@@ -57,7 +57,7 @@
     # Write filtered documents
     with open(output_file, 'w') as f:
         yaml.dump_all(filtered_docs, f, default_flow_style=False)
-    
+
     print(f"Filtered manifest: kept {len(filtered_docs)} resources")
     EOF
   tags:
