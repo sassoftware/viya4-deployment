@@ -28,7 +28,7 @@
   when:
     # Only run if the FQDN is defined
     - V4_CFG_CONNECT_FQDN is not none
-    - (V4_CFG_CONNECT_FQDN | trim) != ""
+    - (V4_CFG_CONNECT_FQDN | trim) | length > 0
   tags:
     - install
     - uninstall
