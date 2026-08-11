@@ -61,7 +61,6 @@
 # including reload), so the forced restart is no longer needed and has been removed to avoid
 # unnecessary pod churn on every playbook run.
 
-
 # Verify Envoy Gateway pod is running and ready (extended wait for slow startup).
 # On timeout, collect pod and event diagnostics for root-cause visibility.
 - name: Verify Envoy Gateway deployment readiness
