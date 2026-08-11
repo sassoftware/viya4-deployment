@@ -34,17 +34,17 @@
   shell: |
     python3 << 'EOF'
     import yaml
-    
+
     input_file = "{{ tmpdir.path }}/gateway-api-install-orig.yaml"
     output_file = "{{ tmpdir.path }}/gateway-api-install.yaml"
-    
+
     # Read entire file first
     with open(input_file, 'r') as f:
         content = f.read()
-    
+
     # Parse all documents
     docs = list(yaml.safe_load_all(content))
-    
+
     # Filter out blocking resources
     filtered_docs = []
     for doc in docs:
@@ -53,7 +53,7 @@
         kind = doc.get('kind', '')
         if kind not in ['ValidatingAdmissionPolicy', 'ValidatingAdmissionPolicyBinding']:
             filtered_docs.append(doc)
-    
+
     # Write filtered documents
     with open(output_file, 'w') as f:
         yaml.dump_all(filtered_docs, f, default_flow_style=False)
