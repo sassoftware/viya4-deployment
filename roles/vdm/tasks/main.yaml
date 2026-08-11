@@ -54,6 +54,15 @@
     - update
     - multi-tenancy
 
+- name: Normalize envoy-gateway VDM defaults
+  set_fact:
+    V4_CFG_GENERATE_GATEWAY_API_RESOURCES: >-
+      {{ (V4_CFG_INGRESS_TYPE == 'envoy-gateway') if (V4_CFG_GENERATE_GATEWAY_API_RESOURCES is none) else V4_CFG_GENERATE_GATEWAY_API_RESOURCES }}
+  tags:
+    - install
+    - uninstall
+    - update
+
 # Validate required Gateway API resource inputs when feature flag is enabled
 - name: Validate Gateway API resource configuration
   fail:
