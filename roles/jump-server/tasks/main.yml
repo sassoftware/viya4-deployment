@@ -54,8 +54,6 @@
     mode: "0777"
   with_items:
     - bin
-    - homes
-    - data
     - astores
   delegate_to: "{{ groups['jump'][0] }}"
   become: true

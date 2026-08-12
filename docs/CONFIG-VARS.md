@@ -96,7 +96,7 @@ Viya4-deployment uses the jump server to interact with the RWX filestore, which 
 
 ### Storage for AWS
 
-When `V4_CFG_MANAGE_STORAGE` is set to `true`, viya4-deployment uses the [EBS CSI driver](#ebs-csi-driver) to create two elastic block storage based storage classes with the default names of `gp3-vol-mq` and `gp3-vol-pg`. The volume type for both storage classes defaults to `gp3`. For EKS clusters, RabbitMQ makes PVC requests to create block storage persistent volumes using the `gp3-vol-mq` storage class while Crunchy Postgres makes PVC requests to create block storage persistent volumes using the `gp3-vol-pg` storage class. Viya4-deployment also creates the `sas` storage class using the csi-driver-nfs Helm chart. If a jump server is used, viya4-deployment uses that server to create the folders for the `astores`, `bin`, `data` and `homes` RWX Filestore NFS paths that are outlined below in the [RWX Filestore](#rwx-filestore) section.
+When `V4_CFG_MANAGE_STORAGE` is set to `true`, viya4-deployment uses the [EBS CSI driver](#ebs-csi-driver) to create two elastic block storage based storage classes with the default names of `gp3-vol-mq` and `gp3-vol-pg`. The volume type for both storage classes defaults to `gp3`. For EKS clusters, RabbitMQ makes PVC requests to create block storage persistent volumes using the `gp3-vol-mq` storage class while Crunchy Postgres makes PVC requests to create block storage persistent volumes using the `gp3-vol-pg` storage class. Viya4-deployment also creates the `sas` storage class using the csi-driver-nfs Helm chart. If a jump server is used, viya4-deployment uses that server to create the folders for the `astores` and `bin` RWX Filestore NFS paths that are outlined below in the [RWX Filestore](#rwx-filestore) section.
 
 ### Storage for Azure
 
@@ -104,19 +104,21 @@ By default, viya4-deployment uses the [Azure managed disks CSI driver](#azure-ma
 
 **NOTE**: The Azure managed disk CSI Driver can only be included at AKS cluster creation time. It is included in all AKS clusters by default, and any AKS clusters created with viya4-iac-azure will have the driver installed. If you did not use the viya4-iac-azure project to create your AKS cluster, ensure that you have enabled the Azure disk CSI driver prior to using this project or disable the creation of the StorageClasses.
 
-viya4-deployment also creates the `sas` storage class using the csi-driver-nfs Helm chart. If a jump server is used, viya4-deployment uses that server to create the folders for the `astores`, `bin`, `data` and `homes` RWX Filestore NFS paths that are outlined below in the [RWX Filestore](#rwx-filestore) section.
+viya4-deployment also creates the `sas` storage class using the csi-driver-nfs Helm chart. If a jump server is used, viya4-deployment uses that server to create the folders for the `astores` and `bin` RWX Filestore NFS paths that are outlined below in the [RWX Filestore](#rwx-filestore) section.
 
 ### Storage for Google Cloud
 
 By default, viya4-deployment uses the [GCP Persistent Disk CSI driver](#gcp-persistent-disk-csi-driver) to create two block storage based storage classes with the default names of `pd-ssd-mq` and `pd-ssd-pg`. The disk type for both storage classes defaults to `pd-ssd`. These StorageClasses provision **zonal** Persistent Disks (not Regional PDs). In multi-zone GKE deployments, zonal PDs are bound to the zone of the consuming pod and are not replicated across zones. If zone-redundant RWO block storage is required, set `V4_CFG_MANAGE_STORAGE` to `false` and pre-create your own StorageClasses with `replication-type: regional-pd`. Refer to the [GCP Regional Persistent Disk documentation](https://cloud.google.com/compute/docs/disks/regional-persistent-disk) for details. For GKE clusters, RabbitMQ makes PVC requests to create block storage persistent volumes using the `pd-ssd-mq` storage class while Crunchy Postgres makes PVC requests to create block storage persistent volumes using the `pd-ssd-pg` storage class. To use a different StorageClass for RabbitMQ, set the `V4_CFG_RABBITMQ_STORAGECLASS` property to the name of the StorageClass to use. To use a different StorageClass for Crunchy Postgres, set the `V4_CFG_CRUNCHY_STORAGECLASS` property to the name of the StorageClass to use.
 
-viya4-deployment also creates the `sas` storage class using the csi-driver-nfs Helm chart. If a jump server is used, viya4-deployment uses that server to create the folders for the `astores`, `bin`, `data` and `homes` RWX Filestore NFS paths that are outlined below in the [RWX Filestore](#rwx-filestore) section.
+viya4-deployment also creates the `sas` storage class using the csi-driver-nfs Helm chart. If a jump server is used, viya4-deployment uses that server to create the folders for the `astores` and `bin` RWX Filestore NFS paths that are outlined below in the [RWX Filestore](#rwx-filestore) section.
 
 ### NFS Storage
 
 When `V4_CFG_MANAGE_STORAGE` is set to `true`, viya4-deployment creates NFS-based storage classes using the csi-driver-nfs Helm chart.
 
-When `V4_CFG_MANAGE_STORAGE` is set to `false`, viya4-deployment does not create the `sas` or `pg-storage` storage classes for you. In addition, viya4-deployment does not create or manage the RWX Filestore NFS paths. Before you run the SAS Viya deployment, you must set the values for `V4_CFG_RWX_FILESTORE_DATA_PATH` and `V4_CFG_RWX_FILESTORE_HOMES_PATH` to specify existing NFS folder locations. The viya4-deployment user can create the required NFS folders from the jump server before starting the deployment. Recommended attribute settings for each folder are as follows:
+When `V4_CFG_MANAGE_STORAGE` is set to `false`, viya4-deployment does not create the `sas` or `pg-storage` storage classes for you. In addition, viya4-deployment does not create or manage the RWX Filestore NFS paths. The viya4-deployment user can create the required NFS folders from the jump server before starting the deployment. Recommended attribute settings for each folder are as follows:
+
+> **⚠️ Breaking Change:** The `V4_CFG_RWX_FILESTORE_DATA_PATH` and `V4_CFG_RWX_FILESTORE_HOMES_PATH` variables and the corresponding NFS mounts for CAS (`/mnt/viya-share/data`) and Compute pods have been removed. These mounts were previously used to provide shared storage between CAS and SAS Studio/Compute sessions. Deployments that have CASlibs, autoexec scripts, or user workflows referencing paths under those NFS locations will lose access to that data after upgrading. Before upgrading, verify whether any customer workflows depend on those paths and migrate data as required. The underlying NFS directories are no longer created by viya4-deployment.
 - **filemode**: `0777`
 - **group**: the equivalent of `nogroup` for your operating system
 - **owner**: `nobody`
@@ -132,8 +134,6 @@ When `V4_CFG_MANAGE_STORAGE` is set to `false`, viya4-deployment does not create
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | V4_CFG_RWX_FILESTORE_ENDPOINT | NFS IP address or host name | string | | false | | baseline, viya |
 | V4_CFG_RWX_FILESTORE_PATH | NFS export path | string | /export | false | If using terraform.tfstate (viya4-iac-gcp), this value will be overridden by the path from the state file (typically /volumes for Filestore).| baseline, viya |
-| V4_CFG_RWX_FILESTORE_DATA_PATH | NFS path to data directory | string | <V4_CFG_RWX_FILESTORE_PATH>/\<NAMESPACE>/data | false | | viya |
-| V4_CFG_RWX_FILESTORE_HOMES_PATH | NFS path to homes directory | string | <V4_CFG_RWX_FILESTORE_PATH>/\<NAMESPACE>/homes | false | | viya |
 
 #### Azure
 
