@@ -3,8 +3,10 @@
 
 # Transformer to set topology spread constraints for stateless services (Deployments)
 # Targets ALL Deployments - no selector (will apply to all including non-SAS)
-# labelSelector omitted - Kubernetes automatically uses each Deployment's pod template labels
-# This ensures each service's replicas are spread independently, not evaluated globally
+# labelSelector: {} (empty) matches all pods; matchLabelKeys narrows scope to each
+# Deployment's own pods via pod-template-hash (auto-injected by Kubernetes on every ReplicaSet).
+# This ensures each service's replicas are spread independently, not evaluated globally.
+# Requires Kubernetes >= 1.27 (matchLabelKeys beta) / >= 1.29 (stable).
 apiVersion: builtin
 kind: PatchTransformer
 metadata:
@@ -16,9 +18,15 @@ patch: |-
       - maxSkew: 1
         topologyKey: topology.kubernetes.io/zone
         whenUnsatisfiable: ScheduleAnyway
+        labelSelector: {}
+        matchLabelKeys:
+          - pod-template-hash
       - maxSkew: 1
         topologyKey: kubernetes.io/hostname
         whenUnsatisfiable: ScheduleAnyway
+        labelSelector: {}
+        matchLabelKeys:
+          - pod-template-hash
 target:
   kind: Deployment
   version: v1
