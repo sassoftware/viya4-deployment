@@ -1,6 +1,7 @@
 # Troubleshooting
 
 - [Troubleshooting](#troubleshooting)
+  - [CAS and Compute Storage Migration Guide](#cas-and-compute-storage-migration-guide)
   - [SAS Viya Orchestration Tool](#sas-viya-orchestration-tool)
   - [SAS Viya Deployment Operator](#sas-viya-deployment-operator)
   - [EKS - Cluster Autoscaler Installation](#eks---cluster-autoscaler-installation)
@@ -12,6 +13,61 @@
   - [Applying a New License for your SAS Viya Platform Deployment](#applying-a-new-license-for-your-sas-viya-platform-deployment)
   - [Tagging the AWS EC2 Load Balancers](#tagging-the-aws-ec2-load-balancers)
   - [Deploying with cadence versions > 2024.06 without creating the external PostgreSQL SharedServices database](#deploying-with-cadence-versions--202406-without-creating-the-external-postgresql-sharedservices-database)
+
+## CAS and Compute Storage Migration Guide
+
+Starting with this release, DaC mounts NFS storage in CAS and Compute pods via PersistentVolumeClaims (PVCs) instead of direct NFS volume mounts. This is a breaking change for existing deployments.
+
+**What changed:**
+
+- Two PVCs (`cas-data` and `cas-homes`) are now created and mounted into CAS and Compute pods instead of direct NFS volumes.
+- The PVCs are provisioned using `V4_CFG_STORAGECLASS` (default: `sas`). The `sas` StorageClass is backed by csi-driver-nfs, which allocates a new subdirectory on the NFS server per PVC rather than reusing the existing `V4_CFG_RWX_FILESTORE_DATA_PATH` and `V4_CFG_RWX_FILESTORE_HOMES_PATH` directories.
+
+**Before you redeploy — back up your data:**
+
+```bash
+# Run from the NFS server or a host with the share mounted
+cp -rp /export/<NAMESPACE>/data  /backup/cas-data-backup-$(date +%Y%m%d)
+cp -rp /export/<NAMESPACE>/homes /backup/cas-homes-backup-$(date +%Y%m%d)
+```
+
+**Steps to redeploy:**
+
+1. Run the DaC viya deployment as normal. The new `cas-data` and `cas-homes` PVCs will be created automatically.
+
+2. Verify the PVCs are `Bound` and CAS pods are `Running`:
+   ```bash
+   kubectl get pvc cas-data cas-homes -n <NAMESPACE>
+   kubectl get pods -n <NAMESPACE> -l app.kubernetes.io/name=sas-cas-server
+   ```
+
+**Restoring existing data after redeployment:**
+
+Find the new NFS path that the `cas-data` PVC is backed by:
+```bash
+PV=$(kubectl get pvc cas-data -n <NAMESPACE> -o jsonpath='{.spec.volumeName}')
+kubectl get pv $PV -o jsonpath='{.spec.csi.volumeAttributes}'
+```
+
+Copy your backed-up data into the new NFS subdirectory on the NFS server:
+```bash
+# Replace <new-subdir> with the subDir value from the step above
+cp -rp /backup/cas-data-backup-<date>/.  <new-subdir>/
+cp -rp /backup/cas-homes-backup-<date>/. <new-subdir-homes>/
+```
+
+**Optional — configuring PVC names and sizes:**
+
+The following variables can be set in your `ansible-vars.yaml` to customise the PVCs created by DaC:
+
+```yaml
+V4_CFG_CAS_DATA_PVC_NAME: cas-data      # default
+V4_CFG_CAS_HOMES_PVC_NAME: cas-homes    # default
+V4_CFG_CAS_DATA_PVC_SIZE: 100Gi         # default
+V4_CFG_CAS_HOMES_PVC_SIZE: 100Gi        # default
+```
+
+---
 
 ## Debug Mode
 Debug mode can be enabled by adding "-vvv" to the end of the docker or ansible commands
