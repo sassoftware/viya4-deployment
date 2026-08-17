@@ -28,6 +28,7 @@
     - [Sample Configuration Files](#sample-configuration-files)
   - [Nodepool Requirements](#nodepool-requirements)
     - [Comprehensive Validation Report](#comprehensive-validation-report)
+  - [GCP: Expected Scheduling Delays During Initial Deployment](#gcp-expected-scheduling-delays-during-initial-deployment)
   - [Chaos Testing \& Validation](#chaos-testing--validation)
     - [Zone Failure Simulation Results](#zone-failure-simulation-results)
     - [Known Limitation (By Design)](#known-limitation-by-design)
@@ -307,6 +308,12 @@ for sts in sas-rabbitmq-server sas-consul-server sas-redis-server sas-workload-o
   fi
 done
 ```
+
+## GCP: Expected Scheduling Delays During Initial Deployment
+
+When deploying on GCP with `V4_CFG_MULTI_ZONE_ENABLED: true`, stateful workloads (Consul, RabbitMQ) may show transient `Pending` scheduling events during initial startup. This is expected behavior caused by the interaction between zonal PD provisioning (`WaitForFirstConsumer`), topology spread constraints, and node taints and is self-resolving within 5–15 minutes.
+
+For a full explanation, example scheduler events, and a triage table to distinguish expected delays from real failures, see the **[RWO Block Storage in Multi-Zone Deployments](https://github.com/sassoftware/viya4-iac-gcp/blob/main/docs/user/Multi-ZoneDeploymentGuide.md#rwo-block-storage-in-multi-zone-deployments)** section of the viya4-iac-gcp Multi-Zone Deployment Guide.
 
 ## Chaos Testing & Validation
 
