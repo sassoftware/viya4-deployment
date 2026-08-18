@@ -114,15 +114,13 @@ viya4-deployment also creates the `sas` storage class using the csi-driver-nfs H
 
 ### NFS Storage
 
-> **⚠ BREAKING CHANGE — CAS and Compute NFS Mounts Replaced by PVCs**
+> **⚠ Notice — CAS and Compute Storage Change**
 >
 > Starting with this release, DaC no longer injects direct NFS volume mounts into CAS and Compute pods. Instead, two PersistentVolumeClaims (`cas-data` and `cas-homes`) are created and mounted into those pods. This change is required for compliance with OpenShift restricted/restricted-v2 Security Context Constraints (SCC).
 >
-> **Impact on existing deployments:** If you are upgrading from a previous version of viya4-deployment, the existing direct NFS mounts in your CAS and Compute pods will be replaced by PVC-backed mounts. Any data currently at the NFS paths (`V4_CFG_RWX_FILESTORE_DATA_PATH` and `V4_CFG_RWX_FILESTORE_HOMES_PATH`) remains on the NFS server but will not be directly accessible to CAS and Compute unless the new PVCs are backed by the same NFS paths.
+> **For fresh deployments:** No action is required. PVCs are created and mounted automatically.
 >
-> **Before upgrading, you must:**
-> 1. Back up all data from your NFS data and homes directories (`V4_CFG_RWX_FILESTORE_DATA_PATH` and `V4_CFG_RWX_FILESTORE_HOMES_PATH`).
-> 2. Follow the [CAS and Compute PVC migration guide](Troubleshooting.md#cas-and-compute-storage-migration-guide) before redeploying.
+> **For users who redeploy an existing SAS Viya instance using DaC** (note: redeployment is outside the officially supported scope of this project): The dynamically provisioned PVCs will be backed by a new NFS subdirectory, not the original `V4_CFG_RWX_FILESTORE_DATA_PATH` / `V4_CFG_RWX_FILESTORE_HOMES_PATH` paths. Back up your data before redeploying. See the [CAS and Compute storage change note](Troubleshooting.md#cas-and-compute-storage-change) for details.
 
 When `V4_CFG_MANAGE_STORAGE` is set to `true`, viya4-deployment creates NFS-based storage classes using the csi-driver-nfs Helm chart.
 
