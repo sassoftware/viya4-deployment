@@ -204,7 +204,7 @@ CONTOUR_CONFIG:
         memory: 256Mi
       limits:
         cpu: 200m
-        memory: 512Mi
+        memory: 1Gi
   envoy:
     tolerations:
       - key: workload.sas.com/class
