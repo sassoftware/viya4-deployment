@@ -125,7 +125,7 @@
     - uninstall
     - update
 
-- name: Gateway API ingress privacy normalization notice
+- name: Gateway API ingress privacy normalization notice (Azure)
   debug:
     msg: "Gateway API resources are enabled on Azure, so V4_CFG_INGRESS_MODE has been normalized to 'private' for this run."
   when:
@@ -133,6 +133,20 @@
     - V4_CFG_GENERATE_GATEWAY_API_RESOURCES | bool
     - PROVIDER is defined
     - "'azure' in (PROVIDER | lower)"
+    - V4_CFG_INGRESS_MODE == 'private'
+  tags:
+    - install
+    - uninstall
+    - update
+
+- name: Gateway API ingress privacy normalization notice (AWS)
+  debug:
+    msg: "Gateway API resources are enabled on AWS, so V4_CFG_INGRESS_MODE has been normalized to 'private' for this run."
+  when:
+    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES is defined
+    - V4_CFG_GENERATE_GATEWAY_API_RESOURCES | bool
+    - PROVIDER is defined
+    - "'aws' in (PROVIDER | lower)"
     - V4_CFG_INGRESS_MODE == 'private'
   tags:
     - install
