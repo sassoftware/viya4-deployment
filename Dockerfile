@@ -19,7 +19,7 @@ RUN curl -sLO https://dl.k8s.io/release/v$kubectl_version/bin/linux/amd64/kubect
 FROM baseline
 ARG helm_version=3.17.1
 ARG aws_cli_version=2.24.16
-ARG gcp_cli_version=513.0.0-0
+ARG gcp_cli_version=582.0.0-0
 
 # Add extra packages including skopeo
 RUN apt-get update && apt-get install --no-install-recommends -y gzip wget git jq ssh sshpass rsync skopeo \
@@ -37,7 +37,8 @@ RUN apt-get update && apt-get install --no-install-recommends -y gzip wget git j
   && echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list \
   && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add - \
   && apt-get update && apt-get install --no-install-recommends -y google-cloud-cli:*=${gcp_cli_version} \
-  && apt-get install --no-install-recommends -y google-cloud-sdk-gke-gcloud-auth-plugin \
+  # the plugin declares Depends: google-cloud-cli (= <same version>), so it must be pinned in lockstep
+  && apt-get install --no-install-recommends -y google-cloud-cli-gke-gcloud-auth-plugin=${gcp_cli_version} \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
