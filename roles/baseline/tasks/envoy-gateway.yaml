@@ -109,11 +109,17 @@
 # Create the GatewayClass resource pointing to the Envoy Gateway controller.
 # Envoy Gateway does not auto-create a GatewayClass; it must be applied manually.
 # loadBalancerSourceRanges is applied on every provider to prevent public exposure.
-# The Azure internal-LB annotation is added only when PROVIDER=azure + V4_CFG_INGRESS_MODE=private.
-- name: Set EnvoyProxy service annotations (Azure internal LB)
+# Provider-specific LB annotations are applied conditionally below.
+- name: Set EnvoyProxy service annotations (default)
   set_fact:
-    _envoy_proxy_svc_annotations:
-      service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+    _envoy_proxy_svc_annotations: {}
+  tags:
+    - install
+    - update
+
+- name: Add Azure internal LB annotation to EnvoyProxy service
+  set_fact:
+    _envoy_proxy_svc_annotations: "{{ _envoy_proxy_svc_annotations | combine({'service.beta.kubernetes.io/azure-load-balancer-internal': 'true'}) }}"
   when:
     - PROVIDER is defined
     - "'azure' in (PROVIDER | lower)"
@@ -122,11 +128,34 @@
     - install
     - update
 
-- name: Set EnvoyProxy service annotations (default)
+- name: Add AWS NLB type annotation to EnvoyProxy service
   set_fact:
-    _envoy_proxy_svc_annotations: {}
+    _envoy_proxy_svc_annotations: "{{ _envoy_proxy_svc_annotations | combine({'service.beta.kubernetes.io/aws-load-balancer-type': 'nlb'}) }}"
   when:
-    - PROVIDER is not defined or "'azure' not in (PROVIDER | lower)" or V4_CFG_INGRESS_MODE != "private"
+    - PROVIDER is defined
+    - "'aws' in (PROVIDER | lower)"
+  tags:
+    - install
+    - update
+
+- name: Add AWS internal LB annotation to EnvoyProxy service
+  set_fact:
+    _envoy_proxy_svc_annotations: "{{ _envoy_proxy_svc_annotations | combine({'service.beta.kubernetes.io/aws-load-balancer-internal': 'true'}) }}"
+  when:
+    - PROVIDER is defined
+    - "'aws' in (PROVIDER | lower)"
+    - V4_CFG_INGRESS_MODE == "private"
+  tags:
+    - install
+    - update
+
+- name: Add AWS LB subnets annotation to EnvoyProxy service
+  set_fact:
+    _envoy_proxy_svc_annotations: "{{ _envoy_proxy_svc_annotations | combine({'service.beta.kubernetes.io/aws-load-balancer-subnets': V4_CFG_AWS_LB_SUBNETS}) }}"
+  when:
+    - PROVIDER is defined
+    - "'aws' in (PROVIDER | lower)"
+    - V4_CFG_AWS_LB_SUBNETS | default('') | length > 0
   tags:
     - install
     - update
