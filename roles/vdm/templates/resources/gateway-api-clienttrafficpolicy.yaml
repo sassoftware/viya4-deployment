@@ -3,20 +3,12 @@ apiVersion: gateway.envoyproxy.io/v1alpha1
 kind: ClientTrafficPolicy
 metadata:
   name: {{ V4_CFG_GATEWAY_API_CLIENT_TRAFFIC_POLICY_NAME | default('enable-proxy-protocol') }}
-{% if V4_CFG_INGRESS_TYPE == 'envoy-gateway' %}
   namespace: {{ V4_CFG_BASELINE_GATEWAY_NAMESPACE | default('envoy-gateway-system') }}
-{% else %}
-  namespace: {{ V4_CFG_VIYA_GATEWAY_NAMESPACE | default(NAMESPACE) }}
-{% endif %}
 spec:
   enableProxyProtocol: true
   targetRefs:
     - group: gateway.networking.k8s.io
       kind: Gateway
-{% if V4_CFG_INGRESS_TYPE == 'envoy-gateway' %}
       name: {{ V4_CFG_BASELINE_GATEWAY_NAME | default('k8s-gw') }}
-{% else %}
-      name: {{ V4_CFG_VIYA_GATEWAY_NAME }}
-{% endif %}
   path:
     escapedSlashesAction: {{ V4_CFG_GATEWAY_API_ESCAPED_SLASHES_ACTION | default('KeepUnchanged') }}
