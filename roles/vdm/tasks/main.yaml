@@ -225,20 +225,6 @@
     - uninstall
     - update
 
-- name: Add Gateway API ClientTrafficPolicy overlay
-  overlay_facts:
-    cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
-    cadence_number: "{{ V4_CFG_CADENCE_VERSION }}"
-    existing: "{{ vdm_overlays }}"
-    add:
-      - { resources: gateway-api-clienttrafficpolicy.yaml, vdm: true }
-  when:
-    - V4_CFG_INGRESS_TYPE == 'envoy-gateway'
-  tags:
-    - install
-    - uninstall
-    - update
-
 - name: Add Envoy Gateway ListenerSet overlays
   overlay_facts:
     cadence_name: "{{ V4_CFG_CADENCE_NAME }}"
