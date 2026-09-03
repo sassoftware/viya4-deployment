@@ -374,6 +374,46 @@
     - install
     - update
 
+- name: Create baseline ClientTrafficPolicy for shared Envoy Gateway
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ KUBECONFIG }}"
+    definition:
+      apiVersion: gateway.envoyproxy.io/v1alpha1
+      kind: ClientTrafficPolicy
+      metadata:
+        name: "{{ V4_CFG_GATEWAY_API_CLIENT_TRAFFIC_POLICY_NAME | default('enable-proxy-protocol') }}"
+        namespace: "{{ V4_CFG_BASELINE_GATEWAY_NAMESPACE }}"
+      spec:
+        enableProxyProtocol: true
+        targetRefs:
+          - group: gateway.networking.k8s.io
+            kind: Gateway
+            name: "{{ V4_CFG_BASELINE_GATEWAY_NAME }}"
+        path:
+          escapedSlashesAction: "{{ V4_CFG_GATEWAY_API_ESCAPED_SLASHES_ACTION | default('KeepUnchanged') }}"
+  when:
+    - V4_CFG_INGRESS_TYPE is defined
+    - V4_CFG_INGRESS_TYPE == 'envoy-gateway'
+  tags:
+    - install
+    - update
+
+- name: Remove baseline ClientTrafficPolicy for shared Envoy Gateway
+  kubernetes.core.k8s:
+    state: absent
+    api_version: gateway.envoyproxy.io/v1alpha1
+    kind: ClientTrafficPolicy
+    name: "{{ V4_CFG_GATEWAY_API_CLIENT_TRAFFIC_POLICY_NAME | default('enable-proxy-protocol') }}"
+    namespace: "{{ V4_CFG_BASELINE_GATEWAY_NAMESPACE }}"
+    kubeconfig: "{{ KUBECONFIG }}"
+  ignore_errors: true
+  when:
+    - V4_CFG_INGRESS_TYPE is defined
+    - V4_CFG_INGRESS_TYPE == 'envoy-gateway'
+  tags:
+    - uninstall
+
 - name: Remove baseline bootstrap Gateway
   kubernetes.core.k8s:
     state: absent
