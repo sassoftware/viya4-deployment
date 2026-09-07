@@ -316,12 +316,6 @@
       when:
         - PROVIDER == "aws"
         - TFSTATE_LOCAL_TAGS is defined
-    - name: tfstate - enable ipv6 # noqa: name[casing]
-      set_fact:
-        V4_CFG_ENABLE_IPV6: "{{ tfstate.enable_ipv6.value }}"
-      when:
-        - tfstate.enable_ipv6 is defined
-        - V4_CFG_ENABLE_IPV6 is not defined
     - name: tfstate - set tfstate to empty string # noqa: name[casing]
       set_fact:
         tfstate: ""

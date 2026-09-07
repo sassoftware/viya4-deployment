@@ -11,6 +11,7 @@ V4_CFG_AWS_LB_SUBNETS: ""
 STORAGE_TYPE_BACKEND: ""
 NETAPP_VOLUME_PATH: ""
 V4_CFG_ENABLE_IPV6: false
+V4_CFG_MULTI_ZONE_TOOL_REPLICAS: {}
 
 ## Cert-manager
 CERT_MANAGER_NAME: cert-manager
@@ -232,7 +233,7 @@ CONTOUR_CONFIG:
         memory: 256Mi
       limits:
         cpu: 200m
-        memory: 512Mi
+        memory: 1Gi
   envoy:
     tolerations:
       - key: workload.sas.com/class
@@ -345,6 +346,49 @@ CONTOUR_AZURE_IPV6_CONFIG:
     service:
       ipFamilies: ["IPv6", "IPv4"]
       ipFamilyPolicy: "PreferDualStack"
+
+# Add AWS load balancer tags to the configuration for Contour (optional)
+CONTOUR_AWS_LB_TAGS_CONFIG:
+  envoy:
+    service:
+      annotations:
+        service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags: ""
+
+# Multi-zone HA configuration for Contour (contour controller Deployment).
+# Applied when V4_CFG_MULTI_ZONE_ENABLED and V4_CFG_MULTI_ZONE_CONTOUR_ENABLED are both true.
+# Applies topology spread constraints and pod anti-affinity so contour controller
+# pods are distributed across availability zones.
+# replicaCount is set dynamically at deploy time to match detected zone count
+# (minimum 2 replicas).
+# NOTE: Envoy runs as a DaemonSet. The default toleration on workload.sas.com/class
+#       NoSchedule taints allows it to run on all eligible DaC-managed node classes.
+CONTOUR_MULTI_ZONE_CONFIG:
+  contour:
+    topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: topology.kubernetes.io/zone
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: contour
+            app.kubernetes.io/component: contour
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: contour
+            app.kubernetes.io/component: contour
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: contour
+                  app.kubernetes.io/component: contour
+              topologyKey: topology.kubernetes.io/zone
 
 ## Cluster Autoscaler
 CLUSTER_AUTOSCALER_ENABLED: true
