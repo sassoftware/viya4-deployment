@@ -132,3 +132,6 @@ V4_CFG_SINGLE_ZONE_FALLBACK: true
 
 ## High Availability (HA) for Stateless Services
 V4_CFG_HA_ENABLED: false
+
+## IPv6 Configuration
+V4_CFG_ENABLE_IPV6: false

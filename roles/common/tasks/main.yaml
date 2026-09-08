@@ -80,6 +80,19 @@
         - tfstate.aks_pod_cidr is defined
         - tfstate.aks_pod_cidr.value|length > 0
         - (tfstate.aks_pod_cidr.value) not in LOADBALANCER_SOURCE_RANGES
+    # Add EKS pod CIDR (VPC IPv6 CIDR) for AWS provider with IPv6 enabled
+    - name: tfstate - Add EKS pod cidr to LOADBALANCER_SOURCE_RANGES # noqa: name[casing]
+      set_fact:
+        LOADBALANCER_SOURCE_RANGES: "{{ LOADBALANCER_SOURCE_RANGES + [tfstate.eks_pod_cidr.value] }}"
+      when:
+        - tfstate.provider is defined
+        - tfstate.provider.value|length > 0
+        - tfstate.provider.value == "aws"
+        - V4_CFG_ENABLE_IPV6 is defined
+        - V4_CFG_ENABLE_IPV6|bool
+        - tfstate.eks_pod_cidr is defined
+        - tfstate.eks_pod_cidr.value|length > 0
+        - (tfstate.eks_pod_cidr.value) not in LOADBALANCER_SOURCE_RANGES
     # Set NFS endpoint and path from tfstate if present
     - name: tfstate - nfs endpoint # noqa: name[casing]
       set_fact:
