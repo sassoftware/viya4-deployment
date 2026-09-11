@@ -382,16 +382,14 @@
       apiVersion: gateway.envoyproxy.io/v1alpha1
       kind: ClientTrafficPolicy
       metadata:
-        name: "{{ V4_CFG_GATEWAY_API_CLIENT_TRAFFIC_POLICY_NAME | default('enable-proxy-protocol') }}"
-        namespace: "{{ V4_CFG_BASELINE_GATEWAY_NAMESPACE }}"
+        name: "{{ V4_CFG_GATEWAY_API_CLIENT_TRAFFIC_POLICY_NAME | default('path-settings') }}"
+        namespace: "{{ V4_CFG_BASELINE_GATEWAY_NAMESPACE | default('envoy-gateway-system') }}"
       spec:
-        enableProxyProtocol: true
+        enableProxyProtocol: false
         targetRefs:
           - group: gateway.networking.k8s.io
             kind: Gateway
-            name: "{{ V4_CFG_BASELINE_GATEWAY_NAME }}"
-        path:
-          escapedSlashesAction: "{{ V4_CFG_GATEWAY_API_ESCAPED_SLASHES_ACTION | default('KeepUnchanged') }}"
+            name: "{{ V4_CFG_BASELINE_GATEWAY_NAME | default('k8s-gw') }}"
   when:
     - V4_CFG_INGRESS_TYPE is defined
     - V4_CFG_INGRESS_TYPE == 'envoy-gateway'
@@ -404,7 +402,7 @@
     state: absent
     api_version: gateway.envoyproxy.io/v1alpha1
     kind: ClientTrafficPolicy
-    name: "{{ V4_CFG_GATEWAY_API_CLIENT_TRAFFIC_POLICY_NAME | default('enable-proxy-protocol') }}"
+    name: "{{ V4_CFG_GATEWAY_API_CLIENT_TRAFFIC_POLICY_NAME | default('path-settings') }}"
     namespace: "{{ V4_CFG_BASELINE_GATEWAY_NAMESPACE }}"
     kubeconfig: "{{ KUBECONFIG }}"
   ignore_errors: true
