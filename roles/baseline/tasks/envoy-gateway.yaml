@@ -1,0 +1,491 @@
+# Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+---
+# This file contains the Envoy Gateway setup tasks for the baseline role.
+# Purpose: Installs and manages Envoy Gateway controller resources.
+
+# Download the Envoy Gateway install manifest to the session temp directory.
+# Tagged with "uninstall" too since "Remove Envoy Gateway" (below) needs this same
+# rendered file to know what to delete.
+- name: Download Envoy Gateway manifest
+  get_url:
+    url: "{{ ENVOY_GATEWAY_MANIFEST_URL }}"
+    dest: "{{ tmpdir.path }}/envoy-gateway-install.yaml"
+    mode: "0640"
+  tags:
+    - install
+    - update
+    - uninstall
+
+# Install or update Envoy Gateway.
+# Note: Don't use wait_condition as the manifest contains multiple resource types (CRDs, Deployments, Services)
+# CRDs don't support wait_condition for Deployment type, causing timeout.
+# Instead, apply the manifest without waiting and verify the Deployment separately.
+- name: Deploy Envoy Gateway
+  kubernetes.core.k8s:
+    state: present
+    src: "{{ tmpdir.path }}/envoy-gateway-install.yaml"
+    kubeconfig: "{{ KUBECONFIG }}"
+    wait: false
+  register: deploy_result
+  tags:
+    - install
+    - update
+
+- name: Debug - Show deployment result
+  debug:
+    msg: "{{ deploy_result }}"
+  tags:
+    - install
+    - update
+
+# Wait for Envoy Gateway Deployment to be created and ready
+- name: Wait for Envoy Gateway Deployment creation
+  kubernetes.core.k8s_info:
+    kind: Deployment
+    name: envoy-gateway
+    namespace: envoy-gateway-system
+    kubeconfig: "{{ KUBECONFIG }}"
+  register: eg_deployment
+  until: eg_deployment.resources | length > 0
+  retries: 30
+  delay: 2
+  tags:
+    - install
+    - update
+
+# NOTE: A forced "restart deployment" step used to live here to make the control plane
+# pick up a manually-managed "envoy-gateway" xDS TLS secret. That manual secret management
+# has been removed (Envoy Gateway's own certgen Job now owns that secret's full lifecycle,
+# including reload), so the forced restart is no longer needed and has been removed to avoid
+# unnecessary pod churn on every playbook run.
+
+# Verify Envoy Gateway pod is running and ready (extended wait for slow startup).
+# On timeout, collect pod and event diagnostics for root-cause visibility.
+- name: Verify Envoy Gateway deployment readiness
+  tags:
+    - install
+    - update
+  block:
+    - name: Wait for Envoy Gateway deployment to become ready
+      kubernetes.core.k8s_info:
+        kind: Deployment
+        name: envoy-gateway
+        namespace: envoy-gateway-system
+        kubeconfig: "{{ KUBECONFIG }}"
+      register: envoy_deployment
+      until: envoy_deployment.resources[0].status.readyReplicas | default(0) > 0
+      retries: 120
+      delay: 5
+  rescue:
+    - name: Gather Envoy Gateway pod status
+      kubernetes.core.k8s_info:
+        kind: Pod
+        namespace: envoy-gateway-system
+        kubeconfig: "{{ KUBECONFIG }}"
+        label_selectors:
+          - "control-plane=envoy-gateway"
+      register: envoy_gateway_pods
+
+    - name: Gather Envoy Gateway events
+      kubernetes.core.k8s_info:
+        api_version: v1
+        kind: Event
+        namespace: envoy-gateway-system
+        kubeconfig: "{{ KUBECONFIG }}"
+      register: envoy_gateway_events
+
+    - name: Fail with detailed Envoy Gateway diagnostics
+      fail:
+        msg: >-
+          Envoy Gateway did not become ready. Pod phases:
+          {{ envoy_gateway_pods.resources | map(attribute='status.phase') | list }};
+          containerStatuses:
+          {{ envoy_gateway_pods.resources | map(attribute='status.containerStatuses') | list }};
+          recent events:
+          {{ (envoy_gateway_events.resources | sort(attribute='lastTimestamp') | map(attribute='message') | list)[-12:] }}
+
+# Create the GatewayClass resource pointing to the Envoy Gateway controller.
+# Envoy Gateway does not auto-create a GatewayClass; it must be applied manually.
+# loadBalancerSourceRanges is applied on every provider to prevent public exposure.
+# Provider-specific LB annotations are applied conditionally below.
+- name: Set EnvoyProxy service annotations (default)
+  set_fact:
+    _envoy_proxy_svc_annotations: {}
+  tags:
+    - install
+    - update
+
+- name: Add Azure internal LB annotation to EnvoyProxy service
+  set_fact:
+    _envoy_proxy_svc_annotations: "{{ _envoy_proxy_svc_annotations | combine({'service.beta.kubernetes.io/azure-load-balancer-internal': 'true'}) }}"
+  when:
+    - PROVIDER is defined
+    - "'azure' in (PROVIDER | lower)"
+    - V4_CFG_INGRESS_MODE == "private"
+  tags:
+    - install
+    - update
+
+- name: Add AWS NLB type annotation to EnvoyProxy service
+  set_fact:
+    _envoy_proxy_svc_annotations: "{{ _envoy_proxy_svc_annotations | combine({'service.beta.kubernetes.io/aws-load-balancer-type': 'nlb'}) }}"
+  when:
+    - PROVIDER is defined
+    - "'aws' in (PROVIDER | lower)"
+  tags:
+    - install
+    - update
+
+- name: Add AWS internal LB annotation to EnvoyProxy service
+  set_fact:
+    _envoy_proxy_svc_annotations: "{{ _envoy_proxy_svc_annotations | combine({'service.beta.kubernetes.io/aws-load-balancer-internal': 'true'}) }}"
+  when:
+    - PROVIDER is defined
+    - "'aws' in (PROVIDER | lower)"
+    - V4_CFG_INGRESS_MODE == "private"
+  tags:
+    - install
+    - update
+
+- name: Add AWS LB subnets annotation to EnvoyProxy service
+  set_fact:
+    _envoy_proxy_svc_annotations: "{{ _envoy_proxy_svc_annotations | combine({'service.beta.kubernetes.io/aws-load-balancer-subnets': V4_CFG_AWS_LB_SUBNETS}) }}"
+  when:
+    - PROVIDER is defined
+    - "'aws' in (PROVIDER | lower)"
+    - V4_CFG_AWS_LB_SUBNETS | default('') | length > 0
+  tags:
+    - install
+    - update
+
+- name: Configure EnvoyProxy
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ KUBECONFIG }}"
+    definition:
+      apiVersion: gateway.envoyproxy.io/v1alpha1
+      kind: EnvoyProxy
+      metadata:
+        name: envoy-gateway-proxy-config
+        namespace: envoy-gateway-system
+      spec:
+        provider:
+          type: Kubernetes
+          kubernetes:
+            envoyService:
+              annotations: "{{ _envoy_proxy_svc_annotations }}"
+              loadBalancerSourceRanges: "{{ LOADBALANCER_SOURCE_RANGES | default(['0.0.0.0/0']) }}"
+  tags:
+    - install
+    - update
+
+- name: Create Envoy GatewayClass
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ KUBECONFIG }}"
+    definition:
+      apiVersion: gateway.networking.k8s.io/v1
+      kind: GatewayClass
+      metadata:
+        name: "{{ ENVOY_GATEWAY_GATEWAYCLASS_NAME }}"
+      spec:
+        controllerName: gateway.envoyproxy.io/gatewayclass-controller
+        parametersRef:
+          group: gateway.envoyproxy.io
+          kind: EnvoyProxy
+          name: envoy-gateway-proxy-config
+          namespace: envoy-gateway-system
+  tags:
+    - install
+    - update
+
+# Wait for GatewayClass to be accepted by the controller.
+- name: Wait for GatewayClass to be accepted
+  kubernetes.core.k8s_info:
+    api_version: gateway.networking.k8s.io/v1
+    kind: GatewayClass
+    name: "{{ ENVOY_GATEWAY_GATEWAYCLASS_NAME }}"
+    kubeconfig: "{{ KUBECONFIG }}"
+  register: gwclass_info
+  until: >
+    gwclass_info.resources | length > 0 and
+    (gwclass_info.resources[0].status.conditions | default([]) |
+     selectattr('type', 'equalto', 'Accepted') |
+     selectattr('status', 'equalto', 'True') | list | length > 0)
+  retries: 30
+  delay: 5
+  tags:
+    - install
+    - update
+
+# Optional baseline bootstrap Gateway for cluster-side Envoy validation/use cases.
+- name: Create baseline bootstrap Gateway (HTTP only)
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ KUBECONFIG }}"
+    definition:
+      apiVersion: gateway.networking.k8s.io/v1
+      kind: Gateway
+      metadata:
+        name: "{{ V4_CFG_BASELINE_GATEWAY_NAME }}"
+        namespace: "{{ V4_CFG_BASELINE_GATEWAY_NAMESPACE }}"
+      spec:
+        gatewayClassName: "{{ ENVOY_GATEWAY_GATEWAYCLASS_NAME }}"
+        allowedListeners:
+          namespaces:
+            from: All
+        listeners:
+          - name: http
+            protocol: HTTP
+            port: 80
+            allowedRoutes:
+              namespaces:
+                from: All
+  when:
+    - V4_CFG_BASELINE_CREATE_BOOTSTRAP_GATEWAY is defined
+    - V4_CFG_BASELINE_CREATE_BOOTSTRAP_GATEWAY | bool
+    - V4_CFG_TLS_MODE == "disabled"
+  tags:
+    - install
+    - update
+
+- name: Create baseline bootstrap Gateway (HTTP and HTTPS)
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ KUBECONFIG }}"
+    definition:
+      apiVersion: gateway.networking.k8s.io/v1
+      kind: Gateway
+      metadata:
+        name: "{{ V4_CFG_BASELINE_GATEWAY_NAME }}"
+        namespace: "{{ V4_CFG_BASELINE_GATEWAY_NAMESPACE }}"
+      spec:
+        gatewayClassName: "{{ ENVOY_GATEWAY_GATEWAYCLASS_NAME }}"
+        allowedListeners:
+          namespaces:
+            from: All
+        listeners:
+          - name: http
+            protocol: HTTP
+            port: 80
+            allowedRoutes:
+              namespaces:
+                from: All
+          - name: https
+            protocol: HTTPS
+            port: 443
+            tls:
+              mode: Terminate
+              certificateRefs:
+                - kind: Secret
+                  name: "{{ V4_CFG_BASELINE_GATEWAY_TLS_SECRET_NAME | default('gateway-secret') }}"
+            allowedRoutes:
+              namespaces:
+                from: All
+  when:
+    - V4_CFG_BASELINE_CREATE_BOOTSTRAP_GATEWAY is defined
+    - V4_CFG_BASELINE_CREATE_BOOTSTRAP_GATEWAY | bool
+    - V4_CFG_TLS_MODE != "disabled"
+    - V4_CFG_BASELINE_GATEWAY_ENABLE_HTTP_LISTENER | default(true) | bool
+    # When envoy-gateway is the ingress type the ListenerSet owns the HTTPS listener;
+    # adding one here would cause duplicate SANs on port 443 and trigger the
+    # "certificate SAN overlaps" / ALPN coalescing warning from Envoy.
+    - V4_CFG_INGRESS_TYPE is not defined or V4_CFG_INGRESS_TYPE != 'envoy-gateway'
+  tags:
+    - install
+    - update
+
+- name: Create baseline bootstrap Gateway (HTTPS only)
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ KUBECONFIG }}"
+    definition:
+      apiVersion: gateway.networking.k8s.io/v1
+      kind: Gateway
+      metadata:
+        name: "{{ V4_CFG_BASELINE_GATEWAY_NAME }}"
+        namespace: "{{ V4_CFG_BASELINE_GATEWAY_NAMESPACE }}"
+      spec:
+        gatewayClassName: "{{ ENVOY_GATEWAY_GATEWAYCLASS_NAME }}"
+        allowedListeners:
+          namespaces:
+            from: All
+        listeners:
+          - name: https
+            protocol: HTTPS
+            port: 443
+            tls:
+              mode: Terminate
+              certificateRefs:
+                - kind: Secret
+                  name: "{{ V4_CFG_BASELINE_GATEWAY_TLS_SECRET_NAME | default('gateway-secret') }}"
+            allowedRoutes:
+              namespaces:
+                from: All
+  when:
+    - V4_CFG_BASELINE_CREATE_BOOTSTRAP_GATEWAY is defined
+    - V4_CFG_BASELINE_CREATE_BOOTSTRAP_GATEWAY | bool
+    - V4_CFG_TLS_MODE != "disabled"
+    - not (V4_CFG_BASELINE_GATEWAY_ENABLE_HTTP_LISTENER | default(true) | bool)
+    # When envoy-gateway is the ingress type the ListenerSet owns the HTTPS listener;
+    # adding one here would cause duplicate SANs on port 443 and trigger the
+    # "certificate SAN overlaps" / ALPN coalescing warning from Envoy.
+    - V4_CFG_INGRESS_TYPE is not defined or V4_CFG_INGRESS_TYPE != 'envoy-gateway'
+  tags:
+    - install
+    - update
+
+# When using envoy-gateway ingress type with TLS enabled, create a bootstrap Gateway that
+# contains only an HTTP listener. The HTTPS (and optional HTTP) listeners for Viya traffic
+# are contributed by the ListenerSet, so they must NOT also be declared on the parent
+# Gateway — doing so would produce two HTTPS certificate entries with the same SAN on
+# port 443, triggering Envoy's "certificate SAN overlaps" / ALPN coalescing warning.
+- name: Create baseline bootstrap Gateway for envoy-gateway with TLS (HTTP-only parent)
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ KUBECONFIG }}"
+    definition:
+      apiVersion: gateway.networking.k8s.io/v1
+      kind: Gateway
+      metadata:
+        name: "{{ V4_CFG_BASELINE_GATEWAY_NAME }}"
+        namespace: "{{ V4_CFG_BASELINE_GATEWAY_NAMESPACE }}"
+      spec:
+        gatewayClassName: "{{ ENVOY_GATEWAY_GATEWAYCLASS_NAME }}"
+        allowedListeners:
+          namespaces:
+            from: All
+        listeners:
+          - name: http
+            protocol: HTTP
+            port: 80
+            allowedRoutes:
+              namespaces:
+                from: All
+  when:
+    - V4_CFG_BASELINE_CREATE_BOOTSTRAP_GATEWAY is defined
+    - V4_CFG_BASELINE_CREATE_BOOTSTRAP_GATEWAY | bool
+    - V4_CFG_TLS_MODE != "disabled"
+    - V4_CFG_INGRESS_TYPE is defined
+    - V4_CFG_INGRESS_TYPE == 'envoy-gateway'
+  tags:
+    - install
+    - update
+
+- name: Create baseline ClientTrafficPolicy for shared Envoy Gateway
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ KUBECONFIG }}"
+    definition:
+      apiVersion: gateway.envoyproxy.io/v1alpha1
+      kind: ClientTrafficPolicy
+      metadata:
+        name: "{{ V4_CFG_GATEWAY_API_CLIENT_TRAFFIC_POLICY_NAME | default('path-settings') }}"
+        namespace: "{{ V4_CFG_BASELINE_GATEWAY_NAMESPACE | default('envoy-gateway-system') }}"
+      spec:
+        enableProxyProtocol: false
+        targetRefs:
+          - group: gateway.networking.k8s.io
+            kind: Gateway
+            name: "{{ V4_CFG_BASELINE_GATEWAY_NAME | default('k8s-gw') }}"
+  when:
+    - V4_CFG_INGRESS_TYPE is defined
+    - V4_CFG_INGRESS_TYPE == 'envoy-gateway'
+  tags:
+    - install
+    - update
+
+- name: Remove baseline ClientTrafficPolicy for shared Envoy Gateway
+  kubernetes.core.k8s:
+    state: absent
+    api_version: gateway.envoyproxy.io/v1alpha1
+    kind: ClientTrafficPolicy
+    name: "{{ V4_CFG_GATEWAY_API_CLIENT_TRAFFIC_POLICY_NAME | default('path-settings') }}"
+    namespace: "{{ V4_CFG_BASELINE_GATEWAY_NAMESPACE }}"
+    kubeconfig: "{{ KUBECONFIG }}"
+  ignore_errors: true
+  when:
+    - V4_CFG_INGRESS_TYPE is defined
+    - V4_CFG_INGRESS_TYPE == 'envoy-gateway'
+  tags:
+    - uninstall
+
+- name: Remove baseline bootstrap Gateway
+  kubernetes.core.k8s:
+    state: absent
+    api_version: gateway.networking.k8s.io/v1
+    kind: Gateway
+    name: "{{ V4_CFG_BASELINE_GATEWAY_NAME }}"
+    namespace: "{{ V4_CFG_BASELINE_GATEWAY_NAMESPACE }}"
+    kubeconfig: "{{ KUBECONFIG }}"
+  ignore_errors: true
+  when:
+    - V4_CFG_BASELINE_CREATE_BOOTSTRAP_GATEWAY is defined
+    - V4_CFG_BASELINE_CREATE_BOOTSTRAP_GATEWAY | bool
+  tags:
+    - uninstall
+
+- name: Wait for baseline bootstrap Gateway removal
+  kubernetes.core.k8s_info:
+    api_version: gateway.networking.k8s.io/v1
+    kind: Gateway
+    name: "{{ V4_CFG_BASELINE_GATEWAY_NAME }}"
+    namespace: "{{ V4_CFG_BASELINE_GATEWAY_NAMESPACE }}"
+    kubeconfig: "{{ KUBECONFIG }}"
+  register: baseline_gateway_removed
+  until: baseline_gateway_removed.resources | length == 0
+  retries: 30
+  delay: 2
+  ignore_errors: true
+  when:
+    - V4_CFG_BASELINE_CREATE_BOOTSTRAP_GATEWAY is defined
+    - V4_CFG_BASELINE_CREATE_BOOTSTRAP_GATEWAY | bool
+  tags:
+    - uninstall
+
+- name: Remove Envoy GatewayClass
+  kubernetes.core.k8s:
+    state: absent
+    api_version: gateway.networking.k8s.io/v1
+    kind: GatewayClass
+    name: "{{ ENVOY_GATEWAY_GATEWAYCLASS_NAME }}"
+    kubeconfig: "{{ KUBECONFIG }}"
+  tags:
+    - uninstall
+
+- name: Wait for Envoy GatewayClass removal
+  kubernetes.core.k8s_info:
+    api_version: gateway.networking.k8s.io/v1
+    kind: GatewayClass
+    name: "{{ ENVOY_GATEWAY_GATEWAYCLASS_NAME }}"
+    kubeconfig: "{{ KUBECONFIG }}"
+  register: gwclass_removed
+  until: gwclass_removed.resources | length == 0
+  retries: 30
+  delay: 2
+  ignore_errors: true
+  tags:
+    - uninstall
+
+- name: Remove EnvoyProxy proxy config
+  kubernetes.core.k8s:
+    state: absent
+    api_version: gateway.envoyproxy.io/v1alpha1
+    kind: EnvoyProxy
+    name: envoy-gateway-proxy-config
+    namespace: envoy-gateway-system
+    kubeconfig: "{{ KUBECONFIG }}"
+  ignore_errors: true
+  tags:
+    - uninstall
+
+- name: Remove Envoy Gateway
+  kubernetes.core.k8s:
+    state: absent
+    src: "{{ tmpdir.path }}/envoy-gateway-install.yaml"
+    kubeconfig: "{{ KUBECONFIG }}"
+    wait: true
+  tags:
+    - uninstall

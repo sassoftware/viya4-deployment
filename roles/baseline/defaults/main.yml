@@ -6,11 +6,31 @@ V4_CFG_TLS_MODE: full-stack # other valid values are front-door, ingress-only, a
 V4_CFG_RWX_FILESTORE_PATH: /export
 V4_CFG_INGRESS_TYPE: contour
 V4_CFG_INGRESS_MODE: public
+V4_CFG_INSTALL_GATEWAY_API: null
+V4_CFG_INSTALL_ENVOY_GATEWAY: null
 V4_CFG_MANAGE_STORAGE: true
 V4_CFG_AWS_LB_SUBNETS: ""
 STORAGE_TYPE_BACKEND: ""
 NETAPP_VOLUME_PATH: ""
 V4_CFG_MULTI_ZONE_TOOL_REPLICAS: {}
+
+## Gateway API
+GATEWAY_API_VERSION: v1.5.0
+GATEWAY_API_NAMESPACE_LABEL_MODE: standard
+GATEWAY_API_MANIFEST_URL: "https://github.com/kubernetes-sigs/gateway-api/releases/download/{{ GATEWAY_API_VERSION }}/{{ GATEWAY_API_NAMESPACE_LABEL_MODE }}-install.yaml"
+
+## Envoy Gateway
+ENVOY_GATEWAY_VERSION: v1.8.0
+ENVOY_GATEWAY_MANIFEST_URL: "https://github.com/envoyproxy/gateway/releases/download/{{ ENVOY_GATEWAY_VERSION }}/install.yaml"
+ENVOY_GATEWAY_GATEWAYCLASS_NAME: envoy
+
+## Optional baseline bootstrap Gateway (cluster-side, OpenStack-style)
+V4_CFG_BASELINE_CREATE_BOOTSTRAP_GATEWAY: true
+V4_CFG_BASELINE_GATEWAY_NAMESPACE: envoy-gateway-system
+V4_CFG_BASELINE_GATEWAY_NAME: k8s-gw
+V4_CFG_BASELINE_GATEWAY_ENABLE_HTTP_LISTENER: true
+V4_CFG_BASELINE_GATEWAY_TLS_SECRET_NAME: gateway-secret
+V4_CFG_GATEWAY_API_CLIENT_TRAFFIC_POLICY_NAME: path-settings
 
 ## Cert-manager
 CERT_MANAGER_NAME: cert-manager
