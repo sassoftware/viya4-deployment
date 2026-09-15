@@ -35,6 +35,7 @@ Supported configuration variables are listed in the table below.  All variables 
     - [Contour](#contour)
     - [EBS CSI Driver](#ebs-csi-driver)
     - [Azure managed disk CSI Driver](#azure-managed-disk-csi-driver)
+    - [GCP Persistent Disk CSI Driver](#gcp-persistent-disk-csi-driver)
     - [Ingress-nginx](#ingress-nginx)
     - [Metrics Server](#metrics-server)
     - [NFS Client](#nfs-client)
@@ -45,7 +46,7 @@ Supported configuration variables are listed in the table below.  All variables 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | DEPLOY | Whether to deploy the SAS Viya platform and SAS Viya Platform Deployment Operator or stop at generating kustomization.yaml and manifests | bool | true | false | This flag can also prevent the uninstall of both the SAS Viya platform and SAS Viya Platform Deployment Operator | viya |
-| LOADBALANCER_SOURCE_RANGES | IP addresses to allow to reach the ingress | [string] | | true | When deploying in a cloud environment, be sure to add the cloud NAT IP address. | baseline, viya |
+| LOADBALANCER_SOURCE_RANGES | IP addresses to allow to reach the ingress | [string] | | true | When deploying in a cloud environment, be sure to add the cloud NAT IP address. Supports both IPv4 (e.g., "10.0.0.0/8") and IPv6 (e.g., "2001:db8::/32") CIDR notation. | baseline, viya |
 | BASE_DIR | Path to store persistent files | string | $HOME | false | | all |
 | KUBECONFIG | Path to kubeconfig file | string | | true | | viya |
 | V4_CFG_SITEDEFAULT | Path to sitedefault file | string | | false | When not set, [sitedefault](../examples/sitedefault.yaml) is used. | viya |
@@ -186,6 +187,7 @@ When V4_CFG_MANAGE_STORAGE is set to `true`, the `sas` and `pg-storage` storage 
 | V4_CFG_INGRESS_TYPE | The ingress controller to deploy | string | "contour" | true | Possible values: "ingress", "contour" | baseline, viya |
 | V4_CFG_INGRESS_FQDN | FQDN to the ingress for SAS Vya installation | string | | true | | viya |
 | V4_CFG_INGRESS_MODE | Whether to create a public or private Loadbalancer endpoint | string | "public" | false | Possible values: "public", "private". Setting this option to "private" adds options to the ingress controller that create a LoadBalancer with private IP address(es) only. | baseline |
+| V4_CFG_ENABLE_IPV6 | Enable IPv6/dual-stack networking for ingress LoadBalancer | bool | false | false | When true on AWS, configures dualstack NLB annotations for both ingress-nginx and Contour. Kubernetes will auto-detect the IP family from the cluster configuration. When true on Azure, configures dual-stack with ipFamilies ["IPv6", "IPv4"] and ipFamilyPolicy "PreferDualStack". Requires cluster with IPv6 enabled at creation time. Not supported on GCP. | baseline |
 
 ## Load Balancer
 
@@ -514,6 +516,22 @@ By default, two block storage StorageClasses are created using the driver, one f
 |AZURE_CRUNCHY_STORAGE_CLASS_DISKIOPS | Disk total IOPS parameter for the `AZURE_CRUNCHY_STORAGE_CLASS_NAME` storage class | string | 5000 | false | Refer to the [Azure documentation](https://learn.microsoft.com/en-us/azure/virtual-machines/disks-types) for IOPS limits considerations | baseline |
 |AZURE_CRUNCHY_STORAGE_CLASS_THROUGHPUT | Maximum volume throughput in MiB/s for the `AZURE_CRUNCHY_STORAGE_CLASS_NAME` storage class | string| 400 | false | Refer to the [Azure documentation](https://learn.microsoft.com/en-us/azure/virtual-machines/disks-types) for throughput limits considerations | baseline |
 |AZURE_CRUNCHY_STORAGE_CLASS_RECLAIM_POLICY | The ReclaimPolicy for the `AZURE_CRUNCHY_STORAGE_CLASS_NAME` storage class | string | Delete | false | Supported values: [`Delete`, `Retain`] **Note**: If set to `Retain`, manual deletion of the Crunchy Persistent Volumes is required after deleting the PostgresCluster. | baseline |
+
+### GCP Persistent Disk CSI Driver
+
+The GCP Persistent Disk CSI Driver is included in all GKE clusters by default, and any GKE clusters created with viya4-iac-gcp will have the driver installed. If you did not use the viya4-iac-gcp project to create your GKE cluster, ensure that you have enabled the Persistent Disk CSI driver prior to using this project or disable the creation of the StorageClasses.
+
+By default, two block storage StorageClasses are created using the driver, one for RabbitMQ and one for Crunchy Postgres. The defaults for these StorageClasses are listed below.
+
+| Name | Description | Type | Default | Required | Notes | Tasks |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
+|CREATE_GCP_RABBITMQ_STORAGE_CLASS| Whether to create a GCP StorageClass for RabbitMQ | bool | true | false | | baseline |
+|GCP_RABBITMQ_STORAGE_CLASS_NAME| The StorageClass name for RabbitMQ | string | pd-ssd-mq | false | | baseline |
+|GCP_RABBITMQ_STORAGE_CLASS_DISK_TYPE| The persistent disk type to use for RabbitMQ persistent volumes | string | pd-ssd | false | Supported values: [`pd-ssd`, `pd-balanced`, `pd-extreme`] | baseline |
+|CREATE_GCP_CRUNCHY_STORAGE_CLASS| Whether to create a GCP StorageClass for Crunchy Postgres | bool | true | false | | baseline |
+|GCP_CRUNCHY_STORAGE_CLASS_NAME| The StorageClass name for Crunchy Postgres | string | pd-ssd-pg | false | | baseline |
+|GCP_CRUNCHY_STORAGE_CLASS_DISK_TYPE| The persistent disk type to use for Crunchy Postgres persistent volumes | string | pd-ssd | false | Supported values: [`pd-ssd`, `pd-balanced`, `pd-extreme`] | baseline |
+|GCP_CRUNCHY_STORAGE_CLASS_RECLAIM_POLICY | The ReclaimPolicy for the `GCP_CRUNCHY_STORAGE_CLASS_NAME` storage class | string | Delete | false | Supported values: [`Delete`, `Retain`] **Note**: If set to `Retain`, manual deletion of the Crunchy Persistent Volumes is required after deleting the PostgresCluster. | baseline |
 
 ### GCP Persistent Disk CSI Driver
 

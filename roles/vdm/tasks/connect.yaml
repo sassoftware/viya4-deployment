@@ -24,10 +24,11 @@
 # Add the SAS/CONNECT FQDN to the SAN DNS list for cert-manager if defined
 - name: Connect - SAS/CONNECT FQDN to the SAN DNS list for cert-manager
   set_fact:
-    V4_CFG_TLS_ADDITIONAL_SAN_DNS: "{{ V4_CFG_TLS_ADDITIONAL_SAN_DNS }} {{ V4_CFG_CONNECT_FQDN }}"
+    V4_CFG_TLS_ADDITIONAL_SAN_DNS: "{{ [V4_CFG_TLS_ADDITIONAL_SAN_DNS | default('') | trim, V4_CFG_CONNECT_FQDN | default('') | trim] | reject('equalto', '') | join(' ') }}"
   when:
     # Only run if the FQDN is defined
     - V4_CFG_CONNECT_FQDN is not none
+    - (V4_CFG_CONNECT_FQDN | trim) | length > 0
   tags:
     - install
     - uninstall

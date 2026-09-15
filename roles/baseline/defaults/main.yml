@@ -10,6 +10,7 @@ V4_CFG_MANAGE_STORAGE: true
 V4_CFG_AWS_LB_SUBNETS: ""
 STORAGE_TYPE_BACKEND: ""
 NETAPP_VOLUME_PATH: ""
+V4_CFG_ENABLE_IPV6: false
 V4_CFG_MULTI_ZONE_TOOL_REPLICAS: {}
 
 ## Cert-manager
@@ -93,6 +94,34 @@ INGRESS_NGINX_AWS_LB_SUBNETS:
     service:
       annotations:
         service.beta.kubernetes.io/aws-load-balancer-subnets: "{{ V4_CFG_AWS_LB_SUBNETS }}"
+
+# Update ipFamily for ingress-nginx service for IPv6 support (AWS)
+# Note: For IPv6 EKS clusters, explicit ipFamilyPolicy may cause deployment issues
+# The dualstack NLB annotations are sufficient for IPv6 support
+# Production-validated configuration for IPv6-only EKS with dual-stack NLB
+# Key requirements:
+#   - preserve_client_ip.enabled=false: Required for IPv4->IPv6 traffic translation
+#   - cross-zone-load-balancing: Ensures response traffic routes correctly
+#   - nlb-ip type: Explicit IP target mode for IPv6 pods
+#   - loadBalancerSourceRanges: Empty by default, users can override with IPv4 CIDRs if needed
+INGRESS_NGINX_IPV6_CONFIG:
+  controller:
+    service:
+      annotations:
+        service.beta.kubernetes.io/aws-load-balancer-type: "nlb-ip"
+        service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
+        service.beta.kubernetes.io/aws-load-balancer-ip-address-type: "dualstack"
+        service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+        service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "tcp"
+        service.beta.kubernetes.io/aws-load-balancer-target-group-attributes: "preserve_client_ip.enabled=false"
+        service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+
+# Update ipFamily for ingress-nginx service for IPv6 dual-stack support (Azure)
+INGRESS_NGINX_AZURE_IPV6_CONFIG:
+  controller:
+    service:
+      ipFamilies: ["IPv6", "IPv4"]
+      ipFamilyPolicy: "PreferDualStack"
 
 # Ingress-nginx - CVE-2021-25742 Mitigation
 INGRESS_NGINX_CVE_2021_25742_PATCH:
@@ -195,7 +224,7 @@ CONTOUR_NAME: contour
 CONTOUR_NAMESPACE: projectcontour
 CONTOUR_CHART_NAME: contour
 CONTOUR_CHART_URL: https://projectcontour.github.io/helm-charts/
-CONTOUR_CHART_VERSION: 0.2.1
+CONTOUR_CHART_VERSION: 0.6.0  # Updated for IPv6 support
 CONTOUR_CONFIG:
   contour:
     resources:
@@ -283,6 +312,40 @@ CONTOUR_MULTI_ZONE_CONFIG:
                   app.kubernetes.io/name: contour
                   app.kubernetes.io/component: contour
               topologyKey: topology.kubernetes.io/zone
+
+# Update ipFamily for Contour service for IPv6 support (AWS)
+# Production-validated configuration for IPv6-only EKS with dual-stack NLB
+# Key requirements:
+#   - Contour extraArgs with :: addresses: Fixes root cause - makes envoy bind to IPv6 from start
+#   - preserve_client_ip.enabled=false: Required for IPv4->IPv6 traffic translation
+#   - cross-zone-load-balancing: Ensures response traffic routes correctly
+#   - nlb-ip type: Explicit IP target mode for IPv6 pods
+#   - loadBalancerSourceRanges: Empty by default, users can override with IPv4 CIDRs if needed
+CONTOUR_IPV6_CONFIG:
+  contour:
+    extraArgs:
+      - "--stats-address=::"           # Bind stats/admin to IPv6 (fixes probe issues)
+      - "--envoy-service-http-address=::"   # Bind HTTP listener to IPv6
+      - "--envoy-service-https-address=::"  # Bind HTTPS listener to IPv6
+      - "--use-proxy-protocol"              # Enable PROXY protocol for NLB to preserve real client IPs
+  envoy:
+    service:
+      annotations:
+        service.beta.kubernetes.io/aws-load-balancer-type: "nlb-ip"
+        service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
+        service.beta.kubernetes.io/aws-load-balancer-ip-address-type: "dualstack"
+        service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+        service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "tcp"
+        service.beta.kubernetes.io/aws-load-balancer-target-group-attributes: "preserve_client_ip.enabled=false"
+        service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+        service.beta.kubernetes.io/aws-load-balancer-proxy-protocol: "*"
+
+# Update ipFamily for Contour service for IPv6 dual-stack support (Azure)
+CONTOUR_AZURE_IPV6_CONFIG:
+  envoy:
+    service:
+      ipFamilies: ["IPv6", "IPv4"]
+      ipFamilyPolicy: "PreferDualStack"
 
 ## Cluster Autoscaler
 CLUSTER_AUTOSCALER_ENABLED: true

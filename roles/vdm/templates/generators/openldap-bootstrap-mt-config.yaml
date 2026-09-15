@@ -10,11 +10,9 @@ kind: ConfigMapGenerator
 metadata:
   name: openldap-bootstrap-config
 literals:
-  - LDAP_TLS="false"
+  - LDAP_ENABLE_TLS="no"
   - LDAP_ADMIN_PASSWORD="Password123"
-  - LDAP_DOMAIN="example.com"
-  - LDAP_REMOVE_CONFIG_AFTER_SETUP="false"
-  - DISABLE_CHOWN="false"
+  - LDAP_ROOT="dc=example,dc=com"
   - |-
     LDAP_USERS_CONF=dn: uid=viya_admin,ou=people,ou=provider,dc=example,dc=com
     changetype: add
