@@ -1,5 +1,7 @@
 ## Baseline Components and Networking Considerations
 
+**Note:** AWS IPv6 is supported starting with the 2026.09 cadence release.
+
 ### 1. **Ingress Controllers**
 
 - **contour** is deployed as the default ingress controller (as of SAS Viya 2026.03). Alternatively, **ingress-nginx** can be configured.
