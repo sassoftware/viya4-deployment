@@ -33,13 +33,6 @@
     - install
     - update
 
-- name: Debug - Show deployment result
-  debug:
-    msg: "{{ deploy_result }}"
-  tags:
-    - install
-    - update
-
 # Wait for Envoy Gateway Deployment to be created and ready
 - name: Wait for Envoy Gateway Deployment creation
   kubernetes.core.k8s_info:
