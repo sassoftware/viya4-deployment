@@ -386,6 +386,8 @@
         namespace: "{{ V4_CFG_BASELINE_GATEWAY_NAMESPACE | default('envoy-gateway-system') }}"
       spec:
         enableProxyProtocol: false
+        path:
+          escapedSlashesAction: KeepUnchanged
         targetRefs:
           - group: gateway.networking.k8s.io
             kind: Gateway
