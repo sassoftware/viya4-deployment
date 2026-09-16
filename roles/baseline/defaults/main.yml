@@ -342,6 +342,11 @@ CONTOUR_IPV6_CONFIG:
 
 # Update ipFamily for Contour service for IPv6 dual-stack support (Azure)
 CONTOUR_AZURE_IPV6_CONFIG:
+  contour:
+    extraArgs:
+      - "--stats-address=::"                # Bind stats/admin to IPv6
+      - "--envoy-service-http-address=::"   # Bind HTTP listener to IPv6
+      - "--envoy-service-https-address=::"  # Bind HTTPS listener to IPv6
   envoy:
     service:
       ipFamilies: ["IPv6", "IPv4"]
