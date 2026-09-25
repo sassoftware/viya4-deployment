@@ -458,7 +458,7 @@ If you used [viya4-iac-aws:5.6.0](https://github.com/sassoftware/viya4-iac-aws/r
 
 Contour is an open source ingress controller that provides dynamic configuration updates. Contour support is available starting with the 2026.02 cadence release.
 
-When `V4_CFG_MULTI_ZONE_ENABLED` is `true` and `V4_CFG_MULTI_ZONE_CONTOUR_ENABLED` is `true` (the default), DaC automatically configures the Contour controller Deployment for multi-zone high availability by setting `replicaCount` to the detected zone count (minimum `2`), adding `topologySpreadConstraints` across `topology.kubernetes.io/zone` and `kubernetes.io/hostname`, and adding preferred pod anti-affinity. The Envoy component runs as a DaemonSet and includes a default toleration for `workload.sas.com/class:NoSchedule`, allowing it to run on DaC-managed node classes across zones.
+When `V4_CFG_MULTI_ZONE_ENABLED` is `true` and `V4_CFG_MULTI_ZONE_CONTOUR_ENABLED` is `true` (the default), DaC automatically configures the Contour controller Deployment for multi-zone high availability by setting `replicaCount` to the detected zone count (minimum `2`), adding `topologySpreadConstraints` across `topology.kubernetes.io/zone` and `kubernetes.io/hostname`, and adding preferred pod anti-affinity. Envoy defaults to a DaemonSet and includes a default toleration for `workload.sas.com/class:NoSchedule`, allowing it to run on DaC-managed node classes across zones. If `V4_CFG_CONTOUR_ENVOY_KIND` is set to `deployment`, Envoy uses the requested replica count instead; the automatic multi-zone sizing in this section still applies only to the Contour controller.
 
 **For detailed information about Contour deployment scenarios, configuration options, and integration with SAS Viya platform, see [Contour Documentation](user/Contour.md).**
 
@@ -469,6 +469,8 @@ When `V4_CFG_MULTI_ZONE_ENABLED` is `true` and `V4_CFG_MULTI_ZONE_CONTOUR_ENABLE
 | CONTOUR_CHART_NAME | Contour Helm chart name | string | contour | false | | baseline |
 | CONTOUR_CHART_URL | Contour Helm chart URL | string | https://projectcontour.github.io/helm-charts/ | false | | baseline |
 | CONTOUR_CHART_VERSION | Contour Helm chart version | string | 0.2.1 | false | | baseline |
+| V4_CFG_CONTOUR_ENVOY_KIND | Envoy workload type for the Contour chart | string | daemonset | false | Supported values: `daemonset`, `deployment`. The default preserves one Envoy pod per eligible node. | baseline |
+| V4_CFG_CONTOUR_ENVOY_REPLICA_COUNT | Number of Envoy replicas when `V4_CFG_CONTOUR_ENVOY_KIND` is `deployment` | int | 2 | false | Ignored when Envoy runs as a DaemonSet. Use `CONTOUR_CONFIG` for advanced placement controls such as `nodeSelector`, `tolerations`, or `affinity`. | baseline |
 | CONTOUR_CONFIG | Contour Helm values | string | See [this file](../roles/baseline/defaults/main.yml) for more information. Altering this value will affect the cluster. | false | | baseline |
 
 ### EBS CSI Driver
