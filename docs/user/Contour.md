@@ -13,6 +13,7 @@ When `V4_CFG_INGRESS_TYPE: contour` is set in your ansible-vars.yaml file, viya4
 - Applies provider-specific settings (AWS NLB, Azure health probes, etc.)
 - Configures multi-zone high availability when `V4_CFG_MULTI_ZONE_ENABLED: true`
 - Adds Envoy tolerations for nodes with `workload.sas.com/class` taints
+- Keeps Envoy as a DaemonSet by default, with an opt-in Deployment mode for capped replica counts
 
 ### SAS Viya Platform Integration
 
@@ -41,6 +42,17 @@ V4_CFG_MULTI_ZONE_CONTOUR_ENABLED: true      # Defaults to true when multi-zone 
 ```
 
 This automatically detects availability zones and configures Contour controller replicas, topology spread constraints, and pod anti-affinity.
+
+### Envoy Workload Mode
+
+By default, Envoy runs as a DaemonSet, which creates one Envoy pod on each eligible node. To cap the number of Envoy pods, switch Envoy to Deployment mode:
+
+```yaml
+V4_CFG_CONTOUR_ENVOY_KIND: deployment
+V4_CFG_CONTOUR_ENVOY_REPLICA_COUNT: 2
+```
+
+When `V4_CFG_CONTOUR_ENVOY_KIND: deployment` is set, viya4-deployment passes `envoy.kind=deployment` and `envoy.replicaCount` to the Contour Helm chart. Multi-zone automation still modifies only the Contour controller Deployment. If you need Envoy pods to avoid CAS or other node classes, set `envoy.nodeSelector`, `envoy.tolerations`, or `envoy.affinity` through `CONTOUR_CONFIG`.
 
 ## Additional Resources
 

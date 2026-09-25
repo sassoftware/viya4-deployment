@@ -225,6 +225,8 @@ CONTOUR_NAMESPACE: projectcontour
 CONTOUR_CHART_NAME: contour
 CONTOUR_CHART_URL: https://projectcontour.github.io/helm-charts/
 CONTOUR_CHART_VERSION: 0.6.0  # Updated for IPv6 support
+V4_CFG_CONTOUR_ENVOY_KIND: daemonset
+V4_CFG_CONTOUR_ENVOY_REPLICA_COUNT: 2
 CONTOUR_CONFIG:
   contour:
     resources:
@@ -283,8 +285,9 @@ CONTOUR_AWS_LB_TAGS_CONFIG:
 # pods are distributed across availability zones.
 # replicaCount is set dynamically at deploy time to match detected zone count
 # (minimum 2 replicas).
-# NOTE: Envoy runs as a DaemonSet. The default toleration on workload.sas.com/class
-#       NoSchedule taints allows it to run on all eligible DaC-managed node classes.
+# NOTE: Envoy defaults to a DaemonSet. If V4_CFG_CONTOUR_ENVOY_KIND is set to
+#       deployment, this overlay still only modifies the Contour controller.
+#       Envoy node placement continues to be controlled by CONTOUR_CONFIG.
 CONTOUR_MULTI_ZONE_CONFIG:
   contour:
     topologySpreadConstraints:

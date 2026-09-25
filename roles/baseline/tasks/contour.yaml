@@ -141,6 +141,25 @@
     - install
     - update
 
+# Update CONTOUR_CONFIG to control the Envoy workload shape.
+# By default Envoy remains a DaemonSet. When deployment mode is selected,
+# replicaCount limits the number of Envoy pods instead of creating one per node.
+- name: Update CONTOUR_CONFIG for Envoy workload mode
+  set_fact:
+    CONTOUR_CONFIG: >-
+      {{
+        CONTOUR_CONFIG
+        | combine({'envoy': {'kind': V4_CFG_CONTOUR_ENVOY_KIND}}, recursive=True)
+        | combine(
+            (V4_CFG_CONTOUR_ENVOY_KIND == 'deployment')
+            | ternary({'envoy': {'replicaCount': V4_CFG_CONTOUR_ENVOY_REPLICA_COUNT}}, {}),
+            recursive=True
+          )
+      }}
+  tags:
+    - install
+    - update
+
 # Deploy the Contour ingress controller using Helm
 - name: Deploy contour
   kubernetes.core.helm:
