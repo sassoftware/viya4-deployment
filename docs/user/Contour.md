@@ -1,3 +1,4 @@
+If you need Envoy pods to avoid CAS or other node classes, set `V4_CFG_CONTOUR_ENVOY_AVOID_CAS_NODES: true` or use `envoy.nodeSelector`, `envoy.tolerations`, or `envoy.affinity` through `CONTOUR_CONFIG`.
 # Contour Ingress Controller
 
 Contour is an open-source ingress controller that uses Envoy proxy as its data plane. It is the default ingress controller for SAS Viya platform deployments starting with the 2026.03 cadence release. For more information, see the [official Contour documentation](https://projectcontour.io/).
@@ -52,20 +53,18 @@ V4_CFG_CONTOUR_ENVOY_KIND: deployment
 V4_CFG_CONTOUR_ENVOY_REPLICA_COUNT: 2
 ```
 
-When `V4_CFG_CONTOUR_ENVOY_KIND: deployment` is set, viya4-deployment passes `envoy.kind=deployment` and `envoy.replicaCount` to the Contour Helm chart. Multi-zone automation still modifies only the Contour controller Deployment. If you need Envoy pods to avoid CAS or other node classes, set `envoy.nodeSelector`, `envoy.tolerations`, or `envoy.affinity` through `CONTOUR_CONFIG`.
+When `V4_CFG_CONTOUR_ENVOY_KIND: deployment` is set, viya4-deployment passes `envoy.kind=deployment` and `envoy.replicaCount` to the Contour Helm chart. Multi-zone automation still modifies only the Contour controller Deployment. If you need Envoy pods to avoid CAS nodes, set `V4_CFG_CONTOUR_ENVOY_AVOID_CAS_NODES: true`.
 
 ### Keeping Envoy Off CAS Nodes
 
-To restrict Envoy to specific node classes, set `V4_CFG_CONTOUR_ENVOY_ALLOWED_NODE_CLASSES`. The value is matched against the label key defined by `V4_CFG_STATEFUL_NODEPOOL_LABEL`, which defaults to `workload.sas.com/class`.
+To keep Envoy off CAS nodes, set `V4_CFG_CONTOUR_ENVOY_AVOID_CAS_NODES: true`. The node class label key is taken from `V4_CFG_STATEFUL_NODEPOOL_LABEL`, which defaults to `workload.sas.com/class`.
 
 ```yaml
 V4_CFG_STATEFUL_NODEPOOL_LABEL: "workload.sas.com/class"
-V4_CFG_CONTOUR_ENVOY_ALLOWED_NODE_CLASSES:
-  - stateless
-  - compute
+V4_CFG_CONTOUR_ENVOY_AVOID_CAS_NODES: true
 ```
 
-With that configuration, Envoy will schedule only on nodes labeled `stateless` or `compute`, and it will not schedule on `cas` nodes. Use `['stateless']` if you want Envoy only on dedicated stateless ingress nodes.
+With that configuration, Envoy will not schedule on nodes labeled `cas`.
 
 ## Additional Resources
 

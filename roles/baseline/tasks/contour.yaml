@@ -160,10 +160,9 @@
     - install
     - update
 
-# Restrict Envoy to user-selected node classes when provided.
-# This can be used to keep Envoy off CAS nodes by allowing only stateless or
-# compute node classes via V4_CFG_CONTOUR_ENVOY_ALLOWED_NODE_CLASSES.
-- name: Update CONTOUR_CONFIG for Envoy allowed node classes
+# Restrict Envoy away from CAS nodes when requested.
+# This keeps Envoy off nodes labeled with workload.sas.com/class=cas.
+- name: Update CONTOUR_CONFIG to avoid CAS nodes for Envoy
   set_fact:
     CONTOUR_CONFIG: >-
       {{
@@ -179,8 +178,8 @@
                           'matchExpressions': [
                             {
                               'key': V4_CFG_STATEFUL_NODEPOOL_LABEL,
-                              'operator': 'In',
-                              'values': V4_CFG_CONTOUR_ENVOY_ALLOWED_NODE_CLASSES
+                              'operator': 'NotIn',
+                              'values': ['cas']
                             }
                           ]
                         }
@@ -194,7 +193,7 @@
           )
       }}
   when:
-    - V4_CFG_CONTOUR_ENVOY_ALLOWED_NODE_CLASSES | length > 0
+    - V4_CFG_CONTOUR_ENVOY_AVOID_CAS_NODES | bool
   tags:
     - install
     - update
