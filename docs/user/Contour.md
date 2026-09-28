@@ -57,10 +57,9 @@ When `V4_CFG_CONTOUR_ENVOY_KIND: deployment` is set, viya4-deployment passes `en
 
 ### Keeping Envoy Off CAS Nodes
 
-To keep Envoy off CAS nodes, set `V4_CFG_CONTOUR_ENVOY_AVOID_CAS_NODES: true`. The node class label key is taken from `V4_CFG_STATEFUL_NODEPOOL_LABEL`, which defaults to `workload.sas.com/class`.
+To keep Envoy off CAS nodes, set `V4_CFG_CONTOUR_ENVOY_AVOID_CAS_NODES: true`.
 
 ```yaml
-V4_CFG_STATEFUL_NODEPOOL_LABEL: "workload.sas.com/class"
 V4_CFG_CONTOUR_ENVOY_AVOID_CAS_NODES: true
 ```
 

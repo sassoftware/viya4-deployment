@@ -472,7 +472,7 @@ When `V4_CFG_MULTI_ZONE_ENABLED` is `true` and `V4_CFG_MULTI_ZONE_CONTOUR_ENABLE
 | CONTOUR_CHART_VERSION | Contour Helm chart version | string | 0.2.1 | false | | baseline |
 | V4_CFG_CONTOUR_ENVOY_KIND | Envoy workload type for the Contour chart | string | daemonset | false | Supported values: `daemonset`, `deployment`. The default preserves one Envoy pod per eligible node. | baseline |
 | V4_CFG_CONTOUR_ENVOY_REPLICA_COUNT | Number of Envoy replicas when `V4_CFG_CONTOUR_ENVOY_KIND` is `deployment` | int | 2 | false | Ignored when Envoy runs as a DaemonSet. Use `CONTOUR_CONFIG` for advanced placement controls such as `nodeSelector`, `tolerations`, or `affinity`. | baseline |
-| V4_CFG_CONTOUR_ENVOY_AVOID_CAS_NODES | Keep Envoy off CAS nodes | bool | false | false | When `true`, Envoy is restricted to nodes whose `V4_CFG_STATEFUL_NODEPOOL_LABEL` value is not `cas`. | baseline |
+| V4_CFG_CONTOUR_ENVOY_AVOID_CAS_NODES | Keep Envoy off CAS nodes | bool | false | false | When `true`, Envoy is restricted away from nodes labeled `workload.sas.com/class=cas`. | baseline |
 | CONTOUR_CONFIG | Contour Helm values | string | See [this file](../roles/baseline/defaults/main.yml) for more information. Altering this value will affect the cluster. | false | | baseline |
 
 ### EBS CSI Driver

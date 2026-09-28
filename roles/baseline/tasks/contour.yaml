@@ -177,7 +177,7 @@
                         {
                           'matchExpressions': [
                             {
-                              'key': V4_CFG_STATEFUL_NODEPOOL_LABEL,
+                              'key': 'workload.sas.com/class',
                               'operator': 'NotIn',
                               'values': ['cas']
                             }
