@@ -115,6 +115,8 @@ INGRESS_NGINX_IPV6_CONFIG:
         service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "tcp"
         service.beta.kubernetes.io/aws-load-balancer-target-group-attributes: "preserve_client_ip.enabled=false"
         service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+      ipFamilyPolicy: "SingleStack"
+      ipFamilies: ["IPv6"]
 
 # Update ipFamily for ingress-nginx service for IPv6 dual-stack support (Azure)
 INGRESS_NGINX_AZURE_IPV6_CONFIG:
