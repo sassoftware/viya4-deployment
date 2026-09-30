@@ -1,4 +1,3 @@
-If you need Envoy pods to avoid CAS or other node classes, set `V4_CFG_CONTOUR_ENVOY_AVOID_CAS_NODES: true` or use `envoy.nodeSelector`, `envoy.tolerations`, or `envoy.affinity` through `CONTOUR_CONFIG`.
 # Contour Ingress Controller
 
 Contour is an open-source ingress controller that uses Envoy proxy as its data plane. It is the default ingress controller for SAS Viya platform deployments starting with the 2026.03 cadence release. For more information, see the [official Contour documentation](https://projectcontour.io/).
@@ -53,7 +52,7 @@ V4_CFG_CONTOUR_ENVOY_KIND: deployment
 V4_CFG_CONTOUR_ENVOY_REPLICA_COUNT: 2
 ```
 
-When `V4_CFG_CONTOUR_ENVOY_KIND: deployment` is set, viya4-deployment passes `envoy.kind=deployment` and `envoy.replicaCount` to the Contour Helm chart. Multi-zone automation still modifies only the Contour controller Deployment. If you need Envoy pods to avoid CAS nodes, set `V4_CFG_CONTOUR_ENVOY_AVOID_CAS_NODES: true`.
+When `V4_CFG_CONTOUR_ENVOY_KIND: deployment` is set, viya4-deployment passes `envoy.kind=deployment` and `envoy.replicaCount` to the Contour Helm chart. Multi-zone automation still modifies only the Contour controller Deployment.
 
 ### Keeping Envoy Off CAS Nodes
 
