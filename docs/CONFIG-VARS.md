@@ -201,7 +201,7 @@ The SAS Viya platform supports two certificate generators: cert-manager and open
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_TLS_GENERATOR | Which SAS-provided tool to use for certificate generation | string | openssl | false | Supported values: [`cert-manager`,`openssl`]. If set to `cert-manager`, `cert-manager` will be installed during baselining. | baseline, viya |
+| V4_CFG_TLS_GENERATOR | Which SAS-provided tool to use for certificate generation | string | openssl | false | Supported values: [`cert-manager`,`openssl`]. If set to `cert-manager`, `cert-manager` will be installed during baselining. **On AWS, setting this to `cert-manager` is only supported for IPv4 clusters.** IPv6/dual-stack AWS clusters (`V4_CFG_ENABLE_IPV6: true`) already have cert-manager installed into the `kube-system` namespace by the IaC/Terraform provisioning process; installing a second cert-manager Helm release will fail with a Helm ownership conflict. For IPv6 AWS clusters, use `V4_CFG_TLS_GENERATOR: openssl` instead. | baseline, viya |
 | V4_CFG_TLS_MODE | Which TLS mode to configure | string | front-door | false | Supported values: [`full-stack`,`front-door`,`disabled.`] When deploying full-stack you must set V4_CFG_TLS_TRUSTED_CA_CERTS to trust external postgres server ca. | all |
 | V4_CFG_TLS_CERT | Path to ingress certificate file | string | | false | If specified, used instead of cert-manager issued certificates | viya |
 | V4_CFG_TLS_KEY | Path to ingress key file | string | | false | Required when V4_CFG_TLS_CERT is specified | viya |
@@ -435,6 +435,7 @@ V4_CFG_STATEFUL_NODEPOOL_RESTRICTION: true
 
 Notes:
   - cert-manager will only be installed if `V4_CFG_TLS_GENERATOR` is set to "cert-manager"
+  - On AWS, `V4_CFG_TLS_GENERATOR: cert-manager` is only supported for IPv4 clusters. On IPv6/dual-stack AWS clusters (`V4_CFG_ENABLE_IPV6: true`), the IaC/Terraform provisioning process already installs cert-manager into the `kube-system` namespace, so this role's own cert-manager install will fail with a Helm ownership conflict (e.g. `ClusterRole "cert-manager-cainjector" ... exists and cannot be imported into the current release`). Use `V4_CFG_TLS_GENERATOR: openssl` for IPv6 AWS clusters instead.
 
 ### Cluster Autoscaler
 
