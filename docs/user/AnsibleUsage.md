@@ -108,8 +108,9 @@ More than one task can be run at the same time. An action can run against a sing
   ```
 
   When a SingleStore (SAS SpeedyStore) cluster is present in the Viya namespace,
-  the uninstall workflow pauses each `MemsqlCluster` before removing Viya. If no
-  SingleStore custom resource exists, the task is skipped.
+  the uninstall workflow pauses each `MemsqlCluster` and waits up to
+  `SINGLESTORE_PAUSE_TIMEOUT` seconds for its pods to terminate before removing
+  Viya. If no SingleStore custom resource exists, the step is skipped.
 
 ### Ansible Config
 

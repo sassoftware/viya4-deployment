@@ -46,6 +46,8 @@ Supported configuration variables are listed in the table below.  All variables 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | DEPLOY | Whether to deploy the SAS Viya platform and SAS Viya Platform Deployment Operator or stop at generating kustomization.yaml and manifests | bool | true | false | This flag can also prevent the uninstall of both the SAS Viya platform and SAS Viya Platform Deployment Operator | viya |
+| SINGLESTORE_PAUSE_ON_UNINSTALL | Whether to pause SingleStore (SAS SpeedyStore) clusters and wait for their pods to terminate before uninstalling the SAS Viya platform | bool | true | false | Skipped when no SingleStore cluster exists in the namespace. | viya |
+| SINGLESTORE_PAUSE_TIMEOUT | Maximum time, in seconds, to wait for SingleStore pods to terminate after pausing | int | 1800 | false | The uninstall fails if the pods have not terminated in time. Increase for large databases with long snapshots. | viya |
 | LOADBALANCER_SOURCE_RANGES | IP addresses to allow to reach the ingress | [string] | | true | When deploying in a cloud environment, be sure to add the cloud NAT IP address. Supports both IPv4 (e.g., "10.0.0.0/8") and IPv6 (e.g., "2001:db8::/32") CIDR notation. | baseline, viya |
 | BASE_DIR | Path to store persistent files | string | $HOME | false | | all |
 | KUBECONFIG | Path to kubeconfig file | string | | true | | viya |
