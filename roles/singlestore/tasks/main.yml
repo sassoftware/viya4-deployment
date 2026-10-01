@@ -1,0 +1,43 @@
+---
+
+- name: SingleStore - find clusters
+  ansible.builtin.command:
+    argv:
+      - kubectl
+      - --namespace
+      - "{{ NAMESPACE }}"
+      - get
+      - "{{ SINGLESTORE_RESOURCE }}"
+      - --output=json
+  environment:
+    KUBECONFIG: "{{ KUBECONFIG }}"
+  register: singlestore_clusters
+  changed_when: false
+  failed_when: false
+  when: SINGLESTORE_PAUSE_ON_UNINSTALL | bool
+  tags:
+    - uninstall
+
+- name: SingleStore - pause clusters
+  ansible.builtin.command:
+    argv:
+      - kubectl
+      - --namespace
+      - "{{ NAMESPACE }}"
+      - patch
+      - "{{ SINGLESTORE_RESOURCE }}"
+      - "{{ item.metadata.name }}"
+      - --type=json
+      - --patch
+      - '[{"op":"add","path":"/spec/clusterState","value":"pause"}]'
+  environment:
+    KUBECONFIG: "{{ KUBECONFIG }}"
+  loop: "{{ (singlestore_clusters.stdout | default('{}', true) | from_json).get('items', []) }}"
+  loop_control:
+    label: "{{ item.metadata.name }}"
+  when:
+    - SINGLESTORE_PAUSE_ON_UNINSTALL | bool
+    - singlestore_clusters.rc | default(1) == 0
+    - item.spec.clusterState | default('') != 'pause'
+  tags:
+    - uninstall

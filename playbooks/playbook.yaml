@@ -70,6 +70,17 @@
       tags:
         - multi-tenancy
 
+    # Pause SingleStore before the Viya uninstall removes the namespace
+    - name: SingleStore role uninstall # noqa: name[casing]
+      include_role:
+        name: singlestore
+      when:
+        - ('viya' in ansible_run_tags)
+        - ('uninstall' in ansible_run_tags)
+      tags:
+        - viya
+        - uninstall
+
     # Include the 'vdm' role for viya and multi-tenancy tags
     - name: vdm role # noqa: name[casing]
       include_role:

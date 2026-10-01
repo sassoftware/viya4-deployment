@@ -1,0 +1,5 @@
+---
+
+# Pause SingleStore clusters before the Viya namespace is removed.
+SINGLESTORE_PAUSE_ON_UNINSTALL: true
+SINGLESTORE_RESOURCE: memsqlclusters
