@@ -39,6 +39,11 @@
 
 ### 4. **Metrics Server, Cert-Manager, and Storage CSI Drivers**
 
+- **`V4_CFG_TLS_GENERATOR: cert-manager` is only supported on IPv4 AWS clusters.** On IPv6/dual-stack AWS clusters (`V4_CFG_ENABLE_IPV6: true`), the IaC/Terraform provisioning already installs its own cert-manager Helm release into the `kube-system` namespace as a prerequisite for the AWS Load Balancer Controller's dualstack webhook certificates. If viya4-deployment then also tries to install cert-manager into the `cert-manager` namespace, the install fails because the two Helm releases both claim ownership of the same cluster-scoped cert-manager resources (CRDs, ClusterRoles, webhooks), for example:
+    ```
+    Error: Unable to continue with install: ClusterRole "cert-manager-cainjector" in namespace "" exists and cannot be imported into the current release: invalid ownership metadata; annotation validation error: key "meta.helm.sh/release-namespace" must equal "cert-manager": current value is "kube-system"
+    ```
+    For IPv6 AWS clusters, set `V4_CFG_TLS_GENERATOR: openssl` instead.
 - **metrics-server** and **cert-manager** may require network access to the Kubernetes API and external endpoints (for certificate validation).
 - **CSI drivers** (such as NFS, EFS, etc.) may require network connectivity to storage backends (e.g., EFS, NFS servers).
 - **ebs-csi-driver** (AWS only) does not expose services externally, but requires network connectivity to AWS APIs and EBS endpoints for dynamic volume provisioning. This enables persistent storage for pods on AWS and may require outbound access to AWS services.
