@@ -1,4 +1,4 @@
-F# List of Valid Configuration Variables
+# List of Valid Configuration Variables
 
 Supported configuration variables are listed in the table below.  All variables can also be specified on the command line.  Values specified on the command line will override all values in configuration defaults files.
 
