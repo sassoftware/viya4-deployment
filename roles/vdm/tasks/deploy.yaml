@@ -134,6 +134,68 @@
         - deployment_tooling == "ansible"
         - V4_CFG_BELOW_THE_LINE
 
+# SingleStore must be paused and its pods gone before Viya is removed so databases are snapshotted
+- name: Deploy - Pause SingleStore
+  when:
+    - SINGLESTORE_PAUSE_ON_UNINSTALL | bool
+  environment:
+    KUBECONFIG: "{{ KUBECONFIG }}"
+  tags:
+    - uninstall
+  block:
+    - name: Deploy - Find SingleStore clusters
+      ansible.builtin.command:
+        argv:
+          - kubectl
+          - --namespace
+          - "{{ NAMESPACE }}"
+          - get
+          - memsqlclusters
+          - --output=json
+      register: singlestore_clusters
+      changed_when: false
+      # A missing resource type means SingleStore is not deployed in this cluster
+      failed_when:
+        - singlestore_clusters.rc != 0
+        - "'have a resource type' not in singlestore_clusters.stderr"
+
+    - name: Deploy - Set SingleStore clusters
+      ansible.builtin.set_fact:
+        singlestore_cluster_items: "{{ (singlestore_clusters.stdout | from_json)['items'] if singlestore_clusters.rc == 0 else [] }}"
+
+    - name: Deploy - Pause SingleStore clusters
+      ansible.builtin.command:
+        argv:
+          - kubectl
+          - --namespace
+          - "{{ NAMESPACE }}"
+          - patch
+          - memsqlclusters
+          - "{{ item.metadata.name }}"
+          - --type=json
+          - --patch
+          - '[{"op":"add","path":"/spec/clusterState","value":"pause"}]'
+      loop: "{{ singlestore_cluster_items }}"
+      loop_control:
+        label: "{{ item.metadata.name }}"
+      when: item.spec.clusterState | default('') != 'pause'
+
+    # Pods are named node-<cluster>-<role>-<n>, e.g. node-sas-singlestore-cluster-leaf-ag1-0
+    - name: Deploy - Wait for SingleStore pods to terminate
+      kubernetes.core.k8s_info:
+        kind: Pod
+        namespace: "{{ NAMESPACE }}"
+        kubeconfig: "{{ KUBECONFIG }}"
+      register: singlestore_pods
+      until: >-
+        singlestore_pods.resources
+        | map(attribute='metadata.name')
+        | select('match', '^node-(' ~ (singlestore_cluster_items | map(attribute='metadata.name') | map('regex_escape') | join('|')) ~ ')-')
+        | list | length == 0
+      retries: "{{ (SINGLESTORE_PAUSE_TIMEOUT | int // 30) + 1 }}"
+      delay: 30
+      when: singlestore_cluster_items | length > 0
+
 # When Gateway resources are in a separate namespace, copy the Viya ingress certificate
 # into the Gateway namespace so HTTPS listeners can resolve certificateRefs.
 - name: Deploy - Get Viya ingress TLS secret

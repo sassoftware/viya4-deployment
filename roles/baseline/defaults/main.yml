@@ -138,6 +138,8 @@ INGRESS_NGINX_IPV6_CONFIG:
         service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "tcp"
         service.beta.kubernetes.io/aws-load-balancer-target-group-attributes: "preserve_client_ip.enabled=false"
         service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+      ipFamilyPolicy: "SingleStack"
+      ipFamilies: ["IPv6"]
 
 # Update ipFamily for ingress-nginx service for IPv6 dual-stack support (Azure)
 INGRESS_NGINX_AZURE_IPV6_CONFIG:
@@ -248,6 +250,9 @@ CONTOUR_NAMESPACE: projectcontour
 CONTOUR_CHART_NAME: contour
 CONTOUR_CHART_URL: https://projectcontour.github.io/helm-charts/
 CONTOUR_CHART_VERSION: 0.6.0  # Updated for IPv6 support
+V4_CFG_CONTOUR_ENVOY_KIND: daemonset
+V4_CFG_CONTOUR_ENVOY_REPLICA_COUNT: 2
+V4_CFG_CONTOUR_ENVOY_AVOID_CAS_NODES: false
 CONTOUR_CONFIG:
   contour:
     resources:
@@ -306,8 +311,14 @@ CONTOUR_AWS_LB_TAGS_CONFIG:
 # pods are distributed across availability zones.
 # replicaCount is set dynamically at deploy time to match detected zone count
 # (minimum 2 replicas).
-# NOTE: Envoy runs as a DaemonSet. The default toleration on workload.sas.com/class
-#       NoSchedule taints allows it to run on all eligible DaC-managed node classes.
+# NOTE: Envoy defaults to a DaemonSet. If V4_CFG_CONTOUR_ENVOY_KIND is set to
+#       deployment, this overlay still only modifies the Contour controller.
+#       Envoy node placement can be restricted with
+#       V4_CFG_CONTOUR_ENVOY_ALLOWED_NODE_CLASSES or controlled directly
+#       through CONTOUR_CONFIG.
+#       Envoy node placement can be restricted with
+#       V4_CFG_CONTOUR_ENVOY_AVOID_CAS_NODES or controlled directly through
+#       CONTOUR_CONFIG.
 CONTOUR_MULTI_ZONE_CONFIG:
   contour:
     topologySpreadConstraints:

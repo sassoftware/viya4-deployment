@@ -1,4 +1,4 @@
-F# List of Valid Configuration Variables
+# List of Valid Configuration Variables
 
 Supported configuration variables are listed in the table below.  All variables can also be specified on the command line.  Values specified on the command line will override all values in configuration defaults files.
 
@@ -46,6 +46,8 @@ Supported configuration variables are listed in the table below.  All variables 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | DEPLOY | Whether to deploy the SAS Viya platform and SAS Viya Platform Deployment Operator or stop at generating kustomization.yaml and manifests | bool | true | false | This flag can also prevent the uninstall of both the SAS Viya platform and SAS Viya Platform Deployment Operator | viya |
+| SINGLESTORE_PAUSE_ON_UNINSTALL | Whether to pause SingleStore (SAS SpeedyStore) clusters and wait for their pods to terminate before uninstalling the SAS Viya platform | bool | true | false | Skipped when no SingleStore cluster exists in the namespace. | viya |
+| SINGLESTORE_PAUSE_TIMEOUT | Maximum time, in seconds, to wait for SingleStore pods to terminate after pausing | int | 1800 | false | The uninstall fails if the pods have not terminated in time. Increase for large databases with long snapshots. | viya |
 | LOADBALANCER_SOURCE_RANGES | IP addresses to allow to reach the ingress | [string] | | true | When deploying in a cloud environment, be sure to add the cloud NAT IP address. Supports both IPv4 (e.g., "10.0.0.0/8") and IPv6 (e.g., "2001:db8::/32") CIDR notation. | baseline, viya |
 | BASE_DIR | Path to store persistent files | string | $HOME | false | | all |
 | KUBECONFIG | Path to kubeconfig file | string | | true | | viya |
@@ -218,7 +220,7 @@ The SAS Viya platform supports two certificate generators: cert-manager and open
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_TLS_GENERATOR | Which SAS-provided tool to use for certificate generation | string | openssl | false | Supported values: [`cert-manager`,`openssl`]. If set to `cert-manager`, `cert-manager` will be installed during baselining. | baseline, viya |
+| V4_CFG_TLS_GENERATOR | Which SAS-provided tool to use for certificate generation | string | openssl | false | Supported values: [`cert-manager`,`openssl`]. If set to `cert-manager`, `cert-manager` will be installed during baselining. **On AWS, setting this to `cert-manager` is only supported for IPv4 clusters.** IPv6/dual-stack AWS clusters (`V4_CFG_ENABLE_IPV6: true`) already have cert-manager installed into the `kube-system` namespace by the IaC/Terraform provisioning process; installing a second cert-manager Helm release will fail with a Helm ownership conflict. For IPv6 AWS clusters, use `V4_CFG_TLS_GENERATOR: openssl` instead. | baseline, viya |
 | V4_CFG_TLS_MODE | Which TLS mode to configure | string | front-door | false | Supported values: [`full-stack`,`front-door`,`disabled.`] When deploying full-stack you must set V4_CFG_TLS_TRUSTED_CA_CERTS to trust external postgres server ca. | all |
 | V4_CFG_TLS_CERT | Path to ingress certificate file | string | | false | If specified, used instead of cert-manager issued certificates | viya |
 | V4_CFG_TLS_KEY | Path to ingress key file | string | | false | Required when V4_CFG_TLS_CERT is specified | viya |
@@ -452,6 +454,7 @@ V4_CFG_STATEFUL_NODEPOOL_RESTRICTION: true
 
 Notes:
   - cert-manager will only be installed if `V4_CFG_TLS_GENERATOR` is set to "cert-manager"
+  - On AWS, `V4_CFG_TLS_GENERATOR: cert-manager` is only supported for IPv4 clusters. On IPv6/dual-stack AWS clusters (`V4_CFG_ENABLE_IPV6: true`), the IaC/Terraform provisioning process already installs cert-manager into the `kube-system` namespace, so this role's own cert-manager install will fail with a Helm ownership conflict (e.g. `ClusterRole "cert-manager-cainjector" ... exists and cannot be imported into the current release`). Use `V4_CFG_TLS_GENERATOR: openssl` for IPv6 AWS clusters instead.
 
 ### Cluster Autoscaler
 
@@ -475,7 +478,7 @@ If you used [viya4-iac-aws:5.6.0](https://github.com/sassoftware/viya4-iac-aws/r
 
 Contour is an open source ingress controller that provides dynamic configuration updates. Contour support is available starting with the 2026.02 cadence release.
 
-When `V4_CFG_MULTI_ZONE_ENABLED` is `true` and `V4_CFG_MULTI_ZONE_CONTOUR_ENABLED` is `true` (the default), DaC automatically configures the Contour controller Deployment for multi-zone high availability by setting `replicaCount` to the detected zone count (minimum `2`), adding `topologySpreadConstraints` across `topology.kubernetes.io/zone` and `kubernetes.io/hostname`, and adding preferred pod anti-affinity. The Envoy component runs as a DaemonSet and includes a default toleration for `workload.sas.com/class:NoSchedule`, allowing it to run on DaC-managed node classes across zones.
+When `V4_CFG_MULTI_ZONE_ENABLED` is `true` and `V4_CFG_MULTI_ZONE_CONTOUR_ENABLED` is `true` (the default), DaC automatically configures the Contour controller Deployment for multi-zone high availability by setting `replicaCount` to the detected zone count (minimum `2`), adding `topologySpreadConstraints` across `topology.kubernetes.io/zone` and `kubernetes.io/hostname`, and adding preferred pod anti-affinity. Envoy defaults to a DaemonSet and includes a default toleration for `workload.sas.com/class:NoSchedule`, allowing it to run on DaC-managed node classes across zones. If `V4_CFG_CONTOUR_ENVOY_KIND` is set to `deployment`, Envoy uses the requested replica count instead; the automatic multi-zone sizing in this section still applies only to the Contour controller. Set `V4_CFG_CONTOUR_ENVOY_AVOID_CAS_NODES: true` to keep Envoy off CAS nodes.
 
 **For detailed information about Contour deployment scenarios, configuration options, and integration with SAS Viya platform, see [Contour Documentation](user/Contour.md).**
 
@@ -486,6 +489,9 @@ When `V4_CFG_MULTI_ZONE_ENABLED` is `true` and `V4_CFG_MULTI_ZONE_CONTOUR_ENABLE
 | CONTOUR_CHART_NAME | Contour Helm chart name | string | contour | false | | baseline |
 | CONTOUR_CHART_URL | Contour Helm chart URL | string | https://projectcontour.github.io/helm-charts/ | false | | baseline |
 | CONTOUR_CHART_VERSION | Contour Helm chart version | string | 0.2.1 | false | | baseline |
+| V4_CFG_CONTOUR_ENVOY_KIND | Envoy workload type for the Contour chart | string | daemonset | false | Supported values: `daemonset`, `deployment`. The default preserves one Envoy pod per eligible node. | baseline |
+| V4_CFG_CONTOUR_ENVOY_REPLICA_COUNT | Number of Envoy replicas when `V4_CFG_CONTOUR_ENVOY_KIND` is `deployment` | int | 2 | false | Ignored when Envoy runs as a DaemonSet. | baseline |
+| V4_CFG_CONTOUR_ENVOY_AVOID_CAS_NODES | Keep Envoy off CAS nodes | bool | false | false | When `true`, Envoy is restricted away from nodes labeled `workload.sas.com/class=cas`. | baseline |
 | CONTOUR_CONFIG | Contour Helm values | string | See [this file](../roles/baseline/defaults/main.yml) for more information. Altering this value will affect the cluster. | false | | baseline |
 
 ### EBS CSI Driver
