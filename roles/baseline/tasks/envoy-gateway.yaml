@@ -153,6 +153,86 @@
     - install
     - update
 
+# Update EnvoyProxy service annotations for IPv6/dual-stack NLB support (AWS).
+# Mirrors INGRESS_NGINX_IPV6_CONFIG/CONTOUR_IPV6_CONFIG: switches the NLB to IP target
+# mode and enables a dualstack NLB. preserve_client_ip.enabled=false is required for
+# IPv4->IPv6 traffic translation; cross-zone-load-balancing ensures response traffic
+# routes correctly. aws-load-balancer-proxy-protocol="*" (paired with
+# enableProxyProtocol=true on the baseline ClientTrafficPolicy below) is required to
+# recover the real client IP, since preserve_client_ip is disabled above -- same
+# pairing used by CONTOUR_IPV6_CONFIG's --use-proxy-protocol (PSCIE-189).
+- name: Add AWS IPv6 dual-stack annotations to EnvoyProxy service
+  set_fact:
+    _envoy_proxy_svc_annotations: >-
+      {{
+        _envoy_proxy_svc_annotations | combine({
+          'service.beta.kubernetes.io/aws-load-balancer-type': 'nlb-ip',
+          'service.beta.kubernetes.io/aws-load-balancer-nlb-target-type': 'ip',
+          'service.beta.kubernetes.io/aws-load-balancer-ip-address-type': 'dualstack',
+          'service.beta.kubernetes.io/aws-load-balancer-scheme': 'internet-facing',
+          'service.beta.kubernetes.io/aws-load-balancer-backend-protocol': 'tcp',
+          'service.beta.kubernetes.io/aws-load-balancer-target-group-attributes': 'preserve_client_ip.enabled=false',
+          'service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled': 'true',
+          'service.beta.kubernetes.io/aws-load-balancer-proxy-protocol': '*'
+        })
+      }}
+  when:
+    - PROVIDER is defined
+    - "'aws' in (PROVIDER | lower)"
+    - V4_CFG_ENABLE_IPV6 | default(false) | bool
+  tags:
+    - install
+    - update
+
+# EnvoyProxy's spec.ipFamily defaults to IPv4-only (undocumented in the CRD default,
+# but confirmed via `kubectl explain EnvoyProxy.spec.ipFamily`). On an IPv6/dual-stack
+# cluster this leaves Envoy's listeners -- including the internal admin/health-check
+# listener used by the pod's readiness/liveness probes -- bound only to 0.0.0.0, so the
+# data-plane pod never becomes Ready ("Envoy replicas unavailable" on the Gateway status)
+# and restarts in a loop. See https://github.com/envoyproxy/gateway/issues/7600.
+#
+# The value must match what the underlying cluster's Service networking actually
+# supports (envoyproxy/gateway's resource_provider.go maps this 1:1 onto the generated
+# Service's spec.ipFamilies/spec.ipFamilyPolicy):
+#   IPv6      -> ipFamilies: [IPv6], ipFamilyPolicy: SingleStack
+#   DualStack -> ipFamilies: [IPv4, IPv6], ipFamilyPolicy: RequireDualStack
+# AWS EKS IPv6 clusters are single-stack IPv6 internally (dual-stack only exists at the
+# external NLB, which the AWS Load Balancer Controller front-ends with both address
+# families while still targeting IPv6-only backends -- the same reason
+# INGRESS_NGINX_IPV6_CONFIG/CONTOUR_IPV6_CONFIG never set ipFamilies/ipFamilyPolicy on
+# AWS). Requesting DualStack there makes Kubernetes reject the Service with
+# "this cluster is not configured for dual-stack services". Azure AKS, in contrast,
+# supports genuine dual-stack Service networking (matching CONTOUR_AZURE_IPV6_CONFIG's
+# explicit ipFamilies/ipFamilyPolicy), so DualStack is correct there.
+- name: Set EnvoyProxy ipFamily (default)
+  set_fact:
+    _envoy_proxy_ip_family: null
+  tags:
+    - install
+    - update
+
+- name: Set EnvoyProxy ipFamily to IPv6 for AWS IPv6 support
+  set_fact:
+    _envoy_proxy_ip_family: IPv6
+  when:
+    - PROVIDER is defined
+    - "'aws' in (PROVIDER | lower)"
+    - V4_CFG_ENABLE_IPV6 | default(false) | bool
+  tags:
+    - install
+    - update
+
+- name: Set EnvoyProxy ipFamily to DualStack for Azure IPv6 support
+  set_fact:
+    _envoy_proxy_ip_family: DualStack
+  when:
+    - PROVIDER is defined
+    - "'azure' in (PROVIDER | lower)"
+    - V4_CFG_ENABLE_IPV6 | default(false) | bool
+  tags:
+    - install
+    - update
+
 - name: Configure EnvoyProxy
   kubernetes.core.k8s:
     state: present
@@ -164,6 +244,7 @@
         name: envoy-gateway-proxy-config
         namespace: envoy-gateway-system
       spec:
+        ipFamily: "{{ _envoy_proxy_ip_family | default(omit, true) }}"
         provider:
           type: Kubernetes
           kubernetes:
@@ -367,6 +448,22 @@
     - install
     - update
 
+# PROXY protocol must only be enabled when the AWS NLB is actually configured to send
+# PROXY protocol headers (aws-load-balancer-proxy-protocol="*", set above for the AWS
+# IPv6 case only). Enabling this without that matching annotation makes Envoy wait for
+# a PROXY header that never arrives and breaks all connections -- which is why this
+# was previously hard-coded to false. Keep it false everywhere except AWS+IPv6.
+- name: Enable ClientTrafficPolicy PROXY protocol for AWS IPv6 dual-stack
+  set_fact:
+    _envoy_client_traffic_enable_proxy_protocol: true
+  when:
+    - PROVIDER is defined
+    - "'aws' in (PROVIDER | lower)"
+    - V4_CFG_ENABLE_IPV6 | default(false) | bool
+  tags:
+    - install
+    - update
+
 - name: Create baseline ClientTrafficPolicy for shared Envoy Gateway
   kubernetes.core.k8s:
     state: present
@@ -378,7 +475,7 @@
         name: "{{ V4_CFG_GATEWAY_API_CLIENT_TRAFFIC_POLICY_NAME | default('path-settings') }}"
         namespace: "{{ V4_CFG_BASELINE_GATEWAY_NAMESPACE | default('envoy-gateway-system') }}"
       spec:
-        enableProxyProtocol: false
+        enableProxyProtocol: "{{ _envoy_client_traffic_enable_proxy_protocol | default(false) | bool }}"
         path:
           escapedSlashesAction: KeepUnchanged
         targetRefs:

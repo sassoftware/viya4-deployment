@@ -21,7 +21,10 @@ GATEWAY_API_NAMESPACE_LABEL_MODE: standard
 GATEWAY_API_MANIFEST_URL: "https://github.com/kubernetes-sigs/gateway-api/releases/download/{{ GATEWAY_API_VERSION }}/{{ GATEWAY_API_NAMESPACE_LABEL_MODE }}-install.yaml"
 
 ## Envoy Gateway
-ENVOY_GATEWAY_VERSION: v1.8.0
+## v1.8.3 (minimum v1.8.2) is required for IPv6/dual-stack: v1.8.0/v1.8.1 reject IPv6
+## CIDRs in EnvoyProxy's loadBalancerSourceRanges, leaving the Gateway stuck in
+## "InvalidParameters"/not-Accepted (https://github.com/envoyproxy/gateway/issues/9048).
+ENVOY_GATEWAY_VERSION: v1.8.3
 ENVOY_GATEWAY_MANIFEST_URL: "https://github.com/envoyproxy/gateway/releases/download/{{ ENVOY_GATEWAY_VERSION }}/install.yaml"
 ENVOY_GATEWAY_GATEWAYCLASS_NAME: envoy
 

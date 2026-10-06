@@ -50,6 +50,19 @@ V4_CFG_INGRESS_FQDN: your-fqdn.example.com
 
 Optional overrides can still be set explicitly in `ansible-vars.yaml`.
 
+## IPv6 / Dual-Stack Support
+
+Setting `V4_CFG_ENABLE_IPV6: true` applies provider-specific dual-stack configuration to the Envoy Gateway-managed Service and proxy, mirroring `ingress-nginx`/`contour`, but tailored to how each cloud provider actually implements IPv6 Kubernetes networking:
+
+- **AWS**: EKS IPv6 clusters are single-stack IPv6 internally (one Service CIDR family only); the dual-stack behavior exists only at the external Network Load Balancer, which the AWS Load Balancer Controller fronts with both IPv4 and IPv6 addresses while still targeting IPv6-only backend pods. The EnvoyProxy service annotations configure this NLB (`aws-load-balancer-type: nlb-ip`, `aws-load-balancer-ip-address-type: dualstack`, `aws-load-balancer-nlb-target-type: ip`, `preserve_client_ip.enabled=false`, cross-zone load balancing, and `aws-load-balancer-proxy-protocol: "*"` to recover the real client IP). `EnvoyProxy.spec.ipFamily` is set to `IPv6` (single-stack) to match the cluster's actual Service networking -- setting `DualStack` here fails with `this cluster is not configured for dual-stack services`.
+- **Azure**: AKS supports genuine dual-stack Service networking, so `EnvoyProxy.spec.ipFamily` is set to `DualStack`.
+- **GCP**: Not supported.
+- **All providers**: `EnvoyProxy.spec.ipFamily` defaults to IPv4-only, which otherwise leaves Envoy's internal admin/health-check listener bound only to `0.0.0.0`; on an IPv6/dual-stack cluster this fails the data-plane pod's readiness/liveness probes (Gateway status shows `Programmed: False` / `Envoy replicas unavailable`, and the pod crash-loops). See [envoyproxy/gateway#7600](https://github.com/envoyproxy/gateway/issues/7600).
+
+Requires the underlying cluster to be created with IPv6 networking enabled (see your cloud provider's IaC project).
+
+**Minimum Envoy Gateway version**: `v1.8.2` (the default `ENVOY_GATEWAY_VERSION` is `v1.8.3`). Versions `v1.8.0`/`v1.8.1` reject IPv6 CIDRs in `loadBalancerSourceRanges` ([envoyproxy/gateway#9048](https://github.com/envoyproxy/gateway/issues/9048)), which leaves the baseline `Gateway` stuck with an `Accepted: False` / `InvalidParameters` condition and no data-plane Envoy Deployment/Service ever gets created. If `LOADBALANCER_SOURCE_RANGES` includes any IPv6 CIDRs, make sure `ENVOY_GATEWAY_VERSION` is `v1.8.2` or later.
+
 ## Important Notes
 
 - Do not combine this mode with traditional ingress controllers in the same run.
