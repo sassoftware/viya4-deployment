@@ -1,0 +1,223 @@
+# Copyright © 2020-2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+---
+# This file contains the Gateway API setup tasks for the baseline role.
+# Purpose: Installs and manages Gateway API CRDs used by Gateway API providers.
+
+# Download the Gateway API manifest to the session temp directory.
+# Tagged with "uninstall" too since "Remove Gateway API CRDs" (below) needs this same
+# rendered file to know what to delete.
+- name: Use experimental Gateway API channel for envoy-gateway ingress type
+  set_fact:
+    GATEWAY_API_NAMESPACE_LABEL_MODE: experimental
+  when:
+    - V4_CFG_INGRESS_TYPE is defined
+    - V4_CFG_INGRESS_TYPE == 'envoy-gateway'
+  tags:
+    - install
+    - update
+
+- name: Download Gateway API manifest
+  get_url:
+    url: "{{ GATEWAY_API_MANIFEST_URL }}"
+    dest: "{{ tmpdir.path }}/gateway-api-install-orig.yaml"
+    mode: "0640"
+  tags:
+    - install
+    - update
+    - uninstall
+
+# Remove ValidatingAdmissionPolicy and ValidatingAdmissionPolicyBinding from the manifest
+# These resources can block CRD deployment due to conflicts between channels
+- name: Filter out blocking policies from Gateway API manifest
+  shell: |
+    python3 << 'EOF'
+    import yaml
+
+    input_file = "{{ tmpdir.path }}/gateway-api-install-orig.yaml"
+    output_file = "{{ tmpdir.path }}/gateway-api-install.yaml"
+
+    # Read entire file first
+    with open(input_file, 'r') as f:
+        content = f.read()
+
+    # Parse all documents
+    docs = list(yaml.safe_load_all(content))
+
+    # Filter out blocking resources
+    filtered_docs = []
+    for doc in docs:
+        if doc is None:
+            continue
+        kind = doc.get('kind', '')
+        if kind not in ['ValidatingAdmissionPolicy', 'ValidatingAdmissionPolicyBinding']:
+            filtered_docs.append(doc)
+
+    # Write filtered documents
+    with open(output_file, 'w') as f:
+        yaml.dump_all(filtered_docs, f, default_flow_style=False)
+
+    print(f"Filtered manifest: kept {len(filtered_docs)} resources")
+    EOF
+  tags:
+    - install
+    - update
+    - uninstall
+
+# Remove ValidatingAdmissionPolicy and binding to prevent conflicts between standard and experimental CRDs
+# This policy may exist from previous deployments and can block CRD creation
+- name: Remove Gateway API ValidatingAdmissionPolicyBinding
+  kubernetes.core.k8s:
+    state: absent
+    kind: ValidatingAdmissionPolicyBinding
+    name: safe-upgrades.gateway.networking.k8s.io
+    kubeconfig: "{{ KUBECONFIG }}"
+    wait: true
+  ignore_errors: true
+  tags:
+    - install
+    - update
+
+- name: Remove Gateway API ValidatingAdmissionPolicy
+  kubernetes.core.k8s:
+    state: absent
+    kind: ValidatingAdmissionPolicy
+    name: safe-upgrades.gateway.networking.k8s.io
+    kubeconfig: "{{ KUBECONFIG }}"
+    wait: true
+  ignore_errors: true
+  tags:
+    - install
+    - update
+
+# Verify policy and binding are removed before proceeding
+- name: Verify ValidatingAdmissionPolicy is removed
+  kubernetes.core.k8s_info:
+    kind: ValidatingAdmissionPolicy
+    name: safe-upgrades.gateway.networking.k8s.io
+    kubeconfig: "{{ KUBECONFIG }}"
+  register: policy_check
+  until: policy_check.resources | length == 0
+  retries: 10
+  delay: 2
+  ignore_errors: true
+  tags:
+    - install
+    - update
+
+# Create Envoy Gateway namespace if it doesn't exist
+- name: Create Envoy Gateway namespace
+  kubernetes.core.k8s:
+    state: present
+    kind: Namespace
+    name: envoy-gateway-system
+    kubeconfig: "{{ KUBECONFIG }}"
+  tags:
+    - install
+    - update
+
+- name: Resolve Gateway listener namespace
+  set_fact:
+    gateway_listener_namespace: >-
+      {{
+        (V4_CFG_BASELINE_GATEWAY_NAMESPACE if (V4_CFG_BASELINE_CREATE_BOOTSTRAP_GATEWAY | default(false) | bool)
+         else (V4_CFG_VIYA_GATEWAY_NAMESPACE | default(NAMESPACE | default('default'))))
+      }}
+  when:
+    - (V4_CFG_GENERATE_GATEWAY_API_RESOURCES is defined and V4_CFG_GENERATE_GATEWAY_API_RESOURCES | bool) or
+      (V4_CFG_BASELINE_CREATE_BOOTSTRAP_GATEWAY is defined and V4_CFG_BASELINE_CREATE_BOOTSTRAP_GATEWAY | bool)
+  tags:
+    - install
+    - update
+
+# Create Gateway resource namespace when using Gateway API resources.
+- name: Create Gateway API resource namespace
+  kubernetes.core.k8s:
+    state: present
+    kind: Namespace
+    name: "{{ gateway_listener_namespace }}"
+    kubeconfig: "{{ KUBECONFIG }}"
+  when:
+    - gateway_listener_namespace is defined
+    - gateway_listener_namespace is not none
+  tags:
+    - install
+    - update
+
+# Ensure the Gateway TLS listener secret exists in the configured Gateway namespace
+# when Gateway resources are separated from the Viya namespace.
+- name: Prepare Gateway listener TLS materials in Gateway namespace
+  when:
+    - V4_CFG_TLS_MODE != "disabled"
+    - gateway_listener_namespace is defined
+    - (V4_CFG_BASELINE_CREATE_BOOTSTRAP_GATEWAY is defined and V4_CFG_BASELINE_CREATE_BOOTSTRAP_GATEWAY | bool) or
+      ((V4_CFG_GENERATE_GATEWAY_API_RESOURCES is defined and V4_CFG_GENERATE_GATEWAY_API_RESOURCES | bool) and
+       gateway_listener_namespace != (NAMESPACE | default('default')))
+  tags:
+    - install
+    - update
+  block:
+    - name: Check if user-provided TLS files are configured for Gateway listener
+      set_fact:
+        gateway_listener_has_user_tls: >-
+          {{
+            (V4_CFG_TLS_CERT is defined and V4_CFG_TLS_CERT is not none and (V4_CFG_TLS_CERT | string | length) > 0)
+            and
+            (V4_CFG_TLS_KEY is defined and V4_CFG_TLS_KEY is not none and (V4_CFG_TLS_KEY | string | length) > 0)
+          }}
+
+    - name: Generate temporary self-signed cert for Gateway listener
+      shell: |
+        openssl req -x509 -nodes -newkey rsa:2048 -sha256 \
+          -keyout "{{ tmpdir.path }}/gateway-listener-tls.key" \
+          -out "{{ tmpdir.path }}/gateway-listener-tls.crt" \
+          -days 365 -subj "/CN={{ V4_CFG_INGRESS_FQDN | default('gateway.local') }}"
+      args:
+        executable: /bin/bash
+      when: not gateway_listener_has_user_tls
+
+    - name: Create Gateway listener TLS secret in Gateway namespace
+      kubernetes.core.k8s:
+        state: present
+        kind: Secret
+        name: "{{ V4_CFG_BASELINE_GATEWAY_TLS_SECRET_NAME | default('gateway-secret') }}"
+        namespace: "{{ gateway_listener_namespace }}"
+        definition:
+          apiVersion: v1
+          metadata:
+            name: "{{ V4_CFG_BASELINE_GATEWAY_TLS_SECRET_NAME | default('gateway-secret') }}"
+            namespace: "{{ gateway_listener_namespace }}"
+          type: kubernetes.io/tls
+          data:
+            tls.crt: "{{ lookup('file', (V4_CFG_TLS_CERT if gateway_listener_has_user_tls else (tmpdir.path + '/gateway-listener-tls.crt'))) | b64encode }}"
+            tls.key: "{{ lookup('file', (V4_CFG_TLS_KEY if gateway_listener_has_user_tls else (tmpdir.path + '/gateway-listener-tls.key'))) | b64encode }}"
+        kubeconfig: "{{ KUBECONFIG }}"
+
+# NOTE: The internal "envoy-gateway" TLS secret (used exclusively for control-plane <-> data-plane
+# xDS mTLS) is intentionally NOT managed here. Envoy Gateway's own install manifest ships a
+# certgen Job that generates and rotates this secret automatically. Manually creating/overwriting
+# it here raced with that Job and produced mismatched control-plane/data-plane certificates,
+# causing "CERTIFICATE_VERIFY_FAILED: self signed certificate" on the xDS stream and Gateway
+# never reaching PROGRAMMED=True. Let Envoy Gateway own this secret's full lifecycle.
+
+# Install or update Gateway API CRDs.
+- name: Deploy Gateway API CRDs
+  kubernetes.core.k8s:
+    state: present
+    src: "{{ tmpdir.path }}/gateway-api-install.yaml"
+    kubeconfig: "{{ KUBECONFIG }}"
+    wait: true
+  tags:
+    - install
+    - update
+
+# Remove Gateway API CRDs when uninstalling and the feature is enabled.
+- name: Remove Gateway API CRDs
+  kubernetes.core.k8s:
+    state: absent
+    src: "{{ tmpdir.path }}/gateway-api-install.yaml"
+    kubeconfig: "{{ KUBECONFIG }}"
+    wait: true
+  tags:
+    - uninstall
