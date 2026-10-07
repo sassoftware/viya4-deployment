@@ -8,6 +8,36 @@
 # Chart Source: https://github.com/cert-manager/cert-manager/tree/master/deploy/charts/cert-manager
 # Purpose: Installs and manages cert-manager for TLS certificate management in Kubernetes.
 
+# Fail fast with a clear message instead of letting the Helm install below fail with a cryptic
+# ownership conflict. On AWS IPv6/dual-stack clusters, the IaC/Terraform provisioning process
+# already installs its own cert-manager Helm release into the "kube-system" namespace (required
+# for the AWS Load Balancer Controller's dualstack webhook certificates). Installing a second
+# cert-manager release here would collide with that release's ownership of the same cluster-scoped
+# resources (CRDs, ClusterRoles, webhooks), causing errors such as:
+#   Error: Unable to continue with install: ClusterRole "cert-manager-cainjector" in namespace ""
+#   exists and cannot be imported into the current release: invalid ownership metadata;
+#   annotation validation error: key "meta.helm.sh/release-namespace" must equal "cert-manager":
+#   current value is "kube-system"
+- name: Fail fast if cert-manager is requested on an AWS IPv6 cluster
+  ansible.builtin.fail:
+    msg: >
+      V4_CFG_TLS_GENERATOR=cert-manager is not supported on AWS IPv6/dual-stack clusters
+      (V4_CFG_ENABLE_IPV6=true). The IaC/Terraform provisioning process already installs its own
+      cert-manager release into the "kube-system" namespace for IPv6 clusters, and installing a
+      second cert-manager release here will fail with a Helm ownership conflict. Set
+      V4_CFG_TLS_GENERATOR: openssl in your ansible-vars.yaml instead. See
+      docs/user/NetworkingConsiderations.md for details.
+  when:
+    - PROVIDER is defined
+    - PROVIDER == "aws"
+    - V4_CFG_ENABLE_IPV6 is defined
+    - V4_CFG_ENABLE_IPV6 | bool
+    - V4_CFG_TLS_GENERATOR is defined
+    - V4_CFG_TLS_GENERATOR == 'cert-manager'
+  tags:
+    - install
+    - update
+
 # Deploy the cert-manager controller using Helm
 - name: Deploy cert-manager
   kubernetes.core.helm:
