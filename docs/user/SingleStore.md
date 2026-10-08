@@ -8,7 +8,9 @@ If your SAS software order includes SAS SpeedyStore, additional requirements app
 
 ## Deploying SAS SpeedyStore Using SAS Viya 4 Deployment
 
-This document describes how to configure and deploy SAS SpeedyStore in a SAS Viya 4 Deployment environment. The procedure in this document is specific to the viya4-deployment (DaC) layout and differs from the generic SingleStore Operator workflow used when deploying with other deployment methods such as the SAS Deployment Operator.
+This document describes how to configure and deploy SAS SpeedyStore in a SAS Viya platform.
+
+The procedure in this document is specific to the viya4-deployment (DaC) layout and differs from the generic SingleStore Operator workflow used when deploying with other deployment methods such as the SAS Deployment Operator.
 
 You can deploy SAS SpeedyStore into a Kubernetes cluster in the following environments:
 - Azure Kubernetes Service (AKS) in Microsoft Azure
@@ -21,21 +23,25 @@ You can deploy SAS SpeedyStore into a Kubernetes cluster in the following enviro
 ### Azure Kubernetes Service Cluster in Microsoft Azure
 
 The [SAS Viya 4 Infrastructure as Code (IaC) for Microsoft Azure](https://github.com/sassoftware/viya4-iac-azure) GitHub project can automatically provision the required infrastructure components that support SAS SpeedyStore deployments.
+
 Refer to the [SingleStore sample input file](https://github.com/sassoftware/viya4-iac-azure/blob/main/examples/sample-input-singlestore.tfvars) for Terraform configuration values that create an AKS cluster suitable for deploying SAS SpeedyStore.
 
 ### EKS Cluster in AWS
 
 The [SAS Viya 4 IaC for AWS](https://github.com/sassoftware/viya4-iac-aws) GitHub project can automatically provision the required infrastructure components that support SAS SpeedyStore deployments.
+
 Refer to the [SingleStore sample input file](https://github.com/sassoftware/viya4-iac-aws/blob/main/examples/sample-input-singlestore.tfvars) for Terraform configuration values that create an EKS cluster suitable for deploying SAS SpeedyStore.
 
 ### Open Source Kubernetes Cluster
 
 The [SAS Viya 4 IaC for Open Source Kubernetes](https://github.com/sassoftware/viya4-iac-k8s) GitHub project can automatically provision the required infrastructure components that support SAS SpeedyStore deployments.
+
 Refer to the [SingleStore sample input file](https://github.com/sassoftware/viya4-iac-k8s/blob/main/examples/vsphere/sample-terraform-static-singlestore.tfvars) for Terraform configuration values that create an Open Source Kubernetes cluster suitable for deploying SAS SpeedyStore.
 
 ### Google Kubernetes Engine Cluster in Google Cloud and Google Distributed Cloud
 
 The [SAS Viya 4 IaC for Google Cloud and Google Distributed Cloud](https://github.com/sassoftware/viya4-iac-gcp) GitHub project can automatically provision the required infrastructure components that support SAS SpeedyStore deployments.
+
 Refer to the [SingleStore sample input file](https://github.com/sassoftware/viya4-iac-gcp/blob/main/examples/sample-input-singlestore.tfvars) for Terraform configuration values that create a GKE cluster suitable for deploying SAS SpeedyStore.
 
 ## Prepare the Deployment Workspace
@@ -57,21 +63,15 @@ This section describes the required DaC-specific configuration for SAS SpeedySto
 
 The configuration of the SingleStore cluster is site-specific. To configure a SingleStore cluster for your deployment:
 
-1. Create the DaC-specific SingleStore configuration directory.
-
-   Create the following directories:
+1. Create the DaC-specific SingleStore configuration directories.
 
    - `$deploy/site-config/sas-singlestore`
    - `$deploy/site-config/sas-singlestore/component`
    - `$deploy/site-config/sas-singlestore/examples`
 
-2. Copy the SAS-provided SingleStore component into the DaC component directory.
+2. Copy the `$deploy/sas-bases/components/sas-singlestore/` directory into `$deploy/site-config/sas-singlestore/component/`.
 
-   Copy the `$deploy/sas-bases/components/sas-singlestore/` directory into `$deploy/site-config/sas-singlestore/component/`.
-
-3. Copy the SAS-provided example files into the deployment configuration directory.
-
-   Copy the files from `$deploy/sas-bases/examples/sas-singlestore/` into `$deploy/site-config/sas-singlestore/`.
+3. Copy the files from `$deploy/sas-bases/examples/sas-singlestore/` into `$deploy/site-config/sas-singlestore/`.
 
    If you are not configuring backups, remove the `backup/` directory from the copied example tree.
 
@@ -98,36 +98,40 @@ The configuration of the SingleStore cluster is site-specific. To configure a Si
    print("*" + sha1(sha1('secretpass'.encode('utf-8')).digest()).hexdigest().upper())
    ```
 
-    Replace `secretpass` with your desired admin password, and then paste the resulting output into the `sas-singlestore-secret.yaml` file, replacing the string `{{ HASHED-ADMIN-PASSWORD }}`. The hashed password contains an initial asterisk that must be included.
+    In the python code, replace `secretpass` with your desired admin password, and then paste the resulting output into the `sas-singlestore-secret.yaml` file, replacing the string `{{ HASHED-ADMIN-PASSWORD }}`. The hashed password contains an initial asterisk that must be included.
 
 6. Customize the cluster configuration.
 
-   Edit `$deploy/site-config/sas-singlestore/sas-singlestore-cluster-config.yaml` to override the default cluster settings, such as the number of leaf nodes, storage class, amount of storage allocated to each node type, or aggregator settings.
+   a. Override the default cluster settings, such as the number of leaf nodes, storage class, amount of storage allocated to each node type, or aggregator settings.
 
-   In the following example, the leaf node definition is modified to create four leaf nodes, each with 750 GB of storage, using a scaling height of 1 (defined as 8 vCPU cores and 32 GB of RAM) and the `managed` storage class. You may also want to perform similar alterations to the aggregatorSpec.  Refer to the [SingleStore Cluster Scaling Document](https://docs.singlestore.com/db/latest/reference/singlestore-operator-reference/scale-a-cluster) for more information.
+      Edit `$deploy/site-config/sas-singlestore/sas-singlestore-cluster-config.yaml`
 
-   ```yaml
-   - op: replace
-     path: /spec/leafSpec/count
-     value: 4
-   - op: replace
-     path: /spec/leafSpec/height
-     value: 1
-   - op: replace
-     path: /spec/leafSpec/storageGB
-     value: 750
-   - op: replace
-     path: /spec/leafSpec/storageClass
-     value: managed
-   ```
+      In the following example, the leaf node definition is modified to create four leaf nodes, each with 750 GB of storage, using a scaling height of 1 (defined as 8 vCPU cores and 32 GB of RAM) and the `managed` storage class. You may also want to perform similar alterations to the aggregatorSpec. Refer to the [SingleStore Cluster Scaling Document](https://docs.singlestore.com/db/latest/reference/singlestore-operator-reference/scale-a-cluster) for more information.
 
-   The `sas-singlestore-cluster-config.yaml` file includes cloud provider-specific profile blocks. Activate exactly one cloud profile for your deployment:
+      ```yaml
+      - op: replace
+        path: /spec/leafSpec/count
+        value: 4
+      - op: replace
+        path: /spec/leafSpec/height
+        value: 1
+      - op: replace
+        path: /spec/leafSpec/storageGB
+        value: 750
+      - op: replace
+        path: /spec/leafSpec/storageClass
+        value: managed
+      ```
 
-   - Azure profile settings are enabled by default.
-   - For AWS deployments, choose either the AWS EKS IPv4 profile or the AWS EKS IPv6 profile.
-   - The AWS EKS IPv6 profile is for new IPv6 installations only.
-   - For AWS, Google Cloud, or Open Source Kubernetes deployments, comment out the Azure profile lines and uncomment the matching provider-specific profile lines.
-   - Do not enable more than one provider profile at the same time.
+   b. Activate exactly one cloud profile for your deployment.
+
+      The `sas-singlestore-cluster-config.yaml` file includes cloud provider-specific profile blocks.
+
+      - Azure profile settings are enabled by default.
+      - For AWS deployments, choose either the AWS EKS IPv4 profile or the AWS EKS IPv6 profile.
+      - The AWS EKS IPv6 profile is for new IPv6 installations only.
+      - For AWS, Google Cloud, or Open Source Kubernetes deployments, comment out the Azure profile lines and uncomment the matching provider-specific profile lines.
+      - Do not enable more than one provider profile at the same time.
 
 7. Configure load balancer source ranges if required.
 
@@ -199,9 +203,7 @@ Determine whether you need to override the cluster OS configuration. For more in
 
 If you do not need to override the cluster OS configuration, continue to the next section.
 
-If you do need to override the cluster OS configuration, copy the file from the SAS-provided example set into the root of the SingleStore site-config directory:
-
-- Copy `$deploy/sas-bases/examples/sas-singlestore-osconfig/sas-singlestore-osconfig.yaml` to `$deploy/site-config/sas-singlestore/sas-singlestore-osconfig.yaml`
+If you do need to override the cluster OS configuration, copy `$deploy/sas-bases/examples/sas-singlestore-osconfig/sas-singlestore-osconfig.yaml` to `$deploy/site-config/sas-singlestore/sas-singlestore-osconfig.yaml`
 
 After copying the `sas-singlestore-osconfig.yaml` file, refer to the "SAS SpeedyStore Cluster OS Configuration" README file for additional guidance.
 
@@ -211,9 +213,7 @@ If you do not want to configure SingleStore backups, continue to the deployment 
 
 If you do want to configure SingleStore backups, configure exactly one backup provider and one authentication path for your environment:
 
-1. Copy the backup component into the DaC component directory.
-
-   Copy the `$deploy/sas-bases/components/sas-singlestore-backup/` subdirectory into `$deploy/site-config/sas-singlestore/component/` directory.
+1. Copy the `$deploy/sas-bases/components/sas-singlestore-backup/` subdirectory into `$deploy/site-config/sas-singlestore/component/` directory.
 
 2. Keep only the single backup provider path that applies to your environment under the `$deploy/site-config/sas-singlestore/backup` directory and remove all other backup paths before you move the backup directory.
 
@@ -237,9 +237,7 @@ If you do want to configure SingleStore backups, configure exactly one backup pr
      - backup/aws/irsa
    ```
 
-4. Move the `backup` directory into the examples directory.
-
-   Move the `backup` subdirectory from `$deploy/site-config/sas-singlestore/` to `$deploy/site-config/sas-singlestore/examples/`.
+4. Move the `backup` subdirectory from `$deploy/site-config/sas-singlestore/` to `$deploy/site-config/sas-singlestore/examples/`.
 
 5. Verify the final layout.
 
