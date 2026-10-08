@@ -106,7 +106,9 @@ The configuration of the SingleStore cluster is site-specific. To configure a Si
 
       Edit `$deploy/site-config/sas-singlestore/sas-singlestore-cluster-config.yaml`
 
-      In the following example, the leaf node definition is modified to create four leaf nodes, each with 750 GB of storage, using a scaling height of 1 (defined as 8 vCPU cores and 32 GB of RAM) and the `managed` storage class. You may also want to perform similar alterations to the aggregatorSpec. Refer to the [SingleStore Cluster Scaling Document](https://docs.singlestore.com/db/latest/reference/singlestore-operator-reference/scale-a-cluster) for more information.
+      In the following example, the leaf node definition is modified to create four leaf nodes, each with 750 GB of storage, using a scaling height of 1 (defined as 8 vCPU cores and 32 GB of RAM) and the `managed` storage class. You may also want to perform similar alterations to the aggregatorSpec.
+
+      Refer to the [SingleStore Cluster Scaling Document](https://docs.singlestore.com/db/latest/reference/singlestore-operator-reference/scale-a-cluster) for more information.
 
       ```yaml
       - op: replace
