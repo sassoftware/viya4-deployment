@@ -1,6 +1,7 @@
 # Troubleshooting
 
 - [Troubleshooting](#troubleshooting)
+  - [CAS and Compute Storage Change](#cas-and-compute-storage-change)
   - [SAS Viya Orchestration Tool](#sas-viya-orchestration-tool)
   - [SAS Viya Deployment Operator](#sas-viya-deployment-operator)
   - [EKS - Cluster Autoscaler Installation](#eks---cluster-autoscaler-installation)
@@ -12,6 +13,18 @@
   - [Applying a New License for your SAS Viya Platform Deployment](#applying-a-new-license-for-your-sas-viya-platform-deployment)
   - [Tagging the AWS EC2 Load Balancers](#tagging-the-aws-ec2-load-balancers)
   - [Deploying with cadence versions > 2024.06 without creating the external PostgreSQL SharedServices database](#deploying-with-cadence-versions--202406-without-creating-the-external-postgresql-sharedservices-database)
+
+## CAS and Compute Storage Change
+
+Starting with this release, DaC mounts NFS storage in CAS and Compute pods via PersistentVolumeClaims (PVCs) instead of direct NFS volume mounts.
+
+**For fresh deployments** (the officially supported use case): No action is required. The `cas-data` and `cas-homes` PVCs are created and mounted automatically using `V4_CFG_STORAGECLASS`.
+
+**Note for users performing redeployments with DaC** (redeployment is outside the officially supported scope of this project): A small number of users use DaC to redeploy existing SAS Viya instances. If you do this, be aware that the new PVCs are dynamically provisioned and will be backed by a **new NFS subdirectory** rather than the original `V4_CFG_RWX_FILESTORE_DATA_PATH` and `V4_CFG_RWX_FILESTORE_HOMES_PATH` paths. Data at the original NFS paths will remain on the server but will not be accessible to CAS and Compute through the new PVCs unless manually restored. Back up your data before redeploying and restore it to the new PVC-backed path after deployment.
+
+For detailed, step-by-step instructions on migrating existing homes/data directories to the new PVC-backed paths, see [CAS/Compute Storage – NFS to PVC Migration](user/CASComputeStorageMigration.md).
+
+---
 
 ## Debug Mode
 Debug mode can be enabled by adding "-vvv" to the end of the docker or ansible commands

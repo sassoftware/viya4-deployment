@@ -8,9 +8,8 @@ patch: |-
     path: /template/spec/volumes/-
     value:
       name: nfs-data
-      nfs:
-        path: {{ V4_CFG_RWX_FILESTORE_DATA_PATH  }}
-        server: {{ V4_CFG_RWX_FILESTORE_ENDPOINT }}
+      persistentVolumeClaim:
+        claimName: {{ V4_CFG_CAS_DATA_PVC_NAME }}
   - op: add
     path: /template/spec/containers/0/volumeMounts/-
     value:
