@@ -107,6 +107,11 @@ More than one task can be run at the same time. An action can run against a sing
     playbooks/playbook.yaml --tags "baseline,viya,uninstall"
   ```
 
+  When a SingleStore (SAS SpeedyStore) cluster is present in the Viya namespace,
+  the uninstall workflow pauses each `MemsqlCluster` and waits up to
+  `SINGLESTORE_PAUSE_TIMEOUT` seconds for its pods to terminate before removing
+  Viya. If no SingleStore custom resource exists, the step is skipped.
+
 ### Ansible Config
 
 In the examples above, we are running `ansible-playbook` from within the project directory. This means Ansible will automatically load the project's `ansible.cfg` file which contains configuration settings to properly run this project's playbook. If you are calling the playbook from a directory outside of this project's folder, it is important to set the following Ansible environment variable prior to running the playbook so that the configuration file gets loaded.
