@@ -22,6 +22,8 @@ Starting with this release, DaC mounts NFS storage in CAS and Compute pods via P
 
 **Note for users performing redeployments with DaC** (redeployment is outside the officially supported scope of this project): A small number of users use DaC to redeploy existing SAS Viya instances. If you do this, be aware that the new PVCs are dynamically provisioned and will be backed by a **new NFS subdirectory** rather than the original `V4_CFG_RWX_FILESTORE_DATA_PATH` and `V4_CFG_RWX_FILESTORE_HOMES_PATH` paths. Data at the original NFS paths will remain on the server but will not be accessible to CAS and Compute through the new PVCs unless manually restored. Back up your data before redeploying and restore it to the new PVC-backed path after deployment.
 
+For detailed, step-by-step instructions on migrating existing homes/data directories to the new PVC-backed paths, see [CAS/Compute Storage – NFS to PVC Migration](user/CASComputeStorageMigration.md).
+
 ---
 
 ## Debug Mode

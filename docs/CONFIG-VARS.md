@@ -123,7 +123,7 @@ viya4-deployment also creates the `sas` storage class using the csi-driver-nfs H
 >
 > **For fresh deployments:** No action is required. PVCs are created and mounted automatically.
 >
-> **For users who redeploy an existing SAS Viya instance using DaC** (note: redeployment is outside the officially supported scope of this project): The dynamically provisioned PVCs will be backed by a new NFS subdirectory, not the original `V4_CFG_RWX_FILESTORE_DATA_PATH` / `V4_CFG_RWX_FILESTORE_HOMES_PATH` paths. Back up your data before redeploying. See the [CAS and Compute storage change note](Troubleshooting.md#cas-and-compute-storage-change) for details.
+> **For users who redeploy an existing SAS Viya instance using DaC** (note: redeployment is outside the officially supported scope of this project): The dynamically provisioned PVCs will be backed by a new NFS subdirectory, not the original `V4_CFG_RWX_FILESTORE_DATA_PATH` / `V4_CFG_RWX_FILESTORE_HOMES_PATH` paths. Back up your data before redeploying. See the [CAS and Compute storage change note](Troubleshooting.md#cas-and-compute-storage-change) and the [CAS/Compute Storage – NFS to PVC Migration guide](user/CASComputeStorageMigration.md) for details.
 
 When `V4_CFG_MANAGE_STORAGE` is set to `true`, viya4-deployment creates NFS-based storage classes using the csi-driver-nfs Helm chart.
 
