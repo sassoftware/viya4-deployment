@@ -37,6 +37,9 @@ V4_CFG_INGRESS_TYPE: contour
 V4_CFG_INGRESS_FQDN: <desired_fqdn>
 V4_CFG_TLS_MODE: full-stack # [full-stack|front-door|ingress-only|disabled]
 
+## Networking
+# V4_CFG_ENABLE_IPV6: true # Set to true for IPv6 clusters (AWS, Azure); requires cluster created with IPv6 enabled
+
 ## Postgres
 # Optional for Google Cloud external postgres cloud-sql-proxy image version override
 # V4_CFG_POSTGRES_CLOUD_SQL_PROXY_VERSION: "1.38.0"
