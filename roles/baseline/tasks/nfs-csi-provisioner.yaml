@@ -81,7 +81,7 @@
           subDir: ${pvc.metadata.namespace}/${pvc.metadata.name}/${pv.metadata.name}
           mountPermissions: "0777"
         mountOptions:
-          - nfsvers=4.1
+          - "vers={{ CSI_DRIVER_NFS_VERSION }}"
           - noatime
           - nodiratime
           - rsize=262144
@@ -111,7 +111,7 @@
           subDir: ${pvc.metadata.namespace}/${pvc.metadata.name}/${pv.metadata.name}
           mountPermissions: "0777"
         mountOptions:
-          - nfsvers=4.1
+          - "vers={{ CSI_DRIVER_NFS_VERSION }}"
           - noatime
           - nodiratime
           - rsize=262144
@@ -179,7 +179,7 @@
           volumeBindingMode: Immediate
           allowVolumeExpansion: true
           mountOptions:
-            - nfsvers=4.1
+            - "vers={{ CSI_DRIVER_NFS_VERSION }}"
             - noatime
             - nodiratime
             - rsize=262144
@@ -228,7 +228,7 @@
           volumeBindingMode: Immediate
           allowVolumeExpansion: true
           mountOptions:
-            - nfsvers=4.1
+            - "vers={{ CSI_DRIVER_NFS_VERSION }}"
             - noatime
             - nodiratime
             - rsize=262144

@@ -151,6 +151,11 @@ CSI_DRIVER_NFS_NAMESPACE: kube-system
 CSI_DRIVER_NFS_CHART_NAME: csi-driver-nfs
 CSI_DRIVER_NFS_CHART_URL: https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts
 CSI_DRIVER_NFS_CHART_VERSION: 4.13.4
+# NFS protocol version for the csi-driver-nfs StorageClasses.
+# GCP Filestore (Basic tier) only supports NFSv3, so force v3 when the
+# Filestore share path (/volumes) is in use. All other backends, including
+# GCP NetApp (non-/volumes path), Azure, vSphere/custom and ONTAP, keep v4.1.
+CSI_DRIVER_NFS_VERSION: "{{ '3' if (PROVIDER | default('')) == 'gcp' and (V4_CFG_RWX_FILESTORE_PATH | default('')) == '/volumes' else '4.1' }}"
 CSI_DRIVER_NFS_CONFIG:
   driver:
     mountPermissions: "0777"
@@ -166,7 +171,7 @@ CSI_DRIVER_NFS_CONFIG:
       subDir: ${pvc.metadata.namespace}-${pvc.metadata.name}-${pv.metadata.name}
       mountPermissions: "0777"
     mountOptions:
-      - vers=4.1
+      - "vers={{ CSI_DRIVER_NFS_VERSION }}"
       - noatime
       - nodiratime
       - rsize=262144
@@ -204,7 +209,7 @@ CSI_DRIVER_NFS_PG_CONFIG:
       subDir: ${pvc.metadata.namespace}/${pvc.metadata.name}/${pv.metadata.name}
       mountPermissions: "0777"
     mountOptions:
-      - vers=4.1
+      - "vers={{ CSI_DRIVER_NFS_VERSION }}"
       - noatime
       - nodiratime
       - rsize=262144
