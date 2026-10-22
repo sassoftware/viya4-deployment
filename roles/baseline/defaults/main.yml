@@ -156,6 +156,9 @@ CSI_DRIVER_NFS_CHART_VERSION: 4.13.4
 # Filestore share path (/volumes) is in use. All other backends, including
 # GCP NetApp (non-/volumes path), Azure, vSphere/custom and ONTAP, keep v4.1.
 CSI_DRIVER_NFS_VERSION: "{{ '3' if (PROVIDER | default('')) == 'gcp' and (V4_CFG_RWX_FILESTORE_PATH | default('')) == '/volumes' else '4.1' }}"
+# NFSv3 needs rpc.statd for remote locking, which the nodes do not run, so
+# add nolock (local locks) when v3 is used. NFSv4.x does not need it.
+CSI_DRIVER_NFS_VERS_OPTIONS: "vers={{ CSI_DRIVER_NFS_VERSION }}{{ ',nolock' if (CSI_DRIVER_NFS_VERSION | string) == '3' else '' }}"
 CSI_DRIVER_NFS_CONFIG:
   driver:
     mountPermissions: "0777"
@@ -171,7 +174,7 @@ CSI_DRIVER_NFS_CONFIG:
       subDir: ${pvc.metadata.namespace}-${pvc.metadata.name}-${pv.metadata.name}
       mountPermissions: "0777"
     mountOptions:
-      - "vers={{ CSI_DRIVER_NFS_VERSION }}"
+      - "{{ CSI_DRIVER_NFS_VERS_OPTIONS }}"
       - noatime
       - nodiratime
       - rsize=262144
@@ -209,7 +212,7 @@ CSI_DRIVER_NFS_PG_CONFIG:
       subDir: ${pvc.metadata.namespace}/${pvc.metadata.name}/${pv.metadata.name}
       mountPermissions: "0777"
     mountOptions:
-      - "vers={{ CSI_DRIVER_NFS_VERSION }}"
+      - "{{ CSI_DRIVER_NFS_VERS_OPTIONS }}"
       - noatime
       - nodiratime
       - rsize=262144
