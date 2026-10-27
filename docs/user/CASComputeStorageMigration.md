@@ -28,7 +28,7 @@ DaC (viya4-deployment) is moving CAS and Compute shared storage (homes and data 
 
 This guide covers the one-time data move and configuration update for existing deployments upgrading to the PVC-backed paths. Fresh deployments do not need this data migration.
 
-The move procedure below is based on a reporter-tested and verified guide. It uses `mv` for an instant rename when both paths are on the same mounted filesystem; this preserves file contents, ownership, permissions, and ACLs without copying file data. The move changes the modified date of each top-level entry, so the procedure records and restores those dates.
+The move procedure below is based on a reporter-tested and verified guide. It uses `mv` for an instant rename when both paths are on the same mounted filesystem; this preserves file contents, ownership, and permissions without copying file data. The move changes the modified date of each top-level entry, so the procedure records and restores those dates.
 
 The migration applies to both homes and data. Complete the entire procedure for homes, then repeat it from Step 1 for data. Update the identities configuration during the homes pass; during the data pass, skip the identities configuration step because it applies only to homes. Replace all example source and destination paths with paths from your deployment; the sample PVC names and IDs in reporter-provided examples are deployment-specific and must not be reused blindly.
 
@@ -42,6 +42,8 @@ The migration applies to both homes and data. Complete the entire procedure for 
 - Do not proceed if any check reports `STOP` or the summary says `DO NOT CONTINUE`.
 - The procedure requires the source and destination to be on the same filesystem. If the check reports different mounts, do not use `mv`; use a separately planned and verified copy-based migration instead.
 - Do not delete the backup until the environment is started and users' files have been validated.
+
+> **NFSv4 ACLs:** If you are using NFSv4 ACLs, use `nfs4-acl-tools` (`nfs4_getfacl` / `nfs4_setfacl`) to back up and restore permissions.
 
 Run each complete Bash block in the same shell, top to bottom, for one directory at a time. Paste whole blocks, including their opening and closing braces. Each check reports `OK` or `STOP`; resolve every `STOP` before continuing.
 
