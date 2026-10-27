@@ -186,7 +186,7 @@ When V4_CFG_MANAGE_STORAGE is set to `true`, the `sas` and `pg-storage` storage 
 
 | Name | Description | Type | Default | Required | Notes | Tasks |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| V4_CFG_INGRESS_TYPE | The ingress controller to deploy | string | "contour" | true | Possible values: "ingress", "contour" | baseline, viya |
+| V4_CFG_INGRESS_TYPE | The ingress controller to deploy | string | "contour" | true | Possible values: "ingress", "contour". The "contour" value deploys Contour as an Ingress API controller only; DaC does not support Contour as a Gateway API implementation. | baseline, viya |
 | V4_CFG_INGRESS_FQDN | FQDN to the ingress for SAS Vya installation | string | | true | | viya |
 | V4_CFG_INGRESS_MODE | Whether to create a public or private Loadbalancer endpoint | string | "public" | false | Possible values: "public", "private". Setting this option to "private" adds options to the ingress controller that create a LoadBalancer with private IP address(es) only. | baseline |
 | V4_CFG_ENABLE_IPV6 | Enable IPv6/dual-stack networking for ingress LoadBalancer | bool | false | false | When true on AWS, configures dualstack NLB annotations for both ingress-nginx and Contour. Kubernetes will auto-detect the IP family from the cluster configuration. When true on Azure, configures dual-stack with ipFamilies ["IPv6", "IPv4"] and ipFamilyPolicy "PreferDualStack". Requires cluster with IPv6 enabled at creation time. Not supported on GCP. | baseline |
@@ -460,6 +460,8 @@ If you used [viya4-iac-aws:5.6.0](https://github.com/sassoftware/viya4-iac-aws/r
 ### Contour
 
 Contour is an open source ingress controller that provides dynamic configuration updates. Contour support is available starting with the 2026.02 cadence release.
+
+**Note**: Although Contour supports both the Kubernetes Ingress API and the Gateway API, DaC support for Contour is limited to the Ingress API. DaC does not support deploying or configuring Contour as a Gateway API implementation, and Contour does not currently meet the SAS Viya platform system requirements for Gateway API.
 
 When `V4_CFG_MULTI_ZONE_ENABLED` is `true` and `V4_CFG_MULTI_ZONE_CONTOUR_ENABLED` is `true` (the default), DaC automatically configures the Contour controller Deployment for multi-zone high availability by setting `replicaCount` to the detected zone count (minimum `2`), adding `topologySpreadConstraints` across `topology.kubernetes.io/zone` and `kubernetes.io/hostname`, and adding preferred pod anti-affinity. Envoy defaults to a DaemonSet and includes a default toleration for `workload.sas.com/class:NoSchedule`, allowing it to run on DaC-managed node classes across zones. If `V4_CFG_CONTOUR_ENVOY_KIND` is set to `deployment`, Envoy uses the requested replica count instead; the automatic multi-zone sizing in this section still applies only to the Contour controller. Set `V4_CFG_CONTOUR_ENVOY_AVOID_CAS_NODES: true` to keep Envoy off CAS nodes.
 
