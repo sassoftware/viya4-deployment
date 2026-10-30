@@ -2,7 +2,7 @@
 
 Contour is an open-source ingress controller that uses Envoy proxy as its data plane. It is the default ingress controller for SAS Viya platform deployments starting with the 2026.03 cadence release. For more information, see the [official Contour documentation](https://projectcontour.io/).
 
-**Note**: Contour supports both the Kubernetes Ingress API and the Gateway API. viya4-deployment supports Contour for the Ingress API only. Deploying or configuring Contour as a Gateway API implementation is not supported by viya4-deployment, and Contour does not currently meet the SAS Viya platform system requirements for Gateway API.
+**Note**: Contour supports both the Kubernetes Ingress API and the Gateway API. In viya4-deployment, the contour option configures Contour as a Kubernetes Ingress API implementation. Gateway API deployments use the envoy-gateway option, which deploys Envoy Gateway as the Gateway API implementation supported by viya4-deployment.
 
 ## What viya4-deployment Does with Contour
 
