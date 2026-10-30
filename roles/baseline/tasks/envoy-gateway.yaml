@@ -233,6 +233,55 @@
     - install
     - update
 
+# Size the Envoy data-plane replicas to the detected zone count (minimum 2) in
+# multi-zone mode. Reuses the zone names already discovered for the shared
+# baseline multi-zone context (see multi-zone-context.yaml), so Envoy Gateway
+# doesn't need its own node query (unlike contour.yaml, which predates that
+# shared context).
+- name: Set Envoy Gateway multi-zone replica count
+  set_fact:
+    ENVOY_GATEWAY_MULTI_ZONE_REPLICA_COUNT: "{{ [2, (BASELINE_MULTI_ZONE_ZONE_NAMES | default([]) | length)] | max }}"
+  when:
+    - V4_CFG_MULTI_ZONE_ENABLED | default(false) | bool
+    - V4_CFG_MULTI_ZONE_ENVOY_GATEWAY_ENABLED | default(true) | bool
+  tags:
+    - install
+    - update
+
+# Build the EnvoyProxy envoyDeployment override for multi-zone HA: sets replica
+# count to match detected zone count (minimum 2) and adds topology spread
+# constraints so Envoy data-plane pods are distributed across availability
+# zones, mirroring the equivalent Contour multi-zone HA behavior
+# (CONTOUR_MULTI_ZONE_CONFIG in roles/baseline/defaults/main.yml). Replica
+# count alone is not sufficient for zone resilience without topology-aware
+# scheduling (PSCLOUD-1874).
+- name: Set Envoy Gateway multi-zone envoyDeployment overrides
+  set_fact:
+    _envoy_proxy_envoy_deployment:
+      replicas: "{{ ENVOY_GATEWAY_MULTI_ZONE_REPLICA_COUNT | int }}"
+      pod:
+        topologySpreadConstraints:
+          - maxSkew: 1
+            topologyKey: topology.kubernetes.io/zone
+            whenUnsatisfiable: ScheduleAnyway
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: envoy
+                app.kubernetes.io/component: proxy
+          - maxSkew: 1
+            topologyKey: kubernetes.io/hostname
+            whenUnsatisfiable: ScheduleAnyway
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: envoy
+                app.kubernetes.io/component: proxy
+  when:
+    - V4_CFG_MULTI_ZONE_ENABLED | default(false) | bool
+    - V4_CFG_MULTI_ZONE_ENVOY_GATEWAY_ENABLED | default(true) | bool
+  tags:
+    - install
+    - update
+
 - name: Configure EnvoyProxy
   kubernetes.core.k8s:
     state: present
@@ -248,6 +297,7 @@
         provider:
           type: Kubernetes
           kubernetes:
+            envoyDeployment: "{{ _envoy_proxy_envoy_deployment | default(omit, true) }}"
             envoyService:
               annotations: "{{ _envoy_proxy_svc_annotations }}"
               loadBalancerSourceRanges: "{{ LOADBALANCER_SOURCE_RANGES | default(['0.0.0.0/0']) }}"
