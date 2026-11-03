@@ -233,14 +233,52 @@
     - install
     - update
 
-# Size the Envoy data-plane replicas to the detected zone count (minimum 2) in
-# multi-zone mode. Reuses the zone names already discovered for the shared
-# baseline multi-zone context (see multi-zone-context.yaml), so Envoy Gateway
-# doesn't need its own node query (unlike contour.yaml, which predates that
-# shared context).
+# Size the Envoy Gateway controller and Envoy data-plane replicas to the detected
+# zone count (minimum 2) in multi-zone mode. Reuses the zone names already
+# discovered for the shared baseline multi-zone context (see multi-zone-context.yaml),
+# so Envoy Gateway doesn't need its own node query (unlike contour.yaml, which predates
+# that shared context).
 - name: Set Envoy Gateway multi-zone replica count
   set_fact:
     ENVOY_GATEWAY_MULTI_ZONE_REPLICA_COUNT: "{{ [2, (BASELINE_MULTI_ZONE_ZONE_NAMES | default([]) | length)] | max }}"
+  when:
+    - V4_CFG_MULTI_ZONE_ENABLED | default(false) | bool
+    - V4_CFG_MULTI_ZONE_ENVOY_GATEWAY_ENABLED | default(true) | bool
+  tags:
+    - install
+    - update
+
+- name: Set Envoy Gateway controller multi-zone topology spread constraints
+  set_fact:
+    _envoy_gateway_controller_topology_spread_constraints:
+      - maxSkew: 1
+        topologyKey: topology.kubernetes.io/zone
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            control-plane: envoy-gateway
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            control-plane: envoy-gateway
+  when:
+    - V4_CFG_MULTI_ZONE_ENABLED | default(false) | bool
+    - V4_CFG_MULTI_ZONE_ENVOY_GATEWAY_ENABLED | default(true) | bool
+  tags:
+    - install
+    - update
+
+- name: Set Envoy Gateway controller multi-zone pod anti-affinity
+  set_fact:
+    _envoy_gateway_controller_pod_anti_affinity:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              control-plane: envoy-gateway
+          topologyKey: topology.kubernetes.io/zone
   when:
     - V4_CFG_MULTI_ZONE_ENABLED | default(false) | bool
     - V4_CFG_MULTI_ZONE_ENVOY_GATEWAY_ENABLED | default(true) | bool
@@ -289,6 +327,31 @@
           }
         }
       }}
+  when:
+    - V4_CFG_MULTI_ZONE_ENABLED | default(false) | bool
+    - V4_CFG_MULTI_ZONE_ENVOY_GATEWAY_ENABLED | default(true) | bool
+  tags:
+    - install
+    - update
+
+- name: Patch Envoy Gateway controller Deployment for multi-zone HA
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ KUBECONFIG }}"
+    definition:
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: envoy-gateway
+        namespace: envoy-gateway-system
+      spec:
+        replicas: "{{ ENVOY_GATEWAY_MULTI_ZONE_REPLICA_COUNT | int }}"
+        template:
+          spec:
+            topologySpreadConstraints: "{{ _envoy_gateway_controller_topology_spread_constraints | default([], true) }}"
+            affinity:
+              podAntiAffinity:
+                preferredDuringSchedulingIgnoredDuringExecution: "{{ _envoy_gateway_controller_pod_anti_affinity | default([], true) }}"
   when:
     - V4_CFG_MULTI_ZONE_ENABLED | default(false) | bool
     - V4_CFG_MULTI_ZONE_ENVOY_GATEWAY_ENABLED | default(true) | bool
