@@ -338,20 +338,32 @@
   kubernetes.core.k8s:
     state: present
     kubeconfig: "{{ KUBECONFIG }}"
-    definition:
-      apiVersion: apps/v1
-      kind: Deployment
-      metadata:
-        name: envoy-gateway
-        namespace: envoy-gateway-system
-      spec:
-        replicas: "{{ ENVOY_GATEWAY_MULTI_ZONE_REPLICA_COUNT | int }}"
-        template:
-          spec:
-            topologySpreadConstraints: "{{ _envoy_gateway_controller_topology_spread_constraints | default([], true) }}"
-            affinity:
-              podAntiAffinity:
-                preferredDuringSchedulingIgnoredDuringExecution: "{{ _envoy_gateway_controller_pod_anti_affinity | default([], true) }}"
+    # Construct one dictionary so older Ansible templating preserves the integer
+    # replica count instead of converting an isolated numeric scalar to a string.
+    definition: >-
+      {{
+        {
+          'apiVersion': 'apps/v1',
+          'kind': 'Deployment',
+          'metadata': {
+            'name': 'envoy-gateway',
+            'namespace': 'envoy-gateway-system'
+          },
+          'spec': {
+            'replicas': (ENVOY_GATEWAY_MULTI_ZONE_REPLICA_COUNT | int),
+            'template': {
+              'spec': {
+                'topologySpreadConstraints': (_envoy_gateway_controller_topology_spread_constraints | default([], true)),
+                'affinity': {
+                  'podAntiAffinity': {
+                    'preferredDuringSchedulingIgnoredDuringExecution': (_envoy_gateway_controller_pod_anti_affinity | default([], true))
+                  }
+                }
+              }
+            }
+          }
+        }
+      }}
   when:
     - V4_CFG_MULTI_ZONE_ENABLED | default(false) | bool
     - V4_CFG_MULTI_ZONE_ENVOY_GATEWAY_ENABLED | default(true) | bool
