@@ -382,6 +382,7 @@ Notes:
 | V4_CFG_MULTI_ZONE_DATA_AGENT_ENABLED | Enable multi-zone distribution for Data Agent Server StatefulSet | bool | true | false | Ensures Data Agent Server pods are distributed across zones for data services availability | viya |
 | V4_CFG_MULTI_ZONE_STATELESS_ENABLED | Enable multi-zone distribution for stateless services (Deployments) | bool | true | false | Enables zone distribution for SAS Viya Deployment resources when combined with HA mode. Requires V4_CFG_HA_ENABLED: true | viya |
 | V4_CFG_MULTI_ZONE_CONTOUR_ENABLED | Enable multi-zone HA distribution for the Contour ingress controller | bool | true | false | When `V4_CFG_MULTI_ZONE_ENABLED` is true, sets Contour controller `replicaCount` to match detected zone count (minimum 2) and applies `topologySpreadConstraints` and pod anti-affinity to distribute Contour pods across availability zones. Envoy runs as a DaemonSet and includes a default toleration for `workload.sas.com/class:NoSchedule` to run on DaC-managed node classes. | baseline |
+| V4_CFG_MULTI_ZONE_ENVOY_GATEWAY_ENABLED | Enable multi-zone HA distribution for the Envoy Gateway data plane | bool | true | false | When `V4_CFG_MULTI_ZONE_ENABLED` is true and `V4_CFG_INGRESS_TYPE` is `envoy-gateway`, sets `EnvoyProxy.spec.provider.kubernetes.envoyDeployment.replicas` to match detected zone count (minimum 2) and applies `topologySpreadConstraints` across `topology.kubernetes.io/zone` and `kubernetes.io/hostname` so Envoy data-plane pods don't concentrate in a single zone. | baseline |
 | V4_CFG_STATEFUL_NODEPOOL_RESTRICTION | Restrict StatefulSets to dedicated stateful nodepools | bool | false | false | Adds node affinity to ensure StatefulSets only run on nodes with the specified stateful nodepool label. | viya |
 | V4_CFG_STATEFUL_NODEPOOL_LABEL | Label key for identifying stateful nodepool nodes | string | workload.sas.com/class | false | Configures the node label used for nodepool affinity. Common values: `workload.sas.com/class` (modern) or `agentpool` (legacy AKS) | viya |
 | V4_CFG_SINGLE_ZONE_FALLBACK | Apply relaxed constraints for single-zone clusters | bool | true | false | When enabled, uses relaxed scheduling constraints for single-zone deployments to prevent scheduling failures | viya |
@@ -495,6 +496,21 @@ When `V4_CFG_MULTI_ZONE_ENABLED` is `true` and `V4_CFG_MULTI_ZONE_CONTOUR_ENABLE
 | V4_CFG_CONTOUR_ENVOY_REPLICA_COUNT | Number of Envoy replicas when `V4_CFG_CONTOUR_ENVOY_KIND` is `deployment` | int | 2 | false | Ignored when Envoy runs as a DaemonSet. | baseline |
 | V4_CFG_CONTOUR_ENVOY_AVOID_CAS_NODES | Keep Envoy off CAS nodes | bool | false | false | When `true`, Envoy is restricted away from nodes labeled `workload.sas.com/class=cas`. | baseline |
 | CONTOUR_CONFIG | Contour Helm values | string | See [this file](../roles/baseline/defaults/main.yml) for more information. Altering this value will affect the cluster. | false | | baseline |
+
+### Envoy Gateway
+
+Envoy Gateway is the Gateway API implementation used when `V4_CFG_INGRESS_TYPE` is set to `envoy-gateway`. Unlike Contour, it is installed from a release manifest rather than a Helm chart, but the same configuration metadata pattern applies for the release version and manifest source.
+
+**For detailed information about Envoy Gateway installation, multi-zone behavior, and Gateway API integration, see [Gateway API Documentation](user/GatewayAPI.md).**
+
+| Name | Description | Type | Default | Required | Notes | Tasks |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
+| GATEWAY_API_VERSION | Gateway API CRD release version | string | v1.5.0 | false | | baseline |
+| GATEWAY_API_NAMESPACE_LABEL_MODE | Gateway API install mode for the release manifest | string | standard | false | Supported values: `standard`, `experimental`. | baseline |
+| GATEWAY_API_MANIFEST_URL | Gateway API install manifest URL | string | https://github.com/kubernetes-sigs/gateway-api/releases/download/{{ GATEWAY_API_VERSION }}/{{ GATEWAY_API_NAMESPACE_LABEL_MODE }}-install.yaml | false | | baseline |
+| ENVOY_GATEWAY_VERSION | Envoy Gateway release version | string | v1.8.3 | false | Minimum supported version for IPv6/dual-stack is `v1.8.2`; default is `v1.8.3`. | baseline |
+| ENVOY_GATEWAY_MANIFEST_URL | Envoy Gateway install manifest URL | string | https://github.com/envoyproxy/gateway/releases/download/{{ ENVOY_GATEWAY_VERSION }}/install.yaml | false | | baseline |
+| ENVOY_GATEWAY_GATEWAYCLASS_NAME | Envoy Gateway GatewayClass name | string | envoy | false | Used as the default GatewayClass for baseline and Viya-generated resources. | baseline |
 
 ### EBS CSI Driver
 

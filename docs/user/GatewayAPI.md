@@ -50,6 +50,15 @@ V4_CFG_INGRESS_FQDN: your-fqdn.example.com
 
 Optional overrides can still be set explicitly in `ansible-vars.yaml`.
 
+## Multi-Zone High Availability
+
+```yaml
+V4_CFG_MULTI_ZONE_ENABLED: true                    # Enables multi-zone for SAS Viya and Envoy Gateway
+V4_CFG_MULTI_ZONE_ENVOY_GATEWAY_ENABLED: true      # Defaults to true when multi-zone is enabled
+```
+
+When multi-zone is enabled, DaC sets `EnvoyProxy.spec.provider.kubernetes.envoyDeployment.replicas` to the detected zone count (minimum 2) and adds `topologySpreadConstraints` across `topology.kubernetes.io/zone` and `kubernetes.io/hostname`, mirroring the equivalent Contour multi-zone HA behavior. Without this, the Envoy data plane defaults to a single proxy replica, which creates a single-zone ingress dependency even in an otherwise multi-zone deployment.
+
 ## IPv6 / Dual-Stack Support
 
 Setting `V4_CFG_ENABLE_IPV6: true` applies provider-specific dual-stack configuration to the Envoy Gateway-managed Service and proxy, mirroring `ingress-nginx`/`contour`, but tailored to how each cloud provider actually implements IPv6 Kubernetes networking:
