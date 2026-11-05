@@ -497,6 +497,21 @@ When `V4_CFG_MULTI_ZONE_ENABLED` is `true` and `V4_CFG_MULTI_ZONE_CONTOUR_ENABLE
 | V4_CFG_CONTOUR_ENVOY_AVOID_CAS_NODES | Keep Envoy off CAS nodes | bool | false | false | When `true`, Envoy is restricted away from nodes labeled `workload.sas.com/class=cas`. | baseline |
 | CONTOUR_CONFIG | Contour Helm values | string | See [this file](../roles/baseline/defaults/main.yml) for more information. Altering this value will affect the cluster. | false | | baseline |
 
+### Envoy Gateway
+
+Envoy Gateway is the Gateway API implementation used when `V4_CFG_INGRESS_TYPE` is set to `envoy-gateway`. Unlike Contour, it is installed from a release manifest rather than a Helm chart, but the same configuration metadata pattern applies for the release version and manifest source.
+
+**For detailed information about Envoy Gateway installation, multi-zone behavior, and Gateway API integration, see [Gateway API Documentation](user/GatewayAPI.md).**
+
+| Name | Description | Type | Default | Required | Notes | Tasks |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
+| GATEWAY_API_VERSION | Gateway API CRD release version | string | v1.5.0 | false | | baseline |
+| GATEWAY_API_NAMESPACE_LABEL_MODE | Gateway API install mode for the release manifest | string | standard | false | Supported values: `standard`, `experimental`. | baseline |
+| GATEWAY_API_MANIFEST_URL | Gateway API install manifest URL | string | https://github.com/kubernetes-sigs/gateway-api/releases/download/{{ GATEWAY_API_VERSION }}/{{ GATEWAY_API_NAMESPACE_LABEL_MODE }}-install.yaml | false | | baseline |
+| ENVOY_GATEWAY_VERSION | Envoy Gateway release version | string | v1.8.3 | false | Minimum supported version for IPv6/dual-stack is `v1.8.2`; default is `v1.8.3`. | baseline |
+| ENVOY_GATEWAY_MANIFEST_URL | Envoy Gateway install manifest URL | string | https://github.com/envoyproxy/gateway/releases/download/{{ ENVOY_GATEWAY_VERSION }}/install.yaml | false | | baseline |
+| ENVOY_GATEWAY_GATEWAYCLASS_NAME | Envoy Gateway GatewayClass name | string | envoy | false | Used as the default GatewayClass for baseline and Viya-generated resources. | baseline |
+
 ### EBS CSI Driver
 
 The EBS CSI driver is only used for kubernetes v1.23 or later AWS EKS clusters.
