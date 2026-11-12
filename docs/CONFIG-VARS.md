@@ -491,7 +491,7 @@ When `V4_CFG_MULTI_ZONE_ENABLED` is `true` and `V4_CFG_MULTI_ZONE_CONTOUR_ENABLE
 | CONTOUR_NAMESPACE | Contour Helm installation namespace | string | projectcontour | false | | baseline |
 | CONTOUR_CHART_NAME | Contour Helm chart name | string | contour | false | | baseline |
 | CONTOUR_CHART_URL | Contour Helm chart URL | string | https://projectcontour.github.io/helm-charts/ | false | | baseline |
-| CONTOUR_CHART_VERSION | Contour Helm chart version | string | 0.2.1 | false | | baseline |
+| CONTOUR_CHART_VERSION | Contour Helm chart version | string | 0.9.0 | false | | baseline |
 | V4_CFG_CONTOUR_ENVOY_KIND | Envoy workload type for the Contour chart | string | daemonset | false | Supported values: `daemonset`, `deployment`. The default preserves one Envoy pod per eligible node. | baseline |
 | V4_CFG_CONTOUR_ENVOY_REPLICA_COUNT | Number of Envoy replicas when `V4_CFG_CONTOUR_ENVOY_KIND` is `deployment` | int | 2 | false | Ignored when Envoy runs as a DaemonSet. | baseline |
 | V4_CFG_CONTOUR_ENVOY_AVOID_CAS_NODES | Keep Envoy off CAS nodes | bool | false | false | When `true`, Envoy is restricted away from nodes labeled `workload.sas.com/class=cas`. | baseline |
