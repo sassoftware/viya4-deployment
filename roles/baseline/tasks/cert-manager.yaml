@@ -38,6 +38,31 @@
     - install
     - update
 
+# When Gateway API is installed alongside cert-manager, cert-manager's gateway-shim
+# controller needs to be explicitly enabled so it can watch Gateway API resources
+# (Gateway/HTTPRoute/ListenerSet) and automatically provision certificates for them,
+# including the provisional self-signed certificates it injects into listener TLS
+# secrets while the real certificate is still being issued
+# (see https://cert-manager.io/docs/usage/gateway/). ListenerSet support also requires
+# its own enablement flag and feature gate.
+- name: Enable Gateway API support in cert-manager
+  set_fact:
+    CERT_MANAGER_CONFIG: "{{ CERT_MANAGER_CONFIG | combine({'extraArgs': (CERT_MANAGER_CONFIG.extraArgs | default([])) + CERT_MANAGER_GATEWAY_API_EXTRA_ARGS}) }}"
+  vars:
+    CERT_MANAGER_GATEWAY_API_EXTRA_ARGS:
+      - --enable-gateway-api
+      - --enable-gateway-api-listenerset
+      - --feature-gates=ListenerSets=true
+  when:
+    - V4_CFG_TLS_GENERATOR is defined
+    - V4_CFG_TLS_GENERATOR == 'cert-manager'
+    - V4_CFG_INSTALL_GATEWAY_API is defined
+    - V4_CFG_INSTALL_GATEWAY_API | bool
+  tags:
+    - install
+    - update
+    - uninstall
+
 # Deploy the cert-manager controller using Helm
 - name: Deploy cert-manager
   kubernetes.core.helm:
