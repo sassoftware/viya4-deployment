@@ -5,6 +5,7 @@
 ### 1. **Ingress Controllers**
 
 - **contour** is deployed as the default ingress controller (as of SAS Viya 2026.03). Alternatively, **ingress-nginx** can be configured.
+- **Gateway API + Envoy Gateway** (`V4_CFG_INGRESS_TYPE: envoy-gateway`) is officially supported starting with the 2026.11 cadence release. See [Gateway API Documentation](GatewayAPI.md).
 - The ingress controller exposes internal Kubernetes services to external clients, typically via AWS Network Load Balancer (NLB) or cloud-specific load balancers.
 - It manages routing of HTTP/HTTPS traffic into the cluster, enforcing TLS, host/path rules, and sometimes source IP restrictions.
 - The choice of ingress controller and its configuration (e.g., annotations, load balancer type) directly affects how external traffic enters your cluster.

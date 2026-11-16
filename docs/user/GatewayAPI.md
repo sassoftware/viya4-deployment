@@ -1,5 +1,7 @@
 # Gateway API + Envoy Gateway
 
+**Note:** Gateway API + Envoy Gateway is officially supported starting with the 2026.11 cadence release.
+
 Gateway API with Envoy Gateway is supported as an ingress option for SAS Viya deployments. This mode uses Gateway API resources (`GatewayClass`, `Gateway`, `ListenerSet`, `HTTPRoute`) instead of traditional `Ingress`/Contour HTTPProxy paths.
 
 ## What viya4-deployment Does
