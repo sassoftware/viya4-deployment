@@ -64,7 +64,19 @@ To keep Envoy off CAS nodes, set `V4_CFG_CONTOUR_ENVOY_AVOID_CAS_NODES: true`.
 V4_CFG_CONTOUR_ENVOY_AVOID_CAS_NODES: true
 ```
 
-With that configuration, Envoy will not schedule on nodes labeled `cas`.
+By default, nodes labeled `workload.sas.com/class=cas` are excluded. If the deployment uses additional workload class values for CAS nodes, specify them with `V4_CFG_CONTOUR_ENVOY_CAS_NODE_CLASSES`.
+
+For example:
+
+```yaml
+V4_CFG_CONTOUR_ENVOY_AVOID_CAS_NODES: true
+V4_CFG_CONTOUR_ENVOY_CAS_NODE_CLASSES:
+  - cas
+  - cascontroller
+  - casworker
+```
+
+When configured this way, Envoy is restricted from nodes whose `workload.sas.com/class` label has any of the listed values.
 
 ## Additional Resources
 
