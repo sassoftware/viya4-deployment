@@ -72,6 +72,16 @@ Requires the underlying cluster to be created with IPv6 networking enabled (see 
 
 **Minimum Envoy Gateway version**: `v1.8.2` (the default `ENVOY_GATEWAY_VERSION` is `v1.8.3`). Versions `v1.8.0`/`v1.8.1` reject IPv6 CIDRs in `loadBalancerSourceRanges` ([envoyproxy/gateway#9048](https://github.com/envoyproxy/gateway/issues/9048)), which leaves the baseline `Gateway` stuck with an `Accepted: False` / `InvalidParameters` condition and no data-plane Envoy Deployment/Service ever gets created. If `LOADBALANCER_SOURCE_RANGES` includes any IPv6 CIDRs, make sure `ENVOY_GATEWAY_VERSION` is `v1.8.2` or later.
 
+## cert-manager Integration
+
+If `V4_CFG_TLS_GENERATOR: cert-manager` is set while Gateway API is installed (`V4_CFG_INSTALL_GATEWAY_API: true`, auto-enabled with `V4_CFG_INGRESS_TYPE: envoy-gateway`), the baseline role installs cert-manager with its gateway-shim controller and `ListenerSet` support enabled:
+
+- `--enable-gateway-api`
+- `--enable-gateway-api-listenerset`
+- `--feature-gates=ListenerSets=true`
+
+These flags let cert-manager watch `Gateway`/`HTTPRoute`/`ListenerSet` resources and automatically manage the TLS secrets they reference, including the [provisional self-signed certificates](https://cert-manager.io/docs/usage/gateway/) cert-manager injects into a listener's TLS secret while the real certificate is still being issued. Without `--enable-gateway-api`, cert-manager ignores Gateway API resources entirely; without `--enable-gateway-api-listenerset` and `--feature-gates=ListenerSets=true`, it cannot resolve certificates referenced by a namespace-local `ListenerSet` (used by this project's `envoy-gateway` mode). No additional configuration is required -- these args are added automatically whenever both conditions above are met.
+
 ## Important Notes
 
 - Do not combine this mode with traditional ingress controllers in the same run.
