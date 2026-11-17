@@ -80,6 +80,7 @@ For zone redundancy configuration of external PostgreSQL, see the [PostgreSQL Do
 - `V4_CFG_MULTI_ZONE_ENABLED`: Master switch for multi-zone distribution (default: **false**)
 - `V4_CFG_MULTI_ZONE_RABBITMQ_ENABLED`: RabbitMQ distribution control (default: true)
 - `V4_CFG_MULTI_ZONE_CONSUL_ENABLED`: Consul distribution control (default: true)
+- `V4_CFG_MULTI_ZONE_VAULT_ENABLED`: SAS Vault Server distribution control (default: true)
 - `V4_CFG_MULTI_ZONE_REDIS_ENABLED`: Redis distribution control (default: true)
 - `V4_CFG_MULTI_ZONE_OPENDISTRO_ENABLED`: OpenDistro/OpenSearch distribution control (default: true)
 - `V4_CFG_MULTI_ZONE_WORKLOAD_ORCHESTRATOR_ENABLED`: Workload Orchestrator distribution control (default: true)
@@ -161,7 +162,7 @@ V4_CFG_SINGLE_ZONE_FALLBACK: true
 - **Quorum Safety**: Single zone failure won't compromise StatefulSet availability
 - **Reliable Scheduling**: Balanced constraints allow successful deployment
 - **Multi-Cloud Support**: Works with AKS, EKS, and GKE
-- **Comprehensive Coverage**: Supports 7 critical StatefulSet workloads
+- **Comprehensive Coverage**: Supports 8 critical StatefulSet workloads
 - **Automatic Detection**: Auto-detects multi-zone clusters and applies appropriate constraints
 - **Single-Zone Fallback**: Gracefully handles single-zone deployments with relaxed constraints
 
@@ -175,10 +176,11 @@ This implementation provides multi-zone distribution for the following StatefulS
 |---|------------------|-------------|--------------------|
 | 1 | sas-rabbitmq-server | Message queue service | StatefulSet (direct) |
 | 2 | sas-consul-server | Service discovery and configuration | StatefulSet (direct) |
-| 3 | sas-redis-server | Caching and session store | StatefulSet (direct) |
-| 4 | sas-opendistro-default | Search and logging (OpenSearch) | OpenDistroCluster CR (operator-managed) |
-| 5 | sas-workload-orchestrator | Job scheduling and orchestration | StatefulSet (direct) |
-| 6 | sas-data-agent-server-colocated | Data agent services | StatefulSet (direct) |
+| 3 | sas-vault-server | Secrets management and encryption (leader/follower quorum) | StatefulSet (direct) |
+| 4 | sas-redis-server | Caching and session store | StatefulSet (direct) |
+| 5 | sas-opendistro-default | Search and logging (OpenSearch) | OpenDistroCluster CR (operator-managed) |
+| 6 | sas-workload-orchestrator | Job scheduling and orchestration | StatefulSet (direct) |
+| 7 | sas-data-agent-server-colocated | Data agent services | StatefulSet (direct) |
 
 ### Implementation Notes
 
@@ -200,7 +202,7 @@ When using custom multi-nodeset topology (separate `sas-opendistro-custom-data` 
 - **Acceptable for Production**: The Elasticsearch/OpenSearch cluster remains resilient to zone failures as long as master quorum (2 of 3) and data availability are maintained across the remaining zones
 
 **Direct StatefulSet Transformers**:
-- RabbitMQ, Consul, Redis, Workload Orchestrator, Data Agent
+- RabbitMQ, Consul, Vault, Redis, Workload Orchestrator, Data Agent
 - Transformers directly patch StatefulSet resources
 - Use strict zone enforcement (`DoNotSchedule`) with soft hostname spreading (`ScheduleAnyway`)
 
