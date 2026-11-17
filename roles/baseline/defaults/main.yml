@@ -263,6 +263,7 @@ V4_CFG_CONTOUR_ENVOY_REPLICA_COUNT: 2
 V4_CFG_CONTOUR_ENVOY_AVOID_CAS_NODES: false
 V4_CFG_CONTOUR_ENVOY_CAS_NODE_CLASSES:
   - cas
+V4_CFG_CONTOUR_ENVOY_TOPOLOGY_SPREAD_ENABLED: false
 CONTOUR_CONFIG:
   contour:
     resources:
@@ -314,6 +315,21 @@ CONTOUR_AWS_LB_TAGS_CONFIG:
     service:
       annotations:
         service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags: ""
+
+# Spread Envoy Deployment replicas across Kubernetes nodes.
+# Applied only when Envoy runs as a Deployment and
+# V4_CFG_CONTOUR_ENVOY_TOPOLOGY_SPREAD_ENABLED is true.
+CONTOUR_ENVOY_TOPOLOGY_SPREAD_CONFIG:
+  envoy:
+    topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/instance: contour
+            app.kubernetes.io/name: contour
+            app.kubernetes.io/component: envoy
 
 # Multi-zone HA configuration for Contour (contour controller Deployment).
 # Applied when V4_CFG_MULTI_ZONE_ENABLED and V4_CFG_MULTI_ZONE_CONTOUR_ENABLED are both true.
