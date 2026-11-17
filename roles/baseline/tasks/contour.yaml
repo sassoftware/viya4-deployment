@@ -155,6 +155,22 @@
     - install
     - update
 
+- name: Validate CONTOUR_ENVOY_CAS_NODE_CLASSES
+  assert:
+    that:
+      - V4_CFG_CONTOUR_ENVOY_CAS_NODE_CLASSES is sequence
+      - V4_CFG_CONTOUR_ENVOY_CAS_NODE_CLASSES is not string
+      - V4_CFG_CONTOUR_ENVOY_CAS_NODE_CLASSES | length > 0
+      - V4_CFG_CONTOUR_ENVOY_CAS_NODE_CLASSES | select('string') | list | length == V4_CFG_CONTOUR_ENVOY_CAS_NODE_CLASSES | length
+    fail_msg: >-
+      V4_CFG_CONTOUR_ENVOY_CAS_NODE_CLASSES must be a non-empty list
+      of workload.sas.com/class values.
+  when:
+    - V4_CFG_CONTOUR_ENVOY_AVOID_CAS_NODES | bool
+  tags:
+    - install
+    - update
+
 - name: Update CONTOUR_CONFIG for Envoy workload mode
   set_fact:
     CONTOUR_CONFIG: >-
@@ -172,7 +188,8 @@
     - update
 
 # Restrict Envoy away from CAS nodes when requested.
-# This keeps Envoy off nodes labeled with workload.sas.com/class=cas.
+# This keeps Envoy off nodes whose workload.sas.com/class label matches
+# a value in V4_CFG_CONTOUR_ENVOY_CAS_NODE_CLASSES.
 - name: Update CONTOUR_CONFIG to avoid CAS nodes for Envoy
   set_fact:
     CONTOUR_CONFIG: >-
@@ -190,7 +207,7 @@
                             {
                               'key': 'workload.sas.com/class',
                               'operator': 'NotIn',
-                              'values': ['cas']
+                              'values': V4_CFG_CONTOUR_ENVOY_CAS_NODE_CLASSES
                             }
                           ]
                         }
