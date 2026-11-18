@@ -327,7 +327,7 @@ CONTOUR_ENVOY_TOPOLOGY_SPREAD_CONFIG:
         whenUnsatisfiable: ScheduleAnyway
         labelSelector:
           matchLabels:
-            app.kubernetes.io/instance: contour
+            app.kubernetes.io/instance: "{{ CONTOUR_NAME }}"
             app.kubernetes.io/name: contour
             app.kubernetes.io/component: envoy
 
