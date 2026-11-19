@@ -187,6 +187,20 @@
     - install
     - update
 
+- name: Update CONTOUR_CONFIG for Envoy topology spreading
+  set_fact:
+    CONTOUR_CONFIG: >-
+      {{
+        CONTOUR_CONFIG
+        | combine(CONTOUR_ENVOY_TOPOLOGY_SPREAD_CONFIG, recursive=True)
+      }}
+  when:
+    - V4_CFG_CONTOUR_ENVOY_KIND == 'deployment'
+    - V4_CFG_CONTOUR_ENVOY_TOPOLOGY_SPREAD_ENABLED | bool
+  tags:
+    - install
+    - update
+
 # Restrict Envoy away from CAS nodes when requested.
 # This keeps Envoy off nodes whose workload.sas.com/class label matches
 # a value in V4_CFG_CONTOUR_ENVOY_CAS_NODE_CLASSES.

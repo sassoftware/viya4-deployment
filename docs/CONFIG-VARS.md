@@ -496,6 +496,7 @@ When `V4_CFG_MULTI_ZONE_ENABLED` is `true` and `V4_CFG_MULTI_ZONE_CONTOUR_ENABLE
 | V4_CFG_CONTOUR_ENVOY_REPLICA_COUNT | Number of Envoy replicas when `V4_CFG_CONTOUR_ENVOY_KIND` is `deployment` | int | 2 | false | Ignored when Envoy runs as a DaemonSet. | baseline |
 | V4_CFG_CONTOUR_ENVOY_AVOID_CAS_NODES | Keep Envoy off CAS nodes | bool | false | false | When `true`, Envoy is restricted away from nodes whose `workload.sas.com/class` label matches a value in `V4_CFG_CONTOUR_ENVOY_CAS_NODE_CLASSES`. | baseline |
 | V4_CFG_CONTOUR_ENVOY_CAS_NODE_CLASSES | CAS node workload classes to avoid | list | [cas] | false | Defines the `workload.sas.com/class` values considered CAS nodes when `V4_CFG_CONTOUR_ENVOY_AVOID_CAS_NODES` is `true`. | baseline |
+| V4_CFG_CONTOUR_ENVOY_TOPOLOGY_SPREAD_ENABLED | Spread Envoy Deployment replicas across Kubernetes nodes | bool | false | false | When `true` and Envoy uses `kind: deployment`, applies a soft `kubernetes.io/hostname` topology spread constraint with `maxSkew: 1`. | baseline |
 | CONTOUR_CONFIG | Contour Helm values | string | See [this file](../roles/baseline/defaults/main.yml) for more information. Altering this value will affect the cluster. | false | | baseline |
 
 ### Envoy Gateway

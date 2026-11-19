@@ -78,6 +78,18 @@ V4_CFG_CONTOUR_ENVOY_CAS_NODE_CLASSES:
 
 When configured this way, Envoy is restricted from nodes whose `workload.sas.com/class` label has any of the listed values.
 
+### Envoy Deployment topology spreading
+
+When Envoy runs as a Deployment, multiple replicas can otherwise be scheduled on the same Kubernetes node. Enable hostname topology spreading to distribute the replicas across available nodes:
+
+```yaml
+V4_CFG_CONTOUR_ENVOY_KIND: deployment
+V4_CFG_CONTOUR_ENVOY_REPLICA_COUNT: 3
+V4_CFG_CONTOUR_ENVOY_TOPOLOGY_SPREAD_ENABLED: true
+```
+
+This applies a soft `kubernetes.io/hostname` topology spread constraint with `maxSkew: 1`. The scheduler attempts to distribute Envoy replicas across nodes but can still schedule them when perfect distribution is temporarily unavailable.
+
 ## Additional Resources
 
 - [CONFIG-VARS.md](../CONFIG-VARS.md#contour) - Configuration reference
