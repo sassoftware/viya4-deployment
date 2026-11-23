@@ -35,6 +35,12 @@
 
 ## Overview
 
+> **⚠ Notice — CAS and Compute Storage Change**
+>
+> Direct NFS volume mounts for CAS and Compute pods have been replaced with PersistentVolumeClaims (PVCs). For **fresh deployments** this is transparent — PVCs are created and mounted automatically with no action required.
+>
+> **If you use DaC to redeploy an existing SAS Viya instance** (note: redeployment is outside the officially supported scope of this project), data previously stored at the original NFS paths will not be automatically accessible through the new dynamically provisioned PVCs. Back up your data before redeploying. See the [storage change note](docs/Troubleshooting.md#cas-and-compute-storage-change) for details.
+
 - This project can only be used for patch updates that use the exact same manifest as the existing deployment. 
 - Updating to a new SAS Viya platform version, cadence, or a new software offering is not supported using this project.
 - For more information about updating your software, see [KB0041450: The SAS Viya Deployment as a Code project does not perform updates](https://sas.service-now.com/csm?id=kb_article_view&sysparm_article=KB0041450).
